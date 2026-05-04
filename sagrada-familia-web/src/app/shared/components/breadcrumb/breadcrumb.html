@@ -1,0 +1,28 @@
+<nav aria-label="Breadcrumb" class="mb-4 flex">
+    <ol class="flex items-center space-x-2 text-sm text-[var(--color-text-secondary)]">
+
+        <li>
+            <a [routerLink]="homeRoute"
+                class="flex items-center hover:text-[var(--color-primary)] transition-colors focus:outline-none focus:text-[var(--color-primary)]">
+                <ng-icon name="heroHome" class="text-lg"></ng-icon>
+            </a>
+        </li>
+
+        @for (item of items; track $index) {
+        <li class="flex items-center space-x-2">
+            <ng-icon name="heroChevronRight" class="text-sm text-gray-400"></ng-icon>
+
+            @if (item.ruta && $index !== items.length - 1) {
+            <a [routerLink]="item.ruta" class="hover:text-[var(--color-primary)] transition-colors font-medium">
+                {{ item.label }}
+            </a>
+            }
+            @else {
+            <span class="font-semibold text-[var(--color-text-primary)] pointer-events-none select-none">
+                {{ item.label }}
+            </span>
+            }
+        </li>
+        }
+    </ol>
+</nav>

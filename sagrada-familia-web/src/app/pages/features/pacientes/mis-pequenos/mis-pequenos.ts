@@ -1,0 +1,66 @@
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { Router } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroChartBar, heroUserCircle, heroHeart, heroCake, heroSun, heroCloud, heroMoon } from '@ng-icons/heroicons/outline';
+import { CommonModule } from '@angular/common';
+
+import { NinoResponse } from '../../../../shared/interfaces/responses/nino.response';
+import { Ninos } from '../../../../core/services/ninos';
+import { LoadingBar } from '../../../../core/services/loading-bar';
+import { finalize } from 'rxjs';
+import { Button } from "../../../../shared/components/button/button";
+import { Tooltip } from "../../../../shared/directives/tooltip/tooltip";
+import { Auth } from '../../../../core/services/auth';
+
+@Component({
+  selector: 'mis-pequenos',
+  standalone: true,
+  imports: [CommonModule, NgIcon, Button, Tooltip],
+  viewProviders: [provideIcons({ heroChartBar, heroUserCircle, heroHeart, heroCake, heroSun, heroCloud, heroMoon })],
+  templateUrl: './mis-pequenos.html',
+})
+export class MisPequenos implements OnInit {
+  private ninosService = inject(Ninos);
+  private router = inject(Router);
+  private loadingBar = inject(LoadingBar);
+  readonly auth = inject(Auth);
+
+  ninos = signal<NinoResponse[]>([]);
+
+  ngOnInit() {
+    this.cargarDatos();
+  }
+
+  cargarDatos() {
+    this.loadingBar.show();
+    this.ninosService.obtenerMisNinos()
+      .pipe(
+        finalize(() => this.loadingBar.complete())
+      ).subscribe({
+        next: (r) => {
+          if (r.success) this.ninos.set(r.data);
+        },
+        error: () => { }
+      });
+  }
+
+  verSeguimiento(id: number) {
+    this.router.navigate(['/medidas/progreso'], { queryParams: { ninoId: id } });
+  }
+
+  verAlimentos(id: number) {
+    this.router.navigate(['/alimentos'], { queryParams: { ninoId: id } });
+  }
+
+  readonly saludoConfig = computed(() => {
+    const hora = new Date().getHours();
+
+    if (hora >= 6 && hora < 12) {
+      return { texto: 'Buenos días', icono: 'heroSun', color: 'text-orange-500' };
+    } else if (hora >= 12 && hora < 18) {
+      return { texto: 'Buenas tardes', icono: 'heroCloud', color: 'text-blue-500' };
+    } else {
+      return { texto: 'Buenas noches', icono: 'heroMoon', color: 'text-indigo-600' };
+    }
+  });
+}

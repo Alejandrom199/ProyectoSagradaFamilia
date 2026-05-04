@@ -1,0 +1,19 @@
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <h2 class="text-3xl font-bold text-gray-800">
+            Historial de Medidas
+        </h2>
+    </div>
+
+    <btn variant="primary" (clicked)="abrirModal()" class="text-white shadow-md hover:shadow-lg transition-shadow">
+        <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+        Registrar Medida
+    </btn>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <datatable [title]="'Registro Clínico de ' + (nino()?.nombre || '...') + ' ' + (nino()?.apellido || '')"
+        [data]="medidas()" [columns]="columnas" [actions]="acciones" searchPlaceholder="Buscar por fecha, estado..."
+        emptyMessage="No hay medidas registradas para este niño.">
+    </datatable>
+</div>

@@ -1,0 +1,58 @@
+<div>
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+
+    <div class="mb-6">
+        <h2 class="text-xl font-bold text-[var(--color-text-primary)]">Nuevo padre / representante</h2>
+        <p class="text-sm text-[var(--color-text-secondary)] mt-0.5">
+            Registrar un nuevo padre o representante legal
+        </p>
+    </div>
+
+    <div class="card max-w-2xl">
+        <div class="card-header">Datos del padre</div>
+        <div class="card-body space-y-4">
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Nombre *</label>
+                    <input class="form-input" type="text" placeholder="Juan" [(ngModel)]="form.nombre">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellido *</label>
+                    <input class="form-input" type="text" placeholder="Pérez" [(ngModel)]="form.apellido">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input class="form-input" type="email" placeholder="juan@email.com" [(ngModel)]="form.email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña *</label>
+                    <input class="form-input" type="password" placeholder="••••••••" [(ngModel)]="form.password">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Teléfono</label>
+                <input class="form-input" type="tel" placeholder="0999999999" [(ngModel)]="form.telefono">
+            </div>
+
+            @if (error()) {
+            <div class="alert alert-error">{{ error() }}</div>
+            }
+
+            <div class="flex gap-3 justify-end pt-2">
+                <a routerLink="/padres" class="btn btn-secondary btn-md">Cancelar</a>
+                <button class="btn btn-primary btn-md" [disabled]="guardando()" (click)="guardar()">
+                    @if (guardando()) {
+                    <span
+                        class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span>
+                    }
+                    Crear padre
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

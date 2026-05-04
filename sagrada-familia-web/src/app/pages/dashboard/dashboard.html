@@ -1,0 +1,66 @@
+<div>
+    <!-- Saludo -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+            {{ saludoConfig().texto }}, {{ auth.currentUser()?.nombre }}
+            <ng-icon [name]="saludoConfig().icono" [ngClass]="saludoConfig().color" class="text-3xl"></ng-icon>
+        </h2>
+        <p class="text-[var(--color-text-secondary)] mt-1">
+            Resumen del sistema de monitoreo pediátrico
+        </p>
+    </div>
+
+    <!-- Cards de estadísticas -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        @for (stat of stats(); track stat.label) {
+        <div class="card">
+            <div class="card-body flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                    [style.background-color]="stat.bgColor">
+                    <ng-icon [name]="stat.icon" [style.color]="stat.color"></ng-icon>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-[var(--color-text-primary)]">{{ stat.valor }}</p>
+                    <p class="text-sm text-[var(--color-text-secondary)]">{{ stat.label }}</p>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Accesos rápidos médico -->
+    @if (auth.esMedico()) {
+    <div class="card">
+        <div class="card-header">Accesos rápidos</div>
+        <div class="card-body grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a routerLink="/pacientes"
+                class="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-alt)] transition-colors">
+                <ng-icon name="heroUsers" class="text-[var(--color-primary)]"></ng-icon>
+                <span class="font-medium text-sm">Ver pacientes</span>
+            </a>
+            <a routerLink="/alimentos"
+                class="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-alt)] transition-colors">
+                <ng-icon name="heroCake" class="text-[var(--color-success)]"></ng-icon>
+                <span class="font-medium text-sm">Gestionar alimentos</span>
+            </a>
+            <a routerLink="/padres"
+                class="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-alt)] transition-colors">
+                <ng-icon name="heroHeart" class="text-[var(--color-danger)]"></ng-icon>
+                <span class="font-medium text-sm">Gestionar padres</span>
+            </a>
+        </div>
+    </div>
+    }
+
+    <!-- Vista padre -->
+    @if (auth.esPadre()) {
+    <div class="card">
+        <div class="card-header">Mis hijos registrados</div>
+        <div class="card-body">
+            <a routerLink="/pacientes" class="btn btn-primary btn-md">
+                Ver mis hijos
+            </a>
+        </div>
+    </div>
+    }
+</div>

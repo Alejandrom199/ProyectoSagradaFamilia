@@ -1,0 +1,26 @@
+/* login.css */
+
+.login-background {
+    background-image: url('../../../../assets/sagrada-familia.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.3);
+    background-blend-mode: overlay;
+}
+
+/* Ajuste para que el texto sobre el fondo oscuro sea blanco o más claro */
+.login-background h1 {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.login-background p {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Efecto de cristal para la tarjeta (opcional pero queda muy bien) */
+:host ::ng-deep .card {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+}

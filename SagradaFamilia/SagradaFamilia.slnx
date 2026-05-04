@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="SagradaFamilia.API/SagradaFamilia.API.csproj" />
+    <Project Path="SagradaFamilia.Application/SagradaFamilia.Application.csproj" />
+    <Project Path="SagradaFamilia.Domain/SagradaFamilia.Domain.csproj" />
+    <Project Path="SagradaFamilia.Infrastructure/SagradaFamilia.Infrastructure.csproj" />
+  </Folder>
+</Solution>

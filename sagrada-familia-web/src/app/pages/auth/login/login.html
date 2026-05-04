@@ -1,0 +1,83 @@
+<div class="min-h-screen flex items-center justify-center px-4 login-background">
+    <div class="w-full max-w-md">
+
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="inline-flex w-12 h-12 rounded-xl flex items-center items-center justify-center shrink-0 border border-blue-100 bg-blue-50/60 transition-all duration-200"
+                style="border-color: rgba(59, 130, 246, 0.15);">
+                <ng-icon name="heroHeart" class="text-blue-600 transition-transform hover:scale-105"
+                    style="font-size: 32px;"></ng-icon>
+            </div>
+            <h1 class="text-2xl font-bold text-[var(--color-text-primary)]">La Sagrada Familia</h1>
+            <p class="text-[var(--color-text-secondary)] text-sm mt-1">Sistema de Monitoreo Pediátrico</p>
+        </div>
+
+        <!-- Card -->
+        <div class="card">
+            <div class="card-header text-center">Iniciar Sesión</div>
+            <div class="card-body">
+
+                <!-- Error -->
+                @if (error()) {
+                <div class="alert alert-error mb-4">{{ error() }}</div>
+                }
+
+                <!-- Form -->
+                <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                    <div class="form-group mb-4">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-input"
+                            [class.input-error]="!!error() || (form.get('email')?.invalid && form.get('email')?.touched)"
+                            placeholder="medico@sagrada.com" formControlName="email" required autocomplete="email">
+                        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+                        <div class="text-red-500 text-xs mt-1">
+                            @if (form.get('email')?.hasError('required')) {
+                            El correo electrónico es requerido.
+                            } @else if (form.get('email')?.hasError('email')) {
+                            Ingresa un correo válido.
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="form-group mb-6">
+                        <label class="form-label">Contraseña</label>
+                        <div class="relative">
+                            <input [type]="mostrarPassword() ? 'text' : 'password'" class="form-input pr-10"
+                                [class.input-error]="!!error() || (form.get('password')?.invalid && form.get('password')?.touched)"
+                                placeholder="••••••••" formControlName="password" required
+                                autocomplete="current-password">
+                            <button type="button"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]"
+                                (click)="mostrarPassword.update(v => !v)">
+                                <ng-icon [name]="mostrarPassword() ? 'heroEyeSlash' : 'heroEye'"></ng-icon>
+                            </button>
+                        </div>
+                        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+                        <div class="text-red-500 text-xs mt-1">
+                            @if (form.get('password')?.hasError('required')) {
+                            La contraseña es requerida.
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-full" [disabled]="cargando()">
+                        @if (cargando()) {
+                        <span
+                            class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        Ingresando...
+                        }
+                        @else {
+                        Ingresar
+                        }
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <p class="text-center text-xs text-[var(--color-text-secondary)] mt-6">
+            Consultorio Médico La Sagrada Familia — Milagro, Ecuador
+        </p>
+    </div>
+</div>

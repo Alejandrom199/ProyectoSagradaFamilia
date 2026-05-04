@@ -1,0 +1,29 @@
+<div class="container mx-auto">
+    <breadcrumb [items]="migajas" homeRoute="/pacientes"></breadcrumb>
+
+    <div class="mb-6">
+
+        <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">
+            Orientación Alimentaria
+            @if(ninoSeleccionado()) {
+            de <span class="text-[var(--color-primary)]">{{ ninoSeleccionado()?.nombre }}</span>
+            }
+        </h2>
+        <p class="text-sm text-[var(--color-text-secondary)] mt-1">
+            Descubre qué puede comer tu hijo en esta etapa de crecimiento basado en su edad actual.
+        </p>
+    </div>
+
+    @if(ninoSeleccionado() && itemsParaElNino().length >= 0) {
+    <explorador-visual [items]="itemsParaElNino()" [categorias]="categoriasMapeadas()"></explorador-visual>
+    } @else {
+    <div
+        class="p-12 text-center bg-[var(--color-surface)] rounded-2xl border border-[var(--color-surface-border)] shadow-sm">
+        <div class="animate-pulse flex flex-col items-center">
+            <div class="w-12 h-12 bg-gray-200 rounded-full mb-4"></div>
+            <div class="h-4 bg-gray-200 rounded w-48 mb-2.5"></div>
+            <div class="h-3 bg-gray-200 rounded w-32"></div>
+        </div>
+    </div>
+    }
+</div>

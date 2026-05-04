@@ -1,0 +1,29 @@
+<div class="max-w-7xl mx-auto">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Gestión de Pacientes</h2>
+            <p class="text-gray-500 mt-1">Gestión clínica de niños registrados en el sistema</p>
+        </div>
+
+        <btn variant="primary" routerLink="/pacientes/crear"
+            class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            Registrar Paciente
+        </btn>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Listado de Pacientes" [data]="ninos()" [columns]="columnas" [actions]="acciones"
+            searchPlaceholder="Buscar por nombre, representante..."
+            emptyMessage="No hay pacientes registrados en el sistema.">
+        </datatable>
+    </div>
+
+    @if (ninoAEliminar()) {
+    <confirm-modal title="¿Eliminar paciente?"
+        [message]="'Esta acción eliminará a ' + ninoAEliminar()?.nombre + ' ' + ninoAEliminar()?.apellido + ' del sistema. Se perderá todo su historial médico.'"
+        (confirm)="confirmarEliminar()" (cancel)="ninoAEliminar.set(null)">
+    </confirm-modal>
+    }
+</div>

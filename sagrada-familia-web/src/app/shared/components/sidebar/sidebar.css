@@ -1,0 +1,32 @@
+/* ── Sidebar link ─────────────────────────── */
+.sidebar-link {
+    color: var(--sidebar-text);
+}
+
+.sidebar-link:hover {
+    background: var(--sidebar-item-hover);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-link:hover .sidebar-link-icon {
+    color: var(--sidebar-accent);
+}
+
+/* ── Activo (routerLinkActive) ─────────────── */
+.sidebar-active {
+    background: var(--sidebar-item-active-bg) !important;
+    color: var(--sidebar-accent) !important;
+}
+
+.sidebar-active .sidebar-link-icon {
+    color: var(--sidebar-accent) !important;
+}
+
+/* ── Scrollbar ────────────────────────────── */
+.scrollbar-none {
+    scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}

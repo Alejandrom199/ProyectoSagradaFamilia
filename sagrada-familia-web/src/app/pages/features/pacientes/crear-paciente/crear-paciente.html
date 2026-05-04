@@ -1,0 +1,69 @@
+<div>
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+
+    <div class="mb-6">
+        <h2 class="text-xl font-bold text-[var(--color-text-primary)]">Nuevo paciente</h2>
+        <p class="text-sm text-[var(--color-text-secondary)] mt-0.5">
+            Registrar un nuevo paciente en el sistema
+        </p>
+    </div>
+
+    <div class="card max-w-2xl">
+        <div class="card-header">Datos del paciente</div>
+        <div class="card-body space-y-4">
+
+            @if (auth.esMedico()) {
+            <div class="form-group">
+                <label class="form-label">Padre representante *</label>
+                <select class="form-input" [(ngModel)]="form.representanteId">
+                    <option [ngValue]="0">Seleccionar padre...</option>
+                    @for (padre of padres(); track padre.id) {
+                    <option [ngValue]="padre.id">{{ padre.nombre }} {{ padre.apellido }}</option>
+                    }
+                </select>
+            </div>
+            }
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Nombre *</label>
+                    <input class="form-input" type="text" placeholder="Ej: Lucas" [(ngModel)]="form.nombre">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellido *</label>
+                    <input class="form-input" type="text" placeholder="Ej: Pérez" [(ngModel)]="form.apellido">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Fecha de nacimiento *</label>
+                    <input class="form-input" type="date" [(ngModel)]="form.fechaNacimiento">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sexo *</label>
+                    <select class="form-input" [(ngModel)]="form.sexo">
+                        <option value="">Seleccionar...</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                </div>
+            </div>
+
+            @if (error()) {
+            <div class="alert alert-error">{{ error() }}</div>
+            }
+
+            <div class="flex gap-3 justify-end pt-2">
+                <a routerLink="/pacientes" class="btn btn-secondary btn-md">Cancelar</a>
+                <button class="btn btn-primary btn-md" [disabled]="guardando()" (click)="guardar()">
+                    @if (guardando()) {
+                    <span
+                        class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span>
+                    }
+                    Crear paciente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

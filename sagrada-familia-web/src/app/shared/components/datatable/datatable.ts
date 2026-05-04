@@ -1,0 +1,268 @@
+import { CommonModule } from '@angular/common';
+import { Component, Input, OnChanges, signal, Output, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  heroChevronLeft,
+  heroChevronRight,
+  heroXMark,
+  heroFunnel,
+  heroArrowUp,
+  heroArrowDown,
+  heroCircleStack,
+  heroUsers,
+  heroEye,
+  heroTrash,
+  heroPencil,
+  heroCog8Tooth,
+  heroArrowDownTray,
+  heroDocumentText,
+  heroTableCells,
+  heroDocumentArrowDown
+} from '@ng-icons/heroicons/outline';
+import { Tooltip } from "../../directives/tooltip/tooltip";
+
+export type ActionType = 'ver' | 'editar' | 'eliminar' | 'medidas';
+
+export interface DatatableColumn<T> {
+  key: Extract<keyof T, string> | string;
+  label: string;
+  sortable?: boolean;
+  filterable?: boolean;
+  render?: (row: T) => string;
+  class?: string;
+}
+
+export interface DatatableAction<T> {
+  type?: ActionType;
+  label?: string;
+  icon?: string;
+  class?: string;
+  visible?: (row: T) => boolean;
+  onClick: (row: T) => void;
+}
+
+@Component({
+  selector: 'datatable',
+  standalone: true,
+  imports: [CommonModule, FormsModule, NgIcon, Tooltip],
+  viewProviders: [provideIcons({
+    heroChevronLeft, heroChevronRight, heroXMark, heroFunnel,
+    heroArrowUp, heroArrowDown, heroCircleStack,
+    heroPencil, heroTrash, heroEye, heroUsers, heroCog8Tooth,
+    heroArrowDownTray, heroDocumentText, heroTableCells, heroDocumentArrowDown
+  })],
+  templateUrl: './datatable.html',
+  styleUrl: './datatable.css',
+})
+export class Datatable<T extends object> implements OnChanges {
+  @Input() title = '';
+  @Input() columns: DatatableColumn<T>[] = [];
+  @Input() actions: DatatableAction<T>[] = [];
+  @Input() data: T[] = [];
+  @Input() pageSize = 10;
+  @Input() pageSizes = [5, 10, 25, 50];
+  @Input() emptyMessage = 'No hay registros para mostrar.';
+
+  // Parámetros de exportación
+  @Input() exportExcel = false;
+  @Input() exportPdf = false;
+  @Input() exportFileName = 'reporte-clinico';
+
+  // EVENTO DE EXPORTACIÓN: Emite los filtros activos al componente padre
+  @Output() onExportPdf = new EventEmitter<Record<string | number | symbol, string>>();
+
+  sortKey = '';
+  sortDir: 'asc' | 'desc' = 'asc';
+  filtros: Record<string | number | symbol, string> = {};
+
+  columnaFiltroActivo = signal<string | null>(null);
+  private readonly paginaActualSignal = signal(1);
+  readonly paginaActual = this.paginaActualSignal.asReadonly();
+
+  get tieneFilrosActivos(): boolean {
+    return Object.values(this.filtros).some(v => v && v.trim() !== '');
+  }
+
+  ngOnChanges() {
+    this.paginaActualSignal.set(1);
+  }
+
+  get datosFiltrados() {
+    let resultado = [...this.data];
+
+    Object.entries(this.filtros).forEach(([key, value]) => {
+      if (value?.trim()) {
+        resultado = resultado.filter(row => {
+          const val = this.getCellValue(row, key);
+          return val != null && String(val).toLowerCase().includes(value.toLowerCase());
+        });
+      }
+    });
+
+    if (this.sortKey) {
+      resultado.sort((a, b) => {
+        const aVal = this.getCellValue(a, this.sortKey);
+        const bVal = this.getCellValue(b, this.sortKey);
+
+        if (aVal == null && bVal == null) return 0;
+        if (aVal == null) return this.sortDir === 'asc' ? -1 : 1;
+        if (bVal == null) return this.sortDir === 'asc' ? 1 : -1;
+
+        const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+        return this.sortDir === 'asc' ? cmp : -cmp;
+      });
+    }
+
+    return resultado;
+  }
+
+  get totalPaginas() {
+    return Math.ceil(this.datosFiltrados.length / this.pageSize) || 1;
+  }
+
+  get inicio() {
+    return (this.paginaActual() - 1) * this.pageSize;
+  }
+
+  get fin() {
+    return Math.min(this.inicio + this.pageSize, this.datosFiltrados.length);
+  }
+
+  get datosPaginados() {
+    return this.datosFiltrados.slice(this.inicio, this.fin);
+  }
+
+  get paginas() {
+    const total = this.totalPaginas;
+    const current = this.paginaActual();
+    const delta = 2;
+    const range: number[] = [];
+
+    for (let i = Math.max(1, current - delta); i <= Math.min(total, current + delta); i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  get accionesProcesadas(): DatatableAction<T>[] {
+    const defaults: Record<ActionType, Partial<DatatableAction<T>>> = {
+      ver: { label: 'Ver', icon: 'heroEye', class: 'text-blue-600 hover:bg-blue-100' },
+      editar: { label: 'Editar', icon: 'heroPencil', class: 'text-amber-500 hover:bg-amber-100' },
+      eliminar: { label: 'Eliminar', icon: 'heroTrash', class: 'text-red-500 hover:bg-red-100' },
+      medidas: { label: 'Medidas', icon: 'heroChartBar', class: 'text-purple-500 hover:bg-purple-100' },
+    };
+
+    return this.actions.map((action: DatatableAction<T>) => {
+      let preset: Partial<DatatableAction<T>> = {};
+
+      if (action.type) {
+        preset = defaults[action.type];
+      }
+
+      return { ...preset, ...action };
+    });
+  }
+
+  getCellValue(row: T, key: string | number | symbol): unknown {
+    const path = String(key);
+    return path.split('.').reduce((obj: unknown, k) => {
+      if (obj && typeof obj === 'object') {
+        return (obj as Record<string, unknown>)[k];
+      }
+      return null;
+    }, row);
+  }
+
+  private limpiarHtml(html: string): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || div.innerText || '').trim();
+  }
+
+  exportarExcel() {
+    if (this.datosFiltrados.length === 0) return;
+
+    const headers = this.columns.map(c => c.label).join(';');
+    const rows = this.datosFiltrados.map(row => {
+      return this.columns.map(col => {
+        let valor = '';
+        if (col.render) {
+          valor = this.limpiarHtml(col.render(row));
+        } else {
+          valor = String(this.getCellValue(row, col.key) ?? '');
+        }
+        return `"${valor.replace(/"/g, '""').replace(/;/g, ',')}"`;
+      }).join(';');
+    });
+
+    const csvContent = '\uFEFF' + [headers, ...rows].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${this.exportFileName}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Emite el evento con los filtros al componente padre
+  exportarPdf() {
+    this.onExportPdf.emit(this.filtros);
+  }
+
+  toggleFiltro(key: string | number | symbol) {
+    const path = String(key);
+    this.columnaFiltroActivo.update(val => val === path ? null : path);
+  }
+
+  obtenerValoresUnicos(key: string | number | symbol): string[] {
+    const path = String(key);
+    const valores = this.data.map(row => String(this.getCellValue(row, path) ?? ''));
+    return [...new Set(valores)].filter(v => v.trim() !== '');
+  }
+
+  onFilterChange() { this.paginaActualSignal.set(1); }
+
+  limpiarFiltroColumna(key: string | number | symbol) {
+    const path = String(key);
+    this.filtros[path] = '';
+    this.paginaActualSignal.set(1);
+    this.columnaFiltroActivo.set(null);
+  }
+
+  limpiarFiltros() {
+    this.filtros = {};
+    this.paginaActualSignal.set(1);
+    this.columnaFiltroActivo.set(null);
+  }
+
+  ordenarPor(key: string | number | symbol, dir?: 'asc' | 'desc') {
+    const sortPath = String(key);
+    if (dir) {
+      this.sortKey = sortPath;
+      this.sortDir = dir;
+    } else {
+      if (this.sortKey === sortPath) {
+        this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortKey = sortPath;
+        this.sortDir = 'asc';
+      }
+    }
+  }
+
+  cambiarPagina(p: number) {
+    if (p >= 1 && p <= this.totalPaginas) {
+      this.paginaActualSignal.set(p);
+    }
+  }
+
+  cambiarTamanoPagina(nuevoTamano: number) {
+    this.pageSize = nuevoTamano;
+    this.paginaActualSignal.set(1);
+  }
+}

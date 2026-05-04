@@ -1,0 +1,17 @@
+<div class="container mx-auto">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-[var(--color-text-primary)]">Alimentos</h2>
+            <p class="text-sm text-[var(--color-text-secondary)] mt-0.5">Catálogo de alimentos recomendados por edad</p>
+        </div>
+        <a routerLink="/alimentos/crear" class="btn btn-primary btn-md flex items-center gap-2">
+            <ng-icon name="heroPlus" class="text-lg"></ng-icon> Nuevo alimento
+        </a>
+    </div>
+
+    <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
+        [exportExcel]="true" [exportPdf]="true" exportFileName="catalogo-alimentos"
+        (onExportPdf)="descargarAlimentosPdf($event)">
+    </datatable>
+</div>

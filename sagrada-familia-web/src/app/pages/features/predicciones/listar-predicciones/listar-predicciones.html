@@ -1,0 +1,100 @@
+<div>
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+    <div class="mb-6 flex justify-between items-end">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Motor Predictivo Nutricional</h2>
+            <p class="text-sm text-gray-500 mt-1">
+                Proyecciones de peso a 3, 6 y 12 meses con Inteligencia Artificial.
+            </p>
+        </div>
+
+        <div>
+            @if (estadoMotor() === 'comprobando') {
+            <status-badge status="warning" text="Conectando al modelo..."></status-badge>
+            } @else if (estadoMotor() === 'online') {
+            <status-badge status="success" [text]="'Sagrada Predict v' + versionMotor()"></status-badge>
+            } @else {
+            <status-badge status="danger" text="Modelo fuera de línea"></status-badge>
+            }
+        </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm mb-6 flex items-center gap-4">
+        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+            <ng-icon name="heroUser" class="text-blue-500 text-xl"></ng-icon>
+        </div>
+        <div class="flex-1 max-w-md">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Paciente a consultar</label>
+            <select class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                (change)="seleccionarNino(+$any($event.target).value)">
+                <option [value]="0">Seleccione un niño de su lista...</option>
+                @for (nino of ninos(); track nino.id) {
+                <option [value]="nino.id">{{ nino.nombre }} {{ nino.apellido }}</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    @if (cargando()) {
+    <spinner-modal message="Se está procesando la predicción..."></spinner-modal>
+    }
+
+    @if (!cargando() && prediccion()) {
+
+    @if (!prediccion()!.puedePredecir) {
+    <div class="bg-white rounded-xl border border-red-100 p-12 text-center shadow-sm">
+        <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ng-icon name="heroExclamationTriangle" class="text-red-500 text-3xl"></ng-icon>
+        </div>
+        <h3 class="font-bold text-xl text-gray-800 mb-2">Datos insuficientes</h3>
+        <p class="text-gray-500 max-w-md mx-auto">
+            {{ prediccion()!.mensaje }} Se requieren al menos 3 medidas históricas para generar un pronóstico fiable.
+        </p>
+    </div>
+    } @else {
+
+    <div
+        class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-6 text-white mb-6 flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <ng-icon name="heroChartBar" class="text-white text-2xl"></ng-icon>
+            </div>
+            <div>
+                <p class="text-blue-100 text-sm">Predicción calculada para:</p>
+                <h3 class="font-bold text-2xl">{{ ninoSeleccionado()?.nombre }} {{ ninoSeleccionado()?.apellido }}</h3>
+            </div>
+        </div>
+        <div class="text-right hidden sm:block">
+            <p class="text-blue-100 text-sm">Alcance de proyección</p>
+            <p class="font-bold text-xl">Hasta 1 año</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div class="h-full">
+            <prediction-chart title="Evolución de Peso Proyectada (3, 6 y 12 meses)"></prediction-chart>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <datatable title="Desglose de peso estimado" [data]="prediccion()!.predicciones" [columns]="columnas"
+                searchPlaceholder="Filtrar meses..." emptyMessage="No hay predicciones." [pageSize]="6">
+            </datatable>
+        </div>
+    </div>
+    }
+    }
+
+    @if (!cargando() && !prediccion() && !ninoSeleccionado()) {
+    <div class="bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 p-16 text-center mt-6">
+        <div
+            class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
+            <ng-icon name="heroChartBar" class="text-blue-400 text-4xl"></ng-icon>
+        </div>
+        <h3 class="font-bold text-xl text-gray-700 mb-2">Módulo de Pronósticos</h3>
+        <p class="text-gray-500 max-w-md mx-auto">
+            Seleccione un paciente de su lista para visualizar la curva de crecimiento estimada por nuestro modelo
+            predictivo.
+        </p>
+    </div>
+    }
+</div>

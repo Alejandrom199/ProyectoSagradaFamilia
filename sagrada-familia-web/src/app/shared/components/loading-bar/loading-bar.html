@@ -1,0 +1,5 @@
+@if (loadingBar.loading()) {
+<div class="loading-bar-container">
+    <div class="loading-bar-progress" [style.width.%]="loadingBar.progress()"></div>
+</div>
+}
