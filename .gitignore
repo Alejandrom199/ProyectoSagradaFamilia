@@ -29,3 +29,6 @@
 **/env/
 **/venv/
 **/.env
+
+# Excluir environments de Angular
+**/src/environments/*.ts
