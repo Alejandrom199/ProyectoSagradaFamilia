@@ -105,6 +105,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IPrediccionService, PrediccionService>();
             services.AddScoped<IAlimentoService, AlimentoService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IReportesService, ReportesService>();
             return services;
         }
 
