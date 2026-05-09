@@ -1,6 +1,6 @@
 <aside class="fixed left-0 top-0 h-full z-30 flex flex-col transition-all duration-200 overflow-hidden"
     style="background: var(--sidebar-bg); border-right: 1px solid var(--color-surface-border);"
-    [class.w-60]="sidebarExpandido()" [class.w-14]="!sidebarExpandido()"
+    [class.w-60]="sidebarExpandido()" [class.w-16]="!sidebarExpandido()"
     [class.-translate-x-full]="!sidebarMovilAbierto()" [class.lg:translate-x-0]="true">
 
     <!-- Logo de la aplicación -->
@@ -96,19 +96,11 @@
         [class.py-3]="!sidebarExpandido()" [class.px-1.5]="!sidebarExpandido()">
 
         @if (sidebarExpandido()) {
+
         <div class="flex items-center gap-2.5 px-2 py-2 rounded-md" style="background: var(--color-surface-alt);">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-[11px] font-bold"
-                style="background: var(--sidebar-accent);">
-                {{ iniciales() }}
-            </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-xs font-semibold truncate" style="color: var(--sidebar-text-active);">
-                    {{ auth.currentUser()?.nombre }}
-                </p>
-                <p class="text-[10px] truncate" style="color: var(--sidebar-text);">
-                    {{ auth.currentUser()?.rol }}
-                </p>
-            </div>
+            <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
+                [sidebarExpandido]="sidebarExpandido()"></avatar>
+
             <btn variant="ghost"
                 class="w-6 h-6 flex items-center justify-center rounded transition-colors hover:bg-[var(--color-surface-border)] cursor-pointer"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="top">
@@ -120,12 +112,10 @@
         @else {
         <div class="flex flex-col items-center gap-1.5">
 
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold"
-                style="background: var(--sidebar-accent);"
-                [tooltip]="(auth.currentUser()?.nombre ?? '') + ' - ' + (auth.currentUser()?.rol ?? '')"
-                tooltipPosition="right">
-                {{ iniciales() }}
-            </div>
+            <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
+                [sidebarExpandido]="sidebarExpandido()"
+                [tooltip]="auth.currentUser()?.nombre + ' - ' + auth.currentUser()?.rol" tooltipPosition="right">
+            </avatar>
 
             <btn variant="ghost"
                 class="w-8 h-8 flex items-center justify-center rounded transition-colors hover:bg-[var(--color-surface-alt)] cursor-pointer"

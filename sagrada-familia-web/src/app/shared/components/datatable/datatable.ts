@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, signal, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnChanges, signal, Output, EventEmitter, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   heroChevronLeft,
   heroChevronRight,
+  heroChevronDoubleLeft,
+  heroChevronDoubleRight,
   heroXMark,
   heroFunnel,
   heroArrowUp,
@@ -18,7 +20,11 @@ import {
   heroArrowDownTray,
   heroDocumentText,
   heroTableCells,
-  heroDocumentArrowDown
+  heroDocumentArrowDown,
+  heroEllipsisVertical,
+  heroMagnifyingGlass,
+  heroArrowPath,
+  heroViewColumns
 } from '@ng-icons/heroicons/outline';
 import { Tooltip } from "../../directives/tooltip/tooltip";
 
@@ -31,6 +37,7 @@ export interface DatatableColumn<T> {
   filterable?: boolean;
   render?: (row: T) => string;
   class?: string;
+  hidden?: boolean;
 }
 
 export interface DatatableAction<T> {
@@ -47,10 +54,11 @@ export interface DatatableAction<T> {
   standalone: true,
   imports: [CommonModule, FormsModule, NgIcon, Tooltip],
   viewProviders: [provideIcons({
-    heroChevronLeft, heroChevronRight, heroXMark, heroFunnel,
-    heroArrowUp, heroArrowDown, heroCircleStack,
+    heroChevronLeft, heroChevronRight, heroChevronDoubleLeft, heroChevronDoubleRight,
+    heroXMark, heroFunnel, heroArrowUp, heroArrowDown, heroCircleStack,
     heroPencil, heroTrash, heroEye, heroUsers, heroCog8Tooth,
-    heroArrowDownTray, heroDocumentText, heroTableCells, heroDocumentArrowDown
+    heroArrowDownTray, heroDocumentText, heroTableCells, heroDocumentArrowDown,
+    heroEllipsisVertical, heroMagnifyingGlass, heroArrowPath, heroViewColumns
   })],
   templateUrl: './datatable.html',
   styleUrl: './datatable.css',
@@ -64,105 +72,164 @@ export class Datatable<T extends object> implements OnChanges {
   @Input() pageSizes = [5, 10, 25, 50];
   @Input() emptyMessage = 'No hay registros para mostrar.';
 
-  // Parámetros de exportación
   @Input() exportExcel = false;
   @Input() exportPdf = false;
-  @Input() exportFileName = 'reporte-clinico';
+  @Input() exportFileName = 'reporte';
 
-  // EVENTO DE EXPORTACIÓN: Emite los filtros activos al componente padre
+  @Input() showActualizar = false;
+  @Input() showColumnas = false;
+  @Input() showExportar = false;
+  @Input() showConfiguracion = false;
+
+  @Output() onActualizar = new EventEmitter<void>();
+  @Output() onConfiguracion = new EventEmitter<void>();
   @Output() onExportPdf = new EventEmitter<Record<string | number | symbol, string>>();
 
   sortKey = '';
   sortDir: 'asc' | 'desc' = 'asc';
   filtros: Record<string | number | symbol, string> = {};
+  busquedaGlobal = '';
 
-  columnaFiltroActivo = signal<string | null>(null);
+  menuActivo = signal<string | null>(null);
+
+  columnasPosicion = {
+    top: '0px',
+    left: '0px'
+  };
+
+  exportarPosicion = {
+    top: '0px',
+    left: '0px'
+  };
+
+  menuPosicion = {
+    top: '0px',
+    left: '0px'
+  };
+
+  filtroPosicion = {
+    top: '0px',
+    left: '0px'
+  };
+
   private readonly paginaActualSignal = signal(1);
   readonly paginaActual = this.paginaActualSignal.asReadonly();
 
-  get tieneFilrosActivos(): boolean {
-    return Object.values(this.filtros).some(v => v && v.trim() !== '');
+  @HostListener('document:click')
+  onClickOutside() {
+    this.menuActivo.set(null);
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.menuActivo.set(null);
+  }
+
+  toggleMenuAcciones(
+    index: number,
+    event: Event,
+    btnElement: HTMLElement
+  ) {
+    event.stopPropagation();
+
+    const menuKey = `accion-${index}`;
+
+    if (this.menuActivo() === menuKey) {
+      this.menuActivo.set(null);
+      return;
+    }
+
+    const rect = btnElement.getBoundingClientRect();
+
+    this.menuPosicion = {
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`
+    };
+
+    this.menuActivo.set(menuKey);
+  }
+
+  toggleFiltro(
+    key: string | number | symbol,
+    event: Event,
+    btnElement: HTMLElement
+  ) {
+    event.stopPropagation();
+
+    const menuKey = `filtro-${String(key)}`;
+
+    if (this.menuActivo() === menuKey) {
+      this.menuActivo.set(null);
+      return;
+    }
+
+    const rect = btnElement.getBoundingClientRect();
+
+    let leftPos = rect.left;
+
+    if (leftPos + 224 > window.innerWidth) {
+      leftPos = window.innerWidth - 240;
+    }
+
+    this.filtroPosicion = {
+      top: `${rect.bottom + 8}px`,
+      left: `${leftPos}px`
+    };
+
+    this.menuActivo.set(menuKey);
+  }
+
+  toggleMenuExportar(event: Event, btnElement: HTMLElement) {
+    event.stopPropagation();
+
+    if (this.menuActivo() === 'exportar') {
+      this.menuActivo.set(null);
+      return;
+    }
+
+    const rect = btnElement.getBoundingClientRect();
+
+    this.exportarPosicion = {
+      top: `${rect.bottom + 8}px`,
+      left: `${rect.right - 160}px`
+    };
+
+    this.menuActivo.set('exportar');
+  }
+
+  toggleMenuColumnas(event: Event, btnElement: HTMLElement) {
+    event.stopPropagation();
+
+    if (this.menuActivo() === 'columnas') {
+      this.menuActivo.set(null);
+      return;
+    }
+
+    const rect = btnElement.getBoundingClientRect();
+
+    this.columnasPosicion = {
+      top: `${rect.bottom + 8}px`,
+      left: `${rect.right - 200}px`
+    };
+
+    this.menuActivo.set('columnas');
+  }
+
+  toggleVisibilidadColumna(key: string | number | symbol) {
+    const col = this.columns.find(c => c.key === key);
+    if (col) {
+      col.hidden = !col.hidden;
+    }
   }
 
   ngOnChanges() {
     this.paginaActualSignal.set(1);
   }
 
-  get datosFiltrados() {
-    let resultado = [...this.data];
-
-    Object.entries(this.filtros).forEach(([key, value]) => {
-      if (value?.trim()) {
-        resultado = resultado.filter(row => {
-          const val = this.getCellValue(row, key);
-          return val != null && String(val).toLowerCase().includes(value.toLowerCase());
-        });
-      }
-    });
-
-    if (this.sortKey) {
-      resultado.sort((a, b) => {
-        const aVal = this.getCellValue(a, this.sortKey);
-        const bVal = this.getCellValue(b, this.sortKey);
-
-        if (aVal == null && bVal == null) return 0;
-        if (aVal == null) return this.sortDir === 'asc' ? -1 : 1;
-        if (bVal == null) return this.sortDir === 'asc' ? 1 : -1;
-
-        const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
-        return this.sortDir === 'asc' ? cmp : -cmp;
-      });
-    }
-
-    return resultado;
+  accionesVisibles(row: T): DatatableAction<T>[] {
+    return this.accionesProcesadas.filter(a => !a.visible || a.visible(row));
   }
 
-  get totalPaginas() {
-    return Math.ceil(this.datosFiltrados.length / this.pageSize) || 1;
-  }
-
-  get inicio() {
-    return (this.paginaActual() - 1) * this.pageSize;
-  }
-
-  get fin() {
-    return Math.min(this.inicio + this.pageSize, this.datosFiltrados.length);
-  }
-
-  get datosPaginados() {
-    return this.datosFiltrados.slice(this.inicio, this.fin);
-  }
-
-  get paginas() {
-    const total = this.totalPaginas;
-    const current = this.paginaActual();
-    const delta = 2;
-    const range: number[] = [];
-
-    for (let i = Math.max(1, current - delta); i <= Math.min(total, current + delta); i++) {
-      range.push(i);
-    }
-    return range;
-  }
-
-  get accionesProcesadas(): DatatableAction<T>[] {
-    const defaults: Record<ActionType, Partial<DatatableAction<T>>> = {
-      ver: { label: 'Ver', icon: 'heroEye', class: 'text-blue-600 hover:bg-blue-100' },
-      editar: { label: 'Editar', icon: 'heroPencil', class: 'text-amber-500 hover:bg-amber-100' },
-      eliminar: { label: 'Eliminar', icon: 'heroTrash', class: 'text-red-500 hover:bg-red-100' },
-      medidas: { label: 'Medidas', icon: 'heroChartBar', class: 'text-purple-500 hover:bg-purple-100' },
-    };
-
-    return this.actions.map((action: DatatableAction<T>) => {
-      let preset: Partial<DatatableAction<T>> = {};
-
-      if (action.type) {
-        preset = defaults[action.type];
-      }
-
-      return { ...preset, ...action };
-    });
-  }
 
   getCellValue(row: T, key: string | number | symbol): unknown {
     const path = String(key);
@@ -209,14 +276,8 @@ export class Datatable<T extends object> implements OnChanges {
     document.body.removeChild(link);
   }
 
-  // Emite el evento con los filtros al componente padre
   exportarPdf() {
     this.onExportPdf.emit(this.filtros);
-  }
-
-  toggleFiltro(key: string | number | symbol) {
-    const path = String(key);
-    this.columnaFiltroActivo.update(val => val === path ? null : path);
   }
 
   obtenerValoresUnicos(key: string | number | symbol): string[] {
@@ -225,19 +286,22 @@ export class Datatable<T extends object> implements OnChanges {
     return [...new Set(valores)].filter(v => v.trim() !== '');
   }
 
-  onFilterChange() { this.paginaActualSignal.set(1); }
+  onFilterChange() {
+    this.paginaActualSignal.set(1);
+  }
 
   limpiarFiltroColumna(key: string | number | symbol) {
     const path = String(key);
     this.filtros[path] = '';
-    this.paginaActualSignal.set(1);
-    this.columnaFiltroActivo.set(null);
+    this.onFilterChange();
+    this.menuActivo.set(null);
   }
 
   limpiarFiltros() {
     this.filtros = {};
-    this.paginaActualSignal.set(1);
-    this.columnaFiltroActivo.set(null);
+    this.busquedaGlobal = '';
+    this.onFilterChange();
+    this.menuActivo.set(null);
   }
 
   ordenarPor(key: string | number | symbol, dir?: 'asc' | 'desc') {
@@ -264,5 +328,88 @@ export class Datatable<T extends object> implements OnChanges {
   cambiarTamanoPagina(nuevoTamano: number) {
     this.pageSize = nuevoTamano;
     this.paginaActualSignal.set(1);
+  }
+
+  toggleTodasLasColumnas() {
+    const mostrarTodas = !this.todasLasColumnasVisibles;
+
+    this.columns.forEach(col => {
+      col.hidden = !mostrarTodas;
+    });
+  }
+
+  get todasLasColumnasVisibles(): boolean {
+    return this.columns.every(c => !c.hidden);
+  }
+
+  get columnasVisibles() {
+    return this.columns.filter(c => !c.hidden);
+  }
+
+  get accionesProcesadas(): DatatableAction<T>[] {
+    const defaults: Record<ActionType, Partial<DatatableAction<T>>> = {
+      ver: { label: 'Ver', icon: 'heroEye', class: 'text-blue-600' },
+      editar: { label: 'Editar', icon: 'heroPencil', class: 'text-amber-600' },
+      eliminar: { label: 'Eliminar', icon: 'heroTrash', class: 'text-red-600' },
+      medidas: { label: 'Medidas', icon: 'heroChartBar', class: 'text-purple-600' },
+    };
+
+    return this.actions.map((action: DatatableAction<T>) => {
+      let preset: Partial<DatatableAction<T>> = {};
+      if (action.type) { preset = defaults[action.type]; }
+      return { ...preset, ...action };
+    });
+  }
+
+  get datosFiltrados() {
+    let resultado = [...this.data];
+
+    if (this.busquedaGlobal.trim()) {
+      const termino = this.busquedaGlobal.toLowerCase();
+      resultado = resultado.filter(row => {
+        return this.columns.some(col => {
+          const val = this.getCellValue(row, col.key);
+          return val != null && String(val).toLowerCase().includes(termino);
+        });
+      });
+    }
+
+    Object.entries(this.filtros).forEach(([key, value]) => {
+      if (value?.trim()) {
+        resultado = resultado.filter(row => {
+          const val = this.getCellValue(row, key);
+          return val != null && String(val).toLowerCase().includes(value.toLowerCase());
+        });
+      }
+    });
+
+    if (this.sortKey) {
+      resultado.sort((a, b) => {
+        const aVal = this.getCellValue(a, this.sortKey);
+        const bVal = this.getCellValue(b, this.sortKey);
+
+        if (aVal == null && bVal == null) return 0;
+        if (aVal == null) return this.sortDir === 'asc' ? -1 : 1;
+        if (bVal == null) return this.sortDir === 'asc' ? 1 : -1;
+
+        const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+        return this.sortDir === 'asc' ? cmp : -cmp;
+      });
+    }
+
+    return resultado;
+  }
+
+  get tieneFilrosActivos(): boolean {
+    return Object.values(this.filtros).some(v => v && v.trim() !== '') || this.busquedaGlobal.trim() !== '';
+  }
+
+  get totalPaginas() { return Math.ceil(this.datosFiltrados.length / this.pageSize) || 1; }
+  get inicio() { return (this.paginaActual() - 1) * this.pageSize; }
+  get fin() { return Math.min(this.inicio + this.pageSize, this.datosFiltrados.length); }
+  get datosPaginados() { return this.datosFiltrados.slice(this.inicio, this.fin); }
+
+  cerrarMenus() {
+    this.menuActivo.set(null);
   }
 }

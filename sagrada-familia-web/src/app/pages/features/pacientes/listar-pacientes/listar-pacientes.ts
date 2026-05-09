@@ -13,6 +13,7 @@ import { Button } from '../../../../shared/components/button/button';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
+import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 
 @Component({
   selector: 'listar-pacientes',
@@ -42,16 +43,7 @@ export class ListarPacientes implements OnInit {
   columnas: DatatableColumn<NinoResponse>[] = [
     {
       key: 'nombre', label: 'Paciente', sortable: true, filterable: true,
-      render: (row) => `
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full ${row.sexo === 'M' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center text-sm font-bold shadow-sm border border-white">
-            ${row.nombre.charAt(0)}${row.apellido.charAt(0)}
-          </div>
-          <div>
-            <p class="font-bold text-gray-800">${row.nombre} ${row.apellido}</p>
-            <p class="text-xs text-gray-500">${row.sexo === 'M' ? 'Varón' : 'Niña'}</p>
-          </div>
-        </div>`
+      render: (row) => generarAvatarHtml(row.nombre, row.apellido, row.sexo)
     },
     {
       key: 'edadMeses', label: 'Edad Actual', sortable: true,

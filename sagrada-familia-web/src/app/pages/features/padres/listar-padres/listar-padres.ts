@@ -13,6 +13,8 @@ import { Auth } from '../../../../core/services/auth';
 import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
+import { Reportes } from '../../../../core/services/reportes';
 
 @Component({
   selector: 'app-listar-padres',
@@ -24,6 +26,7 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 })
 export class ListarPadres implements OnInit {
   private padresService = inject(Padres);
+  private reportesService = inject(Reportes);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
   readonly auth = inject(Auth);
@@ -31,45 +34,42 @@ export class ListarPadres implements OnInit {
   padres = signal<PadreResponse[]>([]);
   padreAEliminar = signal<PadreResponse | null>(null);
 
-  // AQUÍ ESTÁ LA CLAVE: filterable: true en todas las columnas
   columnas: DatatableColumn<PadreResponse>[] = [
     {
       key: 'nombre',
       label: 'Padre/Madre',
       sortable: true,
-      filterable: true, // Filtro 1
-      render: (row) => `
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center text-xs font-semibold text-[var(--color-primary)]">
-            ${row.nombre.charAt(0)}${row.apellido.charAt(0)}
-          </div>
-          <div>
-            <p class="font-medium">${row.nombre} ${row.apellido}</p>
-            <p class="text-xs text-[var(--color-text-secondary)]">${row.email}</p>
-          </div>
-        </div>`
+      filterable: true,
+      render: (row) => generarAvatarHtml(row.nombre, row.apellido)
     },
     {
       key: 'telefono',
       label: 'Teléfono',
       sortable: true,
-      filterable: true, // Filtro 2
+      filterable: true,
       render: (row) => row.telefono || '<span class="text-gray-400">Sin registrar</span>'
     },
     {
       key: 'totalHijos',
       label: 'Hijos',
       sortable: true,
-      filterable: true, // Filtro 3
+      filterable: true,
       render: (row) => `<span class="badge badge-primary">${row.totalHijos ?? 0}</span>`
     },
     {
       key: 'fechaCreacion',
       label: 'Registro',
       sortable: true,
-      filterable: true, // Filtro 4
+      filterable: true,
       render: (row) => formatearFecha(row.fechaCreacion)
-    }
+    },
+    // {
+    //   key: 'estado',
+    //   label: 'ESTADO',
+    //   render: (row) => row.estado === 'ACTIVO'
+    //     ? `<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">ACTIVO</span>`
+    //     : `<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">INACTIVO</span>`
+    // }
   ];
 
   acciones: DatatableAction<PadreResponse>[] = [
@@ -134,6 +134,24 @@ export class ListarPadres implements OnInit {
         this.padreAEliminar.set(null);
         this.loadingBar.complete();
       }
+    });
+  }
+
+  descargarPadresPdf(filtros: any) {
+    this.loadingBar.show();
+    const params = { titulo: 'Listado de Padres', filtro: JSON.stringify(filtros) };
+
+    this.reportesService.descargarReportePdf('reportes/padres-pdf', params).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `padres_${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
     });
   }
 }

@@ -16,8 +16,10 @@
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <datatable title="Listado de Padres de Familia" [data]="padres()" [columns]="columnas" [actions]="acciones"
-            searchPlaceholder="Buscar por nombre, correo electrónico..."
-            emptyMessage="No hay padres registrados en el sistema.">
+            [exportExcel]="true" [exportPdf]="true" (onExportPdf)="descargarPadresPdf($event)" exportFileName="padres"
+            [showActualizar]="true" [showExportar]="true" [showColumnas]="true" [showConfiguracion]="true"
+            searchPlaceholder="Buscar por nombre..." emptyMessage="No hay padres registrados en el sistema."
+            (onActualizar)="cargarPadres()">
         </datatable>
     </div>
 
