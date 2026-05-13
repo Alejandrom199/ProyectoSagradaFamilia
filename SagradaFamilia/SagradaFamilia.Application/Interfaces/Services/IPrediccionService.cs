@@ -1,10 +1,9 @@
-﻿using SagradaFamilia.Application.DTOs.Predicciones;
+﻿using SagradaFamilia.Application.DTOs;
 
-namespace SagradaFamilia.Application.Interfaces.Services
+namespace SagradaFamilia.Application.Interfaces.Services;
+
+public interface IPrediccionService
 {
-    public interface IPrediccionService
-    {
-        Task<PrediccionResponse> ObtenerPrediccionesAsync(int ninoId);
-        Task<PrediccionHealth> ObtenerEstadoServicioPrediccionAsync();
-    }
+    Task<PrediccionDto.Response> ObtenerPrediccionesAsync(int ninoId);
+    Task<PrediccionDto.Health> ObtenerEstadoServicioPrediccionAsync();
 }

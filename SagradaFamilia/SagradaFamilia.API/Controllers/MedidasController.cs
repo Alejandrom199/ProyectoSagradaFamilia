@@ -1,16 +1,13 @@
 ﻿namespace SagradaFamilia.API.Controllers;
 
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
-using SagradaFamilia.Application.DTOs.Medidas;
 using SagradaFamilia.Application.Interfaces.Services;
 
-[ApiController]
-[Route("api/[controller]")]
 [Authorize]
-public class MedidasController : ControllerBase
+public class MedidasController : BaseController
 {
     private readonly IMedidaService _medidaService;
 
@@ -18,32 +15,28 @@ public class MedidasController : ControllerBase
         _medidaService = medidaService;
 
     [HttpGet("nino/{ninoId:int}")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<MedidaResponse>>>> ObtenerPorNino(
-        int ninoId)
+    public async Task<ActionResult<ApiResponse<IEnumerable<MedidaDto.Response>>>> ObtenerPorNino(int ninoId)
     {
         var response = await _medidaService.ObtenerPorNinoAsync(ninoId);
-        return Ok(ApiResponse<IEnumerable<MedidaResponse>>.Ok(response));
+        return HandleResponse(response);
     }
 
     [HttpPost]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<MedidaResponse>>> Crear(
-        [FromBody] CrearMedidaRequest request)
+    public async Task<ActionResult<ApiResponse<MedidaDto.Response>>> Crear([FromBody] MedidaDto.Create request)
     {
-        var medicoId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var response = await _medidaService.CrearAsync(request, medicoId);
-        return CreatedAtAction(nameof(ObtenerPorNino),
-            new { ninoId = request.NinoId },
-            ApiResponse<MedidaResponse>.Ok(response, "Medida registrada exitosamente."));
+        var response = await _medidaService.CrearAsync(request, UsuarioId);
+
+        return CreatedAtAction(nameof(ObtenerPorNino), new { ninoId = request.NinoId },
+            ApiResponse<MedidaDto.Response>.Ok(response, "Medida registrada exitosamente."));
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<MedidaResponse>>> Actualizar(
-        int id, [FromBody] ActualizarMedidaRequest request)
+    public async Task<ActionResult<ApiResponse<MedidaDto.Response>>> Actualizar(int id, [FromBody] MedidaDto.Update request)
     {
         var response = await _medidaService.ActualizarAsync(id, request);
-        return Ok(ApiResponse<MedidaResponse>.Ok(response, "Medida actualizada exitosamente."));
+        return HandleResponse(response, "Medida actualizada exitosamente.");
     }
 
     [HttpDelete("{id:int}")]
@@ -51,6 +44,6 @@ public class MedidasController : ControllerBase
     public async Task<ActionResult<ApiResponse>> Eliminar(int id)
     {
         await _medidaService.EliminarAsync(id);
-        return Ok(ApiResponse.OkNoData("Medida eliminada exitosamente."));
+        return HandleSuccess("Medida eliminada exitosamente.");
     }
 }

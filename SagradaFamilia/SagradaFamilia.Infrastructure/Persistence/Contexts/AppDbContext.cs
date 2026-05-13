@@ -19,21 +19,29 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
         public DbSet<UsuarioPermiso> UsuarioPermisos => Set<UsuarioPermiso>();
         public DbSet<Rol> Roles => Set<Rol>();
         public DbSet<Accion> Acciones => Set<Accion>();
+
+        // ── Perfiles ─────────────────────────────────────────────
+        public DbSet<Padre> Padres => Set<Padre>();
+        public DbSet<Medico> Medicos => Set<Medico>();
+
         // ── Clínico ──────────────────────────────────────────────
         public DbSet<Nino> Ninos => Set<Nino>();
         public DbSet<Medida> Medidas => Set<Medida>();
         public DbSet<Prediccion> Predicciones => Set<Prediccion>();
+        public DbSet<Cita> Citas => Set<Cita>();
+        public DbSet<Prescripcion> Prescripciones => Set<Prescripcion>();
 
         // ── OMS ──────────────────────────────────────────────────
-        public DbSet<OmsPesoPorEdad> OmsPesoPorEdad => Set<OmsPesoPorEdad>();
-        public DbSet<OmsTallaPorEdad> OmsTallaPorEdad => Set<OmsTallaPorEdad>();
+        public DbSet<OmsReferencia> OmsReferencias => Set<OmsReferencia>();
 
         // ── Alimentos ────────────────────────────────────────────
         public DbSet<CategoriaAlimento> CategoriasAlimentos => Set<CategoriaAlimento>();
         public DbSet<Alimento> Alimentos => Set<Alimento>();
 
-        // ── Logs ───────────────────────────────────────────────
+        // ── Sistema y Trazabilidad ───────────────────────────────
         public DbSet<LogSistema> LogsSistema => Set<LogSistema>();
+        public DbSet<Auditoria> Auditorias => Set<Auditoria>();
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
@@ -46,6 +54,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
                     case EntityState.Modified:
                         entry.Entity.FechaActualizacion = DateTime.UtcNow;
                         break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified;
+                        entry.Entity.Eliminado = true;
+                        entry.Entity.FechaEliminacion = DateTime.UtcNow;
+                        break;
                 }
             }
 
@@ -55,6 +68,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
             base.OnModelCreating(modelBuilder);
         }
     }

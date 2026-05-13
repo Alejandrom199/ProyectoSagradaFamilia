@@ -1,14 +1,21 @@
-﻿using SagradaFamilia.Application.DTOs.Ninos;
+﻿using SagradaFamilia.Application.DTOs;
 
 namespace SagradaFamilia.Application.Interfaces.Services
 {
     public interface INinoService
     {
-        Task<NinoResponse> ObtenerPorIdAsync(int id);
-        Task<IEnumerable<NinoResponse>> ObtenerTodosAsync();
-        Task<IEnumerable<NinoResponse>> ObtenerPorRepresentanteAsync(int representanteId);
-        Task<NinoResponse> CrearAsync(CrearNinoRequest request);
-        Task<NinoResponse> ActualizarAsync(int id, ActualizarNinoRequest request);
+        Task<NinoDto.DetailResponse> ObtenerPorIdAsync(int id);
+        Task<IEnumerable<NinoDto.ListResponse>> ObtenerTodosAsync();
+
+        Task<IEnumerable<NinoDto.ListResponse>> ObtenerPorPadreIdAsync(int padreId);
+
+        Task<IEnumerable<NinoDto.ListResponse>> ObtenerPorMedicoIdAsync(int medicoId);
+
+        Task<bool> PerteneceAPadreAsync(int ninoId, int padreId);
+        Task<bool> PerteneceAMedicoAsync(int ninoId, int medicoId);
+
+        Task<NinoDto.DetailResponse> CrearAsync(NinoDto.Create request);
+        Task<NinoDto.DetailResponse> ActualizarAsync(int id, NinoDto.Update request);
         Task EliminarAsync(int id);
     }
 }

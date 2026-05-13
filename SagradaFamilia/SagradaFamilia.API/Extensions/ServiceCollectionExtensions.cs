@@ -83,7 +83,11 @@ namespace SagradaFamilia.API.Extensions
 
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IPadreRepository, PadreRepository>();
+            services.AddScoped<IMedicoRepository, MedicoRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IRolRepository, RolRepository>();
@@ -93,12 +97,19 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IPrediccionRepository, PrediccionRepository>();
             services.AddScoped<IOmsRepository, OmsRepository>();
             services.AddScoped<IAlimentoRepository, AlimentoRepository>();
+
+            services.AddScoped<IAuditoriaRepository, AuditoriaRepository>();
+            services.AddScoped<ILogSistemaRepository, LogSistemaRepository>();
+
             return services;
         }
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IPadreService, PadreService>();
+            services.AddScoped<IMedicoService, MedicoService>();
+            services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<INinoService, NinoService>();
             services.AddScoped<IMedidaService, MedidaService>();
@@ -106,6 +117,10 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IAlimentoService, AlimentoService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IReportesService, ReportesService>();
+
+            services.AddScoped<IAuditoriaService, AuditoriaService>();
+            services.AddScoped<ILogSistemaService, LogSistemaService>();
+
             return services;
         }
 
@@ -124,21 +139,14 @@ namespace SagradaFamilia.API.Extensions
 
         public static IServiceCollection AddAutoMapperProfiles(this IServiceCollection services)
         {
-            services.AddAutoMapper(
-                typeof(AuthMappingProfile),
-                typeof(MenuMappingProfile),
-                typeof(NinoMappingProfile),
-                typeof(MedidaMappingProfile),
-                typeof(PrediccionMappingProfile),
-                typeof(AlimentoMappingProfile)
-            );
+            services.AddAutoMapper(typeof(AuthMappingProfile).Assembly);
             return services;
         }
 
         public static IServiceCollection AddValidators(this IServiceCollection services)
         {
             services.AddFluentValidationAutoValidation();
-            services.AddValidatorsFromAssemblyContaining<LoginValidator>();
+            services.AddValidatorsFromAssembly(typeof(AuthService).Assembly);
             return services;
         }
 
@@ -168,6 +176,8 @@ namespace SagradaFamilia.API.Extensions
                     Description = "Sistema de monitoreo de crecimiento infantil"
                 });
 
+                options.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
+
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -175,23 +185,19 @@ namespace SagradaFamilia.API.Extensions
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Ingresá el token JWT"
+                    Description = "Ingresá el token JWT directamente o se tomará de la cookie 'access_token'"
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id   = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
             return services;
         }

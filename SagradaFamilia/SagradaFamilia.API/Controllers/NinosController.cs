@@ -1,16 +1,13 @@
 ﻿namespace SagradaFamilia.API.Controllers;
 
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
-using SagradaFamilia.Application.DTOs.Ninos;
 using SagradaFamilia.Application.Interfaces.Services;
 
-[ApiController]
-[Route("api/[controller]")]
 [Authorize]
-public class NinosController : ControllerBase
+public class NinosController : BaseController
 {
     private readonly INinoService _ninoService;
 
@@ -19,46 +16,42 @@ public class NinosController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<NinoResponse>>>> ObtenerTodos()
+    public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerTodos()
     {
         var response = await _ninoService.ObtenerTodosAsync();
-        return Ok(ApiResponse<IEnumerable<NinoResponse>>.Ok(response));
+        return HandleResponse(response);
     }
 
     [HttpGet("mis-ninos")]
     [Authorize(Roles = "Padre")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<NinoResponse>>>> ObtenerMisNinos()
+    public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerMisNinos()
     {
-        var representanteId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var response = await _ninoService.ObtenerPorRepresentanteAsync(representanteId);
-        return Ok(ApiResponse<IEnumerable<NinoResponse>>.Ok(response));
+        var response = await _ninoService.ObtenerPorPadreIdAsync(UsuarioId);
+        return HandleResponse(response);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<ApiResponse<NinoResponse>>> ObtenerPorId(int id)
+    public async Task<ActionResult<ApiResponse<NinoDto.DetailResponse>>> ObtenerPorId(int id)
     {
         var response = await _ninoService.ObtenerPorIdAsync(id);
-        return Ok(ApiResponse<NinoResponse>.Ok(response));
+        return HandleResponse(response);
     }
 
     [HttpPost]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<NinoResponse>>> Crear(
-        [FromBody] CrearNinoRequest request)
+    public async Task<ActionResult<ApiResponse<NinoDto.DetailResponse>>> Crear([FromBody] NinoDto.Create request)
     {
         var response = await _ninoService.CrearAsync(request);
-        return CreatedAtAction(nameof(ObtenerPorId),
-            new { id = response.Id },
-            ApiResponse<NinoResponse>.Ok(response, "Niño registrado exitosamente."));
+        return CreatedAtAction(nameof(ObtenerPorId), new { id = response.Id },
+            ApiResponse<NinoDto.DetailResponse>.Ok(response, "Niño registrado exitosamente."));
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<NinoResponse>>> Actualizar(
-        int id, [FromBody] ActualizarNinoRequest request)
+    public async Task<ActionResult<ApiResponse<NinoDto.DetailResponse>>> Actualizar(int id, [FromBody] NinoDto.Update request)
     {
         var response = await _ninoService.ActualizarAsync(id, request);
-        return Ok(ApiResponse<NinoResponse>.Ok(response, "Niño actualizado exitosamente."));
+        return HandleResponse(response, "Datos del niño actualizados.");
     }
 
     [HttpDelete("{id:int}")]
@@ -66,6 +59,6 @@ public class NinosController : ControllerBase
     public async Task<ActionResult<ApiResponse>> Eliminar(int id)
     {
         await _ninoService.EliminarAsync(id);
-        return Ok(ApiResponse.OkNoData("Niño eliminado exitosamente."));
+        return HandleSuccess("Niño eliminado del sistema.");
     }
 }

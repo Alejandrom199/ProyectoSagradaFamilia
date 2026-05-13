@@ -12,6 +12,7 @@ namespace SagradaFamilia.Domain.Interfaces.Repositories
 
         Task<IEnumerable<RolPermiso>> ObtenerPermisosPorRolIdAsync(int rolId);
         Task<IEnumerable<UsuarioPermiso>> ObtenerPermisosPorUsuarioAsync(int usuarioId);
+        
         Task<UsuarioPermiso> CrearUsuarioPermisoAsync(UsuarioPermiso permiso);
         Task EliminarUsuarioPermisoAsync(int usuarioId, int opcionAccionId);
 

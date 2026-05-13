@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Infrastructure.Persistence.Contexts;
 
 namespace SagradaFamilia.Infrastructure.Persistence.Repositories
@@ -11,14 +12,18 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
 
         public OmsRepository(AppDbContext context) => _context = context;
 
-        public async Task<OmsPesoPorEdad?> ObtenerPesoPorEdadAsync(char sexo, int edadMeses) =>
-            await _context.OmsPesoPorEdad
-                .Where(o => o.Sexo == sexo && o.EdadMeses >= edadMeses)
-                .OrderBy(o => o.EdadMeses) // Aseguramos que sea el más próximo hacia arriba
+        public async Task<OmsReferencia?> ObtenerReferenciaAsync(char sexo, int edadMeses, TipoReferencia tipo) =>
+            await _context.OmsReferencias
+                .Where(o => o.Sexo == sexo
+                         && o.EdadMeses >= edadMeses
+                         && o.Tipo == tipo)
+                .OrderBy(o => o.EdadMeses) 
                 .FirstOrDefaultAsync();
 
-        public async Task<OmsTallaPorEdad?> ObtenerTallaPorEdadAsync(char sexo, int edadMeses) =>
-            await _context.OmsTallaPorEdad
-                .FirstOrDefaultAsync(o => o.Sexo == sexo && o.EdadMeses == edadMeses);
+        public async Task<IEnumerable<OmsReferencia>> ObtenerCurvaCompletaAsync(char sexo, TipoReferencia tipo) =>
+            await _context.OmsReferencias
+                .Where(o => o.Sexo == sexo && o.Tipo == tipo)
+                .OrderBy(o => o.EdadMeses) 
+                .ToListAsync();
     }
 }

@@ -23,16 +23,16 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             builder.Property(l => l.Excepcion)
                 .HasMaxLength(4000);
 
+            builder.Property(l => l.StackTrace)
+                .HasMaxLength(8000); // El stack trace suele ser muy largo
+
             builder.Property(l => l.Endpoint)
                 .HasMaxLength(500);
-
-            builder.Property(l => l.IpAddress)
-                .HasMaxLength(50);
 
             builder.Property(l => l.FechaHora)
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            // Índice para búsquedas por fecha y nivel
+            // Íindices para búsquedas rápidas en el dashboard de administrador
             builder.HasIndex(l => l.FechaHora);
             builder.HasIndex(l => l.Nivel);
         }

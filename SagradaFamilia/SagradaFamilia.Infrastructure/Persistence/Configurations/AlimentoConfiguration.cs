@@ -21,7 +21,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             builder.Property(a => a.Descripcion)
                 .HasMaxLength(500);
 
-            builder.Property(a => a.EdadMinimaIntro)
+            builder.Property(a => a.EdadMinimaMeses)
                 .IsRequired();
 
             builder.Property(a => a.Recomendacion)
@@ -29,6 +29,12 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.Property(a => a.Activo)
                 .HasDefaultValue(true);
+
+            // Relación con Categoria
+            builder.HasOne(a => a.Categoria)
+                .WithMany(c => c.Alimentos)
+                .HasForeignKey(a => a.CategoriaId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

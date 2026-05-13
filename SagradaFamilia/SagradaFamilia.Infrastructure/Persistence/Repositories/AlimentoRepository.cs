@@ -11,17 +11,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
 
         public AlimentoRepository(AppDbContext context) => _context = context;
 
-        public async Task<IEnumerable<Alimento>> ObtenerPorEdadAsync(int edadMeses) =>
-            await _context.Alimentos
-                .Include(a => a.Categoria)
-                .Where(a => !a.Eliminado
-                         && a.Activo
-                         && a.EdadMinimaIntro <= edadMeses
-                         && (a.EdadMaxima == null || a.EdadMaxima >= edadMeses))
-                .OrderBy(a => a.Categoria.Nombre)
-                .ThenBy(a => a.Nombre)
-                .ToListAsync();
-
         public async Task<IEnumerable<Alimento>> ObtenerTodosAsync() =>
             await _context.Alimentos
                 .Include(a => a.Categoria)
@@ -34,6 +23,23 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             await _context.Alimentos
                 .Include(a => a.Categoria)
                 .FirstOrDefaultAsync(a => a.Id == id && !a.Eliminado);
+
+        public async Task<IEnumerable<Alimento>> ObtenerPorRangoEdadAsync(int edadMeses) =>
+            await _context.Alimentos
+                .Include(a => a.Categoria)
+                .Where(a => !a.Eliminado
+                         && a.Activo
+                         && a.EdadMinimaMeses <= edadMeses) // Usa el nombre correcto de la propiedad
+                .OrderBy(a => a.Categoria.Nombre)
+                .ThenBy(a => a.Nombre)
+                .ToListAsync();
+
+        public async Task<IEnumerable<Alimento>> ObtenerPorCategoriaAsync(int categoriaId) =>
+            await _context.Alimentos
+                .Include(a => a.Categoria)
+                .Where(a => a.CategoriaId == categoriaId && !a.Eliminado)
+                .OrderBy(a => a.Nombre)
+                .ToListAsync();
 
         public async Task<Alimento> CrearAsync(Alimento alimento)
         {
@@ -54,8 +60,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var alimento = await ObtenerPorIdAsync(id);
             if (alimento is null) return;
 
-            alimento.Eliminado = true;
-            alimento.FechaEliminacion = DateTime.UtcNow;
+            _context.Alimentos.Remove(alimento);
             await _context.SaveChangesAsync();
         }
 
@@ -89,8 +94,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var categoria = await ObtenerCategoriaPorIdAsync(id);
             if (categoria is null) return;
 
-            categoria.Eliminado = true;
-            categoria.FechaEliminacion = DateTime.UtcNow;
+            _context.CategoriasAlimentos.Remove(categoria);
             await _context.SaveChangesAsync();
         }
     }

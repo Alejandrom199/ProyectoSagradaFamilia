@@ -17,7 +17,6 @@
             new() { Success = false, Message = "Errores de validación", Errors = errors };
     }
 
-    // Versión sin datos para endpoints que solo confirman operaciones (DELETE, etc.)
     public class ApiResponse : ApiResponse<object>
     {
         public static ApiResponse OkNoData(string message = "Operación exitosa") =>

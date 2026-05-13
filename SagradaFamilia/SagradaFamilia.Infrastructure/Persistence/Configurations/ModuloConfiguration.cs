@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SagradaFamilia.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 {
@@ -23,9 +18,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(m => m.Descripcion)
-                .HasMaxLength(300);
-
             builder.Property(m => m.Icono)
                 .HasMaxLength(50);
 
@@ -35,6 +27,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             builder.Property(m => m.Activo)
                 .HasDefaultValue(true);
 
+            // Relación Uno a Muchos con Opciones
             builder.HasMany(m => m.Opciones)
                 .WithOne(o => o.Modulo)
                 .HasForeignKey(o => o.ModuloId)

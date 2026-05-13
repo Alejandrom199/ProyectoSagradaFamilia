@@ -2,7 +2,8 @@
 {
     public enum RolEnum
     {
-        Medico = 1,
-        Padre = 2
+        Administrador = 1,
+        Medico = 2,
+        Padre = 3 
     }
 }

@@ -2,9 +2,9 @@
 
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using SagradaFamilia.Application.DTOs.Medidas;
-using SagradaFamilia.Application.Interfaces.Repositories;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
@@ -35,139 +35,175 @@ public class MedidaService : IMedidaService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<MedidaResponse>> ObtenerPorNinoAsync(int ninoId)
+    public async Task<MedidaDto.Response> ObtenerPorIdAsync(int id)
     {
-        var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId)
-            ?? throw new NotFoundException("Niño", ninoId);
+        _logger.LogInformation("Consultando medida ID: {Id}", id);
 
-        var medidas = await _medidaRepository.ObtenerPorNinoAsync(ninoId);
-        var responses = new List<MedidaResponse>();
-
-        foreach (var medida in medidas)
+        var medida = await _medidaRepository.ObtenerPorIdAsync(id);
+        if (medida == null)
         {
-            var response = _mapper.Map<MedidaResponse>(medida);
-            var edadMeses = CalcularEdadMeses(nino.FechaNacimiento, medida.FechaMedicion);
-            var oms = await _omsRepository.ObtenerPesoPorEdadAsync(nino.Sexo, edadMeses);
-
-            if (oms is not null)
-            {
-                response.EstadoNutricional = DeterminarEstadoNutricional(medida.Peso, oms).ToString();
-                response.Percentil = EstimarPercentil(medida.Peso, oms);
-            }
-
-            responses.Add(response);
+            _logger.LogError("Error: Medida con ID {Id} no encontrada.", id);
+            throw new NotFoundException("Medida", id);
         }
 
-        return responses;
+        var response = _mapper.Map<MedidaDto.Response>(medida);
+        await EnriquecerConDatosOms(response, medida.Nino, medida.FechaMedicion, medida.Peso);
+
+        return response;
     }
 
-    public async Task<MedidaResponse> CrearAsync(CrearMedidaRequest request, int medicoId)
+    public async Task<IEnumerable<MedidaDto.Response>> ObtenerPorNinoAsync(int ninoId)
     {
-        var nino = await _ninoRepository.ObtenerPorIdAsync(request.NinoId)
-            ?? throw new NotFoundException("Niño", request.NinoId);
+        _logger.LogInformation("Obteniendo historial de medidas para el niño ID: {NinoId}", ninoId);
 
-        if (await _medidaRepository.ExisteMedidaEnMesAsync(request.NinoId, request.FechaMedicion))
-            throw new BusinessException(
-                "Ya existe una medida registrada para este niño en ese mes.");
+        var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId);
+        if (nino == null)
+        {
+            _logger.LogError("No se puede obtener historial: El niño ID {Id} no existe.", ninoId);
+            throw new NotFoundException("Niño", ninoId);
+        }
+
+        var medidas = await _medidaRepository.ObtenerPorNinoAsync(ninoId);
+        var listaResponse = new List<MedidaDto.Response>();
+
+        foreach (var m in medidas)
+        {
+            var res = _mapper.Map<MedidaDto.Response>(m);
+            await EnriquecerConDatosOms(res, nino, m.FechaMedicion, m.Peso);
+            listaResponse.Add(res);
+        }
+
+        return listaResponse;
+    }
+
+    public async Task<MedidaDto.Response?> ObtenerUltimaMedidaAsync(int ninoId)
+    {
+        _logger.LogInformation("Buscando última medida para el niño ID: {NinoId}", ninoId);
+
+        var medida = await _medidaRepository.ObtenerUltimaMedidaAsync(ninoId);
+        if (medida == null) return null;
+
+        var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId);
+        var response = _mapper.Map<MedidaDto.Response>(medida);
+
+        if (nino != null)
+            await EnriquecerConDatosOms(response, nino, medida.FechaMedicion, medida.Peso);
+
+        return response;
+    }
+
+    public async Task<MedidaDto.Response> CrearAsync(MedidaDto.Create request, int medicoId)
+    {
+        _logger.LogInformation("Creando medida para Niño ID: {NinoId}", request.NinoId);
+
+        var nino = await _ninoRepository.ObtenerPorIdAsync(request.NinoId);
+        if (nino == null)
+        {
+            _logger.LogError("Error en creación: Niño ID {Id} no existe.", request.NinoId);
+            throw new NotFoundException("Niño", request.NinoId);
+        }
+
+        if (await _medidaRepository.ExisteMedidaEnMesAsync(request.NinoId, request.FechaMedicion.Month, request.FechaMedicion.Year))
+        {
+            _logger.LogWarning("Validación fallida: Ya existe una medida en el mes {Mes}/{Anio}",
+                request.FechaMedicion.Month, request.FechaMedicion.Year);
+            throw new BusinessException("Ya existe una medida registrada para este niño en el mes seleccionado.");
+        }
 
         var medida = _mapper.Map<Medida>(request);
         medida.MedicoId = medicoId;
 
         var creada = await _medidaRepository.CrearAsync(medida);
 
-        await _prediccionRepository.ActualizarPesoRealAsync(
-            request.NinoId, request.FechaMedicion, request.Peso);
+        await _prediccionRepository.ActualizarValorRealAsync(
+            request.NinoId,
+            request.FechaMedicion,
+            request.Peso,
+            TipoReferencia.Peso);
 
-        _logger.LogInformation(
-            "Medida creada para niño ID: {NinoId}, peso: {Peso}kg", request.NinoId, request.Peso);
+        _logger.LogInformation("Medida ID {Id} creada y modelo de predicción actualizado.", creada.Id);
 
-        var response = _mapper.Map<MedidaResponse>(creada);
-        var edadMeses = CalcularEdadMeses(nino.FechaNacimiento, request.FechaMedicion);
-        var oms = await _omsRepository.ObtenerPesoPorEdadAsync(nino.Sexo, edadMeses);
-
-        if (oms is not null)
-        {
-            response.EstadoNutricional = DeterminarEstadoNutricional(request.Peso, oms).ToString();
-            response.Percentil = EstimarPercentil(request.Peso, oms);
-        }
+        var response = _mapper.Map<MedidaDto.Response>(creada);
+        await EnriquecerConDatosOms(response, nino, creada.FechaMedicion, creada.Peso);
 
         return response;
     }
 
-    public async Task<MedidaResponse> ActualizarAsync(int id, ActualizarMedidaRequest request)
+    public async Task<MedidaDto.Response> ActualizarAsync(int id, MedidaDto.Update request)
     {
-        var medida = await _medidaRepository.ObtenerPorIdAsync(id)
-            ?? throw new NotFoundException("Medida", id);
+        _logger.LogInformation("Actualizando medida ID: {Id}", id);
 
-        var nino = await _ninoRepository.ObtenerPorIdAsync(medida.NinoId)
-            ?? throw new NotFoundException("Niño", medida.NinoId);
-
-        medida.FechaMedicion = request.FechaMedicion;
-        medida.Peso = request.Peso;
-        medida.Talla = request.Talla;
-
-        var actualizada = await _medidaRepository.ActualizarAsync(medida);
-        _logger.LogInformation("Medida actualizada con ID: {Id}", id);
-
-        var response = _mapper.Map<MedidaResponse>(actualizada);
-        var edadMeses = CalcularEdadMeses(nino.FechaNacimiento, request.FechaMedicion);
-        var oms = await _omsRepository.ObtenerPesoPorEdadAsync(nino.Sexo, edadMeses);
-
-        if (oms is not null)
+        var medida = await _medidaRepository.ObtenerPorIdAsync(id);
+        if (medida == null)
         {
-            response.EstadoNutricional = DeterminarEstadoNutricional(request.Peso, oms).ToString();
-            response.Percentil = EstimarPercentil(request.Peso, oms);
+            _logger.LogError("Error en actualización: Medida ID {Id} no encontrada.", id);
+            throw new NotFoundException("Medida", id);
         }
+
+        _mapper.Map(request, medida);
+        var actualizada = await _medidaRepository.ActualizarAsync(medida);
+
+        var nino = await _ninoRepository.ObtenerPorIdAsync(actualizada.NinoId);
+        var response = _mapper.Map<MedidaDto.Response>(actualizada);
+
+        if (nino != null)
+            await EnriquecerConDatosOms(response, nino, actualizada.FechaMedicion, actualizada.Peso);
 
         return response;
     }
 
     public async Task EliminarAsync(int id)
     {
-        var medida = await _medidaRepository.ObtenerPorIdAsync(id)
-            ?? throw new NotFoundException("Medida", id);
+        _logger.LogWarning("Eliminando medida ID: {Id}", id);
+
+        var medida = await _medidaRepository.ObtenerPorIdAsync(id);
+        if (medida == null)
+        {
+            _logger.LogError("Fallo al eliminar: Medida ID {Id} no encontrada.", id);
+            throw new NotFoundException("Medida", id);
+        }
 
         await _medidaRepository.EliminarAsync(medida.Id);
-        _logger.LogInformation("Medida eliminada con ID: {Id}", id);
+        _logger.LogInformation("Medida ID: {Id} eliminada correctamente.", id);
     }
 
-    // ── Métodos privados ──────────────────────────────────────────────────
-
-    private static int CalcularEdadMeses(DateOnly fechaNacimiento, DateOnly fechaMedicion)
+    private async Task EnriquecerConDatosOms(MedidaDto.Response res, Nino nino, DateOnly fechaMedida, decimal pesoActual)
     {
-        var meses = ((fechaMedicion.Year - fechaNacimiento.Year) * 12)
-                  + fechaMedicion.Month - fechaNacimiento.Month;
+        var edadMeses = CalcularEdadMeses(nino.FechaNacimiento, fechaMedida);
 
-        if (fechaMedicion.Day < fechaNacimiento.Day)
-            meses--;
+        var referencia = await _omsRepository.ObtenerReferenciaAsync(nino.Sexo, edadMeses, TipoReferencia.Peso);
 
+        if (referencia != null)
+        {
+            res.EstadoNutricional = DeterminarEstado(pesoActual, referencia).ToString();
+            res.PercentilPeso = CalcularPercentil(pesoActual, referencia);
+        }
+    }
+
+    private static int CalcularEdadMeses(DateOnly nacimiento, DateOnly medida)
+    {
+        var meses = ((medida.Year - nacimiento.Year) * 12) + medida.Month - nacimiento.Month;
+        if (medida.Day < nacimiento.Day) meses--;
         return Math.Max(0, meses);
     }
 
-    private static EstadoNutricional DeterminarEstadoNutricional(
-        decimal peso, OmsPesoPorEdad oms) => peso switch
-        {
-            _ when peso < oms.Percentil3 => EstadoNutricional.BajoPesoSevero,
-            _ when peso < oms.Percentil15 => EstadoNutricional.BajoPeso,
-            _ when peso < oms.Percentil85 => EstadoNutricional.Normal,
-            _ when peso < oms.Percentil97 => EstadoNutricional.Sobrepeso,
-            _ => EstadoNutricional.Obesidad
-        };
+    private static EstadoNutricional DeterminarEstado(decimal peso, OmsReferencia oms) => peso switch
+    {
+        _ when peso < oms.Percentil3 => EstadoNutricional.BajoPesoSevero,
+        _ when peso < oms.Percentil15 => EstadoNutricional.BajoPeso,
+        _ when peso < oms.Percentil85 => EstadoNutricional.Normal,
+        _ when peso < oms.Percentil97 => EstadoNutricional.Sobrepeso,
+        _ => EstadoNutricional.Obesidad
+    };
 
-    private static int EstimarPercentil(decimal peso, OmsPesoPorEdad oms)
+    // 💡 Corregido: Uso de OmsReferencia
+    private static int CalcularPercentil(decimal peso, OmsReferencia oms)
     {
         if (peso <= oms.Percentil3) return 3;
-        if (peso <= oms.Percentil15) return Interpolar(peso, oms.Percentil3, oms.Percentil15, 3, 15);
-        if (peso <= oms.Percentil50) return Interpolar(peso, oms.Percentil15, oms.Percentil50, 15, 50);
-        if (peso <= oms.Percentil85) return Interpolar(peso, oms.Percentil50, oms.Percentil85, 50, 85);
-        if (peso <= oms.Percentil97) return Interpolar(peso, oms.Percentil85, oms.Percentil97, 85, 97);
-        return 97;
-    }
-
-    private static int Interpolar(decimal valor, decimal min, decimal max, int pMin, int pMax)
-    {
-        if (max == min) return pMin;
-        var ratio = (double)(valor - min) / (double)(max - min);
-        return (int)Math.Round(pMin + ratio * (pMax - pMin));
+        if (peso >= oms.Percentil97) return 97;
+        if (peso <= oms.Percentil15) return 15;
+        if (peso <= oms.Percentil50) return 50;
+        if (peso <= oms.Percentil85) return 85;
+        return 90;
     }
 }

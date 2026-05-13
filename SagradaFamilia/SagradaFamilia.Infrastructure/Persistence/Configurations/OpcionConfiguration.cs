@@ -18,9 +18,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(o => o.Descripcion)
-                .HasMaxLength(300);
-
             builder.Property(o => o.Ruta)
                 .HasMaxLength(150);
 
@@ -33,6 +30,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             builder.Property(o => o.Activo)
                 .HasDefaultValue(true);
 
+            // Relación Uno a Muchos con OpcionAcciones (Crear, Editar, etc.)
             builder.HasMany(o => o.OpcionAcciones)
                 .WithOne(oa => oa.Opcion)
                 .HasForeignKey(oa => oa.OpcionId)

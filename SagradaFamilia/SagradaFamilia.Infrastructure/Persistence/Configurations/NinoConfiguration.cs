@@ -29,9 +29,26 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasColumnType("char(1)");
 
+            // Relaciones
+
+            builder.HasOne(n => n.Padre)
+                .WithMany(p => p.Ninos)
+                .HasForeignKey(n => n.PadreId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(n => n.Medico)
+                .WithMany(m => m.Ninos)
+                .HasForeignKey(n => n.MedicoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasMany(n => n.Medidas)
                 .WithOne(m => m.Nino)
                 .HasForeignKey(m => m.NinoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(n => n.Citas)
+                .WithOne(c => c.Nino)
+                .HasForeignKey(c => c.NinoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(n => n.Predicciones)

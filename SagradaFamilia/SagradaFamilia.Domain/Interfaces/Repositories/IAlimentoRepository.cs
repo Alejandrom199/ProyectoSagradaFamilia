@@ -4,12 +4,16 @@ namespace SagradaFamilia.Application.Interfaces.Repositories
 {
     public interface IAlimentoRepository
     {
-        Task<IEnumerable<Alimento>> ObtenerPorEdadAsync(int edadMeses);
         Task<IEnumerable<Alimento>> ObtenerTodosAsync();
         Task<Alimento?> ObtenerPorIdAsync(int id);
+
+        Task<IEnumerable<Alimento>> ObtenerPorRangoEdadAsync(int edadMeses);
+        Task<IEnumerable<Alimento>> ObtenerPorCategoriaAsync(int categoriaId);
+
         Task<Alimento> CrearAsync(Alimento alimento);
         Task<Alimento> ActualizarAsync(Alimento alimento);
         Task EliminarAsync(int id);
+
         Task<IEnumerable<CategoriaAlimento>> ObtenerCategoriasAsync();
         Task<CategoriaAlimento?> ObtenerCategoriaPorIdAsync(int id);
         Task<CategoriaAlimento> CrearCategoriaAsync(CategoriaAlimento categoria);

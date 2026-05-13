@@ -8,15 +8,17 @@ namespace SagradaFamilia.Application.Mappings
     {
         public MenuMappingProfile()
         {
-            CreateMap<Modulo, MenuResponse>();
+            CreateMap<Modulo, MenuDto.MenuResponse>();
 
-            CreateMap<Opcion, OpcionResponse>()
+            CreateMap<Opcion, MenuDto.OpcionResponse>()
                 .ForMember(dest => dest.Acciones,
                     opt => opt.MapFrom(src =>
-                        src.OpcionAcciones
-                            .Where(oa => oa.Accion != null)
-                            .Select(oa => oa.Accion.Nombre)
-                            .ToList()));
+                        src.OpcionAcciones != null
+                            ? src.OpcionAcciones
+                                .Where(oa => oa.Accion != null)
+                                .Select(oa => oa.Accion.Nombre)
+                                .ToList()
+                            : new List<string>()));
         }
     }
 }

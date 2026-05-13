@@ -18,8 +18,4 @@
     <ProjectReference Include="..\SagradaFamilia.Domain\SagradaFamilia.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\Menu\" />
-  </ItemGroup>
-
 </Project>

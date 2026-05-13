@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SagradaFamilia.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 {
@@ -33,10 +28,20 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             builder.Property(m => m.FechaRegistro)
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            // Máximo una medida por niño por mes
             builder.HasIndex(m => new { m.NinoId, m.FechaMedicion })
                 .IsUnique()
                 .HasFilter("[Eliminado] = 0");
+
+            // Relaciones
+            builder.HasOne(m => m.Nino)
+                .WithMany(n => n.Medidas)
+                .HasForeignKey(m => m.NinoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(m => m.Medico)
+                .WithMany(med => med.Medidas)
+                .HasForeignKey(m => m.MedicoId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

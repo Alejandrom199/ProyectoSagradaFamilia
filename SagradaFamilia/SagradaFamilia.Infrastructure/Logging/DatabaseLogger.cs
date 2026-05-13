@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Infrastructure.Persistence.Contexts;
 
 namespace SagradaFamilia.Infrastructure.Logging
@@ -6,12 +8,12 @@ namespace SagradaFamilia.Infrastructure.Logging
     public class DatabaseLogger : ILogger
     {
         private readonly string _categoryName;
-        private readonly AppDbContext _context;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public DatabaseLogger(string categoryName, AppDbContext context)
+        public DatabaseLogger(string categoryName, IServiceScopeFactory scopeFactory)
         {
             _categoryName = categoryName;
-            _context = context;
+            _scopeFactory = scopeFactory;
         }
 
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull
@@ -30,28 +32,29 @@ namespace SagradaFamilia.Infrastructure.Logging
             if (!IsEnabled(logLevel))
                 return;
 
-            // Ignorar logs internos de EF Core para no saturar la tabla
-            if (_categoryName.StartsWith("Microsoft.EntityFrameworkCore"))
-                return;
+            if (_categoryName.StartsWith("Microsoft.EntityFrameworkCore") ||
+                _categoryName.StartsWith("System.Net.Http")) return;
 
             var mensaje = formatter(state, exception);
 
-            try
+            using (var scope = _scopeFactory.CreateScope())
             {
-                _context.LogsSistema.Add(new Domain.Entities.LogSistema
+                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                try
                 {
-                    FechaHora = DateTime.UtcNow,
-                    Nivel = logLevel.ToString(),
-                    Mensaje = mensaje.Length > 2000 ? mensaje[..2000] : mensaje,
-                    Excepcion = exception?.Message,
-                    StackTrace = exception?.StackTrace?[..Math.Min(exception.StackTrace?.Length ?? 0, 4000)]
-                });
+                    context.LogsSistema.Add(new LogSistema
+                    {
+                        FechaHora = DateTime.UtcNow,
+                        Nivel = logLevel.ToString(),
+                        Mensaje = mensaje.Length > 2000 ? mensaje[..2000] : mensaje,
+                        Excepcion = exception?.Message,
+                        StackTrace = exception?.StackTrace?[..Math.Min(exception.StackTrace?.Length ?? 0, 4000)],
+                        Endpoint = "Global"
+                    });
 
-                _context.SaveChanges();
-            }
-            catch
-            {
-                // Si falla el log en BD no debe romper la aplicación
+                    context.SaveChanges();
+                }
+                catch { /* un logger nunca debe romper el flujo principal */ }
             }
         }
     }

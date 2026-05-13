@@ -63,10 +63,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("EdadMaxima")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EdadMinimaIntro")
+                    b.Property<int>("EdadMinimaMeses")
                         .HasColumnType("int");
 
                     b.Property<bool>("Eliminado")
@@ -94,11 +91,74 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoriaId");
 
+                    b.HasIndex("Eliminado");
+
                     b.ToTable("Alimentos", (string)null);
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Auditoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Accion")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ClavePrimaria")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("Fecha")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Tabla")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ValoresAntiguos")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ValoresNuevos")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Fecha");
+
+                    b.HasIndex("Tabla");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Auditorias", (string)null);
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.CategoriaAlimento", b =>
@@ -139,9 +199,84 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("Eliminado");
+
                     b.ToTable("CategoriasAlimentos", (string)null);
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Cita", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Eliminado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("Estado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaHora")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MedicoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Motivo")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("NinoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("NinoId");
+
+                    b.HasIndex("MedicoId", "FechaHora")
+                        .IsUnique()
+                        .HasFilter("[Estado] != 2 AND [Eliminado] = 0");
+
+                    b.ToTable("Citas", (string)null);
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.LogSistema", b =>
@@ -165,10 +300,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("Mensaje")
                         .IsRequired()
                         .HasMaxLength(2000)
@@ -180,6 +311,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("StackTrace")
+                        .HasMaxLength(8000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UsuarioId")
@@ -192,6 +324,70 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.HasIndex("Nivel");
 
                     b.ToTable("LogsSistema", (string)null);
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medico", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("Eliminado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Especialidad")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("UsuarioId")
+                        .IsUnique();
+
+                    b.ToTable("Medicos", (string)null);
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medida", b =>
@@ -238,7 +434,18 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("Talla")
                         .HasColumnType("decimal(5,2)");
 
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
 
                     b.HasIndex("MedicoId");
 
@@ -261,10 +468,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<string>("Descripcion")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
 
                     b.Property<bool>("Eliminado")
                         .ValueGeneratedOnAdd()
@@ -294,7 +497,18 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Property<int>("Orden")
                         .HasColumnType("int");
 
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
 
                     b.ToTable("Modulos", (string)null);
                 });
@@ -331,26 +545,42 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Property<DateOnly>("FechaNacimiento")
                         .HasColumnType("date");
 
+                    b.Property<int>("MedicoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("RepresentanteId")
+                    b.Property<int>("PadreId")
                         .HasColumnType("int");
 
                     b.Property<string>("Sexo")
                         .IsRequired()
                         .HasColumnType("char(1)");
 
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("RepresentanteId");
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("MedicoId");
+
+                    b.HasIndex("PadreId");
 
                     b.ToTable("Ninos", (string)null);
                 });
 
-            modelBuilder.Entity("SagradaFamilia.Domain.Entities.OmsPesoPorEdad", b =>
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.OmsReferencia", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -380,50 +610,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("char(1)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("Sexo", "EdadMeses")
-                        .IsUnique();
-
-                    b.ToTable("OMS_PesoPorEdad", (string)null);
-                });
-
-            modelBuilder.Entity("SagradaFamilia.Domain.Entities.OmsTallaPorEdad", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("Tipo")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EdadMeses")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Percentil15")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<decimal>("Percentil3")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<decimal>("Percentil50")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<decimal>("Percentil85")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<decimal>("Percentil97")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<string>("Sexo")
-                        .IsRequired()
-                        .HasColumnType("char(1)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Sexo", "EdadMeses")
+                    b.HasIndex("Sexo", "EdadMeses", "Tipo")
                         .IsUnique();
 
-                    b.ToTable("OMS_TallaPorEdad", (string)null);
+                    b.ToTable("OMS_Referencias", (string)null);
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Opcion", b =>
@@ -438,10 +633,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<string>("Descripcion")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
 
                     b.Property<bool>("Eliminado")
                         .ValueGeneratedOnAdd()
@@ -478,7 +669,18 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
 
                     b.HasIndex("ModuloId");
 
@@ -509,6 +711,71 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.ToTable("OpcionAcciones", (string)null);
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Padre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("Eliminado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MedicoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("MedicoId");
+
+                    b.HasIndex("UsuarioId")
+                        .IsUnique();
+
+                    b.ToTable("Padres", (string)null);
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Prediccion", b =>
                 {
                     b.Property<int>("Id")
@@ -525,22 +792,25 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Property<DateOnly>("FechaObjetivo")
                         .HasColumnType("date");
 
-                    b.Property<int>("Meses")
-                        .HasColumnType("int");
-
                     b.Property<int>("NinoId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("PesoMaximo")
+                    b.Property<int>("ProyeccionMeses")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorMaximo")
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<decimal>("PesoMinimo")
+                    b.Property<decimal>("ValorMinimo")
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<decimal>("PesoPredicho")
+                    b.Property<decimal>("ValorPredicho")
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<decimal?>("PesoReal")
+                    b.Property<decimal?>("ValorReal")
                         .HasColumnType("decimal(5,2)");
 
                     b.HasKey("Id");
@@ -548,6 +818,65 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.HasIndex("NinoId");
 
                     b.ToTable("Predicciones", (string)null);
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Prescripcion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DetalleMedicamentos")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("Eliminado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Indicaciones")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("MedicoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NinoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("MedicoId");
+
+                    b.HasIndex("NinoId");
+
+                    b.ToTable("Prescripciones", (string)null);
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.RefreshToken", b =>
@@ -649,11 +978,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<string>("Apellido")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<bool>("Eliminado")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -675,11 +999,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("FechaEliminacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -688,11 +1007,18 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Property<int>("RolId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Telefono")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -742,9 +1068,50 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Navigation("Categoria");
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Auditoria", b =>
+                {
+                    b.HasOne("SagradaFamilia.Domain.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Cita", b =>
+                {
+                    b.HasOne("SagradaFamilia.Domain.Entities.Medico", "Medico")
+                        .WithMany()
+                        .HasForeignKey("MedicoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SagradaFamilia.Domain.Entities.Nino", "Nino")
+                        .WithMany("Citas")
+                        .HasForeignKey("NinoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Medico");
+
+                    b.Navigation("Nino");
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medico", b =>
+                {
+                    b.HasOne("SagradaFamilia.Domain.Entities.Usuario", "Usuario")
+                        .WithOne("Medico")
+                        .HasForeignKey("SagradaFamilia.Domain.Entities.Medico", "UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medida", b =>
                 {
-                    b.HasOne("SagradaFamilia.Domain.Entities.Usuario", "Medico")
+                    b.HasOne("SagradaFamilia.Domain.Entities.Medico", "Medico")
                         .WithMany("Medidas")
                         .HasForeignKey("MedicoId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -763,13 +1130,21 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Nino", b =>
                 {
-                    b.HasOne("SagradaFamilia.Domain.Entities.Usuario", "Representante")
+                    b.HasOne("SagradaFamilia.Domain.Entities.Medico", "Medico")
                         .WithMany("Ninos")
-                        .HasForeignKey("RepresentanteId")
+                        .HasForeignKey("MedicoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Representante");
+                    b.HasOne("SagradaFamilia.Domain.Entities.Padre", "Padre")
+                        .WithMany("Ninos")
+                        .HasForeignKey("PadreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Medico");
+
+                    b.Navigation("Padre");
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Opcion", b =>
@@ -802,6 +1177,25 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Navigation("Opcion");
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Padre", b =>
+                {
+                    b.HasOne("SagradaFamilia.Domain.Entities.Medico", "Medico")
+                        .WithMany("Padres")
+                        .HasForeignKey("MedicoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SagradaFamilia.Domain.Entities.Usuario", "Usuario")
+                        .WithOne("Padre")
+                        .HasForeignKey("SagradaFamilia.Domain.Entities.Padre", "UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Medico");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Prediccion", b =>
                 {
                     b.HasOne("SagradaFamilia.Domain.Entities.Nino", "Nino")
@@ -809,6 +1203,25 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                         .HasForeignKey("NinoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Nino");
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Prescripcion", b =>
+                {
+                    b.HasOne("SagradaFamilia.Domain.Entities.Medico", "Medico")
+                        .WithMany()
+                        .HasForeignKey("MedicoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SagradaFamilia.Domain.Entities.Nino", "Nino")
+                        .WithMany()
+                        .HasForeignKey("NinoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Medico");
 
                     b.Navigation("Nino");
                 });
@@ -883,6 +1296,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Navigation("Alimentos");
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medico", b =>
+                {
+                    b.Navigation("Medidas");
+
+                    b.Navigation("Ninos");
+
+                    b.Navigation("Padres");
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Modulo", b =>
                 {
                     b.Navigation("Opciones");
@@ -890,6 +1312,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Nino", b =>
                 {
+                    b.Navigation("Citas");
+
                     b.Navigation("Medidas");
 
                     b.Navigation("Predicciones");
@@ -907,6 +1331,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.Navigation("UsuarioPermisos");
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Padre", b =>
+                {
+                    b.Navigation("Ninos");
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Rol", b =>
                 {
                     b.Navigation("RolPermisos");
@@ -916,9 +1345,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Usuario", b =>
                 {
-                    b.Navigation("Medidas");
+                    b.Navigation("Medico");
 
-                    b.Navigation("Ninos");
+                    b.Navigation("Padre");
 
                     b.Navigation("Permisos");
 

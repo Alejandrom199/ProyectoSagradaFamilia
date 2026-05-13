@@ -23,6 +23,7 @@ namespace SagradaFamilia.API.Middlewares
 
             sw.Stop();
 
+            // Log format: GET /api/alimentos → 200 en 45ms
             _logger.LogInformation(
                 "{Method} {Path} → {StatusCode} en {Ms}ms",
                 context.Request.Method,

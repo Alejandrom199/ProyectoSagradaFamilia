@@ -3,7 +3,7 @@ using SagradaFamilia.Application.DTOs.Auth;
 
 namespace SagradaFamilia.Application.Validators.Auth
 {
-    public class LoginValidator : AbstractValidator<LoginRequest>
+    public class LoginValidator : AbstractValidator<LoginDto.Request>
     {
         public LoginValidator()
         {

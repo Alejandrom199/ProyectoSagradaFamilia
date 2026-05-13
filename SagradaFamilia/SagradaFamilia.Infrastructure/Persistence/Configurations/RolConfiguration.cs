@@ -18,6 +18,12 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(r => r.Nombre)
                 .IsUnique();
+
+            // Relación con Usuarios
+            builder.HasMany(r => r.Usuarios)
+                .WithOne(u => u.Rol)
+                .HasForeignKey(u => u.RolId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -2,14 +2,12 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SagradaFamilia.Application.DTOs.Alimentos;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 
-[ApiController]
-[Route("api/[controller]")]
 [Authorize]
-public class AlimentosController : ControllerBase
+public class AlimentosController : BaseController
 {
     private readonly IAlimentoService _alimentoService;
 
@@ -17,38 +15,34 @@ public class AlimentosController : ControllerBase
         _alimentoService = alimentoService;
 
     [HttpGet]
-    [Authorize(Roles = "Medico, Padre")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<AlimentoResponse>>>> ObtenerTodos()
+    public async Task<ActionResult<ApiResponse<IEnumerable<AlimentoDto.Response>>>> ObtenerTodos()
     {
         var response = await _alimentoService.ObtenerTodosAsync();
-        return Ok(ApiResponse<IEnumerable<AlimentoResponse>>.Ok(response));
+        return HandleResponse(response);
     }
 
     [HttpGet("por-edad/{edadMeses:int}")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<AlimentoResponse>>>> ObtenerPorEdad(
-        int edadMeses)
+    public async Task<ActionResult<ApiResponse<IEnumerable<AlimentoDto.Response>>>> ObtenerPorEdad(int edadMeses)
     {
-        var response = await _alimentoService.ObtenerPorEdadAsync(edadMeses);
-        return Ok(ApiResponse<IEnumerable<AlimentoResponse>>.Ok(response));
+        // 💡 Corregido: Nombre exacto de la interfaz IAlimentoService
+        var response = await _alimentoService.ObtenerPorRangoEdadAsync(edadMeses);
+        return HandleResponse(response);
     }
 
     [HttpPost]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<AlimentoResponse>>> Crear(
-        [FromBody] CrearAlimentoRequest request)
+    public async Task<ActionResult<ApiResponse<AlimentoDto.Response>>> Crear([FromBody] AlimentoDto.Create request)
     {
         var response = await _alimentoService.CrearAsync(request);
-        return CreatedAtAction(nameof(ObtenerTodos),
-            ApiResponse<AlimentoResponse>.Ok(response, "Alimento creado exitosamente."));
+        return HandleResponse(response, "Alimento creado exitosamente.");
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<AlimentoResponse>>> Actualizar(
-        int id, [FromBody] CrearAlimentoRequest request)
+    public async Task<ActionResult<ApiResponse<AlimentoDto.Response>>> Actualizar(int id, [FromBody] AlimentoDto.Update request)
     {
         var response = await _alimentoService.ActualizarAsync(id, request);
-        return Ok(ApiResponse<AlimentoResponse>.Ok(response, "Alimento actualizado exitosamente."));
+        return HandleResponse(response, "Alimento actualizado.");
     }
 
     [HttpDelete("{id:int}")]
@@ -56,23 +50,21 @@ public class AlimentosController : ControllerBase
     public async Task<ActionResult<ApiResponse>> Eliminar(int id)
     {
         await _alimentoService.EliminarAsync(id);
-        return Ok(ApiResponse.OkNoData("Alimento eliminado exitosamente."));
+        return HandleSuccess("Alimento eliminado.");
     }
 
     [HttpGet("categorias")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<CategoriaResponse>>>> ObtenerCategorias()
+    public async Task<ActionResult<ApiResponse<IEnumerable<CategoriaDto.Response>>>> ObtenerCategorias()
     {
         var response = await _alimentoService.ObtenerCategoriasAsync();
-        return Ok(ApiResponse<IEnumerable<CategoriaResponse>>.Ok(response));
+        return HandleResponse(response);
     }
 
     [HttpPost("categorias")]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<CategoriaResponse>>> CrearCategoria(
-        [FromBody] CrearCategoriaRequest request)
+    public async Task<ActionResult<ApiResponse<CategoriaDto.Response>>> CrearCategoria([FromBody] CategoriaDto.Create request)
     {
         var response = await _alimentoService.CrearCategoriaAsync(request);
-        return CreatedAtAction(nameof(ObtenerCategorias),
-            ApiResponse<CategoriaResponse>.Ok(response, "Categoría creada exitosamente."));
+        return HandleResponse(response, "Categoría creada.");
     }
 }

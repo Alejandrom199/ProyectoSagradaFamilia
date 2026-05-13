@@ -1,15 +1,11 @@
-﻿namespace SagradaFamilia.API.Controllers;
-
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
-using SagradaFamilia.Application.DTOs.Predicciones;
 using SagradaFamilia.Application.Interfaces.Services;
 
-[ApiController]
-[Route("api/[controller]")]
-[Authorize]
-public class PrediccionesController : ControllerBase
+namespace SagradaFamilia.API.Controllers;
+
+public class PrediccionesController : BaseController
 {
     private readonly IPrediccionService _prediccionService;
 
@@ -17,18 +13,16 @@ public class PrediccionesController : ControllerBase
         _prediccionService = prediccionService;
 
     [HttpGet("nino/{ninoId:int}")]
-    public async Task<ActionResult<ApiResponse<PrediccionResponse>>> ObtenerPredicciones(
-        int ninoId)
+    public async Task<ActionResult<ApiResponse<PrediccionDto.Response>>> ObtenerPredicciones(int ninoId)
     {
         var response = await _prediccionService.ObtenerPrediccionesAsync(ninoId);
-        return Ok(ApiResponse<PrediccionResponse>.Ok(response));
+        return HandleResponse(response);
     }
 
     [HttpGet("health")]
-    public async Task<ActionResult<ApiResponse<PrediccionHealth>>> ObtenerEstadoServicioPrediccion()
+    public async Task<ActionResult<ApiResponse<PrediccionDto.Health>>> ObtenerEstadoServicioPrediccion()
     {
         var response = await _prediccionService.ObtenerEstadoServicioPrediccionAsync();
-        return Ok(ApiResponse<PrediccionHealth>.Ok(response));
+        return HandleResponse(response);
     }
-
-}
+}  

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SagradaFamilia.Application.DTOs.Predicciones;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Domain.Entities;
 
 namespace SagradaFamilia.Application.Mappings
@@ -8,7 +8,7 @@ namespace SagradaFamilia.Application.Mappings
     {
         public PrediccionMappingProfile()
         {
-            CreateMap<Prediccion, PuntoPrediccion>();
+            CreateMap<Prediccion, PrediccionDto.Punto>();
         }
     }
 }

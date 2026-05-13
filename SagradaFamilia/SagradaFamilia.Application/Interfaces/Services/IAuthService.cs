@@ -1,13 +1,9 @@
-﻿using SagradaFamilia.Application.DTOs.Auth;
+﻿namespace SagradaFamilia.Application.Interfaces.Services;
 
-namespace SagradaFamilia.Application.Interfaces.Services
+using SagradaFamilia.Application.DTOs.Auth;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task<LoginResponse> LoginAsync(LoginRequest request);
-        Task<LoginResponse> RefreshTokenAsync(RefreshTokenRequest request);
-        Task<UsuarioResponse> CrearPadreAsync(CrearPadreRequest request);
-        Task<IEnumerable<UsuarioResponse>> ObtenerPadresAsync();
-        Task EliminarPadreAsync(int id);
-    }
+    Task<LoginDto.Response> LoginAsync(LoginDto.Request request);
+    Task<LoginDto.Response> RefreshTokenAsync(RefreshTokenDto.Request request);
 }

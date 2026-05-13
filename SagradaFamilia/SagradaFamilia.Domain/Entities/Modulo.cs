@@ -11,9 +11,8 @@ namespace SagradaFamilia.Domain.Entities
     public class Modulo : AuditableEntity
     {
         public string Nombre { get; set; } = string.Empty;
-        public string? Descripcion { get; set; }
-        public string? Icono { get; set; }  // nombre del icono para Angular
-        public int Orden { get; set; }  // orden en el menú
+        public string? Icono { get; set; }
+        public int Orden { get; set; }
         public bool Activo { get; set; } = true;
 
         // Navegación

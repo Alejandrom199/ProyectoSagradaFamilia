@@ -24,7 +24,7 @@ namespace SagradaFamilia.API.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error no controlado: {Message}", ex.Message);
+                _logger.LogError(ex, "Error capturado en middleware: {Message}", ex.Message);
                 await ManejarExcepcionAsync(context, ex);
             }
         }
@@ -38,17 +38,17 @@ namespace SagradaFamilia.API.Middlewares
                 NotFoundException => (HttpStatusCode.NotFound, ex.Message),
                 BusinessException => (HttpStatusCode.BadRequest, ex.Message),
                 UnauthorizedException => (HttpStatusCode.Unauthorized, ex.Message),
-                _ => (HttpStatusCode.InternalServerError, "Ocurrió un error interno.")
+
+                ValidationException vex => (HttpStatusCode.BadRequest,
+                    string.Join(" | ", vex.Errors.SelectMany(kvp => kvp.Value))),
+
+                _ => (HttpStatusCode.InternalServerError, "Ocurrió un error interno no controlado.")
             };
 
             context.Response.StatusCode = (int)statusCode;
 
             var response = ApiResponse.Fail(mensaje);
-
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
+            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
         }

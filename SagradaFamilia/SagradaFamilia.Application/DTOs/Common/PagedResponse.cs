@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SagradaFamilia.Application.DTOs.Common
+﻿namespace SagradaFamilia.Application.DTOs.Common
 {
     public class PagedResponse<T>
     {
@@ -16,11 +10,7 @@ namespace SagradaFamilia.Application.DTOs.Common
         public int PageSize { get; set; }
         public int TotalPages => (int)Math.Ceiling((double)TotalItems / PageSize);
 
-        public static PagedResponse<T> Ok(
-            IEnumerable<T> data,
-            int totalItems,
-            int page,
-            int pageSize) =>
+        public static PagedResponse<T> Ok(IEnumerable<T> data, int totalItems, int page, int pageSize) =>
             new()
             {
                 Success = true,

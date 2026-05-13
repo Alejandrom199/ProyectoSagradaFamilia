@@ -5,7 +5,7 @@ using SagradaFamilia.Domain.Common;
 namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 {
     public abstract class AuditableEntityConfiguration<T> : IEntityTypeConfiguration<T>
-    where T : AuditableEntity
+        where T : AuditableEntity
     {
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
@@ -20,6 +20,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.Property(e => e.FechaEliminacion)
                 .IsRequired(false);
+
+            builder.HasIndex(e => e.Eliminado);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using SagradaFamilia.Application.DTOs.Alimentos;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Domain.Entities;
@@ -25,63 +25,138 @@ public class AlimentoService : IAlimentoService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<AlimentoResponse>> ObtenerPorEdadAsync(int edadMeses)
+    public async Task<IEnumerable<AlimentoDto.Response>> ObtenerTodosAsync()
     {
-        var alimentos = await _alimentoRepository.ObtenerPorEdadAsync(edadMeses);
-        return _mapper.Map<IEnumerable<AlimentoResponse>>(alimentos);
-    }
+        _logger.LogInformation("Obteniendo el catálogo completo de alimentos.");
 
-    public async Task<IEnumerable<AlimentoResponse>> ObtenerTodosAsync()
-    {
         var alimentos = await _alimentoRepository.ObtenerTodosAsync();
-        return _mapper.Map<IEnumerable<AlimentoResponse>>(alimentos);
+        return _mapper.Map<IEnumerable<AlimentoDto.Response>>(alimentos);
     }
 
-    public async Task<AlimentoResponse> CrearAsync(CrearAlimentoRequest request)
+    public async Task<AlimentoDto.Response> ObtenerPorIdAsync(int id)
     {
-        var alimento = _mapper.Map<Alimento>(request);
-        var creado = await _alimentoRepository.CrearAsync(alimento);
-        _logger.LogInformation("Alimento creado con ID: {Id}", creado.Id);
-        return _mapper.Map<AlimentoResponse>(creado);
-    }
+        _logger.LogInformation("Buscando alimento con ID: {Id}", id);
 
-    public async Task<AlimentoResponse> ActualizarAsync(int id, CrearAlimentoRequest request)
-    {
         var alimento = await _alimentoRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Alimento", id);
 
-        alimento.Nombre = request.Nombre;
-        alimento.CategoriaId = request.CategoriaId;
-        alimento.Descripcion = request.Descripcion;
-        alimento.EdadMinimaIntro = request.EdadMinimaIntro;
-        alimento.EdadMaxima = request.EdadMaxima;
-        alimento.Recomendacion = request.Recomendacion;
+        return _mapper.Map<AlimentoDto.Response>(alimento);
+    }
+
+    public async Task<IEnumerable<AlimentoDto.Response>> ObtenerPorRangoEdadAsync(int edadMeses)
+    {
+        _logger.LogInformation("Consultando alimentos recomendados para la edad: {Edad} meses", edadMeses);
+
+        var alimentos = await _alimentoRepository.ObtenerPorRangoEdadAsync(edadMeses); // Asumiendo que el repo mantiene este nombre
+        return _mapper.Map<IEnumerable<AlimentoDto.Response>>(alimentos);
+    }
+
+    public async Task<IEnumerable<AlimentoDto.Response>> ObtenerPorCategoriaAsync(int categoriaId)
+    {
+        _logger.LogInformation("Obteniendo alimentos pertenecientes a la categoría ID: {CategoriaId}", categoriaId);
+
+        var alimentos = await _alimentoRepository.ObtenerPorCategoriaAsync(categoriaId); // Asumiendo que existe en el repo
+        return _mapper.Map<IEnumerable<AlimentoDto.Response>>(alimentos);
+    }
+
+    public async Task<AlimentoDto.Response> CrearAsync(AlimentoDto.Create request)
+    {
+        _logger.LogInformation("Iniciando creación de nuevo alimento: {Nombre}", request.Nombre);
+
+        var alimento = _mapper.Map<Alimento>(request);
+        alimento.Activo = true;
+
+        var creado = await _alimentoRepository.CrearAsync(alimento);
+
+        _logger.LogInformation("Alimento '{Nombre}' creado exitosamente con ID: {Id}", creado.Nombre, creado.Id);
+
+        var alimentoCompleto = await _alimentoRepository.ObtenerPorIdAsync(creado.Id);
+        return _mapper.Map<AlimentoDto.Response>(alimentoCompleto!);
+    }
+
+    public async Task<AlimentoDto.Response> ActualizarAsync(int id, AlimentoDto.Update request)
+    {
+        _logger.LogInformation("Iniciando actualización del alimento ID: {Id}", id);
+
+        var alimento = await _alimentoRepository.ObtenerPorIdAsync(id)
+            ?? throw new NotFoundException("Alimento", id);
+
+        _mapper.Map(request, alimento);
 
         var actualizado = await _alimentoRepository.ActualizarAsync(alimento);
-        _logger.LogInformation("Alimento actualizado con ID: {Id}", id);
-        return _mapper.Map<AlimentoResponse>(actualizado);
+
+        _logger.LogInformation("Alimento ID: {Id} actualizado correctamente.", id);
+
+        var alimentoCompleto = await _alimentoRepository.ObtenerPorIdAsync(actualizado.Id);
+        return _mapper.Map<AlimentoDto.Response>(alimentoCompleto!);
     }
 
     public async Task EliminarAsync(int id)
     {
+        _logger.LogWarning("Intentando eliminar lógicamente el alimento ID: {Id}", id);
+
         var alimento = await _alimentoRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Alimento", id);
 
         await _alimentoRepository.EliminarAsync(alimento.Id);
-        _logger.LogInformation("Alimento eliminado con ID: {Id}", id);
+
+        _logger.LogInformation("Alimento ID: {Id} ha sido eliminado lógicamente del sistema.", id);
     }
 
-    public async Task<IEnumerable<CategoriaResponse>> ObtenerCategoriasAsync()
+    public async Task<IEnumerable<CategoriaDto.Response>> ObtenerCategoriasAsync()
     {
+        _logger.LogInformation("Obteniendo lista de todas las categorías de alimentos.");
+
         var categorias = await _alimentoRepository.ObtenerCategoriasAsync();
-        return _mapper.Map<IEnumerable<CategoriaResponse>>(categorias);
+        return _mapper.Map<IEnumerable<CategoriaDto.Response>>(categorias);
     }
 
-    public async Task<CategoriaResponse> CrearCategoriaAsync(CrearCategoriaRequest request)
+    public async Task<CategoriaDto.Response> ObtenerCategoriaPorIdAsync(int id)
     {
+        _logger.LogInformation("Buscando categoría de alimento con ID: {Id}", id);
+
+        var categoria = await _alimentoRepository.ObtenerCategoriaPorIdAsync(id)
+            ?? throw new NotFoundException("Categoría de Alimento", id);
+
+        return _mapper.Map<CategoriaDto.Response>(categoria);
+    }
+
+    public async Task<CategoriaDto.Response> CrearCategoriaAsync(CategoriaDto.Create request)
+    {
+        _logger.LogInformation("Creando nueva categoría: {Nombre}", request.Nombre);
+
         var categoria = _mapper.Map<CategoriaAlimento>(request);
         var creada = await _alimentoRepository.CrearCategoriaAsync(categoria);
-        _logger.LogInformation("Categoría creada con ID: {Id}", creada.Id);
-        return _mapper.Map<CategoriaResponse>(creada);
+
+        _logger.LogInformation("Categoría '{Nombre}' creada con ID: {Id}", creada.Nombre, creada.Id);
+
+        return _mapper.Map<CategoriaDto.Response>(creada);
+    }
+
+    public async Task<CategoriaDto.Response> ActualizarCategoriaAsync(int id, CategoriaDto.Update request)
+    {
+        _logger.LogInformation("Actualizando categoría ID: {Id}", id);
+
+        var categoria = await _alimentoRepository.ObtenerCategoriaPorIdAsync(id)
+            ?? throw new NotFoundException("Categoría de Alimento", id);
+
+        _mapper.Map(request, categoria);
+        var actualizada = await _alimentoRepository.ActualizarCategoriaAsync(categoria);
+
+        _logger.LogInformation("Categoría ID: {Id} actualizada con éxito.", id);
+
+        return _mapper.Map<CategoriaDto.Response>(actualizada);
+    }
+
+    public async Task EliminarCategoriaAsync(int id)
+    {
+        _logger.LogWarning("Intentando eliminar categoría ID: {Id}", id);
+
+        var categoria = await _alimentoRepository.ObtenerCategoriaPorIdAsync(id)
+            ?? throw new NotFoundException("Categoría de Alimento", id);
+
+        await _alimentoRepository.EliminarCategoriaAsync(categoria.Id);
+
+        _logger.LogInformation("Categoría ID: {Id} eliminada exitosamente.", id);
     }
 }

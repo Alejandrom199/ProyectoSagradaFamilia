@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Domain.Interfaces.Repositories;
 using SagradaFamilia.Infrastructure.Persistence.Contexts;
 
 namespace SagradaFamilia.Infrastructure.Persistence.Repositories
@@ -13,28 +13,44 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
 
         public async Task<Nino?> ObtenerPorIdAsync(int id) =>
             await _context.Ninos
-                .Include(n => n.Representante)
+                .Include(n => n.Padre)
+                .Include(n => n.Medico)
                 .FirstOrDefaultAsync(n => n.Id == id && !n.Eliminado);
 
         public async Task<IEnumerable<Nino>> ObtenerTodosAsync() =>
             await _context.Ninos
-                .Include(n => n.Representante)
+                .Include(n => n.Padre)
+                .Include(n => n.Medico)
                 .Where(n => !n.Eliminado)
                 .OrderBy(n => n.Apellido)
                 .ThenBy(n => n.Nombre)
                 .ToListAsync();
 
-        public async Task<IEnumerable<Nino>> ObtenerPorRepresentanteAsync(int representanteId) =>
+        public async Task<IEnumerable<Nino>> ObtenerPorPadreIdAsync(int padreId) =>
             await _context.Ninos
-                .Include(n => n.Representante)
-                .Where(n => n.RepresentanteId == representanteId && !n.Eliminado)
+                .Include(n => n.Medico) 
+                .Where(n => n.PadreId == padreId && !n.Eliminado)
                 .OrderBy(n => n.Nombre)
                 .ToListAsync();
 
-        public async Task<bool> PerteneceARepresentanteAsync(int ninoId, int representanteId) =>
+        public async Task<IEnumerable<Nino>> ObtenerPorMedicoIdAsync(int medicoId) =>
+            await _context.Ninos
+                .Include(n => n.Padre)
+                .Where(n => n.MedicoId == medicoId && !n.Eliminado)
+                .OrderBy(n => n.Apellido)
+                .ThenBy(n => n.Nombre)
+                .ToListAsync();
+
+        public async Task<bool> PerteneceAPadreAsync(int ninoId, int padreId) =>
             await _context.Ninos
                 .AnyAsync(n => n.Id == ninoId
-                            && n.RepresentanteId == representanteId
+                            && n.PadreId == padreId
+                            && !n.Eliminado);
+
+        public async Task<bool> PerteneceAMedicoAsync(int ninoId, int medicoId) =>
+            await _context.Ninos
+                .AnyAsync(n => n.Id == ninoId
+                            && n.MedicoId == medicoId
                             && !n.Eliminado);
 
         public async Task<Nino> CrearAsync(Nino nino)
@@ -56,8 +72,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var nino = await ObtenerPorIdAsync(id);
             if (nino is null) return;
 
-            nino.Eliminado = true;
-            nino.FechaEliminacion = DateTime.UtcNow;
+            _context.Ninos.Remove(nino);
             await _context.SaveChangesAsync();
         }
     }

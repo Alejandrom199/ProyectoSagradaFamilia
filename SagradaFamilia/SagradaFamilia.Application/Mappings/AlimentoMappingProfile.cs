@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SagradaFamilia.Application.DTOs.Alimentos;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Domain.Entities;
 
 namespace SagradaFamilia.Application.Mappings
@@ -8,17 +8,21 @@ namespace SagradaFamilia.Application.Mappings
     {
         public AlimentoMappingProfile()
         {
-            CreateMap<CrearAlimentoRequest, Alimento>();
 
-            CreateMap<Alimento, AlimentoResponse>()
+            CreateMap<AlimentoDto.Create, Alimento>();
+
+            CreateMap<AlimentoDto.Update, Alimento>();
+
+            CreateMap<Alimento, AlimentoDto.Response>()
                 .ForMember(dest => dest.CategoriaNombre,
-                    opt => opt.MapFrom(src => src.Categoria != null
-                        ? src.Categoria.Nombre
-                        : string.Empty));
+                    opt => opt.MapFrom(src => src.Categoria != null ? src.Categoria.Nombre : string.Empty));
 
-            CreateMap<CrearCategoriaRequest, CategoriaAlimento>();
 
-            CreateMap<CategoriaAlimento, CategoriaResponse>()
+            CreateMap<CategoriaDto.Create, CategoriaAlimento>();
+
+            CreateMap<CategoriaDto.Update, CategoriaAlimento>();
+
+            CreateMap<CategoriaAlimento, CategoriaDto.Response>()
                 .ForMember(dest => dest.TotalAlimentos,
                     opt => opt.MapFrom(src => src.Alimentos != null
                         ? src.Alimentos.Count(a => a.Activo && !a.Eliminado)

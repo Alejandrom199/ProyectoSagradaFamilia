@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Infrastructure.Persistence.Contexts;
 
 namespace SagradaFamilia.Infrastructure.Persistence.Seed
@@ -15,14 +16,20 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 {
                     await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Roles ON");
                     context.Roles.AddRange(
-                        new Rol { Id = 1, Nombre = "Medico" },
-                        new Rol { Id = 2, Nombre = "Padre" }
+                        new Rol { Id = (int)RolEnum.Administrador, Nombre = nameof(RolEnum.Administrador) },
+                        new Rol { Id = (int)RolEnum.Medico, Nombre = nameof(RolEnum.Medico) },
+                        new Rol { Id = (int)RolEnum.Padre, Nombre = nameof(RolEnum.Padre) }
                     );
+
                     await context.SaveChangesAsync();
                     await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Roles OFF");
                     await transaction.CommitAsync();
                 }
-                catch { await transaction.RollbackAsync(); throw; }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
 
             if (!await context.Acciones.AnyAsync())

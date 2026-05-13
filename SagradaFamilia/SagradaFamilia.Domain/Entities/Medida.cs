@@ -13,6 +13,6 @@ namespace SagradaFamilia.Domain.Entities
 
         // Navegación
         public Nino Nino { get; set; } = null!;
-        public Usuario Medico { get; set; } = null!;
+        public Medico Medico { get; set; } = null!;
     }
 }

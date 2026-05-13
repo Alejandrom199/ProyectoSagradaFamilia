@@ -1,9 +1,4 @@
 ﻿using SagradaFamilia.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SagradaFamilia.Domain.Entities
 {
@@ -16,6 +11,5 @@ namespace SagradaFamilia.Domain.Entities
         public string? StackTrace { get; set; }
         public string? Endpoint { get; set; } // qué endpoint generó el log
         public int? UsuarioId { get; set; } // quién estaba logueado
-        public string? IpAddress { get; set; }
     }
 }

@@ -1,126 +1,66 @@
-﻿namespace SagradaFamilia.Application.Services;
-
-using Microsoft.Extensions.Logging;
-using SagradaFamilia.Application.DTOs.Predicciones;
-using SagradaFamilia.Application.Interfaces.Repositories;
+﻿using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Interfaces.Services.External;
-using SagradaFamilia.Domain.Entities;
-using SagradaFamilia.Domain.Exceptions;
 using SagradaFamilia.Domain.Interfaces.Repositories;
+using SagradaFamilia.Application.Interfaces.Repositories;
+using SagradaFamilia.Domain.Exceptions;
+
+namespace SagradaFamilia.Application.Services;
 
 public class PrediccionService : IPrediccionService
 {
     private readonly INinoRepository _ninoRepository;
     private readonly IMedidaRepository _medidaRepository;
-    private readonly IPrediccionRepository _prediccionRepository;
-    private readonly IOmsRepository _omsRepository;
-    private readonly IProphetApiClient _prophetApiClient;
-    private readonly ILogger<PrediccionService> _logger;
+    private readonly IProphetApiClient _prophetClient;
 
     public PrediccionService(
         INinoRepository ninoRepository,
         IMedidaRepository medidaRepository,
-        IPrediccionRepository prediccionRepository,
-        IOmsRepository omsRepository,
-        IProphetApiClient prophetApiClient,
-        ILogger<PrediccionService> logger)
+        IProphetApiClient prophetClient)
     {
         _ninoRepository = ninoRepository;
         _medidaRepository = medidaRepository;
-        _prediccionRepository = prediccionRepository;
-        _omsRepository = omsRepository;
-        _prophetApiClient = prophetApiClient;
-        _logger = logger;
+        _prophetClient = prophetClient;
     }
 
-    public async Task<PrediccionResponse> ObtenerPrediccionesAsync(int ninoId)
+    public async Task<PrediccionDto.Response> ObtenerPrediccionesAsync(int ninoId)
     {
         var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId)
-            ?? throw new NotFoundException("Niño", ninoId);
+                   ?? throw new NotFoundException("Niño", ninoId);
 
-        var medidas = (await _medidaRepository.ObtenerPorNinoAsync(ninoId))
-            .Where(m => !m.Eliminado)
-            .OrderBy(m => m.FechaMedicion)
-            .ToList();
+        // 1. Usamos el nombre exacto de tu interfaz: ObtenerPorNinoAsync
+        var medidas = await _medidaRepository.ObtenerPorNinoAsync(ninoId);
 
-        if (medidas.Count < 3)
+        if (medidas.Count() < 3)
         {
-            _logger.LogWarning(
-                "Niño ID {Id} tiene solo {Count} medidas, mínimo 3 requeridas",
-                ninoId, medidas.Count);
-
-            return new PrediccionResponse
+            return new PrediccionDto.Response
             {
                 PuedePredecir = false,
-                NinoId = ninoId,
-                Mensaje = $"Se necesitan al menos 3 medidas. Hay {medidas.Count}."
+                Mensaje = "Se requieren al menos 3 medidas históricas para generar una predicción confiable.",
+                NinoId = ninoId
             };
         }
 
-        var hoy = DateOnly.FromDateTime(DateTime.Today);
-        var edadActualMeses = CalcularEdadMeses(nino.FechaNacimiento, hoy);
-        var edadProyectadaMeses = Math.Min(edadActualMeses + 12, 60);
-
-        var omsProyectado = await _omsRepository
-            .ObtenerPesoPorEdadAsync(nino.Sexo, edadProyectadaMeses);
-
-        var omsActual = await _omsRepository
-            .ObtenerPesoPorEdadAsync(nino.Sexo, edadActualMeses);
-
-        var cap = omsProyectado?.Percentil97 ?? 22.0m;
-        var floor = omsActual?.Percentil3 ?? 2.5m;
-
-        // Una medida por mes — toma la más reciente de cada mes
-        var medidasParaProphet = medidas
-            .GroupBy(m => new { m.FechaMedicion.Year, m.FechaMedicion.Month })
-            .Select(g => g.OrderByDescending(m => m.FechaMedicion).First())
+        var historico = medidas
             .Select(m => (m.FechaMedicion, m.Peso))
             .ToList();
 
-        _logger.LogInformation(
-            "Llamando a Prophet para niño ID: {Id} con {Count} medidas",
-            ninoId, medidasParaProphet.Count);
+        var ultimaMedida = medidas.OrderByDescending(m => m.FechaMedicion).First();
 
-        var resultado = await _prophetApiClient.PredecirPesoAsync(
-            ninoId, nino.Sexo, medidasParaProphet, cap, floor);
+        int edadMeses = ((DateTime.Now.Year - nino.FechaNacimiento.Year) * 12) +
+                         DateTime.Now.Month - nino.FechaNacimiento.Month;
 
-        if (!resultado.PuedePredecir)
-            return resultado;
-
-        var predicciones = resultado.Predicciones.Select(p => new Prediccion
-        {
-            NinoId = ninoId,
-            FechaObjetivo = p.FechaObjetivo,
-            Meses = p.Meses,
-            PesoPredicho = p.PesoPredicho,
-            PesoMinimo = p.PesoMinimo,
-            PesoMaximo = p.PesoMaximo
-        });
-
-        await _prediccionRepository.GuardarPrediccionesAsync(predicciones);
-
-        _logger.LogInformation("Predicciones guardadas para niño ID: {Id}", ninoId);
-
-        return resultado;
+        return await _prophetClient.PredecirPesoAsync(
+            edadMeses,
+            nino.Sexo,
+            historico,
+            ultimaMedida.Peso,
+            ultimaMedida.Talla
+        );
     }
 
-    public async Task<PrediccionHealth> ObtenerEstadoServicioPrediccionAsync()
+    public async Task<PrediccionDto.Health> ObtenerEstadoServicioPrediccionAsync()
     {
-        _logger.LogInformation("Servicio de predicción no disponible");
-
-        var resultado = await _prophetApiClient.EstadoServicioPredecirAsync();
-
-        return resultado;
-    }
-    private static int CalcularEdadMeses(DateOnly fechaNacimiento, DateOnly fechaReferencia)
-    {
-        var meses = ((fechaReferencia.Year - fechaNacimiento.Year) * 12)
-                  + fechaReferencia.Month - fechaNacimiento.Month;
-
-        if (fechaReferencia.Day < fechaNacimiento.Day)
-            meses--;
-
-        return Math.Max(0, meses);
+        return await _prophetClient.EstadoServicioPredecirAsync();
     }
 }

@@ -32,15 +32,18 @@ namespace SagradaFamilia.API.Extensions
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-            // Registrar el logger de BD
-            var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
-            loggerFactory.AddProvider(new DatabaseLoggerProvider(context));
+            try
+            {
+                logger.LogInformation("Aplicando migraciones pendientes...");
+                await context.Database.MigrateAsync();
 
-            logger.LogInformation("Aplicando migraciones pendientes...");
-            await context.Database.MigrateAsync();
-
-            logger.LogInformation("Ejecutando seeds...");
-            await DatabaseSeeder.SeedAllAsync(context, logger);
+                logger.LogInformation("Ejecutando seeds...");
+                await DatabaseSeeder.SeedAllAsync(context, logger);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Ocurrió un error al aplicar las migraciones o los seeds.");
+            }
         }
     }
 }

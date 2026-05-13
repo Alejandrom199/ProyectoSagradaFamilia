@@ -12,27 +12,35 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.HasKey(p => p.Id);
 
-            builder.Property(p => p.PesoPredicho)
-                .IsRequired()
-                .HasColumnType("decimal(5,2)");
-
-            builder.Property(p => p.PesoMinimo)
-                .IsRequired()
-                .HasColumnType("decimal(5,2)");
-
-            builder.Property(p => p.PesoMaximo)
-                .IsRequired()
-                .HasColumnType("decimal(5,2)");
-
-            builder.Property(p => p.PesoReal)
-                .HasColumnType("decimal(5,2)");
-
-            builder.Property(p => p.Meses)
-                .IsRequired();
-
             builder.Property(p => p.FechaCalculo)
                 .HasDefaultValueSql("GETUTCDATE()");
 
+            builder.Property(p => p.FechaObjetivo)
+                .IsRequired();
+
+            builder.Property(p => p.ProyeccionMeses)
+                .IsRequired();
+
+            builder.Property(p => p.Tipo)
+                .IsRequired();
+
+            builder.Property(p => p.ValorPredicho)
+                .IsRequired()
+                .HasColumnType("decimal(5,2)");
+
+            builder.Property(p => p.ValorMinimo)
+                .IsRequired()
+                .HasColumnType("decimal(5,2)");
+
+            builder.Property(p => p.ValorMaximo)
+                .IsRequired()
+                .HasColumnType("decimal(5,2)");
+
+            builder.Property(p => p.ValorReal)
+                .IsRequired(false)
+                .HasColumnType("decimal(5,2)");
+
+            // Relación
             builder.HasOne(p => p.Nino)
                 .WithMany(n => n.Predicciones)
                 .HasForeignKey(p => p.NinoId)
