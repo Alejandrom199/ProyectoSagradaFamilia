@@ -1,14 +1,12 @@
-<div class="max-w-7xl mx-auto p-4">
+<div class="page-container">
     <div class="mb-10">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-3xl font-extrabold text-gray-800 flex items-center gap-2.5">
+                <h2 class="text-3xl font-bold text-gray-800">
                     {{ saludoConfig().texto }}, {{ auth.currentUser()?.nombre }}
                     <ng-icon [name]="saludoConfig().icono" [ngClass]="saludoConfig().color" class="text-3xl"></ng-icon>
                 </h2>
-                <p class="text-gray-500 mt-1.5 text-base">
-                    Aquí tienes el resumen del crecimiento y desarrollo de tus hijos.
-                </p>
+                <p class="text-gray-500 mt-1">Aquí tienes el resumen del crecimiento y desarrollo de tus hijos.</p>
             </div>
         </div>
     </div>

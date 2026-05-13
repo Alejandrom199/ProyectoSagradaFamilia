@@ -14,3 +14,11 @@ export interface OpcionResponse {
     orden: number;
     acciones: string[];
 }
+
+export interface PermisoUI {
+    opcion: string;
+    puedeVer: boolean;
+    puedeCrear: boolean;
+    puedeEditar: boolean;
+    puedeEliminar: boolean;
+}

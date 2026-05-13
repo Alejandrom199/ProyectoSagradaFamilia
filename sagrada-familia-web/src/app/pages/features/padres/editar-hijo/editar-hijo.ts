@@ -3,15 +3,17 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { provideIcons } from '@ng-icons/core';
 import { heroArrowLeft } from '@ng-icons/heroicons/outline';
-import { NinoResponse } from '../../../../shared/interfaces/responses/nino.response';
-import { PadreResponse } from '../../../../shared/interfaces/responses/padre.response';
-import { Ninos } from '../../../../core/services/ninos';
-import { Padres } from '../../../../core/services/padres';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
+import { NinoResponse, NinoUpdate } from '../../../../shared/interfaces/nino.interface'; // 💡 Importamos el Update
+import { ApiResponse } from '../../../../shared/interfaces/api.interface';
+import { NinosService } from '../../../../core/services/ninos';
+import { PadresService } from '../../../../core/services/padres';
 
 @Component({
   selector: 'app-editar-hijo',
+  standalone: true, // 💡 Añadido standalone para consistencia
   imports: [RouterLink, FormsModule, Breadcrumb],
   viewProviders: [provideIcons({ heroArrowLeft })],
   templateUrl: './editar-hijo.html',
@@ -21,8 +23,8 @@ export class EditarHijo implements OnInit {
   @Input() id!: string;
   @Input() hijoId!: string;
 
-  private ninosService = inject(Ninos);
-  private padresService = inject(Padres);
+  private ninosService = inject(NinosService);
+  private padresService = inject(PadresService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
@@ -31,40 +33,45 @@ export class EditarHijo implements OnInit {
   guardando = signal(false);
   error = signal('');
 
-  form = {
-    nombre: '',
-    apellido: '',
-    fechaNacimiento: '',
-    sexo: ''
-  };
+  // 💡 TIPADO EXPLÍCITO: Aquí es donde matamos el error
+  form: {
+    nombre: string;
+    apellido: string;
+    fechaNacimiento: string;
+    sexo: 'M' | 'F' | ''; // Permitimos el vacío inicial pero restringimos el resto
+  } = {
+      nombre: '',
+      apellido: '',
+      fechaNacimiento: '',
+      sexo: ''
+    };
 
   migajas: BreadcrumbItem[] = [
     { label: 'Padres', ruta: '/padres' },
-    { label: 'Detalle del Padre', ruta: '/padres/:id' },
+    { label: 'Detalle del Padre', ruta: `/padres/${this.id}` }, // 💡 Template string para la ruta
     { label: 'Editar Hijo' },
   ];
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadingBar.show();
 
-    this.padresService.obtenerTodos().subscribe({
-      next: (r) => {
-        if (r.success) {
-          const p = r.data.find(x => x.id === parseInt(this.id));
-          if (p) this.padre.set(p);
-        }
+    // Cargar datos del padre para el contexto
+    this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
+      next: (r: ApiResponse<PadreResponse>) => {
+        if (r.success) this.padre.set(r.data);
       }
     });
 
+    // Cargar datos del hijo para el formulario
     this.ninosService.obtenerPorId(parseInt(this.hijoId)).subscribe({
-      next: (r) => {
+      next: (r: ApiResponse<NinoResponse>) => {
         if (r.success) {
           this.hijo.set(r.data);
           this.form = {
             nombre: r.data.nombre,
             apellido: r.data.apellido,
             fechaNacimiento: r.data.fechaNacimiento,
-            sexo: r.data.sexo
+            sexo: r.data.sexo as 'M' | 'F' // Cast seguro desde la respuesta
           };
         }
         this.loadingBar.complete();
@@ -73,7 +80,8 @@ export class EditarHijo implements OnInit {
     });
   }
 
-  guardar() {
+  guardar(): void {
+    // Validación básica
     if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
       this.error.set('Completá todos los campos obligatorios.');
       return;
@@ -82,8 +90,15 @@ export class EditarHijo implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    this.ninosService.actualizar(parseInt(this.hijoId), this.form).subscribe({
-      next: (r) => {
+    const request: NinoUpdate = {
+      nombre: this.form.nombre,
+      apellido: this.form.apellido,
+      fechaNacimiento: this.form.fechaNacimiento,
+      sexo: this.form.sexo as 'M' | 'F' // TypeScript ahora está tranquilo porque ya validamos que no sea ''
+    };
+
+    this.ninosService.actualizar(parseInt(this.hijoId), request).subscribe({
+      next: (r: ApiResponse<NinoResponse>) => {
         if (r.success) {
           this.router.navigate(['/padres', this.id, 'hijos']);
         }

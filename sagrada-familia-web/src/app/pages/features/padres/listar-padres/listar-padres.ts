@@ -3,18 +3,18 @@ import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroPlus, heroPencil, heroTrash, heroUsers } from '@ng-icons/heroicons/outline';
 
-import { PadreResponse } from '../../../../shared/interfaces/responses/padre.response';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 
 import { formatearFecha } from '../../../../shared/utils/date.utils';
-import { Padres } from '../../../../core/services/padres';
 import { LoadingBar } from '../../../../core/services/loading-bar';
-import { Auth } from '../../../../core/services/auth';
 import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 import { Reportes } from '../../../../core/services/reportes';
+import { PadresService } from '../../../../core/services/padres';
+import { AuthService } from '../../../../core/services/auth';
+import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
 
 @Component({
   selector: 'app-listar-padres',
@@ -25,11 +25,11 @@ import { Reportes } from '../../../../core/services/reportes';
   styleUrl: './listar-padres.css',
 })
 export class ListarPadres implements OnInit {
-  private padresService = inject(Padres);
+  private padresService = inject(PadresService);
   private reportesService = inject(Reportes);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
-  readonly auth = inject(Auth);
+  readonly auth = inject(AuthService);
 
   padres = signal<PadreResponse[]>([]);
   padreAEliminar = signal<PadreResponse | null>(null);
@@ -40,7 +40,8 @@ export class ListarPadres implements OnInit {
       label: 'Padre/Madre',
       sortable: true,
       filterable: true,
-      render: (row) => generarAvatarHtml(row.nombre, row.apellido)
+      render: (row) => generarAvatarHtml(row.nombre, row.apellido),
+      exportValue: (row) => `${row.nombre} ${row.apellido}`
     },
     {
       key: 'telefono',
@@ -64,9 +65,9 @@ export class ListarPadres implements OnInit {
       render: (row) => formatearFecha(row.fechaCreacion)
     },
     // {
-    //   key: 'estado',
+    //   key: 'activo',
     //   label: 'ESTADO',
-    //   render: (row) => row.estado === 'ACTIVO'
+    //   render: (row) => row.activo === 'ACTIVO'
     //     ? `<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">ACTIVO</span>`
     //     : `<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">INACTIVO</span>`
     // }

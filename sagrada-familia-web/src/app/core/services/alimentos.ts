@@ -1,46 +1,43 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiResponse } from '../../shared/interfaces/responses/api-response';
-import { AlimentoResponse, CategoriaResponse } from '../../shared/interfaces/responses/alimento.response';
+import { ApiResponse } from '../../shared/interfaces/api.interface';
+import { AlimentoResponse, CategoriaResponse, AlimentoCreate, AlimentoUpdate, CategoriaCreate } from '../../shared/interfaces/alimento.interface';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class Alimentos {
+@Injectable({ providedIn: 'root' })
+export class AlimentosService {
   private readonly url = `${environment.apiUrl}/alimentos`;
 
   constructor(private http: HttpClient) { }
 
-  obtenerTodos() {
+  obtenerTodos(): Observable<ApiResponse<AlimentoResponse[]>> {
     return this.http.get<ApiResponse<AlimentoResponse[]>>(this.url, { withCredentials: true });
   }
 
-  obtenerPorEdad(edadMeses: number) {
+  obtenerPorEdad(edadMeses: number): Observable<ApiResponse<AlimentoResponse[]>> {
     return this.http.get<ApiResponse<AlimentoResponse[]>>(
       `${this.url}/por-edad/${edadMeses}`, { withCredentials: true }
     );
   }
 
-  obtenerCategorias() {
-    return this.http.get<ApiResponse<CategoriaResponse[]>>(
-      `${this.url}/categorias`, { withCredentials: true }
-    );
+  obtenerCategorias(): Observable<ApiResponse<CategoriaResponse[]>> {
+    return this.http.get<ApiResponse<CategoriaResponse[]>>(`${this.url}/categorias`, { withCredentials: true });
   }
 
-  crear(request: object) {
+  crear(request: AlimentoCreate): Observable<ApiResponse<AlimentoResponse>> {
     return this.http.post<ApiResponse<AlimentoResponse>>(this.url, request, { withCredentials: true });
   }
 
-  actualizar(id: number, request: object) {
+  actualizar(id: number, request: AlimentoUpdate): Observable<ApiResponse<AlimentoResponse>> {
     return this.http.put<ApiResponse<AlimentoResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
   }
 
-  eliminar(id: number) {
+  eliminar(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.url}/${id}`, { withCredentials: true });
   }
 
-  crearCategoria(request: object) {
+  crearCategoria(request: CategoriaCreate): Observable<ApiResponse<CategoriaResponse>> {
     return this.http.post<ApiResponse<CategoriaResponse>>(
       `${this.url}/categorias`, request, { withCredentials: true }
     );

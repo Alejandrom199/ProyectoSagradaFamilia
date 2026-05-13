@@ -8,16 +8,15 @@ import {
   heroUserCircle, heroChevronLeft, heroChevronRight
 } from '@ng-icons/heroicons/outline';
 
-import { MenuResponse } from '../../interfaces/responses/menu.response';
-import { Auth } from '../../../core/services/auth';
-import { Button } from "../button/button";
-import { Tooltip } from "../../directives/tooltip/tooltip";
 import { Avatar } from "../avatar/avatar";
+import { Tooltip } from '../../directives/tooltip/tooltip';
+import { AuthService } from '../../../core/services/auth';
+import { MenuResponse } from '../../interfaces/menu.interface';
 
 @Component({
   selector: 'sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, NgIcon, Button, Tooltip, Avatar],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NgIcon, Avatar, Tooltip],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   viewProviders: [provideIcons({
@@ -27,7 +26,7 @@ import { Avatar } from "../avatar/avatar";
   })],
 })
 export class Sidebar implements OnInit {
-  readonly auth = inject(Auth);
+  readonly auth = inject(AuthService);
 
   // Inputs desde AdminLayout
   sidebarExpandido = input.required<boolean>();

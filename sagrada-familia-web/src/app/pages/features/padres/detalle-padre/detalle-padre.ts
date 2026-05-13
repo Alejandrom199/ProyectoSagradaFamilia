@@ -2,14 +2,14 @@ import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft, heroPlus, heroPencil, heroTrash } from '@ng-icons/heroicons/outline';
-import { PadreResponse } from '../../../../shared/interfaces/responses/padre.response';
-import { NinoResponse } from '../../../../shared/interfaces/responses/nino.response';
 import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
-import { Padres } from '../../../../core/services/padres';
-import { Ninos } from '../../../../core/services/ninos';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { PadresService } from '../../../../core/services/padres';
+import { NinosService } from '../../../../core/services/ninos';
+import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
+import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 
 
 @Component({
@@ -22,8 +22,8 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 export class DetallePadre implements OnInit {
   @Input() id!: string;
 
-  private padresService = inject(Padres);
-  private ninosService = inject(Ninos);
+  private padresService = inject(PadresService);
+  private ninosService = inject(NinosService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
@@ -102,7 +102,7 @@ export class DetallePadre implements OnInit {
     this.ninosService.obtenerTodos().subscribe({
       next: (r) => {
         if (r.success) {
-          const hijosDelPadre = r.data.filter(n => n.representanteId === parseInt(this.id));
+          const hijosDelPadre = r.data.filter(n => n.padreId === parseInt(this.id));
           this.hijos.set(hijosDelPadre);
         }
       }

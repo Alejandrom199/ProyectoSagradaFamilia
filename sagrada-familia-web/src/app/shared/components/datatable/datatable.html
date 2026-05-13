@@ -3,9 +3,7 @@
     <div class="fixed inset-0 z-[9998]" (click)="cerrarMenus()"></div>
     }
 
-    <!-- Barra de Herramientas Superior -->
     <div class="p-4 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100">
-        <!-- Buscador Global -->
         <div class="relative w-full sm:w-96">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <ng-icon name="heroMagnifyingGlass" class="text-blue-600 text-lg"></ng-icon>
@@ -18,10 +16,7 @@
             </div>
         </div>
 
-        <!-- Botones de Acción Globales -->
         <div class="flex items-center gap-2">
-
-            <!-- Botón Actualizar -->
             @if (showActualizar){
             <button
                 class="w-9 h-9 flex items-center justify-center p-0 border border-gray-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none"
@@ -30,76 +25,51 @@
             </button>
             }
 
-            <!-- Botón Columnas -->
             @if (showColumnas){
-            <div>
+            <div class="relative">
                 <button #btnColumnas (click)="toggleMenuColumnas($event, btnColumnas)"
                     class="w-9 h-9 flex items-center justify-center p-0 border border-gray-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none"
-                    [class.bg-blue-50]="menuActivo() === 'columnas'" tooltip="Columnas" tooltipPosition="top">
+                    [class.bg-blue-50]="menuActivo() === 'columnas'">
                     <ng-icon name="heroViewColumns" class="text-xl"></ng-icon>
                 </button>
-
-                <!-- Modal Flotante de Columnas -->
                 @if (menuActivo() === 'columnas') {
                 <div class="fixed w-48 bg-white rounded-xl shadow-lg z-[9999] overflow-hidden border border-gray-100 font-normal text-gray-700 animate-fade-in"
                     [ngStyle]="columnasPosicion" (click)="$event.stopPropagation()">
-
                     <div class="p-2 flex flex-col gap-1 max-h-64 overflow-y-auto">
-
-                        <!-- Título -->
                         <div class="px-2 py-1.5 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                            Mostrar/Ocultar
-                        </div>
-
-                        <!-- Botón inteligente -->
+                            Mostrar/Ocultar</div>
                         <button
                             class="w-full text-left px-2 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             (click)="toggleTodasLasColumnas()">
-
-                            {{ todasLasColumnasVisibles
-                            ? 'Deseleccionar todas'
-                            : 'Seleccionar todas' }}
+                            {{ todasLasColumnasVisibles ? 'Deseleccionar todas' : 'Seleccionar todas' }}
                         </button>
-
                         <div class="border-t border-gray-100 my-1"></div>
-
-                        <!-- Columnas -->
                         @for (col of columns; track col.key) {
                         <label
                             class="flex items-center gap-3 px-2 py-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-
                             <input type="checkbox"
                                 class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
                                 [checked]="!col.hidden" (change)="toggleVisibilidadColumna(col.key)">
-
-                            <span class="text-sm font-medium select-none truncate">
-                                {{ col.label }}
-                            </span>
+                            <span class="text-sm font-medium select-none truncate">{{ col.label }}</span>
                         </label>
                         }
-
                     </div>
                 </div>
                 }
             </div>
             }
 
-            <!-- Botón Exportación -->
-            @if (showExportar){
-            @if (exportExcel || exportPdf) {
-            <div>
+            @if (showExportar && (exportExcel || exportPdf)){
+            <div class="relative">
                 <button #btnExportar (click)="toggleMenuExportar($event, btnExportar)"
                     class="w-9 h-9 flex items-center justify-center p-0 border border-gray-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none"
-                    [class.bg-blue-50]="menuActivo() === 'exportar'" tooltip="Exportar" tooltipPosition="top">
+                    [class.bg-blue-50]="menuActivo() === 'exportar'">
                     <ng-icon name="heroArrowDownTray" class="text-xl"></ng-icon>
                 </button>
-
-                <!-- Modal Flotante de Exportación -->
                 @if (menuActivo() === 'exportar') {
                 <div class="fixed w-40 bg-white rounded-xl shadow-lg z-[9999] overflow-hidden divide-y divide-gray-100 font-normal text-gray-700 animate-fade-in"
                     [ngStyle]="exportarPosicion" (click)="$event.stopPropagation()">
                     <div class="p-1.5 flex flex-col gap-0.5">
-
                         @if (exportExcel) {
                         <button
                             class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-green-50 hover:text-green-700 w-full focus:outline-none transition-colors rounded-lg group"
@@ -109,7 +79,6 @@
                             <span class="font-medium">Excel</span>
                         </button>
                         }
-
                         @if (exportPdf) {
                         <button
                             class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-red-50 hover:text-red-700 w-full focus:outline-none transition-colors rounded-lg group"
@@ -119,56 +88,49 @@
                             <span class="font-medium">PDF</span>
                         </button>
                         }
-
                     </div>
                 </div>
                 }
             </div>
             }
-            }
 
-            <!-- Botón Configuración -->
             @if (showConfiguracion) {
             <button
                 class="w-9 h-9 flex items-center justify-center p-0 border border-gray-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none"
-                tooltip="Configuración" tooltipPosition="top" (click)="onConfiguracion.emit()">
+                (click)="onConfiguracion.emit()">
                 <ng-icon name="heroCog8Tooth" class="text-xl"></ng-icon>
             </button>
             }
-
         </div>
     </div>
 
-    <!-- Contenedor de Tabla -->
-    <div class="w-full overflow-x-auto" (scroll)="cerrarMenus()">
-        <table class=" w-full min-w-max text-sm text-left relative">
+    <div class="w-full overflow-x-auto scrollbar-thin" (scroll)="cerrarMenus()">
+        <table class="w-full min-w-full text-sm text-left relative">
+
             <thead>
-                <!-- Fondo claro para la cabecera -->
                 <tr class="bg-[#F8FAFC] border-b border-gray-100">
 
-                    <!-- Columna vacía para las acciones -->
                     @if (accionesProcesadas.length > 0) {
-                    <th class="px-4 py-3 w-1 whitespace-nowrap"></th>
+                    <th class="w-10 px-2 py-3 text-center"></th>
                     }
 
                     @for (col of columnasVisibles; track col.key) {
-                    <th class="px-4 py-3 text-left whitespace-nowrap relative group">
+                    <th class="px-4 py-3 font-medium text-gray-500 whitespace-nowrap">
 
-                        <!-- Diseño de cabecera restaurado a tu versión original -->
-                        <div class="flex items-center gap-1.5">
-                            <div class="flex items-center gap-1.5 cursor-pointer select-none hover:text-blue-700 transition-colors"
+                        <div class="flex items-center justify-between w-full group">
+                            <div class="flex items-center gap-1.5 cursor-pointer select-none hover:text-blue-700 transition-colors flex-1"
                                 (click)="col.sortable && ordenarPor(col.key)">
-                                <span class="font-medium text-gray-700">{{ col.label }}</span>
+                                <span>{{ col.label }}</span>
 
                                 @if (sortKey === col.key) {
                                 <ng-icon [name]="sortDir === 'asc' ? 'heroArrowUp' : 'heroArrowDown'"
-                                    class="w-4 h-4 text-blue-600"></ng-icon>
+                                    class="w-4 h-4 text-blue-600 flex-shrink-0"></ng-icon>
                                 }
                             </div>
 
                             @if (col.filterable) {
                             <button #btnFiltro
-                                class="p-1 rounded-md transition-all hover:bg-gray-200 text-gray-400 focus:outline-none"
+                                class="p-1 rounded-md transition-all hover:bg-gray-200 text-gray-400 focus:outline-none ml-4 flex-shrink-0"
                                 [class.!text-blue-600]="filtros[col.key] || menuActivo() === 'filtro-' + col.key"
                                 (click)="toggleFiltro(col.key, $event, btnFiltro)">
                                 <ng-icon name="heroFunnel" class="w-4 h-4"></ng-icon>
@@ -176,11 +138,9 @@
                             }
                         </div>
 
-                        <!-- Dropdown de Filtro -->
                         @if (menuActivo() === 'filtro-' + col.key) {
                         <div class="fixed w-56 p-2 bg-white border border-gray-200 rounded-lg shadow-xl z-[9999] font-normal text-gray-700"
                             [ngStyle]="filtroPosicion" (click)="$event.stopPropagation()">
-                            @if (col.filterable) {
                             <div class="p-1">
                                 <label class="text-xs text-gray-500 mb-1.5 block px-1">Buscar en {{ col.label }}</label>
                                 <div class="flex items-center gap-1.5">
@@ -190,7 +150,7 @@
                                         (ngModelChange)="onFilterChange()">
                                     @if (filtros[col.key]) {
                                     <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                                        tooltip="Limpiar" (click)="limpiarFiltroColumna(col.key)">
+                                        (click)="limpiarFiltroColumna(col.key)">
                                         <ng-icon name="heroXMark" class="text-lg"></ng-icon>
                                     </button>
                                     }
@@ -201,7 +161,6 @@
                                     }
                                 </datalist>
                             </div>
-                            }
                         </div>
                         }
                     </th>
@@ -210,122 +169,83 @@
             </thead>
             <tbody>
 
-                <!-- SIN COLUMNAS -->
                 @if (columnasVisibles.length === 0) {
                 <tr>
-                    <td class="px-4 py-16 text-center text-gray-400">
-
+                    <td [attr.colspan]="accionesProcesadas.length > 0 ? 1 : 0"
+                        class="px-4 py-16 text-center text-gray-400">
                         <div class="flex flex-col items-center justify-center gap-3">
-                            <ng-icon name="heroViewColumns" class="text-4xl text-gray-300">
-                            </ng-icon>
-
-                            <p class="text-base font-medium">
-                                No hay columnas visibles.
-                            </p>
+                            <ng-icon name="heroViewColumns" class="text-4xl text-gray-300"></ng-icon>
+                            <p class="text-base font-medium">No hay columnas visibles.</p>
                         </div>
-
                     </td>
                 </tr>
                 }
-
-                <!-- SIN DATOS -->
                 @else if (datosPaginados.length === 0) {
                 <tr>
                     <td [attr.colspan]="columnasVisibles.length + (accionesProcesadas.length > 0 ? 1 : 0)"
                         class="px-4 py-16 text-center text-gray-400">
-
                         <div class="flex flex-col items-center justify-center gap-3">
-                            <ng-icon name="heroCircleStack" class="text-4xl text-gray-300">
-                            </ng-icon>
-
-                            <p class="text-base font-medium">
-                                {{ emptyMessage }}
-                            </p>
+                            <ng-icon name="heroCircleStack" class="text-4xl text-gray-300"></ng-icon>
+                            <p class="text-base font-medium">{{ emptyMessage }}</p>
                         </div>
-
                     </td>
                 </tr>
                 }
-
-                <!-- FILAS -->
                 @else {
 
                 @for (row of datosPaginados; track $index) {
                 <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
 
-                    <!-- ACCIONES -->
                     @if (accionesProcesadas.length > 0 && columnasVisibles.length > 0) {
-                    <td class="px-4 py-3 w-1 whitespace-nowrap relative">
-
+                    <td class="w-10 px-2 py-3 relative text-center">
                         <div class="flex items-center justify-center">
-
                             <button #btnAccion
-                                class="p-1 rounded-lg text-yellow-500 hover:bg-yellow-50 transition-colors focus:outline-none"
+                                class="p-1 rounded-lg text-yellow-500 hover:bg-yellow-50 focus:outline-none"
                                 (click)="toggleMenuAcciones($index, $event, btnAccion)">
-
-                                <ng-icon name="heroEllipsisVertical" class="text-xl font-bold">
-                                </ng-icon>
+                                <ng-icon name="heroEllipsisVertical" class="text-xl font-bold"></ng-icon>
                             </button>
 
                             @if (menuActivo() === 'accion-' + $index) {
-                            <div class="fixed w-40 bg-white rounded-xl shadow-lg z-[9999] origin-top-left overflow-hidden divide-y divide-gray-100 font-normal text-gray-700 animate-fade-in"
+                            <div class="fixed w-40 bg-white rounded-xl shadow-lg z-[9999] overflow-hidden divide-y divide-gray-100 font-normal text-gray-700"
                                 [ngStyle]="menuPosicion" (click)="$event.stopPropagation()">
-
                                 <div class="p-1.5 flex flex-col gap-0.5">
-
                                     @for (action of accionesVisibles(row); track $index) {
                                     <button
-                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-gray-50 w-full focus:outline-none transition-colors rounded-lg group"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-gray-50 w-full rounded-lg group"
                                         [class]="action.class" (click)="action.onClick(row); cerrarMenus()">
-
                                         @if (action.icon) {
                                         <ng-icon [name]="action.icon"
-                                            class="text-lg opacity-70 group-hover:opacity-100">
-                                        </ng-icon>
+                                            class="text-lg opacity-70 group-hover:opacity-100"></ng-icon>
                                         }
-
-                                        <span class="font-medium">
-                                            {{ action.label }}
-                                        </span>
-
+                                        <span class="font-medium">{{ action.label }}</span>
                                     </button>
                                     }
-
                                 </div>
                             </div>
                             }
-
                         </div>
-
                     </td>
                     }
 
-                    <!-- COLUMNAS -->
                     @for (col of columnasVisibles; track col.key) {
-                    <td class="px-4 py-4 whitespace-nowrap text-gray-700 font-medium" [class]="col.class ?? ''">
-
+                    <td class="px-4 py-4 text-gray-700 whitespace-nowrap" [class]="col.class ?? ''">
                         @if (col.render) {
                         <span [innerHTML]="col.render(row)"></span>
-                        }
-                        @else {
+                        } @else {
                         {{ getCellValue(row, col.key) }}
                         }
-
                     </td>
                     }
-
                 </tr>
                 }
-
                 }
-
             </tbody>
         </table>
     </div>
 
-    <!-- Paginación -->
     @if (datosFiltrados.length > 0) {
-    <div class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-gray-500">
+    <div class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-gray-500 border-t border-gray-100">
+
         <div class="flex items-center gap-2">
             <span class="tracking-wide">REGISTROS POR PÁGINA:</span>
             <select
@@ -342,23 +262,28 @@
         </span>
 
         <div class="flex items-center gap-4 text-gray-400">
-            <button class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
+            <button
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors focus:outline-none"
                 [disabled]="paginaActual() === 1" (click)="cambiarPagina(1)">
                 <ng-icon name="heroChevronDoubleLeft" class="text-lg"></ng-icon>
             </button>
-            <button class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
+            <button
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors focus:outline-none"
                 [disabled]="paginaActual() === 1" (click)="cambiarPagina(paginaActual() - 1)">
                 <ng-icon name="heroChevronLeft" class="text-lg"></ng-icon>
             </button>
-            <button class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
+            <button
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors focus:outline-none"
                 [disabled]="paginaActual() === totalPaginas" (click)="cambiarPagina(paginaActual() + 1)">
                 <ng-icon name="heroChevronRight" class="text-lg"></ng-icon>
             </button>
-            <button class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
+            <button
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors focus:outline-none"
                 [disabled]="paginaActual() === totalPaginas" (click)="cambiarPagina(totalPaginas)">
                 <ng-icon name="heroChevronDoubleRight" class="text-lg"></ng-icon>
             </button>
         </div>
+
     </div>
     }
 </div>

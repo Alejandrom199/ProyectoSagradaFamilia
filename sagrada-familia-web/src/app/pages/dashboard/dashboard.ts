@@ -1,6 +1,6 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
-import { Auth } from '../../core/services/auth';
-import { Ninos } from '../../core/services/ninos';
+import { AuthService } from '../../core/services/auth';
+import { NinosService } from '../../core/services/ninos';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroCake, heroChartBar, heroHandRaised, heroHeart, heroUsers, heroSun, heroCloud, heroMoon } from '@ng-icons/heroicons/outline';
@@ -24,8 +24,8 @@ export class Dashboard implements OnInit {
 
 
   constructor(
-    readonly auth: Auth,
-    private ninosService: Ninos
+    readonly auth: AuthService,
+    private ninosService: NinosService
   ) { }
 
   ngOnInit() {

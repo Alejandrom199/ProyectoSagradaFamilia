@@ -5,17 +5,14 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft, heroPlus, heroTrash, heroPencil } from '@ng-icons/heroicons/outline';
 import { CommonModule } from '@angular/common';
 
-import { MedidaResponse } from '../../../../shared/interfaces/responses/medida.response';
-import { NinoResponse } from '../../../../shared/interfaces/responses/nino.response';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
-import { Ninos } from '../../../../core/services/ninos';
-import { Medidas } from '../../../../core/services/medidas';
 import { Datatable, DatatableAction, DatatableColumn } from '../../../../shared/components/datatable/datatable';
-
-// Componentes compartidos UI
 import { Button } from '../../../../shared/components/button/button';
-import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
-import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { NinosService } from '../../../../core/services/ninos';
+import { MedidasService } from '../../../../core/services/medidas';
+import { MedidaResponse } from '../../../../shared/interfaces/medida.interface';
+import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { formatearFecha } from '../../../../shared/utils/date.utils';
+
 
 @Component({
   selector: 'listar-medidas',
@@ -27,8 +24,8 @@ import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadc
 export class ListarMedidas implements OnInit {
   id!: string;
   private route = inject(ActivatedRoute);
-  private medidasService = inject(Medidas);
-  private ninosService = inject(Ninos);
+  private medidasService = inject(MedidasService);
+  private ninosService = inject(NinosService);
 
   medidas = signal<MedidaResponse[]>([]);
   nino = signal<NinoResponse | null>(null);

@@ -1,35 +1,35 @@
 @import "tailwindcss";
 
-/* 1. Definir la paleta de colores de La Sagrada Familia */
+/* Definir la paleta de colores de La Sagrada Familia */
 :root {
     /* Fondo y superficies */
-    --color-background:       #f5f5f5;
-    --color-surface:          #ffffff;
-    --color-surface-alt:      #f0f0f0;
-    --color-surface-border:   #e4e4e7;
+    --color-background: #f5f5f5;
+    --color-surface: #ffffff;
+    --color-surface-alt: #f0f0f0;
+    --color-surface-border: #e4e4e7;
 
     /* Textos */
-    --color-text-primary:     #18181b;
-    --color-text-secondary:   #71717a;
+    --color-text-primary: #18181b;
+    --color-text-secondary: #71717a;
 
     /* Primario (azul corporativo) */
-    --color-primary:          #2563eb;
-    --color-primary-hover:    #1d4ed8;
-    --color-primary-light:    #eff6ff;
+    --color-primary: #2563eb;
+    --color-primary-hover: #1d4ed8;
+    --color-primary-light: #eff6ff;
 
     /* Sidebar — mismo fondo que el contenido, borde derecho */
-    --sidebar-bg:             #ffffff;
-    --sidebar-text:           #52525b;
-    --sidebar-text-active:    #18181b;
-    --sidebar-accent:         #2563eb;
-    --sidebar-item-hover:     #f4f4f5;
+    --sidebar-bg: #ffffff;
+    --sidebar-text: #52525b;
+    --sidebar-text-active: #18181b;
+    --sidebar-accent: #2563eb;
+    --sidebar-item-hover: #f4f4f5;
     --sidebar-item-active-bg: #eff6ff;
 
     /* Tamaños */
-    --header-height:          60px;
+    --header-height: 60px;
 }
 
-/* 2. Construir tus clases personalizadas usando Tailwind */
+/* Construir tus clases personalizadas usando Tailwind */
 @layer components {
 
     /* Diseño de la tarjeta */
@@ -134,6 +134,10 @@
     input[type="password"]::-ms-clear {
         display: none;
     }
+
+    .page-container {
+        @apply w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8;
+    }
 }
 
 /* ═══════ Tooltip global styles ═══════ */
@@ -177,4 +181,36 @@
     border-width: 0 4px 4px 4px;
     border-style: solid;
     border-color: transparent transparent var(--color-text-primary) transparent;
+}
+
+html {
+    /* 1. LA SOLUCIÓN AL SALTO: 
+       Esto obliga al navegador a reservar SIEMPRE el espacio de la barra de scroll. 
+       Así, en Pacientes o en Alimentos, la pantalla medirá exactamente lo mismo y nada brincará. */
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
+/* 2. MAQUILLAJE DE LA BARRA (Para que no se vea como ese bloque gris viejo) */
+::-webkit-scrollbar {
+    width: 8px;
+    /* Más delgadita y elegante */
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    /* Que se funda con el fondo de tu página */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    /* Un gris sutil (slate-300 de Tailwind) */
+    border-radius: 10px;
+    /* Bordes redondeados */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+    /* Se oscurece al pasar el mouse */
 }

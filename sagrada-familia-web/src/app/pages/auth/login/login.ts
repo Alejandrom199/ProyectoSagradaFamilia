@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Auth } from '../../../core/services/auth';
+import { AuthService } from '../../../core/services/auth';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -14,7 +14,7 @@ import { heroEye, heroEyeSlash, heroHeart } from '@ng-icons/heroicons/outline';
 })
 export class Login {
   private fb = inject(FormBuilder);
-  private auth = inject(Auth);
+  private auth = inject(AuthService);
   private router = inject(Router);
 
   cargando = signal(false);

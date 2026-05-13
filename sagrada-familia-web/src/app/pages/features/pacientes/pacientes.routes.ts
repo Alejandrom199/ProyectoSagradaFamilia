@@ -1,23 +1,23 @@
 import { Routes } from "@angular/router";
-import { authGuard } from "../../../core/guards/auth-guard";
+import { medicoGuard } from "../../../core/guards/medico-guard";
 
 export const pacientesRoutes: Routes = [
     {
         path: '',
+        canActivate: [medicoGuard],
         loadComponent: () =>
-            import('./pacientes').then(m => m.Pacientes), // Apunta al orquestador
-        canActivate: [authGuard],
+            import('./listar-pacientes/listar-pacientes').then(m => m.ListarPacientes),
     },
     {
         path: 'crear',
+        canActivate: [medicoGuard],
         loadComponent: () =>
             import('./crear-paciente/crear-paciente').then(m => m.CrearPaciente),
-        canActivate: [authGuard],
     },
     {
         path: ':id/editar',
+        canActivate: [medicoGuard],
         loadComponent: () =>
             import('./editar-paciente/editar-paciente').then(m => m.EditarPaciente),
-        canActivate: [authGuard],
     }
 ]

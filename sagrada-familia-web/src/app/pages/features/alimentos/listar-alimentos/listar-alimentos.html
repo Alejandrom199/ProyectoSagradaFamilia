@@ -1,17 +1,30 @@
-<div class="container mx-auto">
+<div class="page-container">
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-xl font-bold text-[var(--color-text-primary)]">Alimentos</h2>
-            <p class="text-sm text-[var(--color-text-secondary)] mt-0.5">Catálogo de alimentos recomendados por edad</p>
+            <h2 class="text-3xl font-bold text-gray-800">Gestión de Alimentos</h2>
+            <p class="text-gray-500 mt-1">Catálogo de alimentos recomendados por edad</p>
         </div>
-        <a routerLink="/alimentos/crear" class="btn btn-primary btn-md flex items-center gap-2">
-            <ng-icon name="heroPlus" class="text-lg"></ng-icon> Nuevo alimento
-        </a>
+
+        <btn variant="primary" routerLink="/alimentos/crear"
+            class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            Agregar
+        </btn>
     </div>
 
-    <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
-        [exportExcel]="true" [exportPdf]="true" exportFileName="catalogo-alimentos"
-        (onExportPdf)="descargarAlimentosPdf($event)">
-    </datatable>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
+            [showActualizar]="true" [showColumnas]="true" [showExportar]="true" [exportExcel]="true" [exportPdf]="true"
+            [showConfiguracion]="true" exportFileName="catalogo-alimentos" (onExportPdf)="descargarAlimentosPdf($event)"
+            searchPlaceholder="Buscar" emptyMessage="No hay alimentos registrados en el sistema.">
+        </datatable>
+    </div>
+
+    @if (alimentoAEliminar()) {
+    <confirm-modal title="¿Eliminar alimento?"
+        [message]="'Esta acción eliminará a ' + alimentoAEliminar()?.nombre + ' del sistema. Se perderá todo su historial médico.'"
+        (confirm)="confirmarEliminar()" (cancel)="alimentoAEliminar.set(null)">
+    </confirm-modal>
+    }
 </div>

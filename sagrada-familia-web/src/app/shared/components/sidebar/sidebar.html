@@ -1,6 +1,6 @@
 <aside class="fixed left-0 top-0 h-full z-30 flex flex-col transition-all duration-200 overflow-hidden"
     style="background: var(--sidebar-bg); border-right: 1px solid var(--color-surface-border);"
-    [class.w-60]="sidebarExpandido()" [class.w-16]="!sidebarExpandido()"
+    [class.w-63]="sidebarExpandido()" [class.w-16]="!sidebarExpandido()"
     [class.-translate-x-full]="!sidebarMovilAbierto()" [class.lg:translate-x-0]="true">
 
     <!-- Logo de la aplicación -->
@@ -92,37 +92,40 @@
     </nav>
 
     <!--Pie del sidebar usuario-->
-    <div class="shrink-0" style="border-top: 1px solid var(--color-surface-border);" [class.p-3]="sidebarExpandido()"
-        [class.py-3]="!sidebarExpandido()" [class.px-1.5]="!sidebarExpandido()">
+    <div class="shrink-0 border-t border-[var(--color-surface-border)] transition-all duration-300"
+        [ngClass]="sidebarExpandido() ? 'p-3' : 'py-3 px-1.5'">
 
         @if (sidebarExpandido()) {
 
-        <div class="flex items-center gap-2.5 px-2 py-2 rounded-md" style="background: var(--color-surface-alt);">
-            <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
-                [sidebarExpandido]="sidebarExpandido()"></avatar>
-
-            <btn variant="ghost"
-                class="w-6 h-6 flex items-center justify-center rounded transition-colors hover:bg-[var(--color-surface-border)] cursor-pointer"
-                (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="top">
-                <ng-icon name="heroArrowRightOnRectangle"
-                    style="font-size: 14px; color: var(--sidebar-text);"></ng-icon>
-            </btn>
-        </div>
-        }
-        @else {
-        <div class="flex flex-col items-center gap-1.5">
+        <div class="flex items-center justify-between px-2 py-2 rounded-xl bg-[var(--color-surface-alt)]">
 
             <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
-                [sidebarExpandido]="sidebarExpandido()"
-                [tooltip]="auth.currentUser()?.nombre + ' - ' + auth.currentUser()?.rol" tooltipPosition="right">
+                [sidebarExpandido]="true">
             </avatar>
 
-            <btn variant="ghost"
-                class="w-8 h-8 flex items-center justify-center rounded transition-colors hover:bg-[var(--color-surface-alt)] cursor-pointer"
+            <button
+                class="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none flex-shrink-0"
+                (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="top">
+                <ng-icon name="heroArrowRightOnRectangle" class="text-xl"></ng-icon>
+            </button>
+
+        </div>
+
+        } @else {
+        <div class="flex flex-col items-center justify-center w-full gap-3">
+
+            <div class="flex items-center justify-center w-full">
+                <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
+                    [sidebarExpandido]="false" [tooltip]="auth.currentUser()?.nombre + ' - ' + auth.currentUser()?.rol"
+                    tooltipPosition="right">
+                </avatar>
+            </div>
+
+            <button
+                class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none cursor-pointer"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="right">
-                <ng-icon name="heroArrowRightOnRectangle"
-                    style="font-size: 14px; color: var(--sidebar-text);"></ng-icon>
-            </btn>
+                <ng-icon name="heroArrowRightOnRectangle" class="text-[22px]"></ng-icon>
+            </button>
 
         </div>
         }

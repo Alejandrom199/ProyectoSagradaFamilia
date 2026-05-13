@@ -3,10 +3,10 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { provideIcons } from '@ng-icons/core';
 import { heroArrowLeft } from '@ng-icons/heroicons/outline';
-import { CategoriaResponse } from '../../../../shared/interfaces/responses/alimento.response';
-import { Alimentos as AlimentosService } from '../../../../core/services/alimentos';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
+import { AlimentosService } from '../../../../core/services/alimentos';
+import { AlimentoUpdate, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
 
 @Component({
   selector: 'app-crear-alimento',
@@ -53,14 +53,23 @@ export class CrearAlimento implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    this.alimentosService.crear(this.form).subscribe({
+    const request: AlimentoUpdate = {
+      categoriaId: this.form.categoriaId,
+      nombre: this.form.nombre,
+      descripcion: this.form.descripcion || undefined,
+      edadMinimaIntro: this.form.edadMinimaIntro,
+      edadMaxima: this.form.edadMaxima ?? undefined,
+      recomendacion: this.form.recomendacion || undefined
+    };
+
+    this.alimentosService.crear(request).subscribe({
       next: (r) => {
         if (r.success) this.router.navigate(['/alimentos']);
         this.guardando.set(false);
         this.loadingBar.complete();
       },
       error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al crear el alimento.');
+        this.error.set(err.error?.message ?? 'Error al actualizar.');
         this.guardando.set(false);
         this.loadingBar.complete();
       }

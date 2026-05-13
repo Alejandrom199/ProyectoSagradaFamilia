@@ -16,14 +16,14 @@ import {
   ApexTheme
 } from 'ng-apexcharts';
 
-import { NinoResponse } from '../../../../shared/interfaces/responses/nino.response';
-import { MedidaResponse } from '../../../../shared/interfaces/responses/medida.response';
-import { Ninos } from '../../../../core/services/ninos';
-import { Medidas } from '../../../../core/services/medidas';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { finalize } from 'rxjs';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
+import { NinosService } from '../../../../core/services/ninos';
+import { MedidasService } from '../../../../core/services/medidas';
+import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { MedidaResponse } from '../../../../shared/interfaces/medida.interface';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -46,8 +46,8 @@ export type ChartOptions = {
   styleUrl: './progreso-hijos.css'
 })
 export class ProgresoHijos implements OnInit {
-  private ninosService = inject(Ninos);
-  private medidasService = inject(Medidas);
+  private ninosService = inject(NinosService);
+  private medidasService = inject(MedidasService);
   private loadingBar = inject(LoadingBar);
   private route = inject(ActivatedRoute);
 

@@ -3,10 +3,10 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft } from '@ng-icons/heroicons/outline';
-import { AlimentoResponse, CategoriaResponse } from '../../../../shared/interfaces/responses/alimento.response';
-import { Alimentos as AlimentosService } from '../../../../core/services/alimentos';
+import { AlimentosService } from '../../../../core/services/alimentos';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
+import { AlimentoResponse, AlimentoUpdate, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
 
 @Component({
   selector: 'app-editar-alimento',
@@ -81,7 +81,16 @@ export class EditarAlimento implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    this.alimentosService.actualizar(parseInt(this.id), this.form).subscribe({
+    const request: AlimentoUpdate = {
+      categoriaId: this.form.categoriaId,
+      nombre: this.form.nombre,
+      descripcion: this.form.descripcion || undefined,
+      edadMinimaIntro: this.form.edadMinimaIntro,
+      edadMaxima: this.form.edadMaxima ?? undefined,
+      recomendacion: this.form.recomendacion || undefined
+    };
+
+    this.alimentosService.actualizar(parseInt(this.id), request).subscribe({
       next: (r) => {
         if (r.success) this.router.navigate(['/alimentos']);
         this.guardando.set(false);

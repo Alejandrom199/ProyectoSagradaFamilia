@@ -12,6 +12,8 @@ export class Button {
   type = input<'button' | 'submit' | 'reset'>('button');
   disabled = input<boolean>(false);
 
+  width = input<string>('120px');
+
   clicked = output<void>();
 
   onClick() {

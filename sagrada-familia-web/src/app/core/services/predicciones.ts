@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { ApiResponse } from '../../shared/interfaces/responses/api-response';
-import { PrediccionHealth, PrediccionResponse } from '../../shared/interfaces/responses/prediccion.response';
+import { ApiResponse } from '../../shared/interfaces/api.interface';
+import { PrediccionHealth, PrediccionResponse } from '../../shared/interfaces/prediccion.interface';
 
 @Injectable({
   providedIn: 'root',

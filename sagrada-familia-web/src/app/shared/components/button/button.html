@@ -1,4 +1,4 @@
-<button [type]="type()" [disabled]="disabled()" (click)="onClick()"
+<button [type]="type()" [disabled]="disabled()" (click)="onClick()" [style.width]="width()"
   class="inline-flex items-center justify-center px-4 py-2 font-medium transition-colors rounded-lg focus:outline-none"
   [ngClass]="{
     'bg-blue-600 text-white hover:bg-blue-700': variant() === 'primary',

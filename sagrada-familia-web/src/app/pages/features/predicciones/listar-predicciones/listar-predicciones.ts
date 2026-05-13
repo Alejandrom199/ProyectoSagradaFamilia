@@ -3,20 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroChartBar, heroExclamationTriangle, heroUser } from '@ng-icons/heroicons/outline'; // Añadí heroUser
-import { NinoResponse } from '../../../../shared/interfaces/responses/nino.response';
-import { PrediccionResponse, PuntoPrediccion } from '../../../../shared/interfaces/responses/prediccion.response';
 import { Predicciones as PrediccionesService } from '../../../../core/services/predicciones';
-import { Auth } from '../../../../core/services/auth';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { Datatable, DatatableColumn } from '../../../../shared/components/datatable/datatable';
 import { LoadingBar } from '../../../../core/services/loading-bar';
-import { Ninos } from '../../../../core/services/ninos';
 
 // NUEVOS IMPORTES COMPARTIDOS
 import { StatusBadge } from '../../../../shared/components/status-badge/status-badge';
 import { SpinnerModal } from '../../../../shared/components/spinner-modal/spinner-modal';
 import { PredictionChart } from '../../../../shared/components/prediction-chart/prediction-chart';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
+import { NinosService } from '../../../../core/services/ninos';
+import { AuthService } from '../../../../core/services/auth';
+import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { PrediccionResponse, PuntoPrediccion } from '../../../../shared/interfaces/prediccion.interface';
+import { formatearFecha } from '../../../../shared/utils/date.utils';
 
 @Component({
   selector: 'app-listar-predicciones',
@@ -35,10 +35,10 @@ import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadc
   styleUrl: './listar-predicciones.css',
 })
 export class ListarPredicciones implements OnInit {
-  private ninosService = inject(Ninos);
+  private ninosService = inject(NinosService);
   private prediccionesService = inject(PrediccionesService);
   private loadingBar = inject(LoadingBar);
-  readonly auth = inject(Auth);
+  readonly auth = inject(AuthService);
 
   ninos = signal<NinoResponse[]>([]);
   ninoSeleccionado = signal<NinoResponse | null>(null);

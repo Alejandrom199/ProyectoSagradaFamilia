@@ -6,13 +6,13 @@ import { finalize } from 'rxjs';
 
 import { heroArrowLeft, heroVariable, heroFaceSmile, heroCake, heroGlobeAlt, heroBeaker, heroSparkles } from '@ng-icons/heroicons/outline';
 
-import { AlimentoResponse, CategoriaResponse } from '../../../../shared/interfaces/responses/alimento.response';
-import { NinoResponse } from '../../../../shared/interfaces/responses/nino.response';
-import { Alimentos as AlimentosService } from '../../../../core/services/alimentos';
-import { Ninos as NinosService } from '../../../../core/services/ninos';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { CategoriaFiltro, ExploradorVisual, ItemExplorador } from '../../../../shared/components/explorador-visual/explorador-visual';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { AlimentosService } from '../../../../core/services/alimentos';
+import { NinosService } from '../../../../core/services/ninos';
+import { AlimentoResponse, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
+import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 
 @Component({
   selector: 'orientacion-padres',

@@ -15,7 +15,7 @@ export interface PuntoPrediccion {
 }
 
 export interface PrediccionHealth {
-    status: string,
-    service: string,
-    version: string
+    status: string;
+    service: string;
+    version: string;
 }

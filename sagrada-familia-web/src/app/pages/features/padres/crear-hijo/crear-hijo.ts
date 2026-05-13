@@ -1,27 +1,29 @@
-import { Component, Input, inject, signal } from '@angular/core';
+import { Component, Input, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { provideIcons } from '@ng-icons/core';
 import { heroArrowLeft } from '@ng-icons/heroicons/outline';
-import { PadreResponse } from '../../../../shared/interfaces/responses/padre.response';
-import { Ninos } from '../../../../core/services/ninos';
-import { Padres } from '../../../../core/services/padres';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
-
+import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
+import { NinoCreate, NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { ApiResponse } from '../../../../shared/interfaces/api.interface';
+import { NinosService } from '../../../../core/services/ninos';
+import { PadresService } from '../../../../core/services/padres';
 
 @Component({
   selector: 'app-crear-hijo',
+  standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb],
   viewProviders: [provideIcons({ heroArrowLeft })],
   templateUrl: './crear-hijo.html',
   styleUrl: './crear-hijo.css',
 })
-export class CrearHijo {
+export class CrearHijo implements OnInit {
   @Input() id!: string;
 
-  private ninosService = inject(Ninos);
-  private padresService = inject(Padres);
+  private ninosService = inject(NinosService);
+  private padresService = inject(PadresService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
@@ -29,31 +31,34 @@ export class CrearHijo {
   guardando = signal(false);
   error = signal('');
 
-  form = {
-    nombre: '',
-    apellido: '',
-    fechaNacimiento: '',
-    sexo: ''
-  };
+  form: {
+    nombre: string;
+    apellido: string;
+    fechaNacimiento: string;
+    sexo: 'M' | 'F' | '';
+  } = {
+      nombre: '',
+      apellido: '',
+      fechaNacimiento: '',
+      sexo: ''
+    };
 
   migajas: BreadcrumbItem[] = [
     { label: 'Padres', ruta: '/padres' },
-    { label: 'Detalle del Padre', ruta: '/padres/:id' },
+    { label: 'Detalle del Padre', ruta: `/padres/${this.id}` },
     { label: 'Crear Hijo' },
   ];
 
-  ngOnInit() {
-    this.padresService.obtenerTodos().subscribe({
-      next: (r) => {
-        if (r.success) {
-          const p = r.data.find(x => x.id === parseInt(this.id));
-          if (p) this.padre.set(p);
-        }
+  ngOnInit(): void {
+    // Usamos obtenerPorId que es más directo que filtrar en obtenerTodos
+    this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
+      next: (r: ApiResponse<PadreResponse>) => {
+        if (r.success) this.padre.set(r.data);
       }
     });
   }
 
-  guardar() {
+  guardar(): void {
     if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
       this.error.set('Completá todos los campos obligatorios.');
       return;
@@ -62,13 +67,17 @@ export class CrearHijo {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    const request = {
-      representanteId: parseInt(this.id),
-      ...this.form
+    // 💡 Aquí corregimos el nombre del campo a padreId y tipamos como NinoCreate
+    const request: NinoCreate = {
+      padreId: parseInt(this.id),
+      nombre: this.form.nombre,
+      apellido: this.form.apellido,
+      fechaNacimiento: this.form.fechaNacimiento,
+      sexo: this.form.sexo as 'M' | 'F' // Casting seguro tras la validación anterior
     };
 
     this.ninosService.crear(request).subscribe({
-      next: (r) => {
+      next: (r: ApiResponse<NinoResponse>) => {
         if (r.success) {
           this.router.navigate(['/padres', this.id, 'hijos']);
         }

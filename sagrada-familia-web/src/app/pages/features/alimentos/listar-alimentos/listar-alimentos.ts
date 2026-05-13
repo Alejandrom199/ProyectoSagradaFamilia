@@ -3,18 +3,19 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroPlus, heroPencil, heroTrash } from '@ng-icons/heroicons/outline';
-
-import { AlimentoResponse } from '../../../../shared/interfaces/responses/alimento.response';
-import { Alimentos as AlimentosService } from '../../../../core/services/alimentos';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Datatable, DatatableAction, DatatableColumn } from '../../../../shared/components/datatable/datatable';
 import { Reportes } from '../../../../core/services/reportes';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
+import { Button } from '../../../../shared/components/button/button';
+import { AlimentosService } from '../../../../core/services/alimentos';
+import { AlimentoResponse } from '../../../../shared/interfaces/alimento.interface';
 
 @Component({
   selector: 'listar-alimentos',
   standalone: true,
-  imports: [CommonModule, NgIcon, RouterLink, Datatable, Breadcrumb],
+  imports: [CommonModule, NgIcon, RouterLink, Datatable, Breadcrumb, ConfirmModal, Button],
   viewProviders: [provideIcons({ heroPlus, heroPencil, heroTrash })],
   templateUrl: './listar-alimentos.html'
 })

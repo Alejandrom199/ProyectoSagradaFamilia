@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto">
+<div class="page-container">
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
@@ -9,15 +9,14 @@
         <btn variant="primary" routerLink="/pacientes/crear"
             class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
             <ng-icon name="heroPlus" class="mr-2"></ng-icon>
-            Registrar Paciente
+            Agregar
         </btn>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <datatable title="Listado de Pacientes" [data]="ninos()" [columns]="columnas" [actions]="acciones"
-            [exportExcel]="true" [exportPdf]="true" exportFileName="catalogo-pacientes"
-            searchPlaceholder="Buscar por nombre, representante..."
-            emptyMessage="No hay pacientes registrados en el sistema.">
+            [exportExcel]="true" [exportPdf]="true" [showExportar]="true" exportFileName="catalogo-pacientes"
+            searchPlaceholder="Buscar" emptyMessage="No hay pacientes registrados en el sistema.">
         </datatable>
     </div>
 

@@ -1,39 +1,42 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Auth } from './auth';
-import { Router } from '@angular/router';
-import { MenuResponse } from '../../shared/interfaces/responses/menu.response';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiResponse } from '../../shared/interfaces/responses/api-response';
+import { MenuResponse } from '../../shared/interfaces/menu.interface';
+import { ApiResponse } from '../../shared/interfaces/api.interface';
+import { AuthService } from './auth';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class Menu {
+@Injectable({ providedIn: 'root' })
+export class MenuService {
   private readonly url = `${environment.apiUrl}/menu`;
-  private menu = signal<MenuResponse[]>([]);
 
-  constructor(private http: HttpClient, private auth: Auth, private router: Router) { }
+  private readonly _menuItems = signal<MenuResponse[]>([]);
+  readonly menuItems = this._menuItems.asReadonly();
 
-  obtenerMenu() {
+  constructor(private http: HttpClient, private auth: AuthService) { }
+
+  obtenerMenu(): Observable<ApiResponse<MenuResponse[]>> {
     return this.http.get<ApiResponse<MenuResponse[]>>(this.url, { withCredentials: true });
   }
 
-  private cargarMenu() {
+  cargarMenu(): void {
     this.obtenerMenu().subscribe({
-      next: (response) => {
-        if (response.success) this.menu.set(response.data);
+      next: (res: ApiResponse<MenuResponse[]>) => {
+        if (res.success) {
+          this._menuItems.set(res.data);
+        } else {
+          this._menuItems.set(this.menuFallback());
+        }
       },
       error: () => {
-        // Si falla el menú, no romper el layout
-        // Usar menú estático de fallback
-        this.menu.set(this.menuFallback());
+        this._menuItems.set(this.menuFallback());
       }
     });
   }
 
-  private menuFallback(): any[] {
+  private menuFallback(): MenuResponse[] {
     const esMedico = this.auth.esMedico();
+
     return [
       {
         id: 1,
@@ -41,13 +44,40 @@ export class Menu {
         icono: 'home',
         orden: 1,
         opciones: [
-          { id: 1, nombre: 'Dashboard', ruta: '/dashboard', icono: 'home', orden: 1, acciones: ['Ver'] },
-          { id: 2, nombre: 'Pacientes', ruta: '/pacientes', icono: 'users', orden: 2, acciones: ['Ver'] },
+          {
+            id: 1,
+            nombre: 'Dashboard',
+            ruta: '/dashboard',
+            icono: 'dashboard',
+            orden: 1,
+            acciones: ['Ver']
+          },
+          {
+            id: 2,
+            nombre: 'Pacientes',
+            ruta: '/pacientes',
+            icono: 'child_care',
+            orden: 2,
+            acciones: ['Ver', 'Crear']
+          },
           ...(esMedico ? [
-            { id: 3, nombre: 'Padres', ruta: '/padres', icono: 'users', orden: 3, acciones: ['Ver'] },
-            { id: 4, nombre: 'Alimentos', ruta: '/alimentos', icono: 'food', orden: 4, acciones: ['Ver'] },
+            {
+              id: 4,
+              nombre: 'Alimentos',
+              ruta: '/alimentos',
+              icono: 'restaurant',
+              orden: 4,
+              acciones: ['Ver', 'Crear', 'Editar']
+            }
           ] : []),
-          { id: 5, nombre: 'Predicciones', ruta: '/predicciones', icono: 'chart-line', orden: 5, acciones: ['Ver'] },
+          {
+            id: 5,
+            nombre: 'Predicciones',
+            ruta: '/predicciones',
+            icono: 'trending_up',
+            orden: 5,
+            acciones: ['Ver']
+          }
         ]
       }
     ];

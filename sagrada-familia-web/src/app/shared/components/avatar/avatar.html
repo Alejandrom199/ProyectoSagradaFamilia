@@ -1,22 +1,20 @@
-<div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm border border-white"
+<div class="flex items-center" [class.gap-3]="sidebarExpandido()">
+    <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm border border-white shrink-0"
         [ngClass]="colorClase()">
         {{ iniciales() }}
     </div>
-    <div>
 
-        @if (sidebarExpandido()) {
-        <p class="text-gray-800 text-sm">{{ nombre() }} {{ apellido() }}</p>
+    @if (sidebarExpandido()) {
+    <div class="flex-1 min-w-0">
+        <p class="text-gray-800 text-sm truncate">{{ nombre() }} {{ apellido() }}</p>
 
         @if (textoSexo()) {
-        <p class="text-xs text-gray-500">{{ textoSexo() }}</p>
+        <p class="text-xs text-gray-500 truncate">{{ textoSexo() }}</p>
         }
 
         @if (textoRol()) {
-        <p class="text-xs text-gray-500">{{ textoRol() }}</p>
+        <p class="text-xs text-gray-500 truncate">{{ textoRol() }}</p>
         }
-        }
-
-
     </div>
+    }
 </div>

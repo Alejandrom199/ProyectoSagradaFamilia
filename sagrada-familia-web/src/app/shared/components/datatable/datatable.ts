@@ -38,6 +38,7 @@ export interface DatatableColumn<T> {
   render?: (row: T) => string;
   class?: string;
   hidden?: boolean;
+  exportValue?: (row: T) => string;
 }
 
 export interface DatatableAction<T> {
@@ -62,6 +63,9 @@ export interface DatatableAction<T> {
   })],
   templateUrl: './datatable.html',
   styleUrl: './datatable.css',
+  host: {
+    'class': 'block w-full'
+  }
 })
 export class Datatable<T extends object> implements OnChanges {
   @Input() title = '';
@@ -254,7 +258,9 @@ export class Datatable<T extends object> implements OnChanges {
     const rows = this.datosFiltrados.map(row => {
       return this.columns.map(col => {
         let valor = '';
-        if (col.render) {
+        if (col.exportValue) {
+          valor = col.exportValue(row);
+        } else if (col.render) {
           valor = this.limpiarHtml(col.render(row));
         } else {
           valor = String(this.getCellValue(row, col.key) ?? '');

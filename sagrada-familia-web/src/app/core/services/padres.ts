@@ -1,15 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { ApiResponse } from '../../shared/interfaces/responses/api-response';
-import { PadreResponse } from '../../shared/interfaces/responses/padre.response';
-import { CrearPadreRequest } from '../../shared/interfaces/requests/crear-padre.request';
+import { PadreCreate, PadreResponse, PadreUpdate } from '../../shared/interfaces/padre.interface';
+import { ApiResponse } from '../../shared/interfaces/api.interface';
 
 @Injectable({
   providedIn: 'root',
 })
-export class Padres {
-  private readonly url = `${environment.apiUrl}/auth/padres`;
+export class PadresService {
+  private readonly url = `${environment.apiUrl}/padre`;
 
   constructor(private http: HttpClient) { }
 
@@ -21,11 +20,11 @@ export class Padres {
     return this.http.get<ApiResponse<PadreResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
 
-  crear(request: CrearPadreRequest) {
+  crear(request: PadreCreate) {
     return this.http.post<ApiResponse<PadreResponse>>(this.url, request, { withCredentials: true });
   }
 
-  actualizar(id: number, request: Partial<CrearPadreRequest>) {
+  actualizar(id: number, request: PadreUpdate) {
     return this.http.put<ApiResponse<PadreResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
   }
 

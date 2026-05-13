@@ -3,11 +3,11 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft } from '@ng-icons/heroicons/outline';
-import { NinoResponse } from '../../../../shared/interfaces/responses/nino.response';
-import { Ninos } from '../../../../core/services/ninos';
-import { Auth } from '../../../../core/services/auth';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { NinosService } from '../../../../core/services/ninos';
+import { AuthService } from '../../../../core/services/auth';
+import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 
 @Component({
   selector: 'app-editar-paciente',
@@ -19,10 +19,10 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 export class EditarPaciente implements OnInit {
   @Input() id!: string;
 
-  private ninosService = inject(Ninos);
+  private ninosService = inject(NinosService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
-  readonly auth = inject(Auth);
+  readonly auth = inject(AuthService);
 
   nino = signal<NinoResponse | null>(null);
   guardando = signal(false);
@@ -69,7 +69,7 @@ export class EditarPaciente implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    this.ninosService.actualizar(parseInt(this.id), this.form).subscribe({
+    this.ninosService.actualizar(parseInt(this.id), { ...this.form, sexo: this.form.sexo as 'M' | 'F' }).subscribe({
       next: (r) => {
         if (r.success) {
           this.router.navigate(['/pacientes']);

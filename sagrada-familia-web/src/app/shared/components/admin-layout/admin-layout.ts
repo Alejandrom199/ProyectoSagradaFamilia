@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from "@ng-icons/core";
@@ -6,12 +6,11 @@ import {
   heroBars3, heroChevronLeft, heroChevronRight
 } from '@ng-icons/heroicons/outline';
 
-import { MenuResponse } from '../../interfaces/responses/menu.response';
 import { LoadingBar } from '../loading-bar/loading-bar';
 import { Sidebar } from '../sidebar/sidebar';
-import { Header } from '../header/header'; // <-- Importación agregada
-import { Auth } from '../../../core/services/auth';
-import { Menu } from '../../../core/services/menu';
+import { Header } from '../header/header';
+import { AuthService } from '../../../core/services/auth';
+import { MenuService } from '../../../core/services/menu';
 
 @Component({
   selector: 'admin-layout',
@@ -30,36 +29,28 @@ import { Menu } from '../../../core/services/menu';
     heroBars3, heroChevronLeft, heroChevronRight
   })],
 })
-export class AdminLayout {
-  readonly auth = inject(Auth);
-  private readonly menuService = inject(Menu);
+export class AdminLayout implements OnInit {
+  readonly auth = inject(AuthService);
+  private readonly menuService = inject(MenuService);
 
-  readonly sidebarExpandido = signal(true);
-  readonly sidebarMovilAbierto = signal(false);
-  readonly menu = signal<MenuResponse[]>([]);
+  readonly sidebarExpandido = signal<boolean>(true);
+  readonly sidebarMovilAbierto = signal<boolean>(false);
 
-  constructor() {
-    this.cargarMenu();
+  readonly menu = this.menuService.menuItems;
+
+  ngOnInit(): void {
+    this.menuService.cargarMenu();
   }
 
-  private cargarMenu() {
-    this.menuService.obtenerMenu().subscribe({
-      next: (response) => {
-        if (response.success) this.menu.set(response.data);
-      },
-      error: (err) => console.error('Error al cargar el menú:', err)
-    });
-  }
-
-  toggleExpandido() {
+  toggleExpandido(): void {
     this.sidebarExpandido.update(v => !v);
   }
 
-  toggleMovil() {
+  toggleMovil(): void {
     this.sidebarMovilAbierto.update(v => !v);
   }
 
-  cerrarMovil() {
+  cerrarMovil(): void {
     this.sidebarMovilAbierto.set(false);
   }
 
@@ -72,7 +63,7 @@ export class AdminLayout {
     return this.sidebarExpandido() ? '240px' : '56px';
   }
 
-  logout() {
+  logout(): void {
     this.auth.logout();
   }
 }

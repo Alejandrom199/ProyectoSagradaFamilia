@@ -9,3 +9,16 @@ export interface MedidaResponse {
     percentil: number;
     fechaRegistro: string;
 }
+
+export interface MedidaCreate {
+    ninoId: number;
+    fechaMedicion: string;
+    peso: number;
+    talla: number;
+}
+
+export interface MedidaUpdate {
+    fechaMedicion: string;
+    peso: number;
+    talla: number;
+}
