@@ -1,28 +1,37 @@
+import { NinoResponse } from './nino.interface';
+
 export interface MedicoResponse {
     id: number;
+    nombreCompleto: string;
+    email: string;
+    especialidad?: string;
+    telefono?: string;
+}
+
+export interface MedicoDetailResponse {
+    id: number;
+    usuarioId: number;
     nombre: string;
     apellido: string;
     email: string;
-    telefono: string | null;
-    especialidad: string | null;
-    numeroColegiatura: string | null;
+    especialidad?: string;
+    telefono?: string;
     fechaCreacion: string;
+    pacientes: NinoResponse[];
 }
 
 export interface MedicoCreate {
+    email: string;
+    password?: string;
     nombre: string;
     apellido: string;
-    email: string;
-    password: string;
-    telefono?: string;
     especialidad?: string;
-    numeroColegiatura?: string;
+    telefono?: string;
 }
 
 export interface MedicoUpdate {
     nombre: string;
     apellido: string;
-    telefono?: string;
     especialidad?: string;
-    numeroColegiatura?: string;
+    telefono?: string;
 }

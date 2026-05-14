@@ -3,18 +3,17 @@ export interface AlimentoResponse {
     categoriaId: number;
     categoriaNombre: string;
     nombre: string;
-    descripcion: string | null;
-    edadMinimaIntro: number;
-    edadMaxima: number | null;
-    recomendacion: string | null;
+    descripcion?: string;
+    edadMinimaMeses: number;
+    recomendacion?: string;
+    activo: boolean;
 }
 
 export interface AlimentoCreate {
     categoriaId: number;
     nombre: string;
     descripcion?: string;
-    edadMinimaIntro: number;
-    edadMaxima?: number;
+    edadMinimaMeses: number;
     recomendacion?: string;
 }
 
@@ -22,17 +21,17 @@ export interface AlimentoUpdate {
     categoriaId: number;
     nombre: string;
     descripcion?: string;
-    edadMinimaIntro: number;
-    edadMaxima?: number;
+    edadMinimaMeses: number;
     recomendacion?: string;
+    activo: boolean;
 }
 
-// Sub-interfaces para categorías
 export interface CategoriaResponse {
     id: number;
     nombre: string;
-    descripcion: string | null;
+    descripcion?: string;
     totalAlimentos: number;
+    activo: boolean;
 }
 
 export interface CategoriaCreate {

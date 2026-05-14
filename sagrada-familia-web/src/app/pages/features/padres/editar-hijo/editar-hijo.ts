@@ -53,63 +53,63 @@ export class EditarHijo implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.loadingBar.show();
+    // this.loadingBar.show();
 
-    // Cargar datos del padre para el contexto
-    this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
-      next: (r: ApiResponse<PadreResponse>) => {
-        if (r.success) this.padre.set(r.data);
-      }
-    });
+    // // Cargar datos del padre para el contexto
+    // this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
+    //   next: (r: ApiResponse<PadreResponse>) => {
+    //     if (r.success) this.padre.set(r.data);
+    //   }
+    // });
 
-    // Cargar datos del hijo para el formulario
-    this.ninosService.obtenerPorId(parseInt(this.hijoId)).subscribe({
-      next: (r: ApiResponse<NinoResponse>) => {
-        if (r.success) {
-          this.hijo.set(r.data);
-          this.form = {
-            nombre: r.data.nombre,
-            apellido: r.data.apellido,
-            fechaNacimiento: r.data.fechaNacimiento,
-            sexo: r.data.sexo as 'M' | 'F' // Cast seguro desde la respuesta
-          };
-        }
-        this.loadingBar.complete();
-      },
-      error: () => this.loadingBar.complete()
-    });
+    // // Cargar datos del hijo para el formulario
+    // this.ninosService.obtenerPorId(parseInt(this.hijoId)).subscribe({
+    //   next: (r: ApiResponse<NinoResponse>) => {
+    //     if (r.success) {
+    //       this.hijo.set(r.data);
+    //       this.form = {
+    //         nombre: r.data.nombre,
+    //         apellido: r.data.apellido,
+    //         fechaNacimiento: r.data.fechaNacimiento,
+    //         sexo: r.data.sexo as 'M' | 'F' // Cast seguro desde la respuesta
+    //       };
+    //     }
+    //     this.loadingBar.complete();
+    //   },
+    //   error: () => this.loadingBar.complete()
+    // });
   }
 
-  guardar(): void {
-    // Validación básica
-    if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
-      this.error.set('Completá todos los campos obligatorios.');
-      return;
-    }
+  // guardar(): void {
+  //   // Validación básica
+  //   if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
+  //     this.error.set('Completá todos los campos obligatorios.');
+  //     return;
+  //   }
 
-    this.guardando.set(true);
-    this.loadingBar.show();
+  //   this.guardando.set(true);
+  //   this.loadingBar.show();
 
-    const request: NinoUpdate = {
-      nombre: this.form.nombre,
-      apellido: this.form.apellido,
-      fechaNacimiento: this.form.fechaNacimiento,
-      sexo: this.form.sexo as 'M' | 'F' // TypeScript ahora está tranquilo porque ya validamos que no sea ''
-    };
+  //   const request: NinoUpdate = {
+  //     nombre: this.form.nombre,
+  //     apellido: this.form.apellido,
+  //     fechaNacimiento: this.form.fechaNacimiento,
+  //     sexo: this.form.sexo as 'M' | 'F' // TypeScript ahora está tranquilo porque ya validamos que no sea ''
+  //   };
 
-    this.ninosService.actualizar(parseInt(this.hijoId), request).subscribe({
-      next: (r: ApiResponse<NinoResponse>) => {
-        if (r.success) {
-          this.router.navigate(['/padres', this.id, 'hijos']);
-        }
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      },
-      error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al actualizar.');
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      }
-    });
-  }
+  //   this.ninosService.actualizar(parseInt(this.hijoId), request).subscribe({
+  //     next: (r: ApiResponse<NinoResponse>) => {
+  //       if (r.success) {
+  //         this.router.navigate(['/padres', this.id, 'hijos']);
+  //       }
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     },
+  //     error: (err) => {
+  //       this.error.set(err.error?.message ?? 'Error al actualizar.');
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     }
+  //   });
+  // }
 }

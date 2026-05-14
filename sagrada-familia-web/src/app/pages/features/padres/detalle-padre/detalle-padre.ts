@@ -39,10 +39,10 @@ export class DetallePadre implements OnInit {
       render: (row) => `
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 rounded-full ${row.sexo === 'M' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center text-xs font-semibold">
-            ${row.nombre.charAt(0)}${row.apellido.charAt(0)}
+            ${row.nombreCompleto.charAt(0)}${row.nombreCompleto.charAt(1)}
           </div>
           <div>
-            <p class="font-medium">${row.nombre} ${row.apellido}</p>
+            <p class="font-medium">${row.nombreCompleto}</p>
             <p class="text-xs text-[var(--color-text-secondary)]">${row.sexo === 'M' ? 'Varón' : 'Niña'}</p>
           </div>
         </div>`

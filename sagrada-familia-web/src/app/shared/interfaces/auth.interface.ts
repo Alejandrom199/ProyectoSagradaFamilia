@@ -4,8 +4,6 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    accessToken: string;
-    refreshToken: string;
     id: number;
     nombre: string;
     rol: string;
@@ -16,5 +14,4 @@ export interface SessionUser {
     id: number;
     nombre: string;
     rol: string;
-    accessToken?: string;
 }

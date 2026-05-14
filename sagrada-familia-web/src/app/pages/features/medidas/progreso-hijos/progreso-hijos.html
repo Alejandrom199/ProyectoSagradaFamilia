@@ -1,7 +1,8 @@
 <div class="max-w-7xl mx-auto p-4">
     <breadcrumb [items]="migajas" homeRoute="/pacientes"></breadcrumb>
     <div class="mb-8">
-        <h2 class="text-3xl font-extrabold text-gray-800">Progreso de {{ ninoSeleccionado()?.nombre }}</h2>
+        <h2 class="text-3xl font-extrabold text-gray-800">Progreso de {{
+            ninoSeleccionado()?.nombre }} {{ninoSeleccionado()?.apellido }}</h2>
         <p class="text-gray-500 mt-1 text-lg">
             Revisa el historial de crecimiento y medidas de tu pequeño
         </p>
@@ -36,7 +37,8 @@
                 </h3>
                 <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1">
                     <ng-icon name="heroChartBar"></ng-icon>
-                    Percentil alcanzado: P{{ ultimaMedida()?.percentil }}
+                    <!-- 💡 CORREGIDO: Ahora usa percentilTalla como en el DTO -->
+                    Percentil alcanzado: P{{ ultimaMedida()?.percentilTalla }}
                 </p>
             </div>
             <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center text-xl">
@@ -97,7 +99,7 @@
             </div>
             <h3 class="text-xl font-bold text-gray-800 mb-1">Aún no hay medidas registradas</h3>
             <p class="text-sm text-gray-400 max-w-xs">El pediatra registrará las medidas de {{
-                ninoSeleccionado()?.nombre }} en su próxima cita médica.</p>
+                ninoSeleccionado()?.nombre }} {{ninoSeleccionado()?.apellido }} en su próxima cita médica.</p>
         </div>
         }
     </div>

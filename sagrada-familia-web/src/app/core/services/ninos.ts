@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
-import { NinoResponse, NinoCreate, NinoUpdate } from '../../shared/interfaces/nino.interface';
+import { NinoResponse, NinoDetailResponse, NinoCreate, NinoUpdate } from '../../shared/interfaces/nino.interface';
 
 @Injectable({ providedIn: 'root' })
 export class NinosService {
@@ -19,16 +19,16 @@ export class NinosService {
     return this.http.get<ApiResponse<NinoResponse[]>>(`${this.url}/mis-ninos`, { withCredentials: true });
   }
 
-  obtenerPorId(id: number): Observable<ApiResponse<NinoResponse>> {
-    return this.http.get<ApiResponse<NinoResponse>>(`${this.url}/${id}`, { withCredentials: true });
+  obtenerPorId(id: number): Observable<ApiResponse<NinoDetailResponse>> {
+    return this.http.get<ApiResponse<NinoDetailResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
 
-  crear(request: NinoCreate): Observable<ApiResponse<NinoResponse>> {
-    return this.http.post<ApiResponse<NinoResponse>>(this.url, request, { withCredentials: true });
+  crear(request: NinoCreate): Observable<ApiResponse<NinoDetailResponse>> {
+    return this.http.post<ApiResponse<NinoDetailResponse>>(this.url, request, { withCredentials: true });
   }
 
-  actualizar(id: number, request: NinoUpdate): Observable<ApiResponse<NinoResponse>> {
-    return this.http.put<ApiResponse<NinoResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
+  actualizar(id: number, request: NinoUpdate): Observable<ApiResponse<NinoDetailResponse>> {
+    return this.http.put<ApiResponse<NinoDetailResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
   }
 
   eliminar(id: number): Observable<ApiResponse<null>> {

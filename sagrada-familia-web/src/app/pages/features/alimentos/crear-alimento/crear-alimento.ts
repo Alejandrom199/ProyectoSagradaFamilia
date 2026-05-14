@@ -45,34 +45,35 @@ export class CrearAlimento implements OnInit {
   }
 
   guardar() {
-    if (!this.form.nombre || !this.form.categoriaId || !this.form.edadMinimaIntro) {
-      this.error.set('Completá nombre, categoría y edad mínima.');
-      return;
-    }
+    //   if (!this.form.nombre || !this.form.categoriaId || !this.form.edadMinimaIntro) {
+    //     this.error.set('Completá nombre, categoría y edad mínima.');
+    //     return;
+    //   }
 
-    this.guardando.set(true);
-    this.loadingBar.show();
+    //   this.guardando.set(true);
+    //   this.loadingBar.show();
 
-    const request: AlimentoUpdate = {
-      categoriaId: this.form.categoriaId,
-      nombre: this.form.nombre,
-      descripcion: this.form.descripcion || undefined,
-      edadMinimaIntro: this.form.edadMinimaIntro,
-      edadMaxima: this.form.edadMaxima ?? undefined,
-      recomendacion: this.form.recomendacion || undefined
-    };
+    //   const request: AlimentoUpdate = {
+    //     categoriaId: this.form.categoriaId,
+    //     nombre: this.form.nombre,
+    //     descripcion: this.form.descripcion || undefined,
+    //     edadMinimaIntro: this.form.edadMinimaIntro,
+    //     edadMaxima: this.form.edadMaxima ?? undefined,
+    //     recomendacion: this.form.recomendacion || undefined
+    //   };
 
-    this.alimentosService.crear(request).subscribe({
-      next: (r) => {
-        if (r.success) this.router.navigate(['/alimentos']);
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      },
-      error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al actualizar.');
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      }
-    });
+    //   this.alimentosService.crear(request).subscribe({
+    //     next: (r) => {
+    //       if (r.success) this.router.navigate(['/alimentos']);
+    //       this.guardando.set(false);
+    //       this.loadingBar.complete();
+    //     },
+    //     error: (err) => {
+    //       this.error.set(err.error?.message ?? 'Error al actualizar.');
+    //       this.guardando.set(false);
+    //       this.loadingBar.complete();
+    //     }
+    //   });
+    // }
   }
 }

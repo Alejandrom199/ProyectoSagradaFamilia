@@ -1,16 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
 import { MedidaCreate, MedidaResponse, MedidaUpdate } from '../../shared/interfaces/medida.interface';
-import { PrediccionResponse } from '../../shared/interfaces/prediccion.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MedidasService {
   private readonly url = `${environment.apiUrl}/medidas`;
+
   constructor(private http: HttpClient) { }
 
   obtenerPorNino(ninoId: number): Observable<ApiResponse<MedidaResponse[]>> {

@@ -3,7 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
-import { AlimentoResponse, CategoriaResponse, AlimentoCreate, AlimentoUpdate, CategoriaCreate } from '../../shared/interfaces/alimento.interface';
+import {
+  AlimentoResponse,
+  CategoriaResponse,
+  AlimentoCreate,
+  AlimentoUpdate,
+  CategoriaCreate
+} from '../../shared/interfaces/alimento.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AlimentosService {

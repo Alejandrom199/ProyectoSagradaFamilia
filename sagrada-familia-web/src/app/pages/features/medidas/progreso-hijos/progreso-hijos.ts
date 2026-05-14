@@ -22,7 +22,7 @@ import { finalize } from 'rxjs';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { NinosService } from '../../../../core/services/ninos';
 import { MedidasService } from '../../../../core/services/medidas';
-import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface'; // 💡 Actualizado
 import { MedidaResponse } from '../../../../shared/interfaces/medida.interface';
 
 export type ChartOptions = {
@@ -51,7 +51,8 @@ export class ProgresoHijos implements OnInit {
   private loadingBar = inject(LoadingBar);
   private route = inject(ActivatedRoute);
 
-  ninoSeleccionado = signal<NinoResponse | null>(null);
+  // 💡 Actualizado: Usamos NinoDetailResponse porque es lo que devuelve el método obtenerPorId
+  ninoSeleccionado = signal<NinoDetailResponse | null>(null);
   ultimaMedida = signal<MedidaResponse | null>(null);
   cargando = signal(false);
   hayDatos = signal(false);
@@ -64,9 +65,11 @@ export class ProgresoHijos implements OnInit {
   ];
 
   ngOnInit() {
+    // 💡 Descomentado y ajustado para que funcione en vivo
     const ninoIdParam = this.route.snapshot.queryParamMap.get('ninoId');
     if (ninoIdParam) {
-      const idBuscar = parseInt(ninoIdParam);
+      this.loadingBar.show();
+      const idBuscar = parseInt(ninoIdParam, 10);
       this.ninosService.obtenerPorId(idBuscar)
         .pipe(finalize(() => this.loadingBar.complete()))
         .subscribe({
@@ -80,7 +83,8 @@ export class ProgresoHijos implements OnInit {
     }
   }
 
-  seleccionarNino(nino: NinoResponse) {
+  // 💡 Actualizado el parámetro
+  seleccionarNino(nino: NinoDetailResponse) {
     this.ninoSeleccionado.set(nino);
     this.cargando.set(true);
     this.loadingBar.show();

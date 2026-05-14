@@ -43,7 +43,7 @@ export class EditarPadre implements OnInit {
 
   ngOnInit(): void {
     this.formPadre = this.initForm();
-    this.cargarDatosPadre();
+    // this.cargarDatosPadre();
   }
 
   private initForm(): FormGroup {
@@ -60,64 +60,64 @@ export class EditarPadre implements OnInit {
     return this.formPadre.controls;
   }
 
-  private cargarDatosPadre(): void {
-    this.loadingBar.show();
-    const padreId = parseInt(this.id);
+  // private cargarDatosPadre(): void {
+  //   this.loadingBar.show();
+  //   const padreId = parseInt(this.id);
 
-    this.padresService.obtenerPorId(padreId).subscribe({
-      next: (res: ApiResponse<PadreResponse>) => {
-        if (res.success) {
-          this.padre.set(res.data);
-          this.formPadre.patchValue({
-            nombre: res.data.nombre,
-            apellido: res.data.apellido,
-            email: res.data.email,
-            telefono: res.data.telefono ?? ''
-          });
-        }
-      },
-      error: () => {
-        this.error.set('No se pudo cargar la información del representante.');
-        this.loadingBar.complete();
-      },
-      complete: () => this.loadingBar.complete()
-    });
-  }
+  //   this.padresService.obtenerPorId(padreId).subscribe({
+  //     next: (res: ApiResponse<PadreResponse>) => {
+  //       if (res.success) {
+  //         this.padre.set(res.data);
+  //         this.formPadre.patchValue({
+  //           nombre: res.data.nombre,
+  //           apellido: res.data.apellido,
+  //           email: res.data.email,
+  //           telefono: res.data.telefono ?? ''
+  //         });
+  //       }
+  //     },
+  //     error: () => {
+  //       this.error.set('No se pudo cargar la información del representante.');
+  //       this.loadingBar.complete();
+  //     },
+  //     complete: () => this.loadingBar.complete()
+  //   });
+  // }
 
-  guardar(): void {
-    if (this.formPadre.invalid) {
-      this.formPadre.markAllAsTouched();
-      return;
-    }
+  // guardar(): void {
+  //   if (this.formPadre.invalid) {
+  //     this.formPadre.markAllAsTouched();
+  //     return;
+  //   }
 
-    this.guardando.set(true);
-    this.loadingBar.show();
+  //   this.guardando.set(true);
+  //   this.loadingBar.show();
 
-    // 💡 Mapeo estricto al DTO de actualización
-    const request: PadreUpdate = {
-      nombre: this.formPadre.value.nombre,
-      apellido: this.formPadre.value.apellido,
-      telefono: this.formPadre.value.telefono || undefined
-    };
+  //   // 💡 Mapeo estricto al DTO de actualización
+  //   const request: PadreUpdate = {
+  //     nombre: this.formPadre.value.nombre,
+  //     apellido: this.formPadre.value.apellido,
+  //     telefono: this.formPadre.value.telefono || undefined
+  //   };
 
-    this.padresService.actualizar(parseInt(this.id), request).subscribe({
-      next: (res: ApiResponse<PadreResponse>) => {
-        if (res.success) {
-          this.router.navigate(['/padres']);
-        } else {
-          this.error.set(res.message);
-        }
-      },
-      error: (err) => {
-        const msg = err.error?.message ?? 'Error al actualizar los datos.';
-        this.error.set(msg);
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      },
-      complete: () => {
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      }
-    });
-  }
+  //   this.padresService.actualizar(parseInt(this.id), request).subscribe({
+  //     next: (res: ApiResponse<PadreResponse>) => {
+  //       if (res.success) {
+  //         this.router.navigate(['/padres']);
+  //       } else {
+  //         this.error.set(res.message);
+  //       }
+  //     },
+  //     error: (err) => {
+  //       const msg = err.error?.message ?? 'Error al actualizar los datos.';
+  //       this.error.set(msg);
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     },
+  //     complete: () => {
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     }
+  //   });
+  // }
 }

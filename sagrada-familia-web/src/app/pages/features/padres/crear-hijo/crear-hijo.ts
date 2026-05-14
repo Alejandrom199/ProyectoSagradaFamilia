@@ -51,44 +51,44 @@ export class CrearHijo implements OnInit {
 
   ngOnInit(): void {
     // Usamos obtenerPorId que es más directo que filtrar en obtenerTodos
-    this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
-      next: (r: ApiResponse<PadreResponse>) => {
-        if (r.success) this.padre.set(r.data);
-      }
-    });
+    // this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
+    //   next: (r: ApiResponse<PadreResponse>) => {
+    //     if (r.success) this.padre.set(r.data);
+    //   }
+    // });
   }
 
-  guardar(): void {
-    if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
-      this.error.set('Completá todos los campos obligatorios.');
-      return;
-    }
+  // guardar(): void {
+  //   if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
+  //     this.error.set('Completá todos los campos obligatorios.');
+  //     return;
+  //   }
 
-    this.guardando.set(true);
-    this.loadingBar.show();
+  //   this.guardando.set(true);
+  //   this.loadingBar.show();
 
-    // 💡 Aquí corregimos el nombre del campo a padreId y tipamos como NinoCreate
-    const request: NinoCreate = {
-      padreId: parseInt(this.id),
-      nombre: this.form.nombre,
-      apellido: this.form.apellido,
-      fechaNacimiento: this.form.fechaNacimiento,
-      sexo: this.form.sexo as 'M' | 'F' // Casting seguro tras la validación anterior
-    };
+  //   // 💡 Aquí corregimos el nombre del campo a padreId y tipamos como NinoCreate
+  //   const request: NinoCreate = {
+  //     padreId: parseInt(this.id),
+  //     nombre: this.form.nombre,
+  //     apellido: this.form.apellido,
+  //     fechaNacimiento: this.form.fechaNacimiento,
+  //     sexo: this.form.sexo as 'M' | 'F' // Casting seguro tras la validación anterior
+  //   };
 
-    this.ninosService.crear(request).subscribe({
-      next: (r: ApiResponse<NinoResponse>) => {
-        if (r.success) {
-          this.router.navigate(['/padres', this.id, 'hijos']);
-        }
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      },
-      error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al registrar el hijo.');
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      }
-    });
-  }
+  //   this.ninosService.crear(request).subscribe({
+  //     next: (r: ApiResponse<NinoResponse>) => {
+  //       if (r.success) {
+  //         this.router.navigate(['/padres', this.id, 'hijos']);
+  //       }
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     },
+  //     error: (err) => {
+  //       this.error.set(err.error?.message ?? 'Error al registrar el hijo.');
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     }
+  //   });
+  // }
 }
