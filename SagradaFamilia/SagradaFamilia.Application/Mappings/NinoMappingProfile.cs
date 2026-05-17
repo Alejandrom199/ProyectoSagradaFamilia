@@ -14,8 +14,10 @@ namespace SagradaFamilia.Application.Mappings
 
 
             CreateMap<Nino, NinoDto.ListResponse>()
-                .ForMember(dest => dest.NombreCompleto,
-                    opt => opt.MapFrom(src => $"{src.Nombre} {src.Apellido}"))
+                .ForMember(dest => dest.Nombre,
+                    opt => opt.MapFrom(src => src.Nombre))
+                .ForMember(dest => dest.Apellido,
+                    opt => opt.MapFrom(src => src.Apellido))
 
                 .ForMember(dest => dest.NombrePadre,
                     opt => opt.MapFrom(src => src.Padre != null ? $"{src.Padre.Nombre} {src.Padre.Apellido}" : string.Empty))

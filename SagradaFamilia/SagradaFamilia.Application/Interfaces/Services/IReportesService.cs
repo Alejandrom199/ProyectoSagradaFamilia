@@ -2,7 +2,7 @@
 {
     public interface IReportesService
     {
-        Task<byte[]> GenerarAlimentosPdf(string? titulo);
-        Task<byte[]> GenerarPadresPdf(string? titulo);
+        Task<byte[]> GenerarAlimentosPdf(string? titulo, string logoPath, string marcaAguaPath);
+        Task<byte[]> GenerarPadresPdf(string? titulo, string logoPath, string marcaAguaPath);
     }
 }

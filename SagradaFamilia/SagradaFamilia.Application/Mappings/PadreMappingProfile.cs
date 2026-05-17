@@ -12,8 +12,10 @@ namespace SagradaFamilia.Application.Mappings
             CreateMap<PadreDto.Update, Padre>();
 
             CreateMap<Padre, PadreDto.ListResponse>()
-                .ForMember(dest => dest.NombreCompleto,
-                    opt => opt.MapFrom(src => $"{src.Nombre} {src.Apellido}"))
+                .ForMember(dest => dest.Nombre,
+                    opt => opt.MapFrom(src => src.Nombre))
+                .ForMember(dest => dest.Apellido,
+                    opt => opt.MapFrom(src => src.Apellido))
 
                 .ForMember(dest => dest.Email,
                     opt => opt.MapFrom(src => src.Usuario != null ? src.Usuario.Email : string.Empty))

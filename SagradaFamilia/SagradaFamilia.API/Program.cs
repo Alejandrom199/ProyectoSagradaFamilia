@@ -1,4 +1,5 @@
 using SagradaFamilia.API.Extensions;
+using SagradaFamilia.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,7 @@ builder.Services
     .AddJwtAuthentication(builder.Configuration)
     .AddRepositories()
     .AddApplicationServices()
+    .AddInfrastructureServices()
     .AddPdfReporting()
     .AddProphetClient(builder.Configuration)
     .AddAutoMapperProfiles()

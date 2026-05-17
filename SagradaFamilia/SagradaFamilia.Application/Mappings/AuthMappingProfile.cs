@@ -14,7 +14,8 @@ namespace SagradaFamilia.Application.Mappings
 
             // 2. Mapeo para Padre (Toma datos del Padre y de la entidad Usuario ligada)
             CreateMap<Padre, PadreDto.ListResponse>()
-                .ForMember(dest => dest.NombreCompleto, opt => opt.MapFrom(src => $"{src.Nombre} {src.Apellido}"))
+                .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Nombre))
+                .ForMember(dest => dest.Apellido, opt => opt.MapFrom(src => src.Apellido))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Usuario.Email))
                 .ForMember(dest => dest.Activo, opt => opt.MapFrom(src => src.Usuario.Activo))
                 .ForMember(dest => dest.TotalHijos, opt => opt.MapFrom(src => src.Ninos.Count));
@@ -26,7 +27,8 @@ namespace SagradaFamilia.Application.Mappings
 
             // 3. Mapeo para Medico
             CreateMap<Medico, MedicoDto.ListResponse>()
-                .ForMember(dest => dest.NombreCompleto, opt => opt.MapFrom(src => $"{src.Nombre} {src.Apellido}"))
+                .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Nombre))
+                .ForMember(dest => dest.Apellido, opt => opt.MapFrom(src => src.Apellido))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Usuario.Email));
 
             CreateMap<Medico, MedicoDto.DetailResponse>()

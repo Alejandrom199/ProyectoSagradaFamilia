@@ -1,6 +1,6 @@
 ﻿namespace SagradaFamilia.Application.DTOs
 {
-    public static class AlimentoDto
+    public class AlimentoDto
     {
         public class Response
         {
