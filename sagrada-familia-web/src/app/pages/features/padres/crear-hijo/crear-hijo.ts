@@ -50,7 +50,6 @@ export class CrearHijo implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Usamos obtenerPorId que es más directo que filtrar en obtenerTodos
     this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
       next: (r: ApiResponse<PadreResponse>) => {
         if (r.success) this.padre.set(r.data);
@@ -67,13 +66,14 @@ export class CrearHijo implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    // 💡 Aquí corregimos el nombre del campo a padreId y tipamos como NinoCreate
+    // Ajustado al nuevo DTO 'NinoCreate' que exige medicoId
     const request: NinoCreate = {
       padreId: parseInt(this.id),
       nombre: this.form.nombre,
       apellido: this.form.apellido,
       fechaNacimiento: this.form.fechaNacimiento,
-      sexo: this.form.sexo as 'M' | 'F' // Casting seguro tras la validación anterior
+      sexo: this.form.sexo as 'M' | 'F',
+      medicoId: this.padre()?.medicoId ?? 0
     };
 
     this.ninosService.crear(request).subscribe({

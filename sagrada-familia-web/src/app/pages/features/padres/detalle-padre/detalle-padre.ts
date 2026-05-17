@@ -10,10 +10,11 @@ import { PadresService } from '../../../../core/services/padres';
 import { NinosService } from '../../../../core/services/ninos';
 import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 
 
 @Component({
-  selector: 'app-detalle-padre',
+  selector: 'detalle-padre',
   imports: [NgIcon, RouterLink, Datatable, Breadcrumb],
   viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash })],
   templateUrl: './detalle-padre.html',
@@ -36,16 +37,8 @@ export class DetallePadre implements OnInit {
   columnas: DatatableColumn<NinoResponse>[] = [
     {
       key: 'nombre', label: 'Hijo/a', sortable: true, filterable: true,
-      render: (row) => `
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full ${row.sexo === 'M' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center text-xs font-semibold">
-            ${row.nombre.charAt(0)}${row.apellido.charAt(0)}
-          </div>
-          <div>
-            <p class="font-medium">${row.nombre} ${row.apellido}</p>
-            <p class="text-xs text-[var(--color-text-secondary)]">${row.sexo === 'M' ? 'Varón' : 'Niña'}</p>
-          </div>
-        </div>`
+      render: (row) => generarAvatarHtml(row.nombre, row.apellido, row.sexo),
+      exportValue: (row) => `${row.nombre} ${row.apellido}`
     },
     {
       key: 'edadMeses', label: 'Edad', sortable: true,

@@ -76,8 +76,10 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <datatable title="Desglose de peso estimado" [data]="prediccion()!.predicciones" [columns]="columnas"
-                searchPlaceholder="Filtrar meses..." emptyMessage="No hay predicciones." [pageSize]="6">
+            <datatable
+                [title]="'Desglose de peso estimado para ' + ninoSeleccionado()?.nombre + ' ' + ninoSeleccionado()?.apellido"
+                [data]="prediccion()!.predicciones" [columns]="columnas" searchPlaceholder="Filtrar meses..."
+                emptyMessage="No hay predicciones." [pageSize]="6">
             </datatable>
         </div>
     </div>

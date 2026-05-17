@@ -52,15 +52,14 @@ export class OrientacionPadres implements OnInit {
     const edadActual = nino.edadMeses;
 
     return this.alimentos()
-      .filter(a => a.edadMinimaIntro <= edadActual && (!a.edadMaxima || a.edadMaxima >= edadActual))
+      .filter(a => a.edadMinimaMeses <= edadActual)
       .map(a => ({
         id: a.id,
         nombre: a.nombre,
         descripcion: a.recomendacion || 'Sin recomendaciones específicas.',
         categoriaId: a.categoriaId,
         categoriaNombre: a.categoriaNombre,
-        badge: `A partir de los ${a.edadMinimaIntro} meses`,
-        edadMaxima: a.edadMaxima || undefined
+        badge: `A partir de los ${a.edadMinimaMeses} meses`,
       }));
   });
 

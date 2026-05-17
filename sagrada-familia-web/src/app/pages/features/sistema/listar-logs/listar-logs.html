@@ -1,0 +1,28 @@
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Logs del sistema</h2>
+            <p class="text-gray-500 mt-1">Registros de errores y eventos críticos recientes</p>
+        </div>
+
+        <div class="flex gap-2">
+            <a routerLink="/sistema/logs"
+                class="px-4 py-2 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-sm">
+                Logs
+            </a>
+            <a routerLink="/sistema/auditoria"
+                class="px-4 py-2 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 transition-colors">
+                Auditoría
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Errores recientes" [data]="logs()" [columns]="columnas" [exportExcel]="true"
+            exportFileName="logs-sistema" [showActualizar]="true" [showExportar]="true" [showColumnas]="true"
+            searchPlaceholder="Buscar por mensaje o endpoint..."
+            emptyMessage="No hay errores registrados recientemente." (onActualizar)="cargarLogs()">
+        </datatable>
+    </div>
+</div>

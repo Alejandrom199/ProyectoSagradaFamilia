@@ -93,11 +93,11 @@ export class EditarPadre implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    // 💡 Mapeo estricto al DTO de actualización
     const request: PadreUpdate = {
       nombre: this.formPadre.value.nombre,
       apellido: this.formPadre.value.apellido,
-      telefono: this.formPadre.value.telefono || undefined
+      telefono: this.formPadre.value.telefono || undefined,
+      medicoId: this.padre()?.medicoId ?? 0
     };
 
     this.padresService.actualizar(parseInt(this.id), request).subscribe({

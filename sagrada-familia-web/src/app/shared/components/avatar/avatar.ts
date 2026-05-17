@@ -24,21 +24,22 @@ export class Avatar {
     if (s === 'M') return 'bg-blue-100 text-blue-600';
     if (s === 'F') return 'bg-pink-100 text-pink-600';
 
-    return 'bg-gray-100 text-gray-600';
+    return 'bg-white text-gray-600';
   });
 
   textoSexo = computed(() => {
     const s = this.sexo();
-    if (s === 'M') return 'Varón';
+    if (s === 'M') return 'Niño';
     if (s === 'F') return 'Niña';
 
-    return null;
+    return '';
   });
 
   textoRol = computed(() => {
     const r = this.rol();
     if (r === 'Medico') return 'Médico';
     if (r === 'Padre') return 'Padre';
+    else return 'Administrador';
 
     return null;
   });

@@ -1,0 +1,31 @@
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Citas del paciente</h2>
+            <p class="text-gray-500 mt-1">
+                @if (nino()) {
+                <span class="font-semibold">{{ nino()?.nombre }} {{ nino()?.apellido }}</span>
+                } @else {
+                Historial completo de consultas
+                }
+            </p>
+        </div>
+
+        <btn variant="primary" [routerLink]="['/citas/crear']" [queryParams]="{ ninoId: ninoId }"
+            class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            Nueva cita
+        </btn>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Historial de citas" [data]="citas()" [columns]="columnas" [actions]="acciones"
+            [exportExcel]="true" exportFileName="citas-paciente" [showActualizar]="true" [showExportar]="true"
+            searchPlaceholder="Buscar por motivo o médico..."
+            emptyMessage="Este paciente no tiene citas registradas."
+            (onActualizar)="cargarCitas()">
+        </datatable>
+    </div>
+</div>

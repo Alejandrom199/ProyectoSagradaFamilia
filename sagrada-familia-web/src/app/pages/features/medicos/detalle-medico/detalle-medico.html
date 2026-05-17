@@ -1,0 +1,44 @@
+<div>
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+
+    @if (medico()) {
+    <div class="card mb-6">
+        <div class="card-header">Información del médico</div>
+        <div class="card-body">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div>
+                    <p class="text-xs text-[var(--color-text-secondary)] mb-1">Nombre completo</p>
+                    <p class="font-semibold text-[var(--color-text-primary)]">
+                        {{ medico()?.nombreCompleto }}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs text-[var(--color-text-secondary)] mb-1">Email</p>
+                    <p class="font-medium text-[var(--color-text-primary)]">{{ medico()?.email }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[var(--color-text-secondary)] mb-1">Especialidad</p>
+                    <p class="font-medium text-[var(--color-text-primary)]">{{ medico()?.especialidad ?? '—' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[var(--color-text-secondary)] mb-1">Teléfono</p>
+                    <p class="font-medium text-[var(--color-text-primary)]">{{ medico()?.telefono ?? '—' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-[var(--color-text-primary)]">Pacientes asignados</h2>
+            <p class="text-sm text-[var(--color-text-secondary)] mt-0.5">
+                {{ pacientes().length }} paciente{{ pacientes().length !== 1 ? 's' : '' }} bajo cuidado
+            </p>
+        </div>
+    </div>
+
+    <datatable title="Pacientes del médico" [data]="pacientes()" [columns]="columnas" [actions]="acciones"
+        searchPlaceholder="Buscar por nombre..." emptyMessage="Este médico aún no tiene pacientes asignados.">
+    </datatable>
+    }
+</div>

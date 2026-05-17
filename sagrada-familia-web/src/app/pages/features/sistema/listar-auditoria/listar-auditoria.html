@@ -1,0 +1,97 @@
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Auditoría</h2>
+            <p class="text-gray-500 mt-1">Rastro de cambios sobre los registros del sistema</p>
+        </div>
+
+        <div class="flex gap-2">
+            <a routerLink="/sistema/logs"
+                class="px-4 py-2 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 transition-colors">
+                Logs
+            </a>
+            <a routerLink="/sistema/auditoria"
+                class="px-4 py-2 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-sm">
+                Auditoría
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+        <form [formGroup]="formFiltro" (ngSubmit)="buscar()"
+            class="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end">
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-gray-600 uppercase ml-1">Tabla *</label>
+                <select formControlName="tabla"
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                    @for (t of tablas; track t) {
+                    <option [value]="t">{{ t }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-gray-600 uppercase ml-1">Clave primaria *</label>
+                <input formControlName="pk" type="text" placeholder="Ej. 42"
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                    [class.border-red-500]="f['pk'].invalid && f['pk'].touched">
+            </div>
+
+            <button type="submit" [disabled]="formFiltro.invalid"
+                class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-100 hover:bg-blue-700 disabled:opacity-50 transition-all flex items-center gap-2 h-fit">
+                <ng-icon name="heroMagnifyingGlass"></ng-icon>
+                Consultar
+            </button>
+        </form>
+    </div>
+
+    @if (busqueda()) {
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Historial de cambios" [data]="registros()" [columns]="columnas" [actions]="acciones"
+            [exportExcel]="true" exportFileName="auditoria"
+            searchPlaceholder="Buscar en el historial..."
+            emptyMessage="No hay registros auditables para esta búsqueda.">
+        </datatable>
+    </div>
+    } @else {
+    <div class="bg-white rounded-2xl border border-dashed border-gray-300 p-12 text-center">
+        <ng-icon name="heroTableCells" class="text-5xl text-gray-300"></ng-icon>
+        <p class="mt-4 text-gray-500 font-medium">Selecciona una tabla y el ID del registro para consultar su
+            historial de cambios.</p>
+    </div>
+    }
+
+    @if (registroDetalle(); as d) {
+    <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">Detalle del cambio</h3>
+                    <p class="text-xs text-gray-500">{{ d.tabla }} #{{ d.clavePrimaria }} · {{ d.accion }}</p>
+                </div>
+                <button (click)="registroDetalle.set(null)"
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-auto">
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Valores antiguos</p>
+                    <pre
+                        class="text-xs bg-red-50 p-3 rounded-xl border border-red-100 overflow-auto max-h-96 text-red-900">{{ d.valoresAntiguos || '—' }}</pre>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Valores nuevos</p>
+                    <pre
+                        class="text-xs bg-green-50 p-3 rounded-xl border border-green-100 overflow-auto max-h-96 text-green-900">{{ d.valoresNuevos || '—' }}</pre>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                <button (click)="registroDetalle.set(null)"
+                    class="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800 transition-colors">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

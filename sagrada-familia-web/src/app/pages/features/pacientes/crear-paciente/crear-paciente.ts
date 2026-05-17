@@ -31,7 +31,6 @@ export class CrearPaciente implements OnInit {
   guardando = signal(false);
   error = signal('');
 
-  // 💡 Tipado corregido para coincidir con NinoCreate
   form: {
     padreId: number;
     nombre: string;
@@ -80,7 +79,8 @@ export class CrearPaciente implements OnInit {
       apellido: this.form.apellido,
       fechaNacimiento: this.form.fechaNacimiento,
       sexo: this.form.sexo as 'M' | 'F',
-      padreId: this.auth.esMedico() ? this.form.padreId : 0
+      padreId: this.auth.esMedico() ? this.form.padreId : 0,
+      medicoId: this.auth.esMedico() ? (this.auth as any).usuarioId || 0 : 0
     };
 
     this.ninosService.crear(request).subscribe({

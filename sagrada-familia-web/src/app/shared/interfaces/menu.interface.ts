@@ -22,3 +22,9 @@ export interface PermisoUI {
     puedeEditar: boolean;
     puedeEliminar: boolean;
 }
+
+export interface PermisoAsignar {
+    usuarioId: number;
+    opcionAccionId: number;
+    permitido: boolean;
+}

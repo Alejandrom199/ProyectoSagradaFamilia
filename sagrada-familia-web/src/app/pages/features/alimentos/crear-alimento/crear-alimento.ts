@@ -57,9 +57,9 @@ export class CrearAlimento implements OnInit {
       categoriaId: this.form.categoriaId,
       nombre: this.form.nombre,
       descripcion: this.form.descripcion || undefined,
-      edadMinimaIntro: this.form.edadMinimaIntro,
-      edadMaxima: this.form.edadMaxima ?? undefined,
-      recomendacion: this.form.recomendacion || undefined
+      edadMinimaMeses: this.form.edadMinimaIntro,
+      recomendacion: this.form.recomendacion || undefined,
+      activo: true
     };
 
     this.alimentosService.crear(request).subscribe({

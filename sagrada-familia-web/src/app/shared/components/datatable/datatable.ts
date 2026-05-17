@@ -76,18 +76,21 @@ export class Datatable<T extends object> implements OnChanges {
   @Input() pageSizes = [5, 10, 25, 50];
   @Input() emptyMessage = 'No hay registros para mostrar.';
 
-  @Input() exportExcel = false;
-  @Input() exportPdf = false;
+  @Input() exportExcel = true;
+  @Input() exportPdf = true;
   @Input() exportFileName = 'reporte';
 
-  @Input() showActualizar = false;
-  @Input() showColumnas = false;
-  @Input() showExportar = false;
-  @Input() showConfiguracion = false;
+  @Input() showActualizar = true;
+  @Input() showColumnas = true;
+  @Input() showExportar = true;
+  @Input() showConfiguracion = true;
 
   @Output() onActualizar = new EventEmitter<void>();
   @Output() onConfiguracion = new EventEmitter<void>();
   @Output() onExportPdf = new EventEmitter<Record<string | number | symbol, string>>();
+
+  filtrosSeleccion: Record<string, Set<string>> = {};
+  busquedaFiltro: Record<string, string> = {};
 
   sortKey = '';
   sortDir: 'asc' | 'desc' = 'asc';
@@ -296,20 +299,6 @@ export class Datatable<T extends object> implements OnChanges {
     this.paginaActualSignal.set(1);
   }
 
-  limpiarFiltroColumna(key: string | number | symbol) {
-    const path = String(key);
-    this.filtros[path] = '';
-    this.onFilterChange();
-    this.menuActivo.set(null);
-  }
-
-  limpiarFiltros() {
-    this.filtros = {};
-    this.busquedaGlobal = '';
-    this.onFilterChange();
-    this.menuActivo.set(null);
-  }
-
   ordenarPor(key: string | number | symbol, dir?: 'asc' | 'desc') {
     const sortPath = String(key);
     if (dir) {
@@ -380,13 +369,11 @@ export class Datatable<T extends object> implements OnChanges {
       });
     }
 
-    Object.entries(this.filtros).forEach(([key, value]) => {
-      if (value?.trim()) {
-        resultado = resultado.filter(row => {
-          const val = this.getCellValue(row, key);
-          return val != null && String(val).toLowerCase().includes(value.toLowerCase());
-        });
-      }
+    Object.entries(this.filtrosSeleccion).forEach(([key, set]) => {
+      resultado = resultado.filter(row => {
+        const val = String(this.getCellValue(row, key) ?? '');
+        return set.has(val);
+      });
     });
 
     if (this.sortKey) {
@@ -417,5 +404,68 @@ export class Datatable<T extends object> implements OnChanges {
 
   cerrarMenus() {
     this.menuActivo.set(null);
+  }
+
+  // filtros
+  isValorMarcado(key: string | number | symbol, valor: string): boolean {
+    const set = this.filtrosSeleccion[String(key)];
+    return set ? set.has(valor) : true;
+  }
+
+  toggleValorFiltro(key: string | number | symbol, valor: string) {
+    const k = String(key);
+
+    if (!this.filtrosSeleccion[k]) {
+      this.filtrosSeleccion[k] = new Set(this.obtenerValoresUnicos(k));
+    }
+
+    const set = this.filtrosSeleccion[k];
+    set.has(valor) ? set.delete(valor) : set.add(valor);
+
+    if (set.size === this.obtenerValoresUnicos(k).length) {
+      delete this.filtrosSeleccion[k];
+    }
+    this.onFilterChange();
+  }
+
+  todosLosValoresMarcados(key: string | number | symbol): boolean {
+    const set = this.filtrosSeleccion[String(key)];
+    return !set || set.size === this.obtenerValoresUnicos(key).length;
+  }
+
+  toggleTodosLosValores(key: string | number | symbol) {
+    const k = String(key);
+    if (this.todosLosValoresMarcados(k)) {
+      this.filtrosSeleccion[k] = new Set();
+    } else {
+      delete this.filtrosSeleccion[k];
+    }
+    this.onFilterChange();
+  }
+
+  valoresUnicosFiltrados(key: string | number | symbol): string[] {
+    const k = String(key);
+    const q = (this.busquedaFiltro[k] || '').toLowerCase().trim();
+    const todos = this.obtenerValoresUnicos(k);
+    return q ? todos.filter(v => v.toLowerCase().includes(q)) : todos;
+  }
+
+  limpiarFiltroColumna(key: string | number | symbol) {
+    delete this.filtrosSeleccion[String(key)];
+    delete this.busquedaFiltro[String(key)];
+    this.onFilterChange();
+    this.menuActivo.set(null);
+  }
+
+  limpiarFiltros() {
+    this.filtrosSeleccion = {};
+    this.busquedaFiltro = {};
+    this.busquedaGlobal = '';
+    this.onFilterChange();
+    this.menuActivo.set(null);
+  }
+
+  get tieneFiltrosActivos(): boolean {
+    return Object.keys(this.filtrosSeleccion).length > 0 || this.busquedaGlobal.trim() !== '';
   }
 }
