@@ -57,38 +57,38 @@ export class CrearHijo implements OnInit {
     });
   }
 
-  guardar(): void {
-    if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
-      this.error.set('Completá todos los campos obligatorios.');
-      return;
-    }
+  // guardar(): void {
+  //   if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
+  //     this.error.set('Completá todos los campos obligatorios.');
+  //     return;
+  //   }
 
-    this.guardando.set(true);
-    this.loadingBar.show();
+  //   this.guardando.set(true);
+  //   this.loadingBar.show();
 
-    // Ajustado al nuevo DTO 'NinoCreate' que exige medicoId
-    const request: NinoCreate = {
-      padreId: parseInt(this.id),
-      nombre: this.form.nombre,
-      apellido: this.form.apellido,
-      fechaNacimiento: this.form.fechaNacimiento,
-      sexo: this.form.sexo as 'M' | 'F',
-      medicoId: this.padre()?.medicoId ?? 0
-    };
+  // Ajustado al nuevo DTO 'NinoCreate' que exige medicoId
+  const request: NinoCreate = {
+    padreId: parseInt(this.id),
+    nombre: this.form.nombre,
+    apellido: this.form.apellido,
+    fechaNacimiento: this.form.fechaNacimiento,
+    sexo: this.form.sexo as 'M' | 'F',
+    medicoId: this.padre()?.medicoId ?? 0
+  };
 
-    this.ninosService.crear(request).subscribe({
-      next: (r: ApiResponse<NinoResponse>) => {
-        if (r.success) {
-          this.router.navigate(['/padres', this.id, 'hijos']);
-        }
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      },
-      error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al registrar el hijo.');
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      }
-    });
-  }
+  //   this.ninosService.crear(request).subscribe({
+  //     next: (r: ApiResponse<NinoResponse>) => {
+  //       if (r.success) {
+  //         this.router.navigate(['/padres', this.id, 'hijos']);
+  //       }
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     },
+  //     error: (err) => {
+  //       this.error.set(err.error?.message ?? 'Error al registrar el hijo.');
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     }
+  //   });
+  // }
 }

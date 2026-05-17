@@ -12,7 +12,7 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 import { AlimentosService } from '../../../../core/services/alimentos';
 import { NinosService } from '../../../../core/services/ninos';
 import { AlimentoResponse, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
-import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface'; // 💡 Actualizado a DetailResponse
 
 @Component({
   selector: 'orientacion-padres',
@@ -29,7 +29,7 @@ export class OrientacionPadres implements OnInit {
 
   alimentos = signal<AlimentoResponse[]>([]);
   categorias = signal<CategoriaResponse[]>([]);
-  ninoSeleccionado = signal<NinoResponse | null>(null);
+  ninoSeleccionado = signal<NinoDetailResponse | null>(null); // 💡 Actualizado
 
   migajas: BreadcrumbItem[] = [
     { label: 'Orientación Alimentaria' }
@@ -92,7 +92,7 @@ export class OrientacionPadres implements OnInit {
 
     const ninoIdParam = this.route.snapshot.queryParamMap.get('ninoId');
     if (ninoIdParam) {
-      const idBuscar = parseInt(ninoIdParam);
+      const idBuscar = parseInt(ninoIdParam, 10);
       this.ninosService.obtenerPorId(idBuscar)
         .pipe(finalize(() => this.loadingBar.complete()))
         .subscribe({

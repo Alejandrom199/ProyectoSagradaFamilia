@@ -22,7 +22,7 @@
 
     @if (ninoAEliminar()) {
     <confirm-modal title="¿Eliminar paciente?"
-        [message]="'Esta acción eliminará a ' + ninoAEliminar()?.nombre + ' ' + ninoAEliminar()?.apellido + ' del sistema. Se perderá todo su historial médico.'"
+        [message]="'Esta acción eliminará a ' + ninoAEliminar()?.nombreCompleto + ' del sistema. Se perderá todo su historial médico.'"
         (confirm)="confirmarEliminar()" (cancel)="ninoAEliminar.set(null)">
     </confirm-modal>
     }

@@ -5,7 +5,6 @@ import { tap, Observable } from 'rxjs';
 import { SessionUser, LoginRequest, LoginResponse } from '../../shared/interfaces/auth.interface';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
 import { environment } from '../../../environments/environment';
-import { jwtDecode } from 'jwt-decode';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -24,23 +23,48 @@ export class AuthService {
       `${environment.apiUrl}/auth/login`, request, { withCredentials: true }
     ).pipe(
       tap(response => {
-        if (!response.success) throw new Error(response.message || 'Error en el login');
+        if (!response.success || !response.data) {
+          throw new Error(response.message || 'Error en el login');
+        }
+        this.establecerSesion(response.data);
+      })
+    );
+  }
 
-        const user: SessionUser = {
-          id: response.data.id,
-          nombre: response.data.nombre,
-          rol: response.data.rol,
-          accessToken: response.data.accessToken
-        };
-
-        this._currentUser.set(user);
-        localStorage.setItem('user', JSON.stringify(user));
+  refreshToken(): Observable<ApiResponse<LoginResponse>> {
+    return this.http.post<ApiResponse<LoginResponse>>(
+      `${environment.apiUrl}/auth/refresh-token`,
+      {},
+      { withCredentials: true }
+    ).pipe(
+      tap(response => {
+        if (!response.success || !response.data) {
+          this.limpiarSesion();
+          throw new Error(response.message || 'Error al refrescar el token');
+        }
+        this.establecerSesion(response.data);
       })
     );
   }
 
   logout(): void {
-    this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe();
+    this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+      next: () => this.limpiarSesion(),
+      error: () => this.limpiarSesion()
+    });
+  }
+
+  private establecerSesion(data: LoginResponse): void {
+    const user: SessionUser = {
+      id: data.id,
+      nombre: data.nombre,
+      rol: data.rol
+    };
+    this._currentUser.set(user);
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  private limpiarSesion(): void {
     this._currentUser.set(null);
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
@@ -50,7 +74,8 @@ export class AuthService {
     try {
       const raw = localStorage.getItem('user');
       return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   }
-
 }

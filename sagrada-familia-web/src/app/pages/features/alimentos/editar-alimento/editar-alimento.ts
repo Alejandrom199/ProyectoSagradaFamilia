@@ -75,8 +75,8 @@ export class EditarAlimento implements OnInit {
       return;
     }
 
-    this.guardando.set(true);
-    this.loadingBar.show();
+    //   this.guardando.set(true);
+    //   this.loadingBar.show();
 
     const request: AlimentoUpdate = {
       categoriaId: this.form.categoriaId,
@@ -87,17 +87,18 @@ export class EditarAlimento implements OnInit {
       activo: this.alimento()?.activo ?? true
     };
 
-    this.alimentosService.actualizar(parseInt(this.id), request).subscribe({
-      next: (r) => {
-        if (r.success) this.router.navigate(['/alimentos']);
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      },
-      error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al actualizar.');
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      }
-    });
+    //   this.alimentosService.actualizar(parseInt(this.id), request).subscribe({
+    //     next: (r) => {
+    //       if (r.success) this.router.navigate(['/alimentos']);
+    //       this.guardando.set(false);
+    //       this.loadingBar.complete();
+    //     },
+    //     error: (err) => {
+    //       this.error.set(err.error?.message ?? 'Error al actualizar.');
+    //       this.guardando.set(false);
+    //       this.loadingBar.complete();
+    //     }
+    //   });
+    // }
   }
 }

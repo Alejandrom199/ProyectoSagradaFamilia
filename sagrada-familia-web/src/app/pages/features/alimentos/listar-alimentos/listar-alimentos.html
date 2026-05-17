@@ -22,7 +22,7 @@
 
     @if (alimentoAEliminar()) {
     <confirm-modal title="¿Eliminar alimento?"
-        [message]="'Esta acción eliminará a ' + alimentoAEliminar()?.nombre + ' del sistema. Se perderá todo su historial médico.'"
+        [message]="'Esta acción eliminará a ' + alimentoAEliminar()?.nombre + ' del catálogo general. Esta acción no se puede deshacer.'"
         (confirm)="confirmarEliminar()" (cancel)="alimentoAEliminar.set(null)">
     </confirm-modal>
     }

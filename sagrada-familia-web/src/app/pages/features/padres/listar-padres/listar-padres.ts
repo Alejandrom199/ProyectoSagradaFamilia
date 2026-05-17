@@ -40,8 +40,13 @@ export class ListarPadres implements OnInit {
       label: 'Padre/Madre',
       sortable: true,
       filterable: true,
-      render: (row) => generarAvatarHtml(row.nombre, row.apellido),
-      exportValue: (row) => `${row.nombre} ${row.apellido}`
+      render: (row) => {
+        const nombreCompleto = row.nombreCompleto.split(' ');
+        const nombre = nombreCompleto[0];
+        const apellido = nombreCompleto[nombreCompleto.length - 1];
+        return generarAvatarHtml(nombre, apellido);
+      },
+      exportValue: (row) => row.nombreCompleto
     },
     {
       key: 'telefono',

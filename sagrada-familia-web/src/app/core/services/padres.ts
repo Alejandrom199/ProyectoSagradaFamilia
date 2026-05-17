@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PadreCreate, PadreResponse, PadreUpdate } from '../../shared/interfaces/padre.interface';
+import { PadreCreate, PadreDetailResponse, PadreResponse, PadreUpdate } from '../../shared/interfaces/padre.interface';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
 
 @Injectable({
@@ -12,23 +13,26 @@ export class PadresService {
 
   constructor(private http: HttpClient) { }
 
-  obtenerTodos() {
+  obtenerTodos(): Observable<ApiResponse<PadreResponse[]>> {
     return this.http.get<ApiResponse<PadreResponse[]>>(this.url, { withCredentials: true });
   }
 
-  obtenerPorId(id: number) {
-    return this.http.get<ApiResponse<PadreResponse>>(`${this.url}/${id}`, { withCredentials: true });
+  obtenerPorId(id: number): Observable<ApiResponse<PadreDetailResponse>> {
+    return this.http.get<ApiResponse<PadreDetailResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
 
-  crear(request: PadreCreate) {
-    return this.http.post<ApiResponse<PadreResponse>>(this.url, request, { withCredentials: true });
+  crear(request: PadreCreate): Observable<ApiResponse<PadreDetailResponse>> {
+    return this.http.post<ApiResponse<PadreDetailResponse>>(this.url, request, { withCredentials: true });
   }
 
-  actualizar(id: number, request: PadreUpdate) {
-    return this.http.put<ApiResponse<PadreResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
+  /* 
+  // Descomentar cuando se agregue el endpoint [HttpPut("{id:int}")] en PadreController.cs
+  actualizar(id: number, request: PadreUpdate): Observable<ApiResponse<PadreDetailResponse>> {
+    return this.http.put<ApiResponse<PadreDetailResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
   }
+  */
 
-  eliminar(id: number) {
+  eliminar(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.url}/${id}`, { withCredentials: true });
   }
 }

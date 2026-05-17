@@ -2,6 +2,19 @@ import { NinoResponse } from "./nino.interface";
 
 export interface PadreResponse {
     id: number;
+    nombreCompleto: string;
+    email: string;
+    telefono?: string;
+    medicoId: number;
+    nombreMedico: string;
+    totalHijos: number;
+    activo: boolean;
+    fechaCreacion: string;
+}
+
+export interface PadreDetailResponse {
+    id: number;
+    usuarioId: number;
     nombre: string;
     apellido: string;
     email: string;

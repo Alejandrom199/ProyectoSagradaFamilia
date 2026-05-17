@@ -10,6 +10,15 @@ export interface NinoResponse {
     sexo: 'M' | 'F';
     edadMeses: number;
     fechaCreacion: string;
+
+    padreId: number;
+    padreNombreCompleto: string;
+    padreEmail: string;
+    padreTelefono: string;
+
+    medicoId: number;
+    medicoNombreCompleto: string;
+    medicoEspecialidad?: string;
 }
 
 export interface NinoDetailResponse {
@@ -34,6 +43,7 @@ export interface NinoDetailResponse {
 export interface NinoCreate {
     padreId: number;
     medicoId: number;
+    medicoId: number;
     nombre: string;
     apellido: string;
     fechaNacimiento: string;
@@ -45,5 +55,6 @@ export interface NinoUpdate {
     apellido: string;
     fechaNacimiento: string;
     sexo: 'M' | 'F';
+    medicoId?: number;
     medicoId?: number;
 }

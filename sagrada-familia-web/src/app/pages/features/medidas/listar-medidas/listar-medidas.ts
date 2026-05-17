@@ -10,7 +10,7 @@ import { Button } from '../../../../shared/components/button/button';
 import { NinosService } from '../../../../core/services/ninos';
 import { MedidasService } from '../../../../core/services/medidas';
 import { MedidaResponse } from '../../../../shared/interfaces/medida.interface';
-import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface'; // 💡 Actualizado a DetailResponse
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 
 
@@ -28,7 +28,7 @@ export class ListarMedidas implements OnInit {
   private ninosService = inject(NinosService);
 
   medidas = signal<MedidaResponse[]>([]);
-  nino = signal<NinoResponse | null>(null);
+  nino = signal<NinoDetailResponse | null>(null); // 💡 Actualizado
 
   modalAbierto = signal(false);
   editando = signal<MedidaResponse | null>(null);
@@ -63,7 +63,9 @@ export class ListarMedidas implements OnInit {
         return `<span class="px-3 py-1 rounded-full text-xs font-bold border ${map[r.estadoNutricional] ?? defaultClass}">${labels[r.estadoNutricional] ?? r.estadoNutricional}</span>`;
       }
     },
-    { key: 'percentil', label: 'Percentil', sortable: true, render: (r) => `<span class="text-gray-500 font-medium">P${r.percentil}</span>` }
+    // 💡 Separado en dos columnas según el DTO actual
+    { key: 'percentilPeso', label: 'P. Peso', sortable: true, render: (r) => `<span class="text-gray-500 font-medium">P${r.percentilPeso}</span>` },
+    { key: 'percentilTalla', label: 'P. Talla', sortable: true, render: (r) => `<span class="text-gray-500 font-medium">P${r.percentilTalla}</span>` }
   ];
 
   acciones: DatatableAction<MedidaResponse>[] = [
@@ -75,14 +77,14 @@ export class ListarMedidas implements OnInit {
     const idUrl = this.route.snapshot.paramMap.get('id');
     if (idUrl) {
       this.id = idUrl;
-      const ninoId = parseInt(this.id);
-      this.ninosService.obtenerPorId(ninoId).subscribe(r => { if (r.success) this.nino.set(r.data); });
+      const ninoId = parseInt(this.id, 10);
+      this.ninosService.obtenerPorId(ninoId).subscribe(r => { if (r.success && r.data) this.nino.set(r.data); });
       this.cargarMedidas();
     }
   }
 
   cargarMedidas() {
-    this.medidasService.obtenerPorNino(parseInt(this.id)).subscribe(r => {
+    this.medidasService.obtenerPorNino(parseInt(this.id, 10)).subscribe(r => {
       if (r.success) this.medidas.set(r.data);
     });
   }
@@ -106,7 +108,7 @@ export class ListarMedidas implements OnInit {
     const medida = this.editando();
     const obs = medida
       ? this.medidasService.actualizar(medida.id, this.form)
-      : this.medidasService.crear({ ...this.form, ninoId: parseInt(this.id) });
+      : this.medidasService.crear({ ...this.form, ninoId: parseInt(this.id, 10) });
 
     obs.subscribe({
       next: (r) => { if (r.success) { this.cargarMedidas(); this.cerrarModal(); } this.guardando.set(false); },
