@@ -15,15 +15,14 @@
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
-            [showActualizar]="true" [showColumnas]="true" [showExportar]="true" [exportExcel]="true" [exportPdf]="true"
-            [showConfiguracion]="true" exportFileName="catalogo-alimentos" (onExportPdf)="descargarAlimentosPdf($event)"
-            searchPlaceholder="Buscar" emptyMessage="No hay alimentos registrados en el sistema.">
+            exportFileName="catalogo-alimentos" (onExportPdf)="descargarAlimentosPdf($event)" searchPlaceholder="Buscar"
+            emptyMessage="No hay alimentos registrados en el sistema.">
         </datatable>
     </div>
 
     @if (alimentoAEliminar()) {
     <confirm-modal title="¿Eliminar alimento?"
-        [message]="'Esta acción eliminará a ' + alimentoAEliminar()?.nombre + ' del sistema. Se perderá todo su historial médico.'"
+        [message]="'Esta acción eliminará a ' + alimentoAEliminar()?.nombre + ' del catálogo general. Esta acción no se puede deshacer.'"
         (confirm)="confirmarEliminar()" (cancel)="alimentoAEliminar.set(null)">
     </confirm-modal>
     }

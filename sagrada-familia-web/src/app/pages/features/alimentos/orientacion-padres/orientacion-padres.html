@@ -2,11 +2,11 @@
     <breadcrumb [items]="migajas" homeRoute="/pacientes"></breadcrumb>
 
     <div class="mb-6">
-
         <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">
             Orientación Alimentaria
             @if(ninoSeleccionado()) {
-            de <span class="text-[var(--color-primary)]">{{ ninoSeleccionado()?.nombre }}</span>
+            de <span class="text-[var(--color-primary)]">{{ ninoSeleccionado()?.nombre }} {{
+                ninoSeleccionado()?.apellido }}</span>
             }
         </h2>
         <p class="text-sm text-[var(--color-text-secondary)] mt-1">

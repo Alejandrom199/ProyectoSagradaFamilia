@@ -1,0 +1,30 @@
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Gestión de Médicos</h2>
+            <p class="text-gray-500 mt-1">Personal médico pediátrico del consultorio</p>
+        </div>
+
+        <btn variant="primary" routerLink="/medicos/crear"
+            class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            Agregar
+        </btn>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Listado de Médicos" [data]="medicos()" [columns]="columnas" [actions]="acciones"
+            [exportExcel]="true" exportFileName="medicos" [showActualizar]="true" [showExportar]="true"
+            [showColumnas]="true" searchPlaceholder="Buscar por nombre, email o especialidad..."
+            emptyMessage="No hay médicos registrados en el sistema." (onActualizar)="cargarMedicos()">
+        </datatable>
+    </div>
+
+    @if (medicoAEliminar()) {
+    <confirm-modal title="¿Eliminar médico?"
+        [message]="'Esta acción eliminará al Dr(a). ' + medicoAEliminar()!.nombreCompleto + ' del sistema. Las relaciones existentes con pacientes y padres se mantendrán, pero quedarán sin médico asignado.'"
+        (confirm)="confirmarEliminar()" (cancel)="medicoAEliminar.set(null)">
+    </confirm-modal>
+    }
+</div>

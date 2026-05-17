@@ -11,7 +11,8 @@
             public int MedicoId { get; set; }
             public string NombreMedico { get; set; } = string.Empty;
 
-            public string NombreCompleto { get; set; } = string.Empty;
+            public string Nombre { get; set; } = string.Empty;
+            public string Apellido { get; set; } = string.Empty;
             public DateOnly FechaNacimiento { get; set; }
             public char Sexo { get; set; }
             public int EdadMeses { get; set; }

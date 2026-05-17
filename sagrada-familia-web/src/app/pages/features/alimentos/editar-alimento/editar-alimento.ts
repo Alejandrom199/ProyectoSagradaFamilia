@@ -9,7 +9,8 @@ import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadc
 import { AlimentoResponse, AlimentoUpdate, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
 
 @Component({
-  selector: 'app-editar-alimento',
+  selector: 'editar-alimento',
+  standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb],
   viewProviders: [provideIcons({ heroArrowLeft })],
   templateUrl: './editar-alimento.html',
@@ -31,8 +32,7 @@ export class EditarAlimento implements OnInit {
     categoriaId: 0,
     nombre: '',
     descripcion: '',
-    edadMinimaIntro: 0,
-    edadMaxima: null as number | null,
+    edadMinimaMeses: 0,
     recomendacion: ''
   };
 
@@ -44,12 +44,10 @@ export class EditarAlimento implements OnInit {
   ngOnInit() {
     this.loadingBar.show();
 
-    // Cargar categorías
     this.alimentosService.obtenerCategorias().subscribe(r => {
       if (r.success) this.categorias.set(r.data);
     });
 
-    // Cargar datos del alimento
     this.alimentosService.obtenerTodos().subscribe({
       next: (r) => {
         if (r.success) {
@@ -60,8 +58,7 @@ export class EditarAlimento implements OnInit {
               categoriaId: encontrado.categoriaId,
               nombre: encontrado.nombre,
               descripcion: encontrado.descripcion ?? '',
-              edadMinimaIntro: encontrado.edadMinimaIntro,
-              edadMaxima: encontrado.edadMaxima,
+              edadMinimaMeses: encontrado.edadMinimaMeses,
               recomendacion: encontrado.recomendacion ?? ''
             };
           }
@@ -73,34 +70,35 @@ export class EditarAlimento implements OnInit {
   }
 
   guardar() {
-    if (!this.form.nombre || !this.form.categoriaId || !this.form.edadMinimaIntro) {
+    if (!this.form.nombre || !this.form.categoriaId || this.form.edadMinimaMeses === null || this.form.edadMinimaMeses === undefined) {
       this.error.set('Completá nombre, categoría y edad mínima.');
       return;
     }
 
-    this.guardando.set(true);
-    this.loadingBar.show();
+    //   this.guardando.set(true);
+    //   this.loadingBar.show();
 
     const request: AlimentoUpdate = {
       categoriaId: this.form.categoriaId,
       nombre: this.form.nombre,
       descripcion: this.form.descripcion || undefined,
-      edadMinimaIntro: this.form.edadMinimaIntro,
-      edadMaxima: this.form.edadMaxima ?? undefined,
-      recomendacion: this.form.recomendacion || undefined
+      edadMinimaMeses: this.form.edadMinimaMeses,
+      recomendacion: this.form.recomendacion || undefined,
+      activo: this.alimento()?.activo ?? true
     };
 
-    this.alimentosService.actualizar(parseInt(this.id), request).subscribe({
-      next: (r) => {
-        if (r.success) this.router.navigate(['/alimentos']);
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      },
-      error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al actualizar.');
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      }
-    });
+    //   this.alimentosService.actualizar(parseInt(this.id), request).subscribe({
+    //     next: (r) => {
+    //       if (r.success) this.router.navigate(['/alimentos']);
+    //       this.guardando.set(false);
+    //       this.loadingBar.complete();
+    //     },
+    //     error: (err) => {
+    //       this.error.set(err.error?.message ?? 'Error al actualizar.');
+    //       this.guardando.set(false);
+    //       this.loadingBar.complete();
+    //     }
+    //   });
+    // }
   }
 }

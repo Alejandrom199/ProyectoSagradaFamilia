@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SagradaFamilia.Application.Interfaces.Services;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SagradaFamilia.API.Controllers
 {
@@ -8,16 +11,21 @@ namespace SagradaFamilia.API.Controllers
     public class ReportesController : ControllerBase
     {
         private readonly IReportesService _reportesService;
+        private readonly IWebHostEnvironment _env;
 
-        public ReportesController(IReportesService reportesService)
+        public ReportesController(IReportesService reportesService, IWebHostEnvironment env)
         {
             _reportesService = reportesService;
+            _env = env;
         }
 
         [HttpGet("alimentos-pdf")]
         public async Task<IActionResult> GenerarAlimentosPdf([FromQuery] string? titulo)
         {
-            var pdfBytes = await _reportesService.GenerarAlimentosPdf(titulo);
+            string logoPath = Path.Combine(_env.WebRootPath, "assets", "sagrada.png");
+            string marcaAguaPath = Path.Combine(_env.WebRootPath, "assets", "sagrada-opacity.png");
+
+            var pdfBytes = await _reportesService.GenerarAlimentosPdf(titulo, logoPath, marcaAguaPath);
 
             return File(
                 pdfBytes,
@@ -29,7 +37,10 @@ namespace SagradaFamilia.API.Controllers
         [HttpGet("padres-pdf")]
         public async Task<IActionResult> GenerarPadresPdf([FromQuery] string? titulo)
         {
-            var pdfBytes = await _reportesService.GenerarPadresPdf(titulo);
+            string logoPath = Path.Combine(_env.WebRootPath, "assets", "sagrada.png");
+            string marcaAguaPath = Path.Combine(_env.WebRootPath, "assets", "sagrada-opacity.png");
+
+            var pdfBytes = await _reportesService.GenerarPadresPdf(titulo, logoPath, marcaAguaPath);
 
             return File(
                 pdfBytes,

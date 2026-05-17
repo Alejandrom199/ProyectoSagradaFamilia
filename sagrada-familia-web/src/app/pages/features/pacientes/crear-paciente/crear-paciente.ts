@@ -9,7 +9,7 @@ import { NinosService } from '../../../../core/services/ninos';
 import { PadresService } from '../../../../core/services/padres';
 import { AuthService } from '../../../../core/services/auth';
 import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
-import { NinoCreate, NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { NinoCreate, NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
 import { ApiResponse } from '../../../../shared/interfaces/api.interface';
 
 @Component({
@@ -31,7 +31,6 @@ export class CrearPaciente implements OnInit {
   guardando = signal(false);
   error = signal('');
 
-  // 💡 Tipado corregido para coincidir con NinoCreate
   form: {
     padreId: number;
     nombre: string;
@@ -75,16 +74,19 @@ export class CrearPaciente implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
+    // CORRECTO: El objeto request ahora se encuentra dentro del flujo del método guardar
     const request: NinoCreate = {
       nombre: this.form.nombre,
       apellido: this.form.apellido,
       fechaNacimiento: this.form.fechaNacimiento,
       sexo: this.form.sexo as 'M' | 'F',
-      padreId: this.auth.esMedico() ? this.form.padreId : 0
+      padreId: this.auth.esMedico() ? this.form.padreId : 0,
+      medicoId: this.auth.esMedico() ? (this.auth as any).usuarioId || 0 : 0
     };
 
+    // Ajustado a ApiResponse<NinoDetailResponse> para prevenir errores de Overload
     this.ninosService.crear(request).subscribe({
-      next: (r: ApiResponse<NinoResponse>) => {
+      next: (r: ApiResponse<NinoDetailResponse>) => {
         if (r.success) {
           this.router.navigate(['/pacientes']);
         }

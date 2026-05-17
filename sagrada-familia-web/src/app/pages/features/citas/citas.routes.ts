@@ -1,0 +1,26 @@
+import { Routes } from "@angular/router";
+import { medicoGuard } from "../../../core/guards/medico-guard";
+
+export const citasRoutes: Routes = [
+    {
+        path: '',
+        canActivate: [medicoGuard],
+        loadComponent: () =>
+            import('./mis-citas-hoy/mis-citas-hoy')
+                .then(m => m.MisCitasHoy),
+    },
+    {
+        path: 'crear',
+        canActivate: [medicoGuard],
+        loadComponent: () =>
+            import('./crear-cita/crear-cita')
+                .then(m => m.CrearCita),
+    },
+    {
+        path: 'nino/:ninoId',
+        canActivate: [medicoGuard],
+        loadComponent: () =>
+            import('./listar-citas/listar-citas')
+                .then(m => m.ListarCitas),
+    }
+];

@@ -48,6 +48,21 @@ namespace SagradaFamilia.API.Controllers
                 ApiResponse<PadreDto.DetailResponse>.Ok(result, "Padre creado con éxito."));
         }
 
+        [HttpPut("{id:int}")]
+        [Authorize(Roles = "Administrador, Medico")]
+        public async Task<ActionResult<ApiResponse<PadreDto.DetailResponse>>> Update(int id, [FromBody] PadreDto.Update request)
+        {
+            var medicoIdClaim = User.FindFirst("medicoId")?.Value;
+            if (!string.IsNullOrEmpty(medicoIdClaim))
+            {
+                request.MedicoId = int.Parse(medicoIdClaim);
+            }
+
+            var result = await _padreService.ActualizarAsync(id, request);
+
+            return Ok(ApiResponse<PadreDto.DetailResponse>.Ok(result, "Padre actualizado con éxito."));
+        }
+
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<ApiResponse>> Delete(int id)

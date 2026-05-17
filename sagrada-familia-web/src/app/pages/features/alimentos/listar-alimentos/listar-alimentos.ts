@@ -31,8 +31,7 @@ export class ListarAlimentos implements OnInit {
   columnas: DatatableColumn<AlimentoResponse>[] = [
     { key: 'nombre', label: 'Alimento', sortable: true, filterable: true, render: (row) => `<p class="font-medium">${row.nombre}</p>` },
     { key: 'categoriaNombre', label: 'Categoría', sortable: true, filterable: true, render: (row) => `<span class="badge badge-primary">${row.categoriaNombre}</span>` },
-    { key: 'edadMinimaIntro', label: 'Edad mínima (meses)', sortable: true, render: (row) => `${row.edadMinimaIntro} meses` },
-    { key: 'edadMaxima', label: 'Edad máxima', sortable: true, render: (row) => row.edadMaxima ? `${row.edadMaxima} meses` : 'Sin límite' },
+    { key: 'edadMinimaMeses', label: 'Edad mínima (meses)', sortable: true, render: (row) => `${row.edadMinimaMeses} meses` },
     { key: 'recomendacion', label: 'Recomendación', render: (row) => row.recomendacion ? `<p class="text-xs text-[var(--color-text-secondary)] max-w-xs truncate">${row.recomendacion}</p>` : '—' }
   ];
 

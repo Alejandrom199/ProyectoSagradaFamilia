@@ -13,8 +13,7 @@
 
 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
     <datatable [title]="'Registro Clínico de ' + (nino()?.nombre || '...') + ' ' + (nino()?.apellido || '')"
-        [exportExcel]="true" [exportPdf]="true" exportFileName="catalogo-medidas" [data]="medidas()"
-        [columns]="columnas" [actions]="acciones" searchPlaceholder="Buscar por fecha, estado..."
+        [data]="medidas()" [columns]="columnas" [actions]="acciones" searchPlaceholder="Buscar por fecha, estado..."
         emptyMessage="No hay medidas registradas para este niño.">
     </datatable>
 </div>

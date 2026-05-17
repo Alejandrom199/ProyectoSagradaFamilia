@@ -2,11 +2,14 @@ export interface MedidaResponse {
     id: number;
     ninoId: number;
     nombreNino: string;
+    medicoId: number;
+    nombreMedico: string;
     fechaMedicion: string;
     peso: number;
     talla: number;
     estadoNutricional: string;
-    percentil: number;
+    percentilPeso: number;
+    percentilTalla: number;
     fechaRegistro: string;
 }
 

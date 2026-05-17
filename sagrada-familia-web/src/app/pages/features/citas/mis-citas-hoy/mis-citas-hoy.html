@@ -1,0 +1,58 @@
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Mis citas de hoy</h2>
+            <p class="text-gray-500 mt-1">Agenda diaria del médico — {{ formatearFecha(today) }}</p>
+        </div>
+
+        <btn variant="primary" routerLink="/citas/crear"
+            class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            Programar
+        </btn>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+                <ng-icon name="heroCalendarDays" size="1.5em"></ng-icon>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Total del día</p>
+                <p class="text-2xl font-bold text-gray-800">{{ citas().length }}</p>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center">
+                <ng-icon name="heroClock" size="1.5em"></ng-icon>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Pendientes</p>
+                <p class="text-2xl font-bold text-gray-800">
+                    {{ contarPorEstado('Pendiente') }}
+                </p>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
+                <ng-icon name="heroCheckCircle" size="1.5em"></ng-icon>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Completadas</p>
+                <p class="text-2xl font-bold text-gray-800">
+                    {{ contarPorEstado('Completada') }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Agenda del día" [data]="citas()" [columns]="columnas" [actions]="acciones"
+            [exportExcel]="true" exportFileName="citas-hoy" [showActualizar]="true" [showExportar]="true"
+            searchPlaceholder="Buscar por paciente o motivo..."
+            emptyMessage="No hay citas programadas para hoy."
+            (onActualizar)="cargarCitas()">
+        </datatable>
+    </div>
+</div>

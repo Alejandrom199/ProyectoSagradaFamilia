@@ -36,6 +36,26 @@ export const routes: Routes = [
                 loadChildren: () => import('./pages/features/padres/padres.routes').then(m => m.padresRoutes)
             },
             {
+                path: 'medicos',
+                loadChildren: () => import('./pages/features/medicos/medicos.routes').then(m => m.medicosRoutes)
+            },
+            {
+                path: 'citas',
+                loadChildren: () => import('./pages/features/citas/citas.routes').then(m => m.citasRoutes)
+            },
+            {
+                path: 'prescripciones',
+                loadChildren: () => import('./pages/features/prescripciones/prescripciones.routes').then(m => m.prescripcionesRoutes)
+            },
+            {
+                path: 'usuarios',
+                loadChildren: () => import('./pages/features/usuarios/usuarios.routes').then(m => m.usuariosRoutes)
+            },
+            {
+                path: 'sistema',
+                loadChildren: () => import('./pages/features/sistema/sistema.routes').then(m => m.sistemaRoutes)
+            },
+            {
                 path: 'alimentos',
                 loadChildren: () => import('./pages/features/alimentos/alimentos.routes').then(m => m.alimentosRoutes)
             },

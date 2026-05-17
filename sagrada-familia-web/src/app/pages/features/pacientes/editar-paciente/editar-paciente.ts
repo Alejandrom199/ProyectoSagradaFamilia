@@ -43,45 +43,45 @@ export class EditarPaciente implements OnInit {
   ngOnInit() {
     this.loadingBar.show();
 
-    this.ninosService.obtenerPorId(parseInt(this.id)).subscribe({
-      next: (r) => {
-        if (r.success) {
-          this.nino.set(r.data);
-          this.form = {
-            nombre: r.data.nombre,
-            apellido: r.data.apellido,
-            fechaNacimiento: r.data.fechaNacimiento,
-            sexo: r.data.sexo
-          };
-        }
-        this.loadingBar.complete();
-      },
-      error: () => this.loadingBar.complete()
-    });
+    // this.ninosService.obtenerPorId(parseInt(this.id)).subscribe({
+    //   next: (r) => {
+    //     if (r.success) {
+    //       this.nino.set(r.data);
+    //       this.form = {
+    //         nombre: r.data.nombre,
+    //         apellido: r.data.apellido,
+    //         fechaNacimiento: r.data.fechaNacimiento,
+    //         sexo: r.data.sexo
+    //       };
+    //     }
+    //     this.loadingBar.complete();
+    //   },
+    //   error: () => this.loadingBar.complete()
+    // });
   }
 
-  guardar() {
-    if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
-      this.error.set('Completá todos los campos obligatorios.');
-      return;
-    }
+  // guardar() {
+  //   if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
+  //     this.error.set('Completá todos los campos obligatorios.');
+  //     return;
+  //   }
 
-    this.guardando.set(true);
-    this.loadingBar.show();
+  //   this.guardando.set(true);
+  //   this.loadingBar.show();
 
-    this.ninosService.actualizar(parseInt(this.id), { ...this.form, sexo: this.form.sexo as 'M' | 'F' }).subscribe({
-      next: (r) => {
-        if (r.success) {
-          this.router.navigate(['/pacientes']);
-        }
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      },
-      error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al actualizar.');
-        this.guardando.set(false);
-        this.loadingBar.complete();
-      }
-    });
-  }
+  //   this.ninosService.actualizar(parseInt(this.id), { ...this.form, medicoId: this.auth.medicoId, sexo: this.form.sexo as 'M' | 'F' }).subscribe({
+  //     next: (r) => {
+  //       if (r.success) {
+  //         this.router.navigate(['/pacientes']);
+  //       }
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     },
+  //     error: (err) => {
+  //       this.error.set(err.error?.message ?? 'Error al actualizar.');
+  //       this.guardando.set(false);
+  //       this.loadingBar.complete();
+  //     }
+  //   });
+  // }
 }

@@ -1,0 +1,23 @@
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Gestión de Usuarios</h2>
+            <p class="text-gray-500 mt-1">Cuentas administrativas, médicos y padres del sistema</p>
+        </div>
+
+        <btn variant="primary" routerLink="/usuarios/crear"
+            class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            Nuevo usuario
+        </btn>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Cuentas del sistema" [data]="usuarios()" [columns]="columnas" [actions]="acciones"
+            [exportExcel]="true" exportFileName="usuarios" [showActualizar]="true" [showExportar]="true"
+            [showColumnas]="true" searchPlaceholder="Buscar por email o rol..."
+            emptyMessage="No hay usuarios registrados." (onActualizar)="cargarUsuarios()">
+        </datatable>
+    </div>
+</div>

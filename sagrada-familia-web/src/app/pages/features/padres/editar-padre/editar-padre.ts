@@ -7,7 +7,7 @@ import {
   heroPencilSquare, heroEnvelope, heroPhone, heroChevronLeft, heroUser
 } from '@ng-icons/heroicons/outline';
 
-import { PadreResponse, PadreUpdate } from '../../../../shared/interfaces/padre.interface';
+import { PadreDetailResponse, PadreResponse, PadreUpdate } from '../../../../shared/interfaces/padre.interface';
 import { ApiResponse } from '../../../../shared/interfaces/api.interface';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -30,9 +30,9 @@ export class EditarPadre implements OnInit {
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
-  // Propiedades reactivas con tipos explícitos
   formPadre!: FormGroup;
-  padre = signal<PadreResponse | null>(null);
+  // SOLUCIÓN: Cambiado a PadreDetailResponse para que coincida con el valor del GET por ID
+  padre = signal<PadreDetailResponse | null>(null);
   guardando = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -50,12 +50,11 @@ export class EditarPadre implements OnInit {
     return this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       apellido: ['', [Validators.required, Validators.minLength(3)]],
-      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]], // El email suele ser lectura en perfiles
+      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       telefono: ['', [Validators.pattern('^[0-9]{10}$')]]
     });
   }
 
-  // Getter tipado para los controles
   get f() {
     return this.formPadre.controls;
   }
@@ -65,15 +64,16 @@ export class EditarPadre implements OnInit {
     const padreId = parseInt(this.id);
 
     this.padresService.obtenerPorId(padreId).subscribe({
-      next: (res: ApiResponse<PadreResponse>) => {
+      next: (res: ApiResponse<PadreDetailResponse>) => {
         if (res.success) {
-          this.padre.set(res.data);
           this.formPadre.patchValue({
             nombre: res.data.nombre,
             apellido: res.data.apellido,
             email: res.data.email,
             telefono: res.data.telefono ?? ''
           });
+
+          this.padre.set(res.data);
         }
       },
       error: () => {
@@ -93,15 +93,15 @@ export class EditarPadre implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    // 💡 Mapeo estricto al DTO de actualización
     const request: PadreUpdate = {
       nombre: this.formPadre.value.nombre,
       apellido: this.formPadre.value.apellido,
-      telefono: this.formPadre.value.telefono || undefined
+      telefono: this.formPadre.value.telefono || "",
+      medicoId: this.padre()?.medicoId ?? 0
     };
 
     this.padresService.actualizar(parseInt(this.id), request).subscribe({
-      next: (res: ApiResponse<PadreResponse>) => {
+      next: (res: ApiResponse<PadreDetailResponse>) => {
         if (res.success) {
           this.router.navigate(['/padres']);
         } else {
