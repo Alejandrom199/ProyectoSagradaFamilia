@@ -57,7 +57,7 @@
                                 [class.border-red-500]="f['ninoId'].invalid && f['ninoId'].touched">
                                 <option [ngValue]="null" disabled>Seleccionar paciente</option>
                                 @for (p of pacientes(); track p.id) {
-                                <option [ngValue]="p.id">{{ p.nombreCompleto }}</option>
+                                <option [ngValue]="p.id">{{ p.nombre }} {{ p.apellido }}</option>
                                 }
                             </select>
                             @if (f['ninoId'].invalid && f['ninoId'].touched) {

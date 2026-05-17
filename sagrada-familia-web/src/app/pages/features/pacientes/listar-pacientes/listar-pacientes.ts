@@ -55,8 +55,8 @@ export class ListarPacientes implements OnInit {
       label: 'Paciente',
       sortable: true,
       filterable: true,
-      render: (row: NinoResponse) => generarAvatarHtml(row.nombreCompleto, row.sexo),
-      exportValue: (row: NinoResponse) => `${row.nombreCompleto}`
+      render: (row: NinoResponse) => generarAvatarHtml(row.nombre, row.apellido, row.sexo),
+      exportValue: (row: NinoResponse) => `${row.nombre} ${row.apellido}`
     },
     {
       key: 'edadMeses',

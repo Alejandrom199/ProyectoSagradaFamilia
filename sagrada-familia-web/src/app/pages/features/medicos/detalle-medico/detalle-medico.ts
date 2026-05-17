@@ -15,7 +15,7 @@ import { MedicosService } from '../../../../core/services/medicos';
 @Component({
   selector: 'app-detalle-medico',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, Breadcrumb],
+  imports: [Datatable, Breadcrumb],
   viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash, heroAcademicCap })],
   templateUrl: './detalle-medico.html',
   styleUrl: './detalle-medico.css',

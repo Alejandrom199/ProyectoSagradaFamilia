@@ -11,7 +11,7 @@
                 <div>
                     <p class="text-xs text-[var(--color-text-secondary)] mb-1">Nombre completo</p>
                     <p class="font-semibold text-[var(--color-text-primary)]">
-                        {{ padre()?.nombreCompleto }}
+                        {{ padre()?.nombre }} {{ padre()?.apellido }}
                     </p>
                 </div>
                 <div>
@@ -62,7 +62,8 @@
                 </div>
                 <h3 class="font-semibold text-lg">¿Eliminar hijo?</h3>
                 <p class="text-sm text-[var(--color-text-secondary)]">
-                    Esta acción eliminará a <strong>{{ hijoAEliminar()?.nombreCompleto }}</strong> del sistema.
+                    Esta acción eliminará a <strong>{{ hijoAEliminar()?.nombre }} {{ hijoAEliminar()?.apellido
+                        }}</strong> del sistema.
                 </p>
                 <div class="flex gap-3 justify-center">
                     <button class="btn btn-secondary btn-md" (click)="hijoAEliminar.set(null)">Cancelar</button>

@@ -29,7 +29,8 @@ export class ListarPrescripciones implements OnInit {
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
-  nino = signal<NinoResponse | null>(null);
+  // SOLUCIÓN: Cambiado a NinoDetailResponse para alinearse con el servicio de consulta por ID
+  nino = signal<NinoDetailResponse | null>(null);
   prescripciones = signal<PrescripcionResponse[]>([]);
 
   columnas: DatatableColumn<PrescripcionResponse>[] = [

@@ -9,7 +9,7 @@ import { NinosService } from '../../../../core/services/ninos';
 import { PadresService } from '../../../../core/services/padres';
 import { AuthService } from '../../../../core/services/auth';
 import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
-import { NinoCreate, NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { NinoCreate, NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
 import { ApiResponse } from '../../../../shared/interfaces/api.interface';
 
 @Component({
@@ -60,42 +60,44 @@ export class CrearPaciente implements OnInit {
     }
   }
 
-  //   guardar(): void {
-  //     if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
-  //       this.error.set('Completá todos los campos obligatorios.');
-  //       return;
-  //     }
+  guardar(): void {
+    if (!this.form.nombre || !this.form.apellido || !this.form.fechaNacimiento || !this.form.sexo) {
+      this.error.set('Completá todos los campos obligatorios.');
+      return;
+    }
 
-  //     if (this.auth.esMedico() && !this.form.padreId) {
-  //       this.error.set('Debes seleccionar un padre representante.');
-  //       return;
-  //     }
+    if (this.auth.esMedico() && !this.form.padreId) {
+      this.error.set('Debes seleccionar un padre representante.');
+      return;
+    }
 
-  //     this.guardando.set(true);
-  //     this.loadingBar.show();
+    this.guardando.set(true);
+    this.loadingBar.show();
 
-  const request: NinoCreate = {
-    nombre: this.form.nombre,
-    apellido: this.form.apellido,
-    fechaNacimiento: this.form.fechaNacimiento,
-    sexo: this.form.sexo as 'M' | 'F',
-    padreId: this.auth.esMedico() ? this.form.padreId : 0,
-    medicoId: this.auth.esMedico() ? (this.auth as any).usuarioId || 0 : 0
-  };
+    // CORRECTO: El objeto request ahora se encuentra dentro del flujo del método guardar
+    const request: NinoCreate = {
+      nombre: this.form.nombre,
+      apellido: this.form.apellido,
+      fechaNacimiento: this.form.fechaNacimiento,
+      sexo: this.form.sexo as 'M' | 'F',
+      padreId: this.auth.esMedico() ? this.form.padreId : 0,
+      medicoId: this.auth.esMedico() ? (this.auth as any).usuarioId || 0 : 0
+    };
 
-  //     this.ninosService.crear(request).subscribe({
-  //       next: (r: ApiResponse<NinoResponse>) => {
-  //         if (r.success) {
-  //           this.router.navigate(['/pacientes']);
-  //         }
-  //         this.guardando.set(false);
-  //         this.loadingBar.complete();
-  //       },
-  //       error: (err) => {
-  //         this.error.set(err.error?.message ?? 'Error al registrar el paciente.');
-  //         this.guardando.set(false);
-  //         this.loadingBar.complete();
-  //       }
-  //     });
-  //   }
+    // Ajustado a ApiResponse<NinoDetailResponse> para prevenir errores de Overload
+    this.ninosService.crear(request).subscribe({
+      next: (r: ApiResponse<NinoDetailResponse>) => {
+        if (r.success) {
+          this.router.navigate(['/pacientes']);
+        }
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      },
+      error: (err) => {
+        this.error.set(err.error?.message ?? 'Error al registrar el paciente.');
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      }
+    });
+  }
 }

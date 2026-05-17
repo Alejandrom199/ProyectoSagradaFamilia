@@ -41,12 +41,12 @@ export class ListarPadres implements OnInit {
       sortable: true,
       filterable: true,
       render: (row) => {
-        const nombreCompleto = row.nombreCompleto.split(' ');
+        const nombreCompleto = row.nombre.split(' ');
         const nombre = nombreCompleto[0];
         const apellido = nombreCompleto[nombreCompleto.length - 1];
         return generarAvatarHtml(nombre, apellido);
       },
-      exportValue: (row) => row.nombreCompleto
+      exportValue: (row) => row.nombre
     },
     {
       key: 'telefono',

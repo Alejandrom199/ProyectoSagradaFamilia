@@ -18,7 +18,7 @@
                 <select class="form-input" [(ngModel)]="form.padreId">
                     <option [ngValue]="0">Seleccionar padre...</option>
                     @for (padre of padres(); track padre.id) {
-                    <option [ngValue]="padre.id">{{ padre.nombreCompleto }}</option>
+                    <option [ngValue]="padre.id">{{ padre.nombre }} {{ padre.apellido }}</option>
                     }
                 </select>
             </div>

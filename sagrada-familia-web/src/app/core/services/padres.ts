@@ -25,12 +25,9 @@ export class PadresService {
     return this.http.post<ApiResponse<PadreDetailResponse>>(this.url, request, { withCredentials: true });
   }
 
-  /* 
-  // Descomentar cuando se agregue el endpoint [HttpPut("{id:int}")] en PadreController.cs
   actualizar(id: number, request: PadreUpdate): Observable<ApiResponse<PadreDetailResponse>> {
     return this.http.put<ApiResponse<PadreDetailResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
   }
-  */
 
   eliminar(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.url}/${id}`, { withCredentials: true });

@@ -9,7 +9,7 @@
                     <div
                         class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl font-black mb-6">
                         @if (padre()) {
-                        {{ padre()?.nombreCompleto?.charAt(0) }}
+                        {{ padre()?.nombre?.charAt(0) }}
                         } @else {
                         <ng-icon name="heroUser"></ng-icon>
                         }
@@ -18,7 +18,8 @@
                     <h2 class="text-2xl font-bold text-gray-800 leading-tight">Editar Perfil</h2>
                     <p class="text-sm text-gray-500 mt-2 leading-relaxed">
                         Actualizando información de: <br>
-                        <span class="text-blue-600 font-bold text-base">{{ padre()?.nombreCompleto }}</span>
+                        <span class="text-blue-600 font-bold text-base">{{ padre()?.nombre }} {{ padre()?.apellido
+                            }}</span>
                     </p>
 
                     <div class="mt-10 space-y-6">

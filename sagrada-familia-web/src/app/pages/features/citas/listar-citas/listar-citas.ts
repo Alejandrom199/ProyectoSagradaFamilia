@@ -10,7 +10,8 @@ import { LoadingBar } from '../../../../core/services/loading-bar';
 import { CitasService } from '../../../../core/services/citas';
 import { NinosService } from '../../../../core/services/ninos';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
-import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+// CORRECCIÓN: Importamos la interfaz de detalle correspondiente
+import { NinoDetailResponse, NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 
 @Component({
@@ -29,7 +30,8 @@ export class ListarCitas implements OnInit {
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
-  nino = signal<NinoResponse | null>(null);
+  // SOLUCIÓN: Cambiado a NinoDetailResponse para que acepte los datos del GET por ID sin romper tipado
+  nino = signal<NinoDetailResponse | null>(null);
   citas = signal<CitaResponse[]>([]);
 
   formatearFecha = formatearFecha;
@@ -93,7 +95,6 @@ export class ListarCitas implements OnInit {
     const id = parseInt(this.ninoId);
     this.loadingBar.show();
 
-    // Ahora la respuesta r.data encajará perfectamente en tu signal mapeado como NinoResponse
     this.ninosService.obtenerPorId(id).subscribe({
       next: (r) => { if (r.success) this.nino.set(r.data); }
     });

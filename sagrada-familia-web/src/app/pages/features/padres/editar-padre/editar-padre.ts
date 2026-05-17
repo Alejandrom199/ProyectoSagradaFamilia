@@ -7,7 +7,7 @@ import {
   heroPencilSquare, heroEnvelope, heroPhone, heroChevronLeft, heroUser
 } from '@ng-icons/heroicons/outline';
 
-import { PadreResponse, PadreUpdate } from '../../../../shared/interfaces/padre.interface';
+import { PadreDetailResponse, PadreResponse, PadreUpdate } from '../../../../shared/interfaces/padre.interface';
 import { ApiResponse } from '../../../../shared/interfaces/api.interface';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -30,9 +30,9 @@ export class EditarPadre implements OnInit {
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
-  // Propiedades reactivas con tipos explícitos
   formPadre!: FormGroup;
-  padre = signal<PadreResponse | null>(null);
+  // SOLUCIÓN: Cambiado a PadreDetailResponse para que coincida con el valor del GET por ID
+  padre = signal<PadreDetailResponse | null>(null);
   guardando = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -43,81 +43,81 @@ export class EditarPadre implements OnInit {
 
   ngOnInit(): void {
     this.formPadre = this.initForm();
-    // this.cargarDatosPadre();
+    this.cargarDatosPadre();
   }
 
   private initForm(): FormGroup {
     return this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       apellido: ['', [Validators.required, Validators.minLength(3)]],
-      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]], // El email suele ser lectura en perfiles
+      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       telefono: ['', [Validators.pattern('^[0-9]{10}$')]]
     });
   }
 
-  // Getter tipado para los controles
   get f() {
     return this.formPadre.controls;
   }
 
-  // private cargarDatosPadre(): void {
-  //   this.loadingBar.show();
-  //   const padreId = parseInt(this.id);
+  private cargarDatosPadre(): void {
+    this.loadingBar.show();
+    const padreId = parseInt(this.id);
 
-  //   this.padresService.obtenerPorId(padreId).subscribe({
-  //     next: (res: ApiResponse<PadreResponse>) => {
-  //       if (res.success) {
-  //         this.padre.set(res.data);
-  //         this.formPadre.patchValue({
-  //           nombre: res.data.nombre,
-  //           apellido: res.data.apellido,
-  //           email: res.data.email,
-  //           telefono: res.data.telefono ?? ''
-  //         });
-  //       }
-  //     },
-  //     error: () => {
-  //       this.error.set('No se pudo cargar la información del representante.');
-  //       this.loadingBar.complete();
-  //     },
-  //     complete: () => this.loadingBar.complete()
-  //   });
-  // }
+    this.padresService.obtenerPorId(padreId).subscribe({
+      next: (res: ApiResponse<PadreDetailResponse>) => {
+        if (res.success) {
+          this.formPadre.patchValue({
+            nombre: res.data.nombre,
+            apellido: res.data.apellido,
+            email: res.data.email,
+            telefono: res.data.telefono ?? ''
+          });
 
-  // guardar(): void {
-  //   if (this.formPadre.invalid) {
-  //     this.formPadre.markAllAsTouched();
-  //     return;
-  //   }
+          this.padre.set(res.data);
+        }
+      },
+      error: () => {
+        this.error.set('No se pudo cargar la información del representante.');
+        this.loadingBar.complete();
+      },
+      complete: () => this.loadingBar.complete()
+    });
+  }
 
-  //   this.guardando.set(true);
-  //   this.loadingBar.show();
+  guardar(): void {
+    if (this.formPadre.invalid) {
+      this.formPadre.markAllAsTouched();
+      return;
+    }
 
-  const request: PadreUpdate = {
-    nombre: this.formPadre.value.nombre,
-    apellido: this.formPadre.value.apellido,
-    telefono: this.formPadre.value.telefono || undefined,
-    medicoId: this.padre()?.medicoId ?? 0
-  };
+    this.guardando.set(true);
+    this.loadingBar.show();
 
-  //   this.padresService.actualizar(parseInt(this.id), request).subscribe({
-  //     next: (res: ApiResponse<PadreResponse>) => {
-  //       if (res.success) {
-  //         this.router.navigate(['/padres']);
-  //       } else {
-  //         this.error.set(res.message);
-  //       }
-  //     },
-  //     error: (err) => {
-  //       const msg = err.error?.message ?? 'Error al actualizar los datos.';
-  //       this.error.set(msg);
-  //       this.guardando.set(false);
-  //       this.loadingBar.complete();
-  //     },
-  //     complete: () => {
-  //       this.guardando.set(false);
-  //       this.loadingBar.complete();
-  //     }
-  //   });
-  // }
+    const request: PadreUpdate = {
+      nombre: this.formPadre.value.nombre,
+      apellido: this.formPadre.value.apellido,
+      telefono: this.formPadre.value.telefono || "",
+      medicoId: this.padre()?.medicoId ?? 0
+    };
+
+    this.padresService.actualizar(parseInt(this.id), request).subscribe({
+      next: (res: ApiResponse<PadreDetailResponse>) => {
+        if (res.success) {
+          this.router.navigate(['/padres']);
+        } else {
+          this.error.set(res.message);
+        }
+      },
+      error: (err) => {
+        const msg = err.error?.message ?? 'Error al actualizar los datos.';
+        this.error.set(msg);
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      },
+      complete: () => {
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      }
+    });
+  }
 }
