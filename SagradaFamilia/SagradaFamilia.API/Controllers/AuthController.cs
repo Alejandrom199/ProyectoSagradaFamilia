@@ -7,6 +7,8 @@ using SagradaFamilia.Application.Interfaces.Services;
 
 namespace SagradaFamilia.API.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : BaseController
     {
         private readonly IAuthService _authService;

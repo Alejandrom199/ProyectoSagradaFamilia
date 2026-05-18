@@ -28,6 +28,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             await _context.Padres
                 .Include(p => p.Usuario)
                 .Include(p => p.Medico)
+                .Include(p => p.Ninos)
                 .Where(p => !p.Eliminado)
                 .OrderBy(p => p.Apellido)
                 .ThenBy(p => p.Nombre)

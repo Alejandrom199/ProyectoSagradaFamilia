@@ -12,10 +12,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
         public NinoRepository(AppDbContext context) => _context = context;
 
         public async Task<Nino?> ObtenerPorIdAsync(int id) =>
-            await _context.Ninos
-                .Include(n => n.Padre)
-                .Include(n => n.Medico)
-                .FirstOrDefaultAsync(n => n.Id == id && !n.Eliminado);
+        await _context.Ninos
+            .Include(n => n.Padre)
+                .ThenInclude(p => p.Usuario)
+            .Include(n => n.Medico)
+            .FirstOrDefaultAsync(n => n.Id == id && !n.Eliminado);
 
         public async Task<IEnumerable<Nino>> ObtenerTodosAsync() =>
             await _context.Ninos

@@ -55,6 +55,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .WithOne(p => p.Nino)
                 .HasForeignKey(p => p.NinoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(n => n.Prescripciones)
+                .WithOne(p => p.Nino)
+                .HasForeignKey(p => p.NinoId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -3,19 +3,20 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Interfaces.Services.External;
 using SagradaFamilia.Application.Mappings;
 using SagradaFamilia.Application.Services;
 using SagradaFamilia.Application.Validators.Auth;
+using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 using SagradaFamilia.Infrastructure.Authentication;
 using SagradaFamilia.Infrastructure.ExternalServices;
 using SagradaFamilia.Infrastructure.Persistence.Contexts;
 using SagradaFamilia.Infrastructure.Persistence.Repositories;
 using System.Text;
-using QuestPDF.Infrastructure;
 
 namespace SagradaFamilia.API.Extensions
 {
@@ -97,7 +98,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IPrediccionRepository, PrediccionRepository>();
             services.AddScoped<IOmsRepository, OmsRepository>();
             services.AddScoped<IAlimentoRepository, AlimentoRepository>();
-
+            services.AddScoped<ICitaRepository, CitaRepository>();
             services.AddScoped<IAuditoriaRepository, AuditoriaRepository>();
             services.AddScoped<ILogSistemaRepository, LogSistemaRepository>();
 
@@ -116,6 +117,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IPrediccionService, PrediccionService>();
             services.AddScoped<IAlimentoService, AlimentoService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<ICitaService, CitaService>();
 
             services.AddScoped<IAuditoriaService, AuditoriaService>();
             services.AddScoped<ILogSistemaService, LogSistemaService>();

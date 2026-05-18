@@ -7,6 +7,8 @@ using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 
 [Authorize]
+[ApiController]
+[Route("api/[controller]")]
 public class MenuController : BaseController
 {
     private readonly IMenuService _menuService;

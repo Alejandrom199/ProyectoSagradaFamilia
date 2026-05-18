@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 
@@ -12,17 +13,20 @@ public class PrescripcionService : IPrescripcionService
 {
     private readonly IPrescripcionRepository _prescripcionRepository;
     private readonly INinoRepository _ninoRepository;
+    private readonly ICitaRepository _citaRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<PrescripcionService> _logger;
 
     public PrescripcionService(
         IPrescripcionRepository prescripcionRepository,
         INinoRepository ninoRepository,
+        ICitaRepository citaRepository,
         IMapper mapper,
         ILogger<PrescripcionService> logger)
     {
         _prescripcionRepository = prescripcionRepository;
         _ninoRepository = ninoRepository;
+        _citaRepository = citaRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -70,26 +74,28 @@ public class PrescripcionService : IPrescripcionService
 
     public async Task<PrescripcionDto.Response> CrearAsync(PrescripcionDto.Create request, int medicoId)
     {
-        _logger.LogInformation("Generando nueva prescripción para el niño ID: {NinoId} (Solicitado por Médico ID: {MedicoId})",
-            request.NinoId, medicoId);
+        _logger.LogInformation("Generando nueva prescripción para la cita ID: {CitaId}", request.CitaId);
 
-        // 1. Validar que el paciente exista
-        var nino = await _ninoRepository.ObtenerPorIdAsync(request.NinoId);
-        if (nino == null)
+        // 1. Validar que la cita exista y obtener contexto
+        var cita = await _citaRepository.ObtenerPorIdAsync(request.CitaId)
+            ?? throw new NotFoundException("Cita", request.CitaId);
+
+        // 2. Validar que la cita esté en curso
+        if (cita.Estado != EstadoCita.EnCurso)
         {
-            _logger.LogError("Error en creación de receta: El paciente ID {Id} no existe.", request.NinoId);
-            throw new NotFoundException("Niño", request.NinoId);
+            _logger.LogWarning("Intento de prescribir en cita ID {Id} con estado {Estado}", cita.Id, cita.Estado);
+            throw new BusinessException("Solo se puede prescribir en una cita que esté en curso.");
         }
 
-        // 2. Mapeo y asignación manual de campos de seguridad/auditoría
+        // 3. Mapear y asignar contexto desde la cita
         var prescripcion = _mapper.Map<Prescripcion>(request);
-        prescripcion.MedicoId = medicoId;
+        prescripcion.NinoId = cita.NinoId;    // ← desde la cita
+        prescripcion.MedicoId = medicoId;        // ← desde el token
 
         var creada = await _prescripcionRepository.CrearAsync(prescripcion);
 
-        _logger.LogInformation("Prescripción médica registrada exitosamente con ID: {Id}", creada.Id);
+        _logger.LogInformation("Prescripción ID: {Id} registrada para cita ID: {CitaId}", creada.Id, cita.Id);
 
-        // Recuperamos el registro completo para asegurar que el DTO lleve toda la info de navegación
         var prescripcionCompleta = await _prescripcionRepository.ObtenerPorIdAsync(creada.Id);
         return _mapper.Map<PrescripcionDto.Response>(prescripcionCompleta!);
     }

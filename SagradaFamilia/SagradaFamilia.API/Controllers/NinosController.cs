@@ -5,18 +5,37 @@ using Microsoft.AspNetCore.Mvc;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Services;
 
 [Authorize]
+[ApiController]
+[Route("api/[controller]")]
 public class NinosController : BaseController
 {
     private readonly INinoService _ninoService;
+    private readonly IPadreService _padreService;
 
-    public NinosController(INinoService ninoService) =>
+    public NinosController(
+        INinoService ninoService,
+        IPadreService padreService
+    )
+    {
         _ninoService = ninoService;
+        _padreService = padreService;
+    }
+        
 
     [HttpGet]
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerTodos()
+    {
+        var response = await _ninoService.ObtenerPorMedicoIdAsync(UsuarioId);
+        return HandleResponse(response);
+    }
+
+    [HttpGet("todos")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerTodosAdmin()
     {
         var response = await _ninoService.ObtenerTodosAsync();
         return HandleResponse(response);
@@ -26,13 +45,23 @@ public class NinosController : BaseController
     [Authorize(Roles = "Padre")]
     public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerMisNinos()
     {
-        var response = await _ninoService.ObtenerPorPadreIdAsync(UsuarioId);
+        var response = await _ninoService.ObtenerMisPorUsuarioIdAsync(UsuarioId);
         return HandleResponse(response);
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Medico,Padre")]
     public async Task<ActionResult<ApiResponse<NinoDto.DetailResponse>>> ObtenerPorId(int id)
     {
+        if (User.IsInRole("Padre"))
+        {
+            var padre = await _padreService.ObtenerPorUsuarioIdAsync(UsuarioId);
+            if (padre == null) return Forbid();
+
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(id, padre.Id);
+            if (!esSuHijo) return Forbid();
+        }
+
         var response = await _ninoService.ObtenerPorIdAsync(id);
         return HandleResponse(response);
     }

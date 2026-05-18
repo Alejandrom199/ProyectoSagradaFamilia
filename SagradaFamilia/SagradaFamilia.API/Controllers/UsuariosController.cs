@@ -7,6 +7,8 @@ using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 
 [Authorize(Roles = "Administrador")]
+[ApiController]
+[Route("api/[controller]")]
 public class UsuariosController : BaseController
 {
     private readonly IUsuarioService _usuarioService;

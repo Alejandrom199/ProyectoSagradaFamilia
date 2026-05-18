@@ -7,6 +7,8 @@ using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 
 [Authorize]
+[ApiController]
+[Route("api/[controller]")]
 public class MedidasController : BaseController
 {
     private readonly IMedidaService _medidaService;

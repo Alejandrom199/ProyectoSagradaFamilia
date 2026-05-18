@@ -7,6 +7,8 @@ using SagradaFamilia.Application.Interfaces.Services;
 namespace SagradaFamilia.API.Controllers
 {
     [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
     public class PadreController : BaseController
     {
         private readonly IPadreService _padreService;

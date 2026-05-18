@@ -6,7 +6,9 @@ using SagradaFamilia.Application.Interfaces.Services;
 
 namespace SagradaFamilia.API.Controllers;
 
-[Authorize(Roles = "Administrador")]
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
 public class MedicoController : BaseController
 {
     private readonly IMedicoService _medicoService;
@@ -14,6 +16,7 @@ public class MedicoController : BaseController
     public MedicoController(IMedicoService medicoService) => _medicoService = medicoService;
 
     [HttpGet]
+    [Authorize(Roles = "Administrador, Medico")]
     public async Task<ActionResult<ApiResponse<IEnumerable<MedicoDto.ListResponse>>>> GetAll()
     {
         var result = await _medicoService.ObtenerTodosAsync();
@@ -21,14 +24,15 @@ public class MedicoController : BaseController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<MedicoDto.DetailResponse>>> Create([FromBody] MedicoDto.Create request)
     {
-        // 💡 Ajustado: La interfaz devuelve DetailResponse para creación
         var result = await _medicoService.CrearAsync(request);
         return HandleResponse(result, "Médico registrado correctamente.");
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse>> Delete(int id)
     {
         await _medicoService.EliminarAsync(id);

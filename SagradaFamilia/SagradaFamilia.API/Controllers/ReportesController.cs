@@ -48,5 +48,20 @@ namespace SagradaFamilia.API.Controllers
                 $"reporte-padres-{DateTime.Now:yyyyMMdd}.pdf"
             );
         }
+
+        [HttpGet("ninos-pdf")]
+        public async Task<IActionResult> GenerarNinosPdf([FromQuery] string? titulo)
+        {
+            string logoPath = Path.Combine(_env.WebRootPath, "assets", "sagrada.png");
+            string marcaAguaPath = Path.Combine(_env.WebRootPath, "assets", "sagrada-opacity.png");
+
+            var pdfBytes = await _reportesService.GenerarNinosPdf(titulo, logoPath, marcaAguaPath);
+
+            return File(
+                pdfBytes,
+                "application/pdf",
+                $"reporte-padres-{DateTime.Now:yyyyMMdd}.pdf"
+            );
+        }
     }
 }
