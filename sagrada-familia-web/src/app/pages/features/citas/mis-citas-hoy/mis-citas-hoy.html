@@ -1,11 +1,11 @@
 <div class="page-container">
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
-    <div class="flex items-center justify-between mb-8">
+    <!-- Cabecera — reemplazar el div existente -->
+    <div class="mb-6 flex justify-between items-end">
         <div>
-            <h2 class="text-3xl font-bold text-gray-800">Mis citas de hoy</h2>
-            <p class="text-gray-500 mt-1">Agenda diaria del médico — {{ formatearFecha(today) }}</p>
+            <h2 class="text-2xl font-bold text-gray-800">Mis citas de hoy</h2>
+            <p class="text-sm text-gray-500 mt-1">Agenda diaria — {{ formatearFecha(today) }}</p>
         </div>
-
         <btn variant="primary" routerLink="/citas/crear"
             class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
             <ng-icon name="heroPlus" class="mr-2"></ng-icon>
@@ -50,8 +50,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <datatable title="Agenda del día" [data]="citas()" [columns]="columnas" [actions]="acciones"
             [exportExcel]="true" exportFileName="citas-hoy" [showActualizar]="true" [showExportar]="true"
-            searchPlaceholder="Buscar por paciente o motivo..."
-            emptyMessage="No hay citas programadas para hoy."
+            searchPlaceholder="Buscar por paciente o motivo..." emptyMessage="No hay citas programadas para hoy."
             (onActualizar)="cargarCitas()">
         </datatable>
     </div>

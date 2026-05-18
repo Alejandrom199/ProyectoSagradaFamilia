@@ -1,22 +1,21 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { provideIcons } from '@ng-icons/core';
-import { heroArrowLeft } from '@ng-icons/heroicons/outline';
+import { provideIcons, NgIcon } from '@ng-icons/core';
+import { heroArrowLeft, heroUserPlus } from '@ng-icons/heroicons/outline';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { NinosService } from '../../../../core/services/ninos';
 import { PadresService } from '../../../../core/services/padres';
 import { AuthService } from '../../../../core/services/auth';
 import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
-import { NinoCreate, NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
-import { ApiResponse } from '../../../../shared/interfaces/api.interface';
+import { NinoCreate } from '../../../../shared/interfaces/nino.interface';
 
 @Component({
   selector: 'app-crear-paciente',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb],
-  viewProviders: [provideIcons({ heroArrowLeft })],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  viewProviders: [provideIcons({ heroArrowLeft, heroUserPlus })],
   templateUrl: './crear-paciente.html',
   styleUrl: './crear-paciente.css',
 })
@@ -51,11 +50,14 @@ export class CrearPaciente implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.migajas = [
+      { label: 'Pacientes', ruta: '/pacientes' },
+      { label: 'Nuevo paciente' },
+    ];
+
     if (this.auth.esMedico()) {
       this.padresService.obtenerTodos().subscribe({
-        next: (r: ApiResponse<PadreResponse[]>) => {
-          if (r.success) this.padres.set(r.data);
-        }
+        next: (r) => { if (r.success) this.padres.set(r.data); }
       });
     }
   }
@@ -65,7 +67,6 @@ export class CrearPaciente implements OnInit {
       this.error.set('Completá todos los campos obligatorios.');
       return;
     }
-
     if (this.auth.esMedico() && !this.form.padreId) {
       this.error.set('Debes seleccionar un padre representante.');
       return;
@@ -74,22 +75,18 @@ export class CrearPaciente implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    // CORRECTO: El objeto request ahora se encuentra dentro del flujo del método guardar
     const request: NinoCreate = {
       nombre: this.form.nombre,
       apellido: this.form.apellido,
       fechaNacimiento: this.form.fechaNacimiento,
       sexo: this.form.sexo as 'M' | 'F',
-      padreId: this.auth.esMedico() ? this.form.padreId : 0,
-      medicoId: this.auth.esMedico() ? (this.auth as any).usuarioId || 0 : 0
+      padreId: this.form.padreId,
+      medicoId: this.auth.currentUser()?.id ?? 0
     };
 
-    // Ajustado a ApiResponse<NinoDetailResponse> para prevenir errores de Overload
     this.ninosService.crear(request).subscribe({
-      next: (r: ApiResponse<NinoDetailResponse>) => {
-        if (r.success) {
-          this.router.navigate(['/pacientes']);
-        }
+      next: (r) => {
+        if (r.success) this.router.navigate(['/pacientes']);
         this.guardando.set(false);
         this.loadingBar.complete();
       },

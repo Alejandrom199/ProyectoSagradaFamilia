@@ -66,6 +66,11 @@ export class ListarCitas implements OnInit {
   acciones: DatatableAction<CitaResponse>[] = [
     {
       type: 'ver',
+      label: 'Ver consulta',
+      onClick: (row) => this.router.navigate(['/citas', row.id])
+    },
+    {
+      type: 'ver',
       label: 'Completar',
       icon: 'heroCheckCircle',
       class: 'text-green-600 hover:bg-green-50',
@@ -88,7 +93,23 @@ export class ListarCitas implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.cargarDatos();
+    const id = parseInt(this.ninoId);
+    this.loadingBar.show();
+
+    this.ninosService.obtenerPorId(id).subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.nino.set(r.data);
+          this.migajas = [
+            { label: 'Pacientes', ruta: '/pacientes' },
+            { label: `${r.data.nombre} ${r.data.apellido}`, ruta: `/pacientes/${this.ninoId}` },
+            { label: 'Citas' },
+          ];
+        }
+      }
+    });
+
+    this.cargarCitas();
   }
 
   cargarDatos(): void {

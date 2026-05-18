@@ -13,36 +13,43 @@
 
                     <h2 class="text-2xl font-bold text-gray-800 leading-tight">Nueva receta médica</h2>
                     <p class="text-sm text-gray-500 mt-3 leading-relaxed">
-                        Registra los medicamentos prescritos al paciente durante la consulta.
+                        Registra los medicamentos prescritos durante la consulta.
                     </p>
 
-                    <div class="mt-8 space-y-6">
-                        <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroUser" class="text-blue-500 text-lg"></ng-icon></div>
-                            <div>
-                                <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Paciente</h4>
-                                <p class="text-xs text-gray-500 mt-1">Selecciona al niño al que se le indican los
-                                    medicamentos.</p>
+                    @if (cita()) {
+                    <div class="mt-6 p-4 bg-white rounded-xl border border-gray-200">
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Contexto</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <ng-icon name="heroUser" class="text-blue-400 text-sm shrink-0"></ng-icon>
+                                <span class="text-sm font-semibold text-gray-800">{{ cita()?.nombreNino }}</span>
                             </div>
+                            <div class="flex items-center gap-2">
+                                <ng-icon name="heroCalendarDays" class="text-blue-400 text-sm shrink-0"></ng-icon>
+                                <span class="text-xs text-gray-500">{{ formatearFecha(cita()!.fechaHora) }}</span>
+                            </div>
+                            @if (cita()?.motivo) {
+                            <p class="text-xs text-gray-500 pl-5">{{ cita()?.motivo }}</p>
+                            }
                         </div>
+                    </div>
+                    }
 
+                    <div class="mt-6 space-y-5">
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="heroBeaker" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Medicamentos</h4>
-                                <p class="text-xs text-gray-500 mt-1">Lista de fármacos con dosis y frecuencia. Sé
+                                <p class="text-xs text-gray-500 mt-1">Lista fármacos con dosis y frecuencia. Sé
                                     específico.</p>
                             </div>
                         </div>
-
                         <div class="flex gap-4">
-                            <div class="mt-1">
-                                <ng-icon name="heroClipboardDocumentList" class="text-blue-500 text-lg"></ng-icon>
-                            </div>
+                            <div class="mt-1"><ng-icon name="heroClipboardDocumentList"
+                                    class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Indicaciones</h4>
-                                <p class="text-xs text-gray-500 mt-1">Observaciones adicionales para los padres
-                                    (opcional).</p>
+                                <p class="text-xs text-gray-500 mt-1">Observaciones adicionales para los padres.</p>
                             </div>
                         </div>
                     </div>
@@ -53,18 +60,9 @@
                 <form [formGroup]="formPrescripcion" (ngSubmit)="guardar()" class="space-y-6">
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-gray-600 uppercase ml-1">Paciente *</label>
-                        <select formControlName="ninoId"
-                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
-                            [class.border-red-500]="f['ninoId'].invalid && f['ninoId'].touched">
-                            <option [ngValue]="null" disabled>Seleccionar paciente</option>
-                            @for (p of pacientes(); track p.id) {
-                            <option [ngValue]="p.id">{{ p.nombre + ' ' + p.apellido }}</option>
-                            }
-                        </select>
-                        @if (f['ninoId'].invalid && f['ninoId'].touched) {
-                        <span class="text-[11px] text-red-500 font-medium ml-1">Seleccione un paciente</span>
-                        }
+                        <label class="text-xs font-bold text-gray-600 uppercase ml-1">Diagnóstico</label>
+                        <input formControlName="diagnostico" type="text" placeholder="Ej. Faringoamigdalitis aguda"
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -87,14 +85,14 @@
 
                     @if (error()) {
                     <div
-                        class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-semibold flex items-center gap-2 animate-shake">
+                        class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-semibold flex items-center gap-2">
                         <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                         {{ error() }}
                     </div>
                     }
 
                     <div class="pt-6 border-t border-gray-100 flex items-center justify-end gap-3">
-                        <a routerLink="/pacientes"
+                        <a [routerLink]="['/citas', citaId]"
                             class="px-4 py-2 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors">
                             Cancelar
                         </a>

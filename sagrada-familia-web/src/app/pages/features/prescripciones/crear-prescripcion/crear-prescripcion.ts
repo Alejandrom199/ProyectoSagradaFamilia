@@ -1,70 +1,71 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { provideIcons, NgIcon } from '@ng-icons/core';
-import { heroBeaker, heroClipboardDocumentList, heroPlus, heroUser } from '@ng-icons/heroicons/outline';
+import { heroBeaker, heroClipboardDocumentList, heroUser, heroCalendarDays } from '@ng-icons/heroicons/outline';
 import { finalize } from 'rxjs';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
-import { NinosService } from '../../../../core/services/ninos';
+import { CitasService } from '../../../../core/services/citas';
+import { PrescripcionesService } from '../../../../core/services/prescripciones';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { PrescripcionCreate } from '../../../../shared/interfaces/prescripcion.interface';
-import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
-import { PrescripcionesService } from '../../../../core/services/prescripciones';
+import { CitaResponse } from '../../../../shared/interfaces/cita.interface';
+import { formatearFecha } from '../../../../shared/utils/date.utils';
 
 @Component({
   selector: 'app-crear-prescripcion',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
-  viewProviders: [provideIcons({ heroBeaker, heroClipboardDocumentList, heroPlus, heroUser })],
+  viewProviders: [provideIcons({ heroBeaker, heroClipboardDocumentList, heroUser, heroCalendarDays })],
   templateUrl: './crear-prescripcion.html',
-  styleUrl: './crear-prescripcion.css',
 })
 export class CrearPrescripcion implements OnInit {
+  @Input() citaId!: string;
+
   private fb = inject(FormBuilder);
   private prescripcionesService = inject(PrescripcionesService);
-  private ninosService = inject(NinosService);
-  private route = inject(ActivatedRoute);
+  private citasService = inject(CitasService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
   formPrescripcion!: FormGroup;
-  pacientes = signal<NinoResponse[]>([]);
-
+  cita = signal<CitaResponse | null>(null);
   guardando = signal(false);
   error = signal<string | null>(null);
+  formatearFecha = formatearFecha;
 
   migajas: BreadcrumbItem[] = [
-    { label: 'Prescripciones' },
+    { label: 'Citas', ruta: '/citas' },
     { label: 'Nueva receta' },
   ];
 
   ngOnInit(): void {
-    this.formPrescripcion = this.initForm();
-
-    const ninoIdParam = this.route.snapshot.queryParamMap.get('ninoId');
-    if (ninoIdParam) {
-      this.formPrescripcion.patchValue({ ninoId: parseInt(ninoIdParam) });
-    }
-
-    this.cargarPacientes();
-  }
-
-  private initForm(): FormGroup {
-    return this.fb.group({
-      ninoId: [null, Validators.required],
+    this.formPrescripcion = this.fb.group({
       detalleMedicamentos: ['', [Validators.required, Validators.minLength(5)]],
+      diagnostico: [''],
       indicaciones: ['']
     });
+    this.cargarCita();
   }
 
-  get f() {
-    return this.formPrescripcion.controls;
-  }
+  get f() { return this.formPrescripcion.controls; }
 
-  private cargarPacientes(): void {
-    this.ninosService.obtenerTodos().subscribe({
-      next: (r) => { if (r.success) this.pacientes.set(r.data); }
+  private cargarCita(): void {
+    this.loadingBar.show();
+    this.citasService.obtenerPorId(parseInt(this.citaId)).subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.cita.set(r.data);
+          this.migajas = [
+            { label: 'Citas', ruta: '/citas' },
+            { label: 'Consulta', ruta: `/citas/${this.citaId}` },
+            { label: 'Nueva receta' },
+          ];
+        }
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
     });
   }
 
@@ -79,27 +80,23 @@ export class CrearPrescripcion implements OnInit {
     this.loadingBar.show();
 
     const data: PrescripcionCreate = {
-      ninoId: this.formPrescripcion.value.ninoId,
+      citaId: parseInt(this.citaId),
       detalleMedicamentos: this.formPrescripcion.value.detalleMedicamentos,
-      indicaciones: this.formPrescripcion.value.indicaciones || undefined
+      diagnostico: this.formPrescripcion.value.diagnostico || undefined,
+      indicaciones: this.formPrescripcion.value.indicaciones || undefined,
     };
 
     this.prescripcionesService.crear(data)
-      .pipe(
-        finalize(() => {
-          this.guardando.set(false);
-          this.loadingBar.complete();
-        })
-      )
+      .pipe(finalize(() => {
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      }))
       .subscribe({
         next: (res) => {
-          if (res.success) {
-            this.router.navigate(['/prescripciones/nino', data.ninoId]);
-          } else {
-            this.error.set(res.message);
-          }
+          if (res.success) this.router.navigate(['/citas', this.citaId]);
+          else this.error.set(res.message);
         },
-        error: () => this.error.set('Ocurrió un error al registrar la receta. Intente más tarde.')
+        error: () => this.error.set('Ocurrió un error al registrar la receta.')
       });
   }
 }

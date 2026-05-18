@@ -5,7 +5,6 @@ import {
   heroPlus, heroPencil, heroTrash, heroEye, heroChartBar, heroUserCircle
 } from '@ng-icons/heroicons/outline';
 
-// 💡 Interfaces estrictamente tipadas
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { ApiResponse } from '../../../../shared/interfaces/api.interface';
 
@@ -21,6 +20,7 @@ import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 import { NinosService } from '../../../../core/services/ninos';
+import { Reportes } from '../../../../core/services/reportes';
 
 @Component({
   selector: 'listar-pacientes',
@@ -43,6 +43,7 @@ import { NinosService } from '../../../../core/services/ninos';
 })
 export class ListarPacientes implements OnInit {
   private ninosService = inject(NinosService);
+  private reportesService = inject(Reportes);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
@@ -126,6 +127,24 @@ export class ListarPacientes implements OnInit {
         this.ninoAEliminar.set(null);
         this.loadingBar.complete();
       }
+    });
+  }
+
+  descargarPacientesPdf(filtros: any) {
+    this.loadingBar.show();
+    const params = { titulo: "Listado de Pacientes", filtro: JSON.stringify(filtros) }
+
+    this.reportesService.descargarReportePdf('reportes/ninos-pdf', params).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `pacientes_${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
     });
   }
 }

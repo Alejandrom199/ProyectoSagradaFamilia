@@ -1,70 +1,73 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
-import { AuthService } from '../../core/services/auth';
-import { NinosService } from '../../core/services/ninos';
+import { Component, computed, OnInit, signal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroCake, heroChartBar, heroHandRaised, heroHeart, heroUsers, heroSun, heroCloud, heroMoon } from '@ng-icons/heroicons/outline';
 import { CommonModule } from '@angular/common';
+import {
+  heroCake, heroChartBar, heroHeart, heroUsers,
+  heroSun, heroCloud, heroMoon, heroCalendarDays,
+  heroBeaker, heroChartBarSquare, heroArrowRight
+} from '@ng-icons/heroicons/outline';
+
+import { AuthService } from '../../core/services/auth';
+import { NinosService } from '../../core/services/ninos';
+import { AlimentosService } from '../../core/services/alimentos';
+import { CitasService } from '../../core/services/citas';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'dashboard',
   standalone: true,
   imports: [CommonModule, RouterLink, NgIcon],
-  viewProviders: [provideIcons({ heroUsers, heroHeart, heroChartBar, heroCake, heroHandRaised, heroSun, heroCloud, heroMoon })],
+  viewProviders: [provideIcons({
+    heroUsers, heroHeart, heroChartBar, heroCake,
+    heroSun, heroCloud, heroMoon, heroCalendarDays,
+    heroBeaker, heroChartBarSquare, heroArrowRight
+  })],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
+  readonly auth = inject(AuthService);
+  private ninosService = inject(NinosService);
+  private alimentosService = inject(AlimentosService);
+  private citasService = inject(CitasService);
+
   stats = signal([
-    { label: 'Pacientes', valor: '—', icon: 'heroUsers', color: '#2563eb', bgColor: '#dbeafe' },
-    { label: 'Medidas', valor: '—', icon: 'heroChartBar', color: '#16a34a', bgColor: '#dcfce7' },
-    { label: 'Alimentos', valor: '—', icon: 'heroCake', color: '#d97706', bgColor: '#fef3c7' },
-    { label: 'Predicciones activas', valor: '—', icon: 'heroHeart', color: '#dc2626', bgColor: '#fee2e2' },
+    { label: 'Pacientes', valor: '—', icon: 'heroUsers', color: '#2563eb', bgColor: '#dbeafe', ruta: '/pacientes' },
+    { label: 'Citas hoy', valor: '—', icon: 'heroCalendarDays', color: '#7c3aed', bgColor: '#ede9fe', ruta: '/citas' },
+    { label: 'Alimentos', valor: '—', icon: 'heroCake', color: '#d97706', bgColor: '#fef3c7', ruta: '/alimentos' },
+    { label: 'Predicciones', valor: '—', icon: 'heroChartBar', color: '#16a34a', bgColor: '#dcfce7', ruta: '/predicciones' },
   ]);
 
-
-  constructor(
-    readonly auth: AuthService,
-    private ninosService: NinosService
-  ) { }
-
   ngOnInit() {
-    const esMedico = this.auth.esMedico();
+    if (!this.auth.esMedico()) return;
 
-    if (esMedico) {
-      // Cargar estadísticas básicas
-      this.ninosService.obtenerTodos().subscribe(response => {
-        if (response.success) {
-          this.stats.update(s => {
-            s[0].valor = String(response.data.length);
-            return [...s];
-          });
-        }
-      });
-    }
+    // Pacientes
+    this.ninosService.obtenerTodos().subscribe(r => {
+      if (r.success) this.actualizarStat(0, String(r.data.length));
+    });
+
+    // Citas de hoy
+    this.citasService.obtenerMisCitasHoy().subscribe(r => {
+      if (r.success) this.actualizarStat(1, String(r.data.length));
+    });
+
+    // Alimentos
+    this.alimentosService.obtenerTodos().subscribe(r => {
+      if (r.success) this.actualizarStat(2, String(r.data.length));
+    });
+  }
+
+  private actualizarStat(index: number, valor: string): void {
+    this.stats.update(s => {
+      const copia = [...s];
+      copia[index] = { ...copia[index], valor };
+      return copia;
+    });
   }
 
   readonly saludoConfig = computed(() => {
     const hora = new Date().getHours();
-
-    if (hora >= 6 && hora < 12) {
-      return {
-        texto: 'Buenos días',
-        icono: 'heroSun',
-        color: 'text-orange-500'
-      };
-    } else if (hora >= 12 && hora < 19) {
-      return {
-        texto: 'Buenas tardes',
-        icono: 'heroCloud',
-        color: 'text-blue-500'
-      };
-    } else {
-      return {
-        texto: 'Buenas noches',
-        icono: 'heroMoon',
-        color: 'text-indigo-600'
-      };
-    }
+    if (hora >= 6 && hora < 12) return { texto: 'Buenos días', icono: 'heroSun', color: 'text-orange-500' };
+    if (hora >= 12 && hora < 19) return { texto: 'Buenas tardes', icono: 'heroCloud', color: 'text-blue-500' };
+    return { texto: 'Buenas noches', icono: 'heroMoon', color: 'text-indigo-600' };
   });
 }

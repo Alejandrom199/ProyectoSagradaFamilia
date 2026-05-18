@@ -2,7 +2,8 @@ import { NinoResponse } from './nino.interface';
 
 export interface MedicoResponse {
     id: number;
-    nombreCompleto: string;
+    nombre: string;
+    apellido: string;
     email: string;
     especialidad?: string;
     telefono?: string;

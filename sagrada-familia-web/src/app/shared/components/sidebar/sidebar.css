@@ -12,7 +12,7 @@
     color: var(--sidebar-accent);
 }
 
-/* ── Activo (routerLinkActive) ─────────────── */
+/* ── Activo ───────────────────────────────── */
 .sidebar-active {
     background: var(--sidebar-item-active-bg) !important;
     color: var(--sidebar-accent) !important;
@@ -20,6 +20,51 @@
 
 .sidebar-active .sidebar-link-icon {
     color: var(--sidebar-accent) !important;
+}
+
+/* ── Cabecera de módulo ───────────────────── */
+.sidebar-modulo-btn {
+    color: var(--sidebar-text);
+    cursor: pointer;
+}
+
+.sidebar-modulo-btn:hover,
+.sidebar-modulo-btn.modulo-abierto {
+    background: var(--sidebar-item-hover);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-modulo-btn:hover .sidebar-modulo-icon,
+.sidebar-modulo-btn.modulo-abierto .sidebar-modulo-icon {
+    color: var(--sidebar-accent);
+}
+
+.sidebar-modulo-btn .sidebar-modulo-chevron {
+    color: var(--sidebar-text);
+    opacity: 0.5;
+}
+
+.sidebar-modulo-btn:hover .sidebar-modulo-chevron,
+.sidebar-modulo-btn.modulo-abierto .sidebar-modulo-chevron {
+    opacity: 1;
+    color: var(--sidebar-accent);
+}
+
+/* ── Accordion ────────────────────────────── */
+.modulo-opciones {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.22s ease, opacity 0.18s ease;
+}
+
+.modulo-opciones>div {
+    overflow: hidden;
+}
+
+.modulo-opciones.abierto {
+    grid-template-rows: 1fr;
+    opacity: 1;
 }
 
 /* ── Scrollbar ────────────────────────────── */

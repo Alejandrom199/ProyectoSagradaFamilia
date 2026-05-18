@@ -4,13 +4,6 @@
     <div class="flex items-center justify-between mb-8">
         <div>
             <h2 class="text-3xl font-bold text-gray-800">Historial de prescripciones</h2>
-            <p class="text-gray-500 mt-1">
-                @if (nino()) {
-                <span class="font-semibold">{{ nino()?.nombre }} {{ nino()?.apellido }}</span>
-                } @else {
-                Recetas médicas del paciente
-                }
-            </p>
         </div>
 
         <btn variant="primary" [routerLink]="['/prescripciones/crear']" [queryParams]="{ ninoId: ninoId }"
@@ -21,11 +14,10 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        <datatable title="Recetas médicas" [data]="prescripciones()" [columns]="columnas"
-            [exportExcel]="true" exportFileName="prescripciones-paciente" [showActualizar]="true"
-            [showExportar]="true" searchPlaceholder="Buscar por medicamento o médico..."
-            emptyMessage="Este paciente no tiene prescripciones registradas."
-            (onActualizar)="cargarPrescripciones()">
+        <datatable title="Recetas médicas" [data]="prescripciones()" [columns]="columnas" [exportExcel]="true"
+            exportFileName="prescripciones-paciente" [showActualizar]="true" [showExportar]="true"
+            searchPlaceholder="Buscar por medicamento o médico..."
+            emptyMessage="Este paciente no tiene prescripciones registradas." (onActualizar)="cargarPrescripciones()">
         </datatable>
     </div>
 </div>

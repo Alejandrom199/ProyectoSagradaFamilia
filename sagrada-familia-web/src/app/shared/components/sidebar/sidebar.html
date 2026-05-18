@@ -1,15 +1,15 @@
 <aside class="fixed left-0 top-0 h-full z-30 flex flex-col transition-all duration-200 overflow-hidden"
     style="background: var(--sidebar-bg); border-right: 1px solid var(--color-surface-border);"
-    [class.w-63]="sidebarExpandido()" [class.w-16]="!sidebarExpandido()"
-    [class.-translate-x-full]="!sidebarMovilAbierto()" [class.lg:translate-x-0]="true">
+    [style.width]="sidebarExpandido() ? '280px' : '64px'" [class.-translate-x-full]="!sidebarMovilAbierto()"
+    [class.lg:translate-x-0]="true">
 
-    <!-- Logo de la aplicación -->
+    <!-- Logo -->
     <div class="flex items-center shrink-0 px-4"
         style="height: var(--header-height); border-bottom: 1px solid var(--color-surface-border);"
         [class.justify-start]="sidebarExpandido()" [class.justify-center]="!sidebarExpandido()">
 
-        <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border border-blue-100 bg-blue-50/60 transition-all duration-200"
-            style="border-color: rgba(59, 130, 246, 0.15);">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-blue-50/60"
+            style="border: 1px solid rgba(59,130,246,0.15);">
             <ng-icon name="heroHeart" class="text-blue-600 transition-transform hover:scale-105"
                 style="font-size: 16px;"></ng-icon>
         </div>
@@ -22,111 +22,110 @@
         }
     </div>
 
-    <!-- Menu -->
     <nav class="flex-1 overflow-y-auto overflow-x-hidden py-3 scrollbar-none" [class.px-2]="sidebarExpandido()"
         [class.px-1.5]="!sidebarExpandido()">
 
-        @if(auth.esMedico()){
-        <!-- Link Dashboard -->
-        <div class="mb-2">
+        @if (auth.esMedico()) {
+        <div class="mb-1">
             @if (sidebarExpandido()) {
             <a routerLink="/dashboard" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: true }"
                 class="sidebar-link flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
                 (click)="cerrarMovil.emit()">
-
                 <ng-icon name="heroHome" class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
                 <span class="truncate">Dashboard</span>
             </a>
-            }
-
-            @else {
+            } @else {
             <a routerLink="/dashboard" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: true }"
                 class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto rounded-xl text-sm transition-all duration-150"
                 tooltip="Dashboard" tooltipPosition="right" (click)="cerrarMovil.emit()">
-
                 <ng-icon name="heroHome" class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
             </a>
             }
         </div>
         }
 
-        <!-- Modulos de navegación -->
+        <!-- Módulos -->
         @for (modulo of menu(); track modulo.id) {
-        <div [class.mb-4]="sidebarExpandido()" [class.mb-2]="!sidebarExpandido()">
 
-            @if (sidebarExpandido()) {
-            <p class="text-[10px] font-semibold uppercase tracking-widest px-2 mb-1"
-                style="color: var(--sidebar-text);">
-                {{ modulo.nombre }}
-            </p>
-            } @else {
+        @if (sidebarExpandido()) {
+        <div class="mb-1">
+
+            <button (click)="toggleModulo(modulo.id)"
+                class="sidebar-modulo-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-150 group"
+                [class.modulo-abierto]="moduloEstaAbierto(modulo.id)">
+
+                <div class="flex items-center gap-2.5">
+                    <ng-icon [name]="resolverIcono(modulo.opciones[0]?.icono ?? '')"
+                        class="sidebar-modulo-icon shrink-0 transition-colors duration-150"
+                        style="font-size: 15px;"></ng-icon>
+                    <span class="font-semibold text-xs uppercase tracking-wider truncate">
+                        {{ modulo.nombre }}
+                    </span>
+                </div>
+
+                <ng-icon name="heroChevronDown"
+                    class="sidebar-modulo-chevron shrink-0 transition-transform duration-200"
+                    [class.rotate-180]="moduloEstaAbierto(modulo.id)" style="font-size: 14px;"></ng-icon>
+            </button>
+
+            <div class="modulo-opciones" [class.abierto]="moduloEstaAbierto(modulo.id)">
+                <div class="mt-0.5 ml-3 pl-2.5 space-y-0.5" style="border-left: 2px solid var(--color-surface-border);">
+                    @for (opcion of modulo.opciones; track opcion.id) {
+                    <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active"
+                        [routerLinkActiveOptions]="{ exact: false }"
+                        class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150"
+                        [class.mb-2]="$last" (click)="cerrarMovil.emit()">
+                        <ng-icon [name]="resolverIcono(opcion.icono)" class="sidebar-link-icon shrink-0"
+                            style="font-size: 15px;"></ng-icon>
+                        <span class="truncate">{{ opcion.nombre }}</span>
+                    </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        } @else {
+        <div class="mb-2">
             <div class="h-px mx-1 mb-2" style="background: var(--color-surface-border);"></div>
-            }
-
-            <!-- Opciones del modulo -->
             @for (opcion of modulo.opciones; track opcion.id) {
-
-            @if (sidebarExpandido()) {
             <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: false }"
-                class="sidebar-link flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
-                (click)="cerrarMovil.emit()">
-
-                <ng-icon [name]="resolverIcono(opcion.icono)" class="sidebar-link-icon shrink-0"
-                    style="font-size: 16px;"></ng-icon>
-                <span class="truncate">{{ opcion.nombre }}</span>
-            </a>
-            }
-
-            @else {
-            <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: false }"
-                class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto mb-2 rounded-xl text-sm transition-all duration-150"
+                class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto mb-1 rounded-xl text-sm transition-all duration-150"
                 [tooltip]="opcion.nombre" tooltipPosition="right" (click)="cerrarMovil.emit()">
-
                 <ng-icon [name]="resolverIcono(opcion.icono)" class="sidebar-link-icon shrink-0"
                     style="font-size: 16px;"></ng-icon>
             </a>
-            }
             }
         </div>
         }
+
+        }
     </nav>
 
-    <!--Pie del sidebar usuario-->
     <div class="shrink-0 border-t border-[var(--color-surface-border)] transition-all duration-300"
         [ngClass]="sidebarExpandido() ? 'p-3' : 'py-3 px-1.5'">
 
         @if (sidebarExpandido()) {
-
         <div class="flex items-center justify-between px-2 py-2 rounded-xl bg-[var(--color-surface-alt)]">
-
             <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
-                [sidebarExpandido]="true">
-            </avatar>
-
+                [sidebarExpandido]="true"></avatar>
             <button
                 class="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none flex-shrink-0"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="top">
                 <ng-icon name="heroArrowRightOnRectangle" class="text-xl"></ng-icon>
             </button>
-
         </div>
 
         } @else {
-        <div class="flex flex-col items-center justify-center w-full gap-3">
-
-            <div class="flex items-center justify-center w-full">
-                <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
-                    [sidebarExpandido]="false" [tooltip]="auth.currentUser()?.nombre + ' - ' + auth.currentUser()?.rol"
-                    tooltipPosition="right">
-                </avatar>
-            </div>
-
+        <div class="flex flex-col items-center gap-3">
+            <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
+                [sidebarExpandido]="false"
+                [tooltip]="(auth.currentUser()?.nombre ?? '') + ' - ' + (auth.currentUser()?.rol ?? '')"
+                tooltipPosition="right"></avatar>
             <button
                 class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none cursor-pointer"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="right">
                 <ng-icon name="heroArrowRightOnRectangle" class="text-[22px]"></ng-icon>
             </button>
-
         </div>
         }
     </div>

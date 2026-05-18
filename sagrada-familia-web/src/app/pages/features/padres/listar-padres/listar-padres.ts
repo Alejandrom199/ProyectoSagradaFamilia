@@ -40,12 +40,7 @@ export class ListarPadres implements OnInit {
       label: 'Padre/Madre',
       sortable: true,
       filterable: true,
-      render: (row) => {
-        const nombreCompleto = row.nombre.split(' ');
-        const nombre = nombreCompleto[0];
-        const apellido = nombreCompleto[nombreCompleto.length - 1];
-        return generarAvatarHtml(nombre, apellido);
-      },
+      render: (row) => generarAvatarHtml(row.nombre, row.apellido),
       exportValue: (row) => row.nombre
     },
     {

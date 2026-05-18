@@ -34,13 +34,8 @@ export class ListarMedicos implements OnInit {
       label: 'Médico',
       sortable: true,
       filterable: true,
-      render: (row) => {
-        const partes = row.nombreCompleto.split(' ');
-        const nombre = partes[0];
-        const apellido = partes[partes.length - 1];
-        return generarAvatarHtml(nombre, apellido);
-      },
-      exportValue: (row) => row.nombreCompleto
+      render: (row) => generarAvatarHtml(row.nombre, row.apellido),
+      exportValue: (row) => `${row.nombre} ${row.apellido}`
     },
     {
       key: 'email',

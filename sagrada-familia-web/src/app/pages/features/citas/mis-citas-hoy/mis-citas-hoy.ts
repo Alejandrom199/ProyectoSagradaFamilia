@@ -15,7 +15,7 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
   selector: 'app-mis-citas-hoy',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, Button, Breadcrumb],
-  viewProviders: [provideIcons({ heroPlus, heroCheckCircle, heroXCircle, heroCalendarDays, heroClock })],
+  viewProviders: [provideIcons({ heroCheckCircle, heroXCircle, heroCalendarDays, heroClock, heroPlus })],
   templateUrl: './mis-citas-hoy.html',
   styleUrl: './mis-citas-hoy.css',
 })
@@ -58,11 +58,20 @@ export class MisCitasHoy implements OnInit {
   acciones: DatatableAction<CitaResponse>[] = [
     {
       type: 'ver',
-      label: 'Marcar completada',
+      label: 'Ver consulta',
+      icon: 'heroEye',
+      onClick: (row) => this.router.navigate(['/citas', row.id])
+    },
+    {
+      type: 'ver',
+      label: 'Iniciar / Completar',
       icon: 'heroCheckCircle',
       class: 'text-green-600 hover:bg-green-50',
-      visible: (row) => row.estado === 'Pendiente',
-      onClick: (row) => this.cambiarEstado(row.id, EstadoCita.Completada)
+      visible: (row) => row.estado === 'Pendiente' || row.estado === 'EnCurso',
+      onClick: (row) => {
+        const siguiente = row.estado === 'Pendiente' ? EstadoCita.EnCurso : EstadoCita.Completada;
+        this.cambiarEstado(row.id, siguiente);
+      }
     },
     {
       type: 'eliminar',

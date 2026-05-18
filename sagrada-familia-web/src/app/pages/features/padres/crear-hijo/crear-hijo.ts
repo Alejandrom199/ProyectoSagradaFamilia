@@ -1,8 +1,8 @@
 import { Component, Input, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { provideIcons } from '@ng-icons/core';
-import { heroArrowLeft } from '@ng-icons/heroicons/outline';
+import { provideIcons, NgIcon } from '@ng-icons/core';
+import { heroArrowLeft, heroUserPlus } from '@ng-icons/heroicons/outline';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { PadreDetailResponse, PadreResponse } from '../../../../shared/interfaces/padre.interface';
@@ -14,8 +14,8 @@ import { PadresService } from '../../../../core/services/padres';
 @Component({
   selector: 'app-crear-hijo',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb],
-  viewProviders: [provideIcons({ heroArrowLeft })],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  viewProviders: [provideIcons({ heroArrowLeft, heroUserPlus })],
   templateUrl: './crear-hijo.html',
   styleUrl: './crear-hijo.css',
 })
@@ -46,15 +46,16 @@ export class CrearHijo implements OnInit {
   migajas: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
-    this.migajas = [
-      { label: 'Padres', ruta: '/padres' },
-      { label: 'Detalle del Padre', ruta: `/padres/${this.id}` },
-      { label: 'Crear Hijo' },
-    ];
-
     this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
-      next: (r: ApiResponse<PadreDetailResponse>) => {
-        if (r.success) this.padre.set(r.data);
+      next: (r) => {
+        if (r.success) {
+          this.padre.set(r.data);
+          this.migajas = [
+            { label: 'Padres', ruta: '/padres' },
+            { label: `${r.data.nombre} ${r.data.apellido}`, ruta: `/padres/${this.id}/hijos` },
+            { label: 'Agregar hijo' },
+          ];
+        }
       }
     });
   }
