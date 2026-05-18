@@ -123,4 +123,19 @@ public class CitaService : ICitaService
 
         _logger.LogInformation("Cita ID: {Id} eliminada correctamente del sistema.", id);
     }
+
+    public async Task<IEnumerable<CitaDto.Response>> ObtenerPorPadreIdAsync(int padreId)
+    {
+        _logger.LogInformation("Consultando citas de los hijos del padre ID: {PadreId}", padreId);
+
+        var citas = await _citaRepository.ObtenerPorPadreIdAsync(padreId);
+        return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
+    }
+
+    public async Task<IEnumerable<CitaDto.Response>> ObtenerProximasPorMedicoAsync(int medicoId)
+    {
+        _logger.LogInformation("Consultando agenda futura del médico ID: {MedicoId}", medicoId);
+        var citas = await _citaRepository.ObtenerPendientesPorMedicoAsync(medicoId);
+        return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
+    }
 }

@@ -5,6 +5,8 @@ using SagradaFamilia.Application.Interfaces.Services;
 
 namespace SagradaFamilia.API.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class PrediccionesController : BaseController
 {
     private readonly IPrediccionService _prediccionService;

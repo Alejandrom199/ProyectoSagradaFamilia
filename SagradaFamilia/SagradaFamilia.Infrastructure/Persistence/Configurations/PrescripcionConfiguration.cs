@@ -11,7 +11,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             base.Configure(builder);
 
             builder.ToTable("Prescripciones");
-
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.DetalleMedicamentos)
@@ -20,6 +19,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.Property(p => p.Indicaciones)
                 .HasMaxLength(2000);
+
+            builder.Property(p => p.Diagnostico)
+                .HasMaxLength(500);
 
             // Relaciones
             builder.HasOne(p => p.Nino)
@@ -30,6 +32,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             builder.HasOne(p => p.Medico)
                 .WithMany()
                 .HasForeignKey(p => p.MedicoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.Cita) 
+                .WithMany(c => c.Prescripciones)
+                .HasForeignKey(p => p.CitaId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

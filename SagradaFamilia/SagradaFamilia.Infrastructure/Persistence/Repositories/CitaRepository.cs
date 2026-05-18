@@ -17,6 +17,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .Include(c => c.Nino)
                     .ThenInclude(n => n.Padre)
                 .Include(c => c.Medico)
+                .Include(c => c.Prescripciones)
                 .FirstOrDefaultAsync(c => c.Id == id && !c.Eliminado);
 
         public async Task<IEnumerable<Cita>> ObtenerPorNinoIdAsync(int ninoId) =>
@@ -26,16 +27,20 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .OrderByDescending(c => c.FechaHora)
                 .ToListAsync();
 
-        public async Task<IEnumerable<Cita>> ObtenerPorMedicoIdAsync(int medicoId, DateOnly fecha) =>
-            await _context.Citas
+        public async Task<IEnumerable<Cita>> ObtenerPorMedicoIdAsync(int medicoId, DateOnly fecha)
+        {
+            var inicio = fecha.ToDateTime(TimeOnly.MinValue);
+            var fin = fecha.ToDateTime(TimeOnly.MaxValue);
+
+            return await _context.Citas
                 .Include(c => c.Nino)
                 .Where(c => c.MedicoId == medicoId
                          && !c.Eliminado
-                         && c.FechaHora.Year == fecha.Year
-                         && c.FechaHora.Month == fecha.Month
-                         && c.FechaHora.Day == fecha.Day)
+                         && c.FechaHora >= inicio
+                         && c.FechaHora <= fin)
                 .OrderBy(c => c.FechaHora)
                 .ToListAsync();
+        }
 
         public async Task<IEnumerable<Cita>> ObtenerPendientesPorMedicoAsync(int medicoId) =>
             await _context.Citas
@@ -69,5 +74,13 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             _context.Citas.Remove(cita);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Cita>> ObtenerPorPadreIdAsync(int padreId) =>
+            await _context.Citas
+                .Include(c => c.Nino)
+                .Include(c => c.Medico)
+                .Where(c => c.Nino.PadreId == padreId && !c.Eliminado)
+                .OrderByDescending(c => c.FechaHora)
+                .ToListAsync();
     }
 }

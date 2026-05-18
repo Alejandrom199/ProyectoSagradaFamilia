@@ -11,15 +11,18 @@ using SagradaFamilia.Domain.Interfaces.Repositories;
 public class NinoService : INinoService
 {
     private readonly INinoRepository _ninoRepository;
+    private readonly IPadreRepository _padreRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<NinoService> _logger;
 
     public NinoService(
         INinoRepository ninoRepository,
+        IPadreRepository padreRepository,
         IMapper mapper,
         ILogger<NinoService> logger)
     {
         _ninoRepository = ninoRepository;
+        _padreRepository = padreRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -116,4 +119,14 @@ public class NinoService : INinoService
 
         _logger.LogInformation("Niño ID: {Id} eliminado lógicamente del sistema.", id);
     }
+
+    public async Task<IEnumerable<NinoDto.ListResponse>> ObtenerMisPorUsuarioIdAsync(int usuarioId)
+    {
+        var padre = await _padreRepository.ObtenerPorUsuarioIdAsync(usuarioId)
+            ?? throw new NotFoundException("Padre", usuarioId);
+
+        var ninos = await _ninoRepository.ObtenerPorPadreIdAsync(padre.Id);
+        return _mapper.Map<IEnumerable<NinoDto.ListResponse>>(ninos);
+    }
+
 }

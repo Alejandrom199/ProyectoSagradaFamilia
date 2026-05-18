@@ -8,11 +8,13 @@ namespace SagradaFamilia.Infrastructure.Reporting
     {
         private readonly IAlimentoService _alimentoService;
         private readonly IPadreService _padreService;
+        private readonly INinoService _ninoService;
 
-        public ReportesService(IAlimentoService alimentoService, IPadreService padreService)
+        public ReportesService(IAlimentoService alimentoService, IPadreService padreService, INinoService ninoService)
         {
             _alimentoService = alimentoService;
             _padreService = padreService;
+            _ninoService = ninoService;
         }
 
         public async Task<byte[]> GenerarAlimentosPdf(string? titulo, string logoPath, string marcaAguaPath)
@@ -29,6 +31,15 @@ namespace SagradaFamilia.Infrastructure.Reporting
             var padres = await _padreService.ObtenerTodosAsync();
 
             var documento = new PadresReportDocument(padres, titulo, logoPath, marcaAguaPath);
+
+            return documento.GeneratePdf();
+        }
+
+        public async Task<byte[]> GenerarNinosPdf(string? titulo, string logoPath, string marcaAguaPath)
+        {
+            var ninos = await _ninoService.ObtenerTodosAsync();
+
+            var documento = new NinosReportDocument(ninos, titulo, logoPath, marcaAguaPath);
 
             return documento.GeneratePdf();
         }

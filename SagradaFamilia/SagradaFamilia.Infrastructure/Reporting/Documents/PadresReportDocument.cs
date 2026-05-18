@@ -12,6 +12,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
         private readonly string _titulo;
         private readonly string _logoPath;
         private readonly string _marcaAguaPath;
+        private readonly bool isLandscape;
 
         public PadresReportDocument(
             IEnumerable<PadreDto.ListResponse> padres,
@@ -23,13 +24,14 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
             _titulo = titulo ?? "Reporte General de Representantes";
             _logoPath = logoPath;
             _marcaAguaPath = marcaAguaPath;
+            isLandscape = true;
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
         public void Compose(IDocumentContainer container)
         {
-            var template = new BaseReportTemplate(_titulo, _logoPath, _marcaAguaPath, true, GenerarTabla);
+            var template = new BaseReportTemplate(_titulo, _logoPath, _marcaAguaPath, isLandscape, GenerarTabla);
             template.Compose(container);
         }
 
@@ -70,7 +72,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                         .Text($"{item.TotalHijos}").Style(BaseReportTemplate.EstiloValores);
 
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima)
-                        .Text(item.Activo ? "ACTIVO" : "INACTIVO").Style(BaseReportTemplate.EstiloValores);
+                        .Text(item.Activo ? "Activo" : "Inactivo").Style(BaseReportTemplate.EstiloValores);
                 }
             });
         }

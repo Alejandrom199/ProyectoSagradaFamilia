@@ -5,19 +5,27 @@ using Microsoft.AspNetCore.Mvc;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Services;
 using SagradaFamilia.Domain.Enums;
 
 [Authorize]
+[ApiController]
+[Route("api/[controller]")]
 public class CitasController : BaseController
 {
     private readonly ICitaService _citaService;
+    private readonly INinoService _ninoService;
 
-    public CitasController(ICitaService citaService) => _citaService = citaService;
-
-    [HttpGet("nino/{ninoId:int}")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> PorNino(int ninoId)
+    public CitasController(ICitaService citaService, INinoService ninoService)
     {
-        var response = await _citaService.ObtenerPorNinoIdAsync(ninoId);
+        _citaService = citaService;
+        _ninoService = ninoService;
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<ApiResponse<CitaDto.Response>>> ObtenerPorId(int id)
+    {
+        var response = await _citaService.ObtenerPorIdAsync(id);
         return HandleResponse(response);
     }
 
@@ -43,5 +51,36 @@ public class CitasController : BaseController
     {
         await _citaService.ActualizarEstadoAsync(id, nuevoEstado);
         return HandleSuccess("Estado de la cita actualizado.");
+    }
+
+    [HttpGet("proximas")]
+    [Authorize(Roles = "Medico")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> Proximas()
+    {
+        var response = await _citaService.ObtenerProximasPorMedicoAsync(UsuarioId);
+        return HandleResponse(response);
+    }
+
+    [HttpGet("mis-hijos")]
+    [Authorize(Roles = "Padre")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> CitasMisHijos()
+    {
+        var response = await _citaService.ObtenerPorPadreIdAsync(UsuarioId);
+        return HandleResponse(response);
+    }
+
+    [HttpGet("nino/{ninoId:int}")]
+    [Authorize(Roles = "Medico,Padre")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> PorNino(int ninoId)
+    {
+        // Si es padre, validar que el niño le pertenece
+        if (User.IsInRole("Padre"))
+        {
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, UsuarioId);
+            if (!esSuHijo) return Forbid();
+        }
+
+        var response = await _citaService.ObtenerPorNinoIdAsync(ninoId);
+        return HandleResponse(response);
     }
 }

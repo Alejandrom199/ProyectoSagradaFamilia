@@ -19,5 +19,7 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task ActualizarEstadoAsync(int id, EstadoCita nuevoEstado);
 
         Task EliminarAsync(int id);
+        Task<IEnumerable<CitaDto.Response>> ObtenerPorPadreIdAsync(int padreId);
+        Task<IEnumerable<CitaDto.Response>> ObtenerProximasPorMedicoAsync(int medicoId);
     }
 }
