@@ -17,10 +17,6 @@ export class PadresService {
     return this.http.get<ApiResponse<PadreResponse[]>>(this.url, { withCredentials: true });
   }
 
-  obtenerPorId(id: number): Observable<ApiResponse<PadreDetailResponse>> {
-    return this.http.get<ApiResponse<PadreDetailResponse>>(`${this.url}/${id}`, { withCredentials: true });
-  }
-
   crear(request: PadreCreate): Observable<ApiResponse<PadreDetailResponse>> {
     return this.http.post<ApiResponse<PadreDetailResponse>>(this.url, request, { withCredentials: true });
   }
@@ -31,5 +27,9 @@ export class PadresService {
 
   eliminar(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.url}/${id}`, { withCredentials: true });
+  }
+
+  obtenerPorId(id: number): Observable<ApiResponse<PadreDetailResponse>> {
+    return this.http.get<ApiResponse<PadreDetailResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
 }

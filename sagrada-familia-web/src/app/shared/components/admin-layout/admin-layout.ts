@@ -60,7 +60,7 @@ export class AdminLayout implements OnInit {
 
   getMarginLeft(): string {
     if (this.isMovil()) return '0';
-    return this.sidebarExpandido() ? '240px' : '56px';
+    return this.sidebarExpandido() ? '280px' : '64px';
   }
 
   logout(): void {

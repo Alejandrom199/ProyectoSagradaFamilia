@@ -1,76 +1,82 @@
-<div>
-
+<div class="page-container">
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     @if (padre()) {
+
+    <!-- Cabecera -->
+    <div class="mb-6 flex justify-between items-end">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">
+                {{ padre()?.nombre }} {{ padre()?.apellido }}
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">Ficha del representante legal</p>
+        </div>
+
+    </div>
+
     <!-- Info del padre -->
-    <div class="card mb-6">
-        <div class="card-header">Información del padre / representante</div>
-        <div class="card-body">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div>
-                    <p class="text-xs text-[var(--color-text-secondary)] mb-1">Nombre completo</p>
-                    <p class="font-semibold text-[var(--color-text-primary)]">
-                        {{ padre()?.nombre }} {{ padre()?.apellido }}
-                    </p>
-                </div>
-                <div>
-                    <p class="text-xs text-[var(--color-text-secondary)] mb-1">Email</p>
-                    <p class="font-medium text-[var(--color-text-primary)]">{{ padre()?.email }}</p>
-                </div>
-                <div>
-                    <p class="text-xs text-[var(--color-text-secondary)] mb-1">Teléfono</p>
-                    <p class="font-medium text-[var(--color-text-primary)]">{{ padre()?.telefono ?? '—' }}</p>
-                </div>
-                <div>
-                    <p class="text-xs text-[var(--color-text-secondary)] mb-1">Fecha de registro</p>
-                    <p class="font-medium text-[var(--color-text-primary)]">{{ formatearFecha(padre()?.fechaCreacion!)}}
-                    </p>
-                </div>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                <ng-icon name="heroUser" class="text-blue-500 text-base"></ng-icon>
             </div>
+            <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">
+                Información del representante
+            </h3>
+        </div>
+        <div class="px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-6">
+
+            <div class="flex flex-col gap-1">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Nombre completo</p>
+                <p class="text-sm font-semibold text-gray-800">
+                    {{ padre()?.nombre }} {{ padre()?.apellido }}
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Email</p>
+                <p class="text-sm font-medium text-gray-700 truncate">{{ padre()?.email }}</p>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Teléfono</p>
+                <p class="text-sm font-medium text-gray-700">{{ padre()?.telefono ?? '—' }}</p>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha de registro</p>
+                <p class="text-sm font-medium text-gray-700">{{ formatearFecha(padre()?.fechaCreacion!) }}</p>
+            </div>
+
         </div>
     </div>
 
-    <!-- Header hijos -->
-    <div class="flex items-center justify-between mb-6">
+    <!-- Hijos -->
+    <div class="mb-4 flex justify-between items-end">
         <div>
-            <h2 class="text-xl font-bold text-[var(--color-text-primary)]">Hijos asignados</h2>
-            <p class="text-sm text-[var(--color-text-secondary)] mt-0.5">
-                {{ hijos().length }} hijo{{ hijos().length !== 1 ? 's' : '' }} registrado{{ hijos().length !== 1 ? 's'
-                : '' }}
+            <h3 class="text-lg font-bold text-gray-800">Hijos asignados</h3>
+            <p class="text-sm text-gray-500 mt-0.5">
+                {{ hijos().length }} hijo{{ hijos().length !== 1 ? 's' : '' }}
+                registrado{{ hijos().length !== 1 ? 's' : '' }}
             </p>
         </div>
-        <a [routerLink]="['/padres', id, 'hijos', 'crear']" class="btn btn-primary btn-md">
-            <ng-icon name="heroPlus"></ng-icon>
-            Agregar hijo
-        </a>
     </div>
 
-    <!-- Tabla de hijos -->
-    <datatable title="Hijos del representante" [data]="hijos()" [columns]="columnas" [actions]="acciones"
-        searchPlaceholder="Buscar por nombre..." emptyMessage="Este padre no tiene hijos registrados.">
-    </datatable>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <datatable title="Hijos del representante" [data]="hijos()" [columns]="columnas" [actions]="acciones"
+            searchPlaceholder="Buscar por nombre..." emptyMessage="Este padre no tiene hijos registrados."
+            [showExportar]="false">
+        </datatable>
+    </div>
+
     }
 
     <!-- Modal confirmar eliminación -->
     @if (hijoAEliminar()) {
-    <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-[var(--color-surface)] rounded-xl w-full max-w-sm">
-            <div class="card-body text-center space-y-4">
-                <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-                    <ng-icon name="heroTrash" class="text-red-600 text-2xl"></ng-icon>
-                </div>
-                <h3 class="font-semibold text-lg">¿Eliminar hijo?</h3>
-                <p class="text-sm text-[var(--color-text-secondary)]">
-                    Esta acción eliminará a <strong>{{ hijoAEliminar()?.nombre }} {{ hijoAEliminar()?.apellido
-                        }}</strong> del sistema.
-                </p>
-                <div class="flex gap-3 justify-center">
-                    <button class="btn btn-secondary btn-md" (click)="hijoAEliminar.set(null)">Cancelar</button>
-                    <button class="btn btn-danger btn-md" (click)="confirmarEliminar()">Eliminar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <confirm-modal title="¿Eliminar hijo?"
+        [message]="'Esta acción eliminará a ' + hijoAEliminar()?.nombre + ' ' + hijoAEliminar()?.apellido + ' del sistema.'"
+        (confirm)="confirmarEliminar()" (cancel)="hijoAEliminar.set(null)">
+    </confirm-modal>
     }
+
 </div>

@@ -6,8 +6,10 @@ export interface CitaResponse {
     nombreMedico: string;
     fechaHora: string;
     motivo?: string;
-    estado: string;
+    notasConsulta?: string;
+    estado: EstadoCita;
     fechaCreacion: string;
+    tienePrescripcion: boolean;
 }
 
 export interface CitaCreate {
@@ -24,8 +26,9 @@ export interface CitaUpdate {
 }
 
 export enum EstadoCita {
-    Pendiente = 1,
-    Completada = 2,
-    Cancelada = 3,
-    NoAsistio = 4,
+    Pendiente = 'Pendiente',
+    EnCurso = 'EnCurso',
+    Completada = 'Completada',
+    NoAsistio = 'NoAsistio',
+    Cancelada = 'Cancelada'
 }

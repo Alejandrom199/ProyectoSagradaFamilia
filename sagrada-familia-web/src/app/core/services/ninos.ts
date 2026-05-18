@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
-import { NinoResponse, NinoDetailResponse, NinoCreate, NinoUpdate } from '../../shared/interfaces/nino.interface';
+import { NinoCreate, NinoDetailResponse, NinoResponse, NinoUpdate } from '../../shared/interfaces/nino.interface';
 
 @Injectable({ providedIn: 'root' })
 export class NinosService {
@@ -11,10 +11,12 @@ export class NinosService {
 
   constructor(private http: HttpClient) { }
 
+  // Médico — sus pacientes (GET /ninos → ahora filtra por médico en el backend)
   obtenerTodos(): Observable<ApiResponse<NinoResponse[]>> {
     return this.http.get<ApiResponse<NinoResponse[]>>(this.url, { withCredentials: true });
   }
 
+  // Padre — sus hijos
   obtenerMisNinos(): Observable<ApiResponse<NinoResponse[]>> {
     return this.http.get<ApiResponse<NinoResponse[]>>(`${this.url}/mis-ninos`, { withCredentials: true });
   }

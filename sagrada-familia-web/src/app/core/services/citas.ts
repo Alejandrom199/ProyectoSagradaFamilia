@@ -5,46 +5,50 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
 import { CitaCreate, CitaResponse, CitaUpdate, EstadoCita } from '../../shared/interfaces/cita.interface';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CitasService {
   private readonly url = `${environment.apiUrl}/citas`;
 
   constructor(private http: HttpClient) { }
 
+  // Médico — agenda del día
+  obtenerMisCitasHoy(): Observable<ApiResponse<CitaResponse[]>> {
+    return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/hoy`, { withCredentials: true });
+  }
+
+  // Médico — citas futuras/pendientes
+  obtenerProximas(): Observable<ApiResponse<CitaResponse[]>> {
+    return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/proximas`, { withCredentials: true });
+  }
+
+  // Médico y Padre — citas de un niño específico
   obtenerPorNino(ninoId: number): Observable<ApiResponse<CitaResponse[]>> {
     return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/nino/${ninoId}`, { withCredentials: true });
   }
 
-  obtenerMisCitasHoy(): Observable<ApiResponse<CitaResponse[]>> {
-    return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/hoy`, { withCredentials: true });
+  // Padre — citas de todos sus hijos
+  obtenerCitasMisHijos(): Observable<ApiResponse<CitaResponse[]>> {
+    return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/mis-hijos`, { withCredentials: true });
+  }
+
+  // Detalle de una cita (para la pantalla de consulta)
+  obtenerPorId(id: number): Observable<ApiResponse<CitaResponse>> {
+    return this.http.get<ApiResponse<CitaResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
 
   crear(request: CitaCreate): Observable<ApiResponse<CitaResponse>> {
     return this.http.post<ApiResponse<CitaResponse>>(this.url, request, { withCredentials: true });
   }
 
-  cambiarEstado(id: number, nuevoEstado: EstadoCita): Observable<ApiResponse<null>> {
-    return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/estado`, nuevoEstado, { withCredentials: true });
-  }
-
-  /*
-  // Descomentar cuando se agreguen los endpoints en CitasController.cs
-  obtenerTodos(): Observable<ApiResponse<CitaResponse[]>> {
-    return this.http.get<ApiResponse<CitaResponse[]>>(this.url, { withCredentials: true });
-  }
-
-  obtenerPorId(id: number): Observable<ApiResponse<CitaResponse>> {
-    return this.http.get<ApiResponse<CitaResponse>>(`${this.url}/${id}`, { withCredentials: true });
-  }
-
   actualizar(id: number, request: CitaUpdate): Observable<ApiResponse<CitaResponse>> {
     return this.http.put<ApiResponse<CitaResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
+  }
+
+  cambiarEstado(id: number, nuevoEstado: EstadoCita): Observable<ApiResponse<null>> {
+    return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/estado`, nuevoEstado, { withCredentials: true });
   }
 
   eliminar(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.url}/${id}`, { withCredentials: true });
   }
-  */
 }

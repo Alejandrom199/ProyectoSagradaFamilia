@@ -23,7 +23,7 @@
 
     @if (medicoAEliminar()) {
     <confirm-modal title="¿Eliminar médico?"
-        [message]="'Esta acción eliminará al Dr(a). ' + medicoAEliminar()!.nombreCompleto + ' del sistema. Las relaciones existentes con pacientes y padres se mantendrán, pero quedarán sin médico asignado.'"
+        [message]="'Esta acción eliminará al Dr(a). ' + medicoAEliminar()!.nombre + ' ' + medicoAEliminar()!.apellido + ' del sistema. Las relaciones existentes con pacientes y padres se mantendrán, pero quedarán sin médico asignado.'"
         (confirm)="confirmarEliminar()" (cancel)="medicoAEliminar.set(null)">
     </confirm-modal>
     }

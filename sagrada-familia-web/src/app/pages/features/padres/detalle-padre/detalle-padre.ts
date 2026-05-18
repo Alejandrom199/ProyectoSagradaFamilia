@@ -1,22 +1,23 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroArrowLeft, heroPlus, heroPencil, heroTrash } from '@ng-icons/heroicons/outline';
+import { heroArrowLeft, heroPlus, heroPencil, heroTrash, heroUser } from '@ng-icons/heroicons/outline';
 import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { PadresService } from '../../../../core/services/padres';
 import { NinosService } from '../../../../core/services/ninos';
-import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
+import { PadreDetailResponse, PadreResponse } from '../../../../shared/interfaces/padre.interface';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
+import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
 
 
 @Component({
   selector: 'detalle-padre',
-  imports: [NgIcon, RouterLink, Datatable, Breadcrumb],
-  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash })],
+  imports: [NgIcon, Datatable, Breadcrumb, ConfirmModal],
+  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash, heroUser })],
   templateUrl: './detalle-padre.html',
   styleUrl: './detalle-padre.css',
 })
@@ -28,7 +29,7 @@ export class DetallePadre implements OnInit {
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
-  padre = signal<PadreResponse | null>(null);
+  padre = signal<PadreDetailResponse | null>(null);
   hijos = signal<NinoResponse[]>([]);
   hijoAEliminar = signal<NinoResponse | null>(null);
 
@@ -56,14 +57,24 @@ export class DetallePadre implements OnInit {
 
   acciones: DatatableAction<NinoResponse>[] = [
     {
-      type: 'editar',
-      onClick: (row) => this.router.navigate(['/padres', this.id, 'hijos', row.id, 'editar'])
-    },
-    {
-      type: 'eliminar',
-      onClick: (row) => this.hijoAEliminar.set(row)
+      type: 'ver',
+      label: 'Ver ficha',
+      onClick: (row) => this.router.navigate(['/pacientes', row.id])
     }
   ];
+  // acciones: DatatableAction<NinoResponse>[] = [
+  //   {
+  //     type: 'editar',
+  //     onClick: (row) => this.router.navigate(
+  //       ['/padres', this.id, 'hijos', row.id, 'editar'],
+  //       { queryParams: { origen: 'padres' } }
+  //     )
+  //   },
+  //   {
+  //     type: 'eliminar',
+  //     onClick: (row) => this.hijoAEliminar.set(row)
+  //   }
+  // ];
 
   migajas: BreadcrumbItem[] = [
     { label: 'Padres', ruta: '/padres' },
@@ -77,11 +88,14 @@ export class DetallePadre implements OnInit {
   cargarDatos() {
     this.loadingBar.show();
 
-    this.padresService.obtenerTodos().subscribe({
+    this.padresService.obtenerPorId(parseInt(this.id)).subscribe({
       next: (r) => {
         if (r.success) {
-          const p = r.data.find(x => x.id === parseInt(this.id));
-          if (p) this.padre.set(p);
+          this.padre.set(r.data);
+          this.migajas = [
+            { label: 'Padres', ruta: '/padres' },
+            { label: `${r.data.nombre} ${r.data.apellido}` },
+          ];
         }
         this.loadingBar.complete();
       },

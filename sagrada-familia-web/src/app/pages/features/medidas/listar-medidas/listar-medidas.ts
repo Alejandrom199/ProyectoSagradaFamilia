@@ -12,12 +12,14 @@ import { MedidasService } from '../../../../core/services/medidas';
 import { MedidaResponse } from '../../../../shared/interfaces/medida.interface';
 import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface'; // 💡 Actualizado a DetailResponse
 import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
 
 
 @Component({
   selector: 'listar-medidas',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIcon, Datatable, Button],
+  imports: [CommonModule, FormsModule, NgIcon, Datatable, Button, ConfirmModal, Breadcrumb],
   viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroTrash, heroPencil })],
   templateUrl: './listar-medidas.html',
 })
@@ -29,6 +31,7 @@ export class ListarMedidas implements OnInit {
 
   medidas = signal<MedidaResponse[]>([]);
   nino = signal<NinoDetailResponse | null>(null); // 💡 Actualizado
+  migajas = signal<BreadcrumbItem[]>([]);
 
   modalAbierto = signal(false);
   editando = signal<MedidaResponse | null>(null);
@@ -78,7 +81,18 @@ export class ListarMedidas implements OnInit {
     if (idUrl) {
       this.id = idUrl;
       const ninoId = parseInt(this.id, 10);
-      this.ninosService.obtenerPorId(ninoId).subscribe(r => { if (r.success && r.data) this.nino.set(r.data); });
+
+      this.ninosService.obtenerPorId(ninoId).subscribe(r => {
+        if (r.success && r.data) {
+          this.nino.set(r.data);
+          this.migajas.set([
+            { label: 'Pacientes', ruta: '/pacientes' },
+            { label: `${r.data.nombre} ${r.data.apellido}`, ruta: `/pacientes/${this.id}` },
+            { label: 'Medidas' },
+          ]);
+        }
+      });
+
       this.cargarMedidas();
     }
   }

@@ -1,4 +1,5 @@
 <div class="page-container">
+
     <!-- Saludo -->
     <div class="mb-8">
         <h2 class="text-3xl font-bold text-gray-800">
@@ -8,57 +9,146 @@
         <p class="text-gray-500 mt-1">Resumen del sistema de monitoreo pediátrico</p>
     </div>
 
-    <!-- Cards de estadísticas -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Stats -->
+    @if (auth.esMedico()) {
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         @for (stat of stats(); track stat.label) {
-        <div class="card">
-            <div class="card-body flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                    [style.background-color]="stat.bgColor">
-                    <ng-icon [name]="stat.icon" [style.color]="stat.color"></ng-icon>
-                </div>
-                <div>
-                    <p class="text-2xl font-bold text-[var(--color-text-primary)]">{{ stat.valor }}</p>
-                    <p class="text-sm text-[var(--color-text-secondary)]">{{ stat.label }}</p>
-                </div>
+        <a [routerLink]="stat.ruta"
+            class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:shadow-md hover:border-gray-300 transition-all group">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                [style.background-color]="stat.bgColor">
+                <ng-icon [name]="stat.icon" [style.color]="stat.color" class="text-xl"></ng-icon>
             </div>
-        </div>
+            <div class="min-w-0">
+                <p class="text-2xl font-bold text-gray-800 leading-none">{{ stat.valor }}</p>
+                <p class="text-xs text-gray-500 mt-1 truncate">{{ stat.label }}</p>
+            </div>
+        </a>
         }
     </div>
 
-    <!-- Accesos rápidos médico -->
-    @if (auth.esMedico()) {
-    <div class="card">
-        <div class="card-header">Accesos rápidos</div>
-        <div class="card-body grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <a routerLink="/pacientes"
-                class="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-alt)] transition-colors">
-                <ng-icon name="heroUsers" class="text-[var(--color-primary)]"></ng-icon>
-                <span class="font-medium text-sm">Ver pacientes</span>
+    <!-- Accesos rápidos -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Accesos rápidos</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+            <a routerLink="/pacientes/crear"
+                class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:border-blue-300 hover:shadow-md transition-all group">
+                <div
+                    class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+                    <ng-icon name="heroUsers" class="text-blue-500 text-lg"></ng-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-800">Nuevo paciente</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Registrar un niño</p>
+                </div>
+                <ng-icon name="heroArrowRight"
+                    class="text-gray-300 group-hover:text-blue-400 transition-colors shrink-0"></ng-icon>
             </a>
+
+            <a routerLink="/citas/crear"
+                class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:border-purple-300 hover:shadow-md transition-all group">
+                <div
+                    class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
+                    <ng-icon name="heroCalendarDays" class="text-purple-500 text-lg"></ng-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-800">Programar cita</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Agendar consulta</p>
+                </div>
+                <ng-icon name="heroArrowRight"
+                    class="text-gray-300 group-hover:text-purple-400 transition-colors shrink-0"></ng-icon>
+            </a>
+
+            <a routerLink="/padres/crear"
+                class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:border-red-300 hover:shadow-md transition-all group">
+                <div
+                    class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center shrink-0 group-hover:bg-red-100 transition-colors">
+                    <ng-icon name="heroHeart" class="text-red-500 text-lg"></ng-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-800">Nuevo representante</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Registrar padre o tutor</p>
+                </div>
+                <ng-icon name="heroArrowRight"
+                    class="text-gray-300 group-hover:text-red-400 transition-colors shrink-0"></ng-icon>
+            </a>
+
+            <a routerLink="/predicciones"
+                class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:border-green-300 hover:shadow-md transition-all group">
+                <div
+                    class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0 group-hover:bg-green-100 transition-colors">
+                    <ng-icon name="heroChartBarSquare" class="text-green-500 text-lg"></ng-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-800">Predicciones</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Motor predictivo IA</p>
+                </div>
+                <ng-icon name="heroArrowRight"
+                    class="text-gray-300 group-hover:text-green-400 transition-colors shrink-0"></ng-icon>
+            </a>
+
             <a routerLink="/alimentos"
-                class="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-alt)] transition-colors">
-                <ng-icon name="heroCake" class="text-[var(--color-success)]"></ng-icon>
-                <span class="font-medium text-sm">Gestionar alimentos</span>
+                class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:border-amber-300 hover:shadow-md transition-all group">
+                <div
+                    class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center shrink-0 group-hover:bg-amber-100 transition-colors">
+                    <ng-icon name="heroCake" class="text-amber-500 text-lg"></ng-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-800">Alimentos</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Catálogo nutricional</p>
+                </div>
+                <ng-icon name="heroArrowRight"
+                    class="text-gray-300 group-hover:text-amber-400 transition-colors shrink-0"></ng-icon>
             </a>
-            <a routerLink="/padres"
-                class="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-alt)] transition-colors">
-                <ng-icon name="heroHeart" class="text-[var(--color-danger)]"></ng-icon>
-                <span class="font-medium text-sm">Gestionar padres</span>
+
+            <a routerLink="/citas"
+                class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:border-purple-300 hover:shadow-md transition-all group">
+                <div
+                    class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
+                    <ng-icon name="heroBeaker" class="text-purple-500 text-lg"></ng-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-800">Agenda de hoy</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Ver citas del día</p>
+                </div>
+                <ng-icon name="heroArrowRight"
+                    class="text-gray-300 group-hover:text-purple-400 transition-colors shrink-0"></ng-icon>
             </a>
+
         </div>
     </div>
     }
 
     <!-- Vista padre -->
     @if (auth.esPadre()) {
-    <div class="card">
-        <div class="card-header">Mis hijos registrados</div>
-        <div class="card-body">
-            <a routerLink="/pacientes" class="btn btn-primary btn-md">
-                Ver mis hijos
-            </a>
-        </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a routerLink="/mis-pequenos"
+            class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:border-blue-300 hover:shadow-md transition-all group">
+            <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                <ng-icon name="heroUsers" class="text-blue-500 text-lg"></ng-icon>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-gray-800">Mis pequeños</p>
+                <p class="text-xs text-gray-400 mt-0.5">Ver el progreso de tus hijos</p>
+            </div>
+            <ng-icon name="heroArrowRight"
+                class="text-gray-300 group-hover:text-blue-400 transition-colors shrink-0"></ng-icon>
+        </a>
+
+        <a routerLink="/alimentos"
+            class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 hover:border-amber-300 hover:shadow-md transition-all group">
+            <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                <ng-icon name="heroCake" class="text-amber-500 text-lg"></ng-icon>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-gray-800">Guía de alimentos</p>
+                <p class="text-xs text-gray-400 mt-0.5">Orientación nutricional</p>
+            </div>
+            <ng-icon name="heroArrowRight"
+                class="text-gray-300 group-hover:text-amber-400 transition-colors shrink-0"></ng-icon>
+        </a>
     </div>
     }
+
 </div>

@@ -224,6 +224,18 @@
                     @if (accionesProcesadas.length > 0 && columnasVisibles.length > 0) {
                     <td class="w-10 px-2 py-3 relative text-center">
                         <div class="flex items-center justify-center">
+
+                            @if (accionesVisibles(row).length === 1) {
+                            <button class="p-1.5 rounded-lg hover:bg-gray-100 focus:outline-none transition-colors"
+                                [class]="accionesVisibles(row)[0].class"
+                                [tooltip]="accionesVisibles(row)[0].label || ''" tooltipPosition="bottom"
+                                (click)="accionesVisibles(row)[0].onClick(row)">
+                                @if (accionesVisibles(row)[0].icon) {
+                                <ng-icon [name]="accionesVisibles(row)[0].icon!" class="text-lg"></ng-icon>
+                                }
+                            </button>
+
+                            } @else {
                             <button #btnAccion
                                 class="p-1 rounded-lg text-orange-600 hover:bg-orange-100 focus:outline-none"
                                 (click)="toggleMenuAcciones($index, $event, btnAccion)">
@@ -248,6 +260,8 @@
                                 </div>
                             </div>
                             }
+                            }
+
                         </div>
                     </td>
                     }
