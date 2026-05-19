@@ -13,7 +13,7 @@ import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.int
 @Component({
   selector: 'historial-citas',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, Breadcrumb],
+  imports: [Datatable, Breadcrumb],
   viewProviders: [provideIcons({ heroEye, heroCalendarDays })],
   templateUrl: './historial-citas.html',
 })

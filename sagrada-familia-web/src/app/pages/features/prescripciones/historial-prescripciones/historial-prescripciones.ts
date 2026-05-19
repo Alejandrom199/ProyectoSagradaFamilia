@@ -13,7 +13,7 @@ import { PrescripcionResponse } from '../../../../shared/interfaces/prescripcion
 @Component({
   selector: 'app-listar-prescripciones',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, Breadcrumb],
+  imports: [Datatable, Breadcrumb],
   viewProviders: [provideIcons({ heroEye, heroBeaker })],
   templateUrl: './historial-prescripciones.html',
 })
