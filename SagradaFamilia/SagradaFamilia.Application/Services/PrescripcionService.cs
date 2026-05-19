@@ -50,7 +50,6 @@ public class PrescripcionService : IPrescripcionService
     {
         _logger.LogInformation("Consultando historial de recetas para el niño ID: {NinoId}", ninoId);
 
-        // 💡 Validación de existencia usando ObtenerPorIdAsync (ya que ExisteAsync no existe)
         var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId);
         if (nino == null)
         {
@@ -58,7 +57,6 @@ public class PrescripcionService : IPrescripcionService
             throw new NotFoundException("Niño", ninoId);
         }
 
-        // 💡 Usamos el nombre exacto del repositorio: ObtenerHistorialPorNinoAsync
         var prescripciones = await _prescripcionRepository.ObtenerHistorialPorNinoAsync(ninoId);
         return _mapper.Map<IEnumerable<PrescripcionDto.Response>>(prescripciones);
     }
@@ -67,7 +65,6 @@ public class PrescripcionService : IPrescripcionService
     {
         _logger.LogInformation("Consultando todas las prescripciones emitidas por el médico ID: {MedicoId}", medicoId);
 
-        // 💡 Usamos el nombre exacto: ObtenerPorMedicoAsync
         var prescripciones = await _prescripcionRepository.ObtenerPorMedicoAsync(medicoId);
         return _mapper.Map<IEnumerable<PrescripcionDto.Response>>(prescripciones);
     }
@@ -76,21 +73,18 @@ public class PrescripcionService : IPrescripcionService
     {
         _logger.LogInformation("Generando nueva prescripción para la cita ID: {CitaId}", request.CitaId);
 
-        // 1. Validar que la cita exista y obtener contexto
         var cita = await _citaRepository.ObtenerPorIdAsync(request.CitaId)
             ?? throw new NotFoundException("Cita", request.CitaId);
 
-        // 2. Validar que la cita esté en curso
         if (cita.Estado != EstadoCita.EnCurso)
         {
             _logger.LogWarning("Intento de prescribir en cita ID {Id} con estado {Estado}", cita.Id, cita.Estado);
             throw new BusinessException("Solo se puede prescribir en una cita que esté en curso.");
         }
 
-        // 3. Mapear y asignar contexto desde la cita
         var prescripcion = _mapper.Map<Prescripcion>(request);
-        prescripcion.NinoId = cita.NinoId;    // ← desde la cita
-        prescripcion.MedicoId = medicoId;        // ← desde el token
+        prescripcion.NinoId = cita.NinoId;
+        prescripcion.MedicoId = medicoId; 
 
         var creada = await _prescripcionRepository.CrearAsync(prescripcion);
 
@@ -111,7 +105,6 @@ public class PrescripcionService : IPrescripcionService
             throw new NotFoundException("Prescripción", id);
         }
 
-        // Aplicamos los cambios del DTO a la entidad
         _mapper.Map(request, prescripcion);
 
         var actualizada = await _prescripcionRepository.ActualizarAsync(prescripcion);

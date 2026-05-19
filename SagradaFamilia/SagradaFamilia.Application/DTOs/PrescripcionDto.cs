@@ -34,5 +34,14 @@
             public string DetalleMedicamentos { get; set; } = string.Empty;
             public string? Indicaciones { get; set; }
         }
+
+        public class PrescripcionResumen
+        {
+            public int Id { get; set; }
+            public string DetalleMedicamentos { get; set; } = string.Empty;
+            public string Indicaciones { get; set; } = string.Empty;
+            public string Diagnostico { get; set; } = string.Empty;
+            public DateTime FechaCreacion { get; set; }
+        }
     }
 }

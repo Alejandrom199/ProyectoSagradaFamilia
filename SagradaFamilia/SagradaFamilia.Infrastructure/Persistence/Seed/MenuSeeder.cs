@@ -48,7 +48,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                     {
                         new() { Nombre = "Agenda de Citas", Ruta = "/citas", Icono = "calendar-days", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
-                        new() { Nombre = "Medicamentos", Ruta = "/medicamentos", Icono = "pills", Orden = 2, Activo = true,
+                        new() { Nombre = "Historial de Citas", Ruta = "/citas/historial", Icono = "clock", Orden = 2, Activo = true,
+                            OpcionAcciones = Acciones(GetIdAccion("Ver")) },
+                        new() { Nombre = "Historial de Prescripciones", Ruta = "/prescripciones", Icono = "pills", Orden = 3, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
                     }
                 },
@@ -80,7 +82,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
 
         private static async Task SeedRolPermisosAsync(AppDbContext context, int idAccionVer)
         {
-            //int idAdmin = (int)RolEnum.Administrador;
+            int idAdmin = (int)RolEnum.Administrador;
             int idMedico = (int)RolEnum.Medico;
             int idPadre = (int)RolEnum.Padre;
 
@@ -93,7 +95,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
 
             foreach (var oa in todasLasOpcionAcciones)
             {
-                //rolPermisos.Add(new RolPermiso { RolId = idAdmin, OpcionAccionId = oa.Id, Permitido = true });
+                rolPermisos.Add(new RolPermiso { RolId = idAdmin, OpcionAccionId = oa.Id, Permitido = true });
 
                 rolPermisos.Add(new RolPermiso { RolId = idMedico, OpcionAccionId = oa.Id, Permitido = true });
 

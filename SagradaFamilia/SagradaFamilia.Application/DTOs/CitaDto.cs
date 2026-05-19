@@ -1,4 +1,5 @@
 ﻿using SagradaFamilia.Domain.Enums;
+using static SagradaFamilia.Application.DTOs.PrescripcionDto;
 
 namespace SagradaFamilia.Application.DTOs
 {
@@ -17,6 +18,7 @@ namespace SagradaFamilia.Application.DTOs
             public string Estado { get; set; } = string.Empty;
             public DateTime FechaCreacion { get; set; }
             public bool TienePrescripcion { get; set; }
+            public PrescripcionResumen? Prescripcion { get; set; }
         }
 
         public class Create
