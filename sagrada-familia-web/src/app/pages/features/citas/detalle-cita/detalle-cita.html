@@ -81,27 +81,44 @@
                     </button>
                     }
                 </div>
-                <div class="px-6 py-10 text-center">
-                    @if (cita()?.tienePrescripcion) {
-                    <div class="flex flex-col items-center gap-3">
-                        <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
-                            <ng-icon name="heroCheckCircle" class="text-green-500 text-2xl"></ng-icon>
+
+                <div class="px-6 py-6">
+                    @if (cita()?.tienePrescripcion && cita()?.prescripcion; as p) {
+                    <!-- Prescripción emitida -->
+                    <div class="flex flex-col gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex flex-col gap-1">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Diagnóstico</p>
+                                <p class="text-sm font-semibold text-gray-800">{{ p.diagnostico }}</p>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Medicamentos</p>
+                                <p class="text-sm text-gray-700">{{ p.detalleMedicamentos }}</p>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Indicaciones</p>
+                                <p class="text-sm text-gray-700">{{ p.indicaciones }}</p>
+                            </div>
                         </div>
-                        <p class="text-sm font-semibold text-gray-700">Esta consulta tiene prescripción emitida</p>
-                        <a [routerLink]="['/prescripciones/nino', cita()?.ninoId]"
-                            class="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                            Ver historial de prescripciones →
-                        </a>
+                        <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                            <p class="text-xs text-gray-400">
+                                Emitida el {{ formatearFecha(p.fechaCreacion) }}
+                            </p>
+                            <a [routerLink]="['/prescripciones/nino', cita()?.ninoId]"
+                                class="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                                Ver historial completo →
+                            </a>
+                        </div>
                     </div>
                     } @else if (cita()?.estado === 'EnCurso') {
-                    <div class="flex flex-col items-center gap-3">
+                    <div class="flex flex-col items-center gap-3 py-6 text-center">
                         <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
                             <ng-icon name="heroBeaker" class="text-blue-400 text-2xl"></ng-icon>
                         </div>
                         <p class="text-sm text-gray-500">La consulta está en curso. Podés emitir la receta médica.</p>
                     </div>
                     } @else {
-                    <div class="flex flex-col items-center gap-3">
+                    <div class="flex flex-col items-center gap-3 py-6 text-center">
                         <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
                             <ng-icon name="heroClipboardDocumentList" class="text-gray-300 text-2xl"></ng-icon>
                         </div>

@@ -1,20 +1,20 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroPlus, heroCheckCircle, heroXCircle, heroCalendarDays, heroClock } from '@ng-icons/heroicons/outline';
 
-import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { CitasService } from '../../../../core/services/citas';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { finalize, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-mis-citas-hoy',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, Button, Breadcrumb],
+  imports: [CommonModule, NgIcon, RouterLink, Button, Breadcrumb],
   viewProviders: [provideIcons({ heroCheckCircle, heroXCircle, heroCalendarDays, heroClock, heroPlus })],
   templateUrl: './mis-citas-hoy.html',
   styleUrl: './mis-citas-hoy.css',
@@ -24,107 +24,140 @@ export class MisCitasHoy implements OnInit {
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
-  citas = signal<CitaResponse[]>([]);
-  today = new Date().toISOString();
+  readonly EstadoCita = EstadoCita;
 
-  contarPorEstado(estado: string): number {
-    return this.citas().filter(c => c.estado === estado).length;
-  }
+  citasHoy = signal<CitaResponse[]>([]);
+  citasProximas = signal<CitaResponse[]>([]);
+  cargando = signal(false);
 
-  columnas: DatatableColumn<CitaResponse>[] = [
-    {
-      key: 'fechaHora', label: 'Hora', sortable: true,
-      render: (row) => {
-        const hora = new Date(row.fechaHora).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' });
-        return `<span class="font-bold text-blue-700">${hora}</span>`;
-      },
-      exportValue: (row) => new Date(row.fechaHora).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
-    },
-    {
-      key: 'nombreNino', label: 'Paciente', sortable: true, filterable: true,
-      render: (row) => `<span class="font-medium text-gray-800">${row.nombreNino}</span>`
-    },
-    {
-      key: 'motivo', label: 'Motivo', filterable: true,
-      render: (row) => row.motivo || '<span class="text-gray-400">Sin motivo registrado</span>'
-    },
-    {
-      key: 'estado', label: 'Estado', sortable: true,
-      render: (row) => this.badgeEstado(row.estado),
-      exportValue: (row) => row.estado
-    }
-  ];
+  mesActual = signal(new Date());
+  fechaSeleccionada = signal(new Date());
 
-  acciones: DatatableAction<CitaResponse>[] = [
-    {
-      type: 'ver',
-      label: 'Ver consulta',
-      icon: 'heroEye',
-      onClick: (row) => this.router.navigate(['/citas', row.id])
-    },
-    {
-      type: 'ver',
-      label: 'Iniciar / Completar',
-      icon: 'heroCheckCircle',
-      class: 'text-green-600 hover:bg-green-50',
-      visible: (row) => row.estado === 'Pendiente' || row.estado === 'EnCurso',
-      onClick: (row) => {
-        const siguiente = row.estado === 'Pendiente' ? EstadoCita.EnCurso : EstadoCita.Completada;
-        this.cambiarEstado(row.id, siguiente);
-      }
-    },
-    {
-      type: 'eliminar',
-      label: 'Cancelar',
-      icon: 'heroXCircle',
-      class: 'text-red-600 hover:bg-red-50',
-      visible: (row) => row.estado === 'Pendiente',
-      onClick: (row) => this.cambiarEstado(row.id, EstadoCita.Cancelada)
-    }
-  ];
+  todasLasCitas = computed(() => {
+    const mapa = new Map<number, CitaResponse>();
+    [...this.citasHoy(), ...this.citasProximas()].forEach(c => mapa.set(c.id, c));
+    return Array.from(mapa.values());
+  });
 
-  migajas: BreadcrumbItem[] = [
-    { label: 'Citas' },
-  ];
+  indicePorFecha = computed(() => {
+    const mapa = new Map<string, CitaResponse[]>();
+    this.todasLasCitas().forEach(c => {
+      const key = this.keyFecha(new Date(c.fechaHora));
+      if (!mapa.has(key)) mapa.set(key, []);
+      mapa.get(key)!.push(c);
+    });
+    return mapa;
+  });
 
-  ngOnInit(): void {
-    this.cargarCitas();
-  }
+  citasDelDiaSeleccionado = computed(() => {
+    const key = this.keyFecha(this.fechaSeleccionada());
+    return (this.indicePorFecha().get(key) ?? [])
+      .slice()
+      .sort((a, b) => new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime());
+  });
 
-  cargarCitas(): void {
+  diasDelMes = computed(() => {
+    const ref = this.mesActual();
+    const año = ref.getFullYear();
+    const mes = ref.getMonth();
+    const primer = new Date(año, mes, 1);
+    const ultimo = new Date(año, mes + 1, 0).getDate();
+
+    let dow = primer.getDay();
+    dow = dow === 0 ? 6 : dow - 1;
+
+    const dias: (Date | null)[] = Array(dow).fill(null);
+    for (let d = 1; d <= ultimo; d++) dias.push(new Date(año, mes, d));
+    return dias;
+  });
+
+  // Stats
+  totalHoy = computed(() => this.citasHoy().length);
+  pendientesHoy = computed(() => this.citasHoy().filter(c => c.estado === EstadoCita.Pendiente).length);
+  completadasHoy = computed(() => this.citasHoy().filter(c => c.estado === EstadoCita.Completada).length);
+  proximasTotal = computed(() => this.citasProximas().length);
+
+  migajas: BreadcrumbItem[] = [{ label: 'Mi Agenda' }];
+
+  ngOnInit(): void { this.cargarTodo(); }
+
+  cargarTodo(): void {
+    this.cargando.set(true);
     this.loadingBar.show();
-    this.citasService.obtenerMisCitasHoy().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.citas.set(response.data);
+
+    forkJoin({
+      hoy: this.citasService.obtenerMisCitasHoy(),
+      proximas: this.citasService.obtenerProximas()
+    }).pipe(finalize(() => { this.cargando.set(false); this.loadingBar.complete(); }))
+      .subscribe({
+        next: ({ hoy, proximas }) => {
+          if (hoy.success) this.citasHoy.set(hoy.data);
+          if (proximas.success) this.citasProximas.set(proximas.data);
+          console.log(this.citasHoy());
+          console.log(this.citasProximas());
         }
-        this.loadingBar.complete();
-      },
-      error: () => this.loadingBar.complete()
-    });
+      });
   }
 
-  cambiarEstado(citaId: number, nuevoEstado: EstadoCita): void {
+  cambiarEstado(citaId: number, estado: EstadoCita, event: MouseEvent): void {
+    event.stopPropagation();
     this.loadingBar.show();
-    this.citasService.cambiarEstado(citaId, nuevoEstado).subscribe({
-      next: (response) => {
-        if (response.success) this.cargarCitas();
-        else this.loadingBar.complete();
-      },
+    this.citasService.cambiarEstado(citaId, estado).subscribe({
+      next: (res) => { if (res.success) this.cargarTodo(); else this.loadingBar.complete(); },
       error: () => this.loadingBar.complete()
     });
   }
 
-  private badgeEstado(estado: string): string {
-    const mapa: Record<string, string> = {
-      'Pendiente': 'bg-yellow-100 text-yellow-700',
-      'Completada': 'bg-green-100 text-green-700',
-      'Cancelada': 'bg-red-100 text-red-700',
-      'NoAsistio': 'bg-gray-100 text-gray-700'
-    };
-    const clase = mapa[estado] || 'bg-gray-100 text-gray-700';
-    return `<span class="px-2 py-1 rounded-full text-xs font-bold ${clase}">${estado}</span>`;
+  verCita(id: number): void { this.router.navigate(['/citas', id]); }
+
+  // Navegación calendario
+  mesAnterior(): void {
+    const m = this.mesActual();
+    this.mesActual.set(new Date(m.getFullYear(), m.getMonth() - 1, 1));
+  }
+  mesSiguiente(): void {
+    const m = this.mesActual();
+    this.mesActual.set(new Date(m.getFullYear(), m.getMonth() + 1, 1));
+  }
+  seleccionarDia(dia: Date): void { this.fechaSeleccionada.set(dia); }
+
+  // Helpers
+  keyFecha(d: Date): string {
+    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  }
+  tieneCitas(dia: Date): CitaResponse[] {
+    return this.indicePorFecha().get(this.keyFecha(dia)) ?? [];
+  }
+  esDiaSeleccionado(dia: Date): boolean {
+    const s = this.fechaSeleccionada();
+    return dia.toDateString() === s.toDateString();
+  }
+  esHoy(dia: Date): boolean {
+    return dia.toDateString() === new Date().toDateString();
+  }
+  nombreMes(): string {
+    return this.mesActual().toLocaleDateString('es-EC', { month: 'long', year: 'numeric' });
+  }
+  formatearHora(fechaHora: string): string {
+    return new Date(fechaHora).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' });
+  }
+  formatearFechaSel(): string {
+    return this.fechaSeleccionada().toLocaleDateString('es-EC', {
+      weekday: 'long', day: 'numeric', month: 'long'
+    });
+  }
+  esHoySeleccionado(): boolean {
+    return this.fechaSeleccionada().toDateString() === new Date().toDateString();
   }
 
-  protected readonly formatearFecha = formatearFecha;
+  colorEstado(estado: string): { fondo: string; texto: string; punto: string; borde: string } {
+    const mapa: Record<string, { fondo: string; texto: string; punto: string; borde: string }> = {
+      Pendiente: { fondo: 'bg-amber-50', texto: 'text-amber-700', punto: 'bg-amber-400', borde: 'border-amber-200' },
+      EnCurso: { fondo: 'bg-blue-50', texto: 'text-blue-700', punto: 'bg-blue-500', borde: 'border-blue-200' },
+      Completada: { fondo: 'bg-emerald-50', texto: 'text-emerald-700', punto: 'bg-emerald-400', borde: 'border-emerald-200' },
+      Cancelada: { fondo: 'bg-red-50', texto: 'text-red-600', punto: 'bg-red-400', borde: 'border-red-200' },
+      NoAsistio: { fondo: 'bg-gray-100', texto: 'text-gray-500', punto: 'bg-gray-400', borde: 'border-gray-200' },
+    };
+    return mapa[estado] ?? { fondo: 'bg-gray-100', texto: 'text-gray-500', punto: 'bg-gray-400', borde: 'border-gray-200' };
+  }
 }

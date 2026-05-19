@@ -23,3 +23,11 @@ export interface PrescripcionUpdate {
     detalleMedicamentos: string;
     indicaciones?: string;
 }
+
+export interface PrescripcionResumen {
+    id: number;
+    detalleMedicamentos: string;
+    indicaciones: string;
+    diagnostico: string;
+    fechaCreacion: string;
+}

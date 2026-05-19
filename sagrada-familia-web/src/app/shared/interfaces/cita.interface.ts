@@ -1,3 +1,5 @@
+import { PrescripcionResumen } from "./prescripcion.interface";
+
 export interface CitaResponse {
     id: number;
     ninoId: number;
@@ -10,6 +12,7 @@ export interface CitaResponse {
     estado: EstadoCita;
     fechaCreacion: string;
     tienePrescripcion: boolean;
+    prescripcion?: PrescripcionResumen;
 }
 
 export interface CitaCreate {
@@ -27,8 +30,8 @@ export interface CitaUpdate {
 
 export enum EstadoCita {
     Pendiente = 'Pendiente',
-    EnCurso = 'EnCurso',
     Completada = 'Completada',
+    EnCurso = 'EnCurso',
     NoAsistio = 'NoAsistio',
     Cancelada = 'Cancelada'
 }
