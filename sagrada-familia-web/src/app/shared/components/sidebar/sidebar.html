@@ -72,7 +72,7 @@
                 <div class="mt-0.5 ml-3 pl-2.5 space-y-0.5" style="border-left: 2px solid var(--color-surface-border);">
                     @for (opcion of modulo.opciones; track opcion.id) {
                     <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active"
-                        [routerLinkActiveOptions]="{ exact: false }"
+                        [routerLinkActiveOptions]="{ exact: esExacta(opcion.ruta) }"
                         class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150"
                         [class.mb-2]="$last" (click)="cerrarMovil.emit()">
                         <ng-icon [name]="resolverIcono(opcion.icono)" class="sidebar-link-icon shrink-0"
@@ -88,7 +88,8 @@
         <div class="mb-2">
             <div class="h-px mx-1 mb-2" style="background: var(--color-surface-border);"></div>
             @for (opcion of modulo.opciones; track opcion.id) {
-            <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: false }"
+            <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active"
+                [routerLinkActiveOptions]="{ exact: esExacta(opcion.ruta) }"
                 class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto mb-1 rounded-xl text-sm transition-all duration-150"
                 [tooltip]="opcion.nombre" tooltipPosition="right" (click)="cerrarMovil.emit()">
                 <ng-icon [name]="resolverIcono(opcion.icono)" class="sidebar-link-icon shrink-0"

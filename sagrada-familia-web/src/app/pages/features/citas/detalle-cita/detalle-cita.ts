@@ -83,7 +83,7 @@ export class DetalleCita implements OnInit {
   badge(estado: string): { clase: string; label: string } {
     const mapa: Record<string, { clase: string; label: string }> = {
       'Pendiente': { clase: 'bg-yellow-100 text-yellow-700 border-yellow-200', label: 'Pendiente' },
-      'EnCurso': { clase: 'bg-blue-100 text-blue-700 border-blue-200', label: 'En curso' },
+      'En Curso': { clase: 'bg-blue-100 text-blue-700 border-blue-200', label: 'En curso' },
       'Completada': { clase: 'bg-green-100 text-green-700 border-green-200', label: 'Completada' },
       'NoAsistio': { clase: 'bg-gray-100 text-gray-600 border-gray-200', label: 'No asistió' },
       'Cancelada': { clase: 'bg-red-100 text-red-600 border-red-200', label: 'Cancelada' },

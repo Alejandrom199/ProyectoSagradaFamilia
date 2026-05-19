@@ -13,6 +13,11 @@ export const citasRoutes: Routes = [
         loadComponent: () => import('./crear-cita/crear-cita').then(m => m.CrearCita),
     },
     {
+        path: 'historial',
+        canActivate: [medicoGuard],
+        loadComponent: () => import('./historial-citas/historial-citas').then(m => m.HistorialCitas),
+    },
+    {
         path: 'nino/:ninoId',
         canActivate: [medicoGuard],
         loadComponent: () => import('./listar-citas/listar-citas').then(m => m.ListarCitas),

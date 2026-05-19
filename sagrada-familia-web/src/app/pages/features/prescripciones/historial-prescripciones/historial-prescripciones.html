@@ -1,0 +1,18 @@
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">Mis Prescripciones</h2>
+            <p class="text-gray-500 mt-1">Historial de recetas médicas emitidas</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <datatable title="Prescripciones emitidas" [data]="prescripciones()" [columns]="columnas" [actions]="acciones"
+            [exportExcel]="true" exportFileName="mis-prescripciones"
+            searchPlaceholder="Buscar por paciente o diagnóstico..." emptyMessage="No has emitido prescripciones aún."
+            (onActualizar)="cargarPrescripciones()">
+        </datatable>
+    </div>
+</div>

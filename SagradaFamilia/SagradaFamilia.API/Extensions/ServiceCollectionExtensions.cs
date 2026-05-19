@@ -96,6 +96,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<INinoRepository, NinoRepository>();
             services.AddScoped<IMedidaRepository, MedidaRepository>();
             services.AddScoped<IPrediccionRepository, PrediccionRepository>();
+            services.AddScoped<IPrescripcionRepository, PrescripcionRepository>();
             services.AddScoped<IOmsRepository, OmsRepository>();
             services.AddScoped<IAlimentoRepository, AlimentoRepository>();
             services.AddScoped<ICitaRepository, CitaRepository>();
@@ -115,6 +116,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<INinoService, NinoService>();
             services.AddScoped<IMedidaService, MedidaService>();
             services.AddScoped<IPrediccionService, PrediccionService>();
+            services.AddScoped<IPrescripcionService, PrescripcionService>();
             services.AddScoped<IAlimentoService, AlimentoService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICitaService, CitaService>();

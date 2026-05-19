@@ -8,20 +8,8 @@ namespace SagradaFamilia.Application.Mappings
     {
         public CitaMappingProfile()
         {
-
             CreateMap<CitaDto.Create, Cita>();
             CreateMap<CitaDto.Update, Cita>();
-
-
-            CreateMap<Cita, CitaDto.Response>()
-                .ForMember(dest => dest.NombreNino,
-                    opt => opt.MapFrom(src => src.Nino != null ? $"{src.Nino.Nombre} {src.Nino.Apellido}" : string.Empty))
-
-                .ForMember(dest => dest.NombreMedico,
-                    opt => opt.MapFrom(src => src.Medico != null ? $"{src.Medico.Nombre} {src.Medico.Apellido}" : string.Empty))
-
-                .ForMember(dest => dest.Estado,
-                    opt => opt.MapFrom(src => src.Estado.ToString()));
 
             CreateMap<Cita, CitaDto.Response>()
                 .ForMember(dest => dest.NombreNino,
@@ -31,7 +19,11 @@ namespace SagradaFamilia.Application.Mappings
                 .ForMember(dest => dest.Estado,
                     opt => opt.MapFrom(src => src.Estado.ToString()))
                 .ForMember(dest => dest.TienePrescripcion,
-                    opt => opt.MapFrom(src => src.Prescripciones != null && src.Prescripciones.Any()));
+                    opt => opt.MapFrom(src => src.Prescripciones != null && src.Prescripciones.Any()))
+                .ForMember(dest => dest.Prescripcion,
+                    opt => opt.MapFrom(src => src.Prescripciones.FirstOrDefault()));
+
+            CreateMap<Prescripcion, PrescripcionDto.PrescripcionResumen>();
         }
     }
 }

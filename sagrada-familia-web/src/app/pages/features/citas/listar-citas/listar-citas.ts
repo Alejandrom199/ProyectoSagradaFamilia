@@ -15,7 +15,7 @@ import { NinoDetailResponse, NinoResponse } from '../../../../shared/interfaces/
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 
 @Component({
-  selector: 'app-listar-citas',
+  selector: 'listar-citas',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, Button, Breadcrumb],
   viewProviders: [provideIcons({ heroPlus, heroCheckCircle, heroXCircle, heroCalendarDays })],

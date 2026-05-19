@@ -16,6 +16,10 @@ export class CitasService {
     return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/hoy`, { withCredentials: true });
   }
 
+  obtenerHistorial(): Observable<ApiResponse<CitaResponse[]>> {
+    return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/historial`, { withCredentials: true });
+  }
+
   // Médico — citas futuras/pendientes
   obtenerProximas(): Observable<ApiResponse<CitaResponse[]>> {
     return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/proximas`, { withCredentials: true });
@@ -45,10 +49,28 @@ export class CitasService {
   }
 
   cambiarEstado(id: number, nuevoEstado: EstadoCita): Observable<ApiResponse<null>> {
-    return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/estado`, nuevoEstado, { withCredentials: true });
+    return this.http.patch<ApiResponse<null>>(
+      `${this.url}/${id}/estado`,
+      JSON.stringify(this.estadoANumero(nuevoEstado)),
+      {
+        withCredentials: true,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   }
 
   eliminar(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.url}/${id}`, { withCredentials: true });
+  }
+
+  private estadoANumero(estado: EstadoCita): number {
+    const mapa: Record<EstadoCita, number> = {
+      [EstadoCita.Pendiente]: 1,
+      [EstadoCita.Completada]: 2,
+      [EstadoCita.EnCurso]: 3,
+      [EstadoCita.NoAsistio]: 4,
+      [EstadoCita.Cancelada]: 5,
+    };
+    return mapa[estado];
   }
 }

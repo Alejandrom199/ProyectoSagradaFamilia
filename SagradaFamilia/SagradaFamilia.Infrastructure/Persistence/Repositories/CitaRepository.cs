@@ -20,6 +20,14 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .Include(c => c.Prescripciones)
                 .FirstOrDefaultAsync(c => c.Id == id && !c.Eliminado);
 
+        public async Task<IEnumerable<Cita>> ObtenerHistorialPorMedicoAsync(int usuarioId) =>
+            await _context.Citas
+                .Include(c => c.Nino)
+                .Include(c => c.Medico)
+                .Where(c => c.Medico.UsuarioId == usuarioId && !c.Eliminado)
+                .OrderByDescending(c => c.FechaHora)
+                .ToListAsync();
+
         public async Task<IEnumerable<Cita>> ObtenerPorNinoIdAsync(int ninoId) =>
             await _context.Citas
                 .Include(c => c.Medico)
@@ -27,14 +35,14 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .OrderByDescending(c => c.FechaHora)
                 .ToListAsync();
 
-        public async Task<IEnumerable<Cita>> ObtenerPorMedicoIdAsync(int medicoId, DateOnly fecha)
+        public async Task<IEnumerable<Cita>> ObtenerPorMedicoIdAsync(int usuarioId, DateOnly fecha)
         {
             var inicio = fecha.ToDateTime(TimeOnly.MinValue);
             var fin = fecha.ToDateTime(TimeOnly.MaxValue);
 
             return await _context.Citas
                 .Include(c => c.Nino)
-                .Where(c => c.MedicoId == medicoId
+                .Where(c => c.Medico.UsuarioId == usuarioId
                          && !c.Eliminado
                          && c.FechaHora >= inicio
                          && c.FechaHora <= fin)
@@ -42,13 +50,14 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Cita>> ObtenerPendientesPorMedicoAsync(int medicoId) =>
+        public async Task<IEnumerable<Cita>> ObtenerPendientesPorMedicoAsync(int usuarioId) =>
             await _context.Citas
                 .Include(c => c.Nino)
-                .Where(c => c.MedicoId == medicoId
+                .Include(c => c.Medico) 
+                .Where(c => c.Medico.UsuarioId == usuarioId
                          && c.Estado == EstadoCita.Pendiente
                          && !c.Eliminado
-                         && c.FechaHora >= DateTime.UtcNow.Date)
+                         && c.FechaHora >= DateTime.Now.Date)
                 .OrderBy(c => c.FechaHora)
                 .ToListAsync();
 
@@ -82,5 +91,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .Where(c => c.Nino.PadreId == padreId && !c.Eliminado)
                 .OrderByDescending(c => c.FechaHora)
                 .ToListAsync();
+
+
     }
 }

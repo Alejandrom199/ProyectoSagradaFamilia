@@ -2,10 +2,10 @@
 {
     public enum EstadoCita
     {
-        Pendiente,
-        EnCurso,
-        Completada,
-        NoAsistio,
-        Cancelada
+        Pendiente = 1,
+        Completada = 2,
+        EnCurso = 3,
+        NoAsistio = 4,
+        Cancelada = 5
     }
 }

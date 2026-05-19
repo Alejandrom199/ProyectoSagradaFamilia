@@ -13,6 +13,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             await RolAccionSeeder.SeedAsync(context);
             logger.LogInformation("RolAccionSeeder completado");
 
+            await AdministradorSeeder.SeedAsync(context);
+            logger.LogInformation("AdministradorSeeder completado");
+
             await MedicoSeeder.SeedAsync(context);
             logger.LogInformation("MedicoSeeder completado");
 

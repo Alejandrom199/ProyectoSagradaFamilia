@@ -7,6 +7,7 @@ using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Services;
 using SagradaFamilia.Domain.Enums;
+using System.Security.Claims;
 
 [Authorize]
 [ApiController]
@@ -29,12 +30,25 @@ public class CitasController : BaseController
         return HandleResponse(response);
     }
 
+    [HttpGet("historial")]
+    [Authorize(Roles = "Medico")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> Historial()
+    {
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var usuarioId))
+            return Unauthorized();
+
+        var response = await _citaService.ObtenerHistorialPorMedicoAsync(usuarioId);
+        return HandleResponse(response);
+    }
+
     [HttpGet("hoy")]
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> MisCitasHoy()
     {
-        // Usamos el UsuarioId del token para buscar el perfil médico o pasarlo al service
-        var response = await _citaService.ObtenerPorMedicoIdAsync(UsuarioId, DateOnly.FromDateTime(DateTime.Now));
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var usuarioId))
+            return Unauthorized();
+
+        var response = await _citaService.ObtenerPorMedicoIdAsync(usuarioId, DateOnly.FromDateTime(DateTime.Now));
         return HandleResponse(response);
     }
 
@@ -42,11 +56,18 @@ public class CitasController : BaseController
     [Authorize(Roles = "Medico, Administrador")]
     public async Task<ActionResult<ApiResponse<CitaDto.Response>>> Crear([FromBody] CitaDto.Create request)
     {
-        var response = await _citaService.CrearAsync(request);
+        var usuarioIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(usuarioIdClaim, out var usuarioId))
+        {
+            return Unauthorized();
+        }
+
+        var response = await _citaService.CrearAsync(request, usuarioId);
         return HandleResponse(response, "Cita programada exitosamente.");
     }
 
     [HttpPatch("{id:int}/estado")]
+    [Authorize(Roles = "Medico, Administrador")]
     public async Task<ActionResult<ApiResponse>> CambiarEstado(int id, [FromBody] EstadoCita nuevoEstado)
     {
         await _citaService.ActualizarEstadoAsync(id, nuevoEstado);
@@ -57,7 +78,10 @@ public class CitasController : BaseController
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> Proximas()
     {
-        var response = await _citaService.ObtenerProximasPorMedicoAsync(UsuarioId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var usuarioId))
+            return Unauthorized();
+
+        var response = await _citaService.ObtenerProximasPorMedicoAsync(usuarioId);
         return HandleResponse(response);
     }
 

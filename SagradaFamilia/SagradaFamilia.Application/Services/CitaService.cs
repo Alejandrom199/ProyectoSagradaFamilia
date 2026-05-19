@@ -35,6 +35,13 @@ public class CitaService : ICitaService
         return _mapper.Map<CitaDto.Response>(cita);
     }
 
+    public async Task<IEnumerable<CitaDto.Response>> ObtenerHistorialPorMedicoAsync(int usuarioId)
+    {
+        _logger.LogInformation("Consultando historial completo del médico ID: {UsuarioId}", usuarioId);
+        var citas = await _citaRepository.ObtenerHistorialPorMedicoAsync(usuarioId);
+        return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
+    }
+
     public async Task<IEnumerable<CitaDto.Response>> ObtenerPorNinoIdAsync(int ninoId)
     {
         _logger.LogInformation("Consultando historial de citas para el niño ID: {NinoId}", ninoId);
@@ -59,35 +66,37 @@ public class CitaService : ICitaService
         return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
     }
 
-    public async Task<CitaDto.Response> CrearAsync(CitaDto.Create request)
+    public async Task<CitaDto.Response> CrearAsync(CitaDto.Create request, int usuarioId)
     {
         _logger.LogInformation("Intentando agendar nueva cita para el Niño ID: {NinoId} con el Médico ID: {MedicoId}",
             request.NinoId, request.MedicoId);
 
         var cita = _mapper.Map<Cita>(request);
-        cita.Estado = EstadoCita.Pendiente; // Toda cita nueva inicia como pendiente
+        cita.Estado = EstadoCita.Pendiente;
+        cita.UsuarioCreacionId = usuarioId;
 
         var creada = await _citaRepository.CrearAsync(cita);
 
         _logger.LogInformation("Cita agendada exitosamente con ID: {Id} para la fecha/hora: {FechaHora}",
             creada.Id, creada.FechaHora);
 
-        // Recuperamos con navegación para devolver nombres de Niño/Médico en el DTO
         var citaCompleta = await _citaRepository.ObtenerPorIdAsync(creada.Id);
         return _mapper.Map<CitaDto.Response>(citaCompleta!);
     }
 
-    public async Task<CitaDto.Response> ActualizarAsync(int id, CitaDto.Update request)
+    public async Task<CitaDto.Response> ActualizarAsync(int id, CitaDto.Update request, int usuarioId)
     {
         _logger.LogInformation("Iniciando actualización/reprogramación de la cita ID: {Id}", id);
 
         var cita = await _citaRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Cita", id);
 
-        // Mapeamos los cambios (Médico, FechaHora, Motivo)
         _mapper.Map(request, cita);
 
-        var actualizada = await _citaRepository.ActualizarAsync(cita);
+        var citaMap = _mapper.Map<Cita>(request);
+        cita.UsuarioModificacionId = usuarioId;
+
+        var actualizada = await _citaRepository.ActualizarAsync(citaMap);
 
         _logger.LogInformation("Cita ID: {Id} actualizada correctamente. Nueva Fecha/Hora: {FechaHora}",
             id, actualizada.FechaHora);
@@ -138,4 +147,5 @@ public class CitaService : ICitaService
         var citas = await _citaRepository.ObtenerPendientesPorMedicoAsync(medicoId);
         return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
     }
+
 }

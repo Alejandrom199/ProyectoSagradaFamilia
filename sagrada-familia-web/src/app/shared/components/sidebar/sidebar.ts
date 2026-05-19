@@ -36,7 +36,6 @@ export class Sidebar implements OnInit {
   nombre = signal<string>('');
   apellido = signal<string>('');
 
-  // IDs de módulos abiertos
   modulosAbiertos = signal<Set<number>>(new Set());
 
   cerrarMovil = output<void>();
@@ -57,7 +56,6 @@ export class Sidebar implements OnInit {
   };
 
   constructor() {
-    // Auto-abrir el módulo cuya ruta coincide con la URL actual
     effect(() => {
       const menu = this.menu();
       const url = this.router.url;
@@ -94,5 +92,10 @@ export class Sidebar implements OnInit {
   iniciales(): string {
     return (this.auth.currentUser()?.nombre ?? '')
       .split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
+  }
+
+  esExacta = (ruta: string): boolean => {
+    const rutasConSubrutas = ['/citas'];
+    return rutasConSubrutas.includes(ruta);
   }
 }

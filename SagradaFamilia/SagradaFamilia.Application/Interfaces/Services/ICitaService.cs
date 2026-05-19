@@ -6,15 +6,15 @@ namespace SagradaFamilia.Application.Interfaces.Services
     public interface ICitaService
     {
         Task<CitaDto.Response> ObtenerPorIdAsync(int id);
-
+        Task<IEnumerable<CitaDto.Response>> ObtenerHistorialPorMedicoAsync(int usuarioId);
         Task<IEnumerable<CitaDto.Response>> ObtenerPorNinoIdAsync(int ninoId);
 
         Task<IEnumerable<CitaDto.Response>> ObtenerPorMedicoIdAsync(int medicoId, DateOnly fecha);
 
         Task<IEnumerable<CitaDto.Response>> ObtenerPendientesPorMedicoAsync(int medicoId);
 
-        Task<CitaDto.Response> CrearAsync(CitaDto.Create request);
-        Task<CitaDto.Response> ActualizarAsync(int id, CitaDto.Update request);
+        Task<CitaDto.Response> CrearAsync(CitaDto.Create request, int usuarioId);
+        Task<CitaDto.Response> ActualizarAsync(int id, CitaDto.Update request, int usuarioId);
 
         Task ActualizarEstadoAsync(int id, EstadoCita nuevoEstado);
 

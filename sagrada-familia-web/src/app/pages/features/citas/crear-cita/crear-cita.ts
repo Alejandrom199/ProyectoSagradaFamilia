@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { provideIcons, NgIcon } from '@ng-icons/core';
 import { heroCalendarDays, heroClock, heroDocumentText, heroPlus, heroUser } from '@ng-icons/heroicons/outline';
 import { finalize } from 'rxjs';
@@ -40,12 +40,20 @@ export class CrearCita implements OnInit {
   guardando = signal(false);
   error = signal<string | null>(null);
 
+  readonly fechaMinima = (() => {
+    const hoy = new Date();
+    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+  })();
+
+  esMedico = signal(false);
+
   migajas: BreadcrumbItem[] = [
     { label: 'Citas', ruta: '/citas' },
     { label: 'Programar cita' },
   ];
 
   ngOnInit(): void {
+    this.esMedico.set(this.authService.esMedico());
     this.formCita = this.initForm();
 
     const ninoIdParam = this.route.snapshot.queryParamMap.get('ninoId');
@@ -58,13 +66,16 @@ export class CrearCita implements OnInit {
   }
 
   private initForm(): FormGroup {
+
+    const medicoId = this.authService.esMedico() ? this.authService.currentUser()?.id : null;
+
     return this.fb.group({
       ninoId: [null, Validators.required],
-      medicoId: [null, Validators.required],
+      medicoId: [medicoId, Validators.required],
       fecha: ['', Validators.required],
       hora: ['', Validators.required],
       motivo: ['']
-    });
+    }, { validators: this.fechaHoraFuturaValidator });
   }
 
   get f() {
@@ -104,11 +115,11 @@ export class CrearCita implements OnInit {
     this.loadingBar.show();
 
     const v = this.formCita.value;
-    const fechaHora = new Date(`${v.fecha}T${v.hora}:00`).toISOString();
+    const fechaHora = `${v.fecha}T${v.hora}:00`;
 
     const data: CitaCreate = {
       ninoId: v.ninoId,
-      medicoId: v.medicoId,
+      medicoId: this.esMedico() ? this.authService.currentUser()?.id : v.medicoId,
       fechaHora,
       motivo: v.motivo || undefined
     };
@@ -127,5 +138,31 @@ export class CrearCita implements OnInit {
         },
         error: () => this.error.set('Ocurrió un error al programar la cita. Intente más tarde.')
       });
+  }
+
+  private fechaHoraFuturaValidator(group: AbstractControl): ValidationErrors | null {
+    const fecha = group.get('fecha')?.value;
+    const hora = group.get('hora')?.value;
+    if (!fecha || !hora) return null;
+
+    const seleccionada = new Date(`${fecha}T${hora}:00`);
+    const ahora = new Date();
+
+    const hoy = new Date();
+    const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+
+    if (fecha > hoyStr) return null;
+    if (fecha < hoyStr) return { fechaPasada: true };
+
+    return seleccionada <= ahora ? { fechaPasada: true } : null;
+  }
+
+  get horaMinima(): string {
+    const fechaSel = this.f['fecha'].value;
+    if (fechaSel === this.fechaMinima) {
+      const now = new Date();
+      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+    return '';
   }
 }
