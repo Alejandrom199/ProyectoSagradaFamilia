@@ -3,12 +3,12 @@
 
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-gray-800">Historial de Citas</h2>
-            <p class="text-gray-500 mt-1">Todas las consultas registradas en tu agenda</p>
+            <h2 class="text-3xl font-bold text-slate-800">Historial de Citas</h2>
+            <p class="text-slate-500 mt-1">Todas las consultas registradas en tu agenda</p>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="border border-slate-200 overflow-hidden">
         <datatable title="Historial completo" [data]="citas()" [columns]="columnas" [actions]="acciones"
             [exportExcel]="true" exportFileName="historial-citas" searchPlaceholder="Buscar por paciente o motivo..."
             emptyMessage="No hay citas registradas en tu historial." (onActualizar)="cargarHistorial()">

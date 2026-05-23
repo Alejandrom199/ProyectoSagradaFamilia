@@ -12,6 +12,7 @@ import { LoadingBar } from '../../../../core/services/loading-bar';
 import { MedicosService } from '../../../../core/services/medicos';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { MedicoCreate } from '../../../../shared/interfaces/medico.interface';
+import { passwordValidator } from '../../../../shared/validators/password.validator';
 
 @Component({
   selector: 'app-crear-medico',
@@ -50,7 +51,7 @@ export class CrearMedico implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       apellido: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, passwordValidator]],
       especialidad: ['', [Validators.minLength(3)]],
       telefono: ['', [Validators.pattern('^[0-9]{10}$')]]
     });

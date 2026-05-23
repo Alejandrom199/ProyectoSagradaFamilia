@@ -6,12 +6,12 @@
     <!-- Cabecera -->
     <div class="mb-6 flex justify-between items-end">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">{{ cita()?.nombreNino }}</h2>
-            <p class="text-sm text-gray-500 mt-1">
+            <h2 class="text-2xl font-bold text-slate-800">{{ cita()?.nombreNino }}</h2>
+            <p class="text-sm text-slate-500 mt-1">
                 {{ formatearFecha(cita()!.fechaHora) }} · Dr(a). {{ cita()?.nombreMedico }}
             </p>
         </div>
-        <span class="px-3 py-1.5 rounded-xl text-xs font-bold border {{ badge(cita()!.estado).clase }}">
+        <span class="px-3 py-1.5 rounded-md text-xs font-bold border {{ badge(cita()!.estado).clase }}">
             {{ badge(cita()!.estado).label }}
         </span>
     </div>
@@ -22,60 +22,60 @@
         <div class="xl:col-span-2 space-y-6">
 
             <!-- Datos de la cita -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+            <div class="bg-white border border-slate-200">
+                <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
                         <ng-icon name="heroCalendarDays" class="text-blue-500 text-base"></ng-icon>
                     </div>
-                    <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Datos de la consulta</h3>
+                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Datos de la consulta</h3>
                 </div>
                 <div class="px-6 py-5 grid grid-cols-2 gap-6">
                     <div class="flex flex-col gap-1">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Paciente</p>
-                        <p class="text-sm font-semibold text-gray-800">{{ cita()?.nombreNino }}</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Paciente</p>
+                        <p class="text-sm font-semibold text-slate-800">{{ cita()?.nombreNino }}</p>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Médico</p>
-                        <p class="text-sm font-medium text-gray-700">Dr(a). {{ cita()?.nombreMedico }}</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Médico</p>
+                        <p class="text-sm font-medium text-slate-700">Dr(a). {{ cita()?.nombreMedico }}</p>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha y hora</p>
-                        <p class="text-sm font-medium text-gray-700">{{ formatearFecha(cita()!.fechaHora) }}</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha y hora</p>
+                        <p class="text-sm font-medium text-slate-700">{{ formatearFecha(cita()!.fechaHora) }}</p>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Estado</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</p>
                         <span
-                            class="inline-flex w-fit px-2.5 py-1 rounded-lg text-xs font-bold border {{ badge(cita()!.estado).clase }}">
+                            class="inline-flex w-fit px-2.5 py-1 rounded-md text-xs font-bold border {{ badge(cita()!.estado).clase }}">
                             {{ badge(cita()!.estado).label }}
                         </span>
                     </div>
                     @if (cita()?.motivo) {
                     <div class="flex flex-col gap-1 col-span-2">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Motivo</p>
-                        <p class="text-sm text-gray-700">{{ cita()?.motivo }}</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Motivo</p>
+                        <p class="text-sm text-slate-700">{{ cita()?.motivo }}</p>
                     </div>
                     }
                     @if (cita()?.notasConsulta) {
                     <div class="flex flex-col gap-1 col-span-2">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Notas de consulta</p>
-                        <p class="text-sm text-gray-700">{{ cita()?.notasConsulta }}</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Notas de consulta</p>
+                        <p class="text-sm text-slate-700">{{ cita()?.notasConsulta }}</p>
                     </div>
                     }
                 </div>
             </div>
 
             <!-- Prescripción -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div class="bg-white border border-slate-200">
+                <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                        <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
                             <ng-icon name="heroBeaker" class="text-blue-500 text-base"></ng-icon>
                         </div>
-                        <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Prescripción</h3>
+                        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Prescripción</h3>
                     </div>
                     @if (!cita()?.tienePrescripcion && cita()?.estado === 'EnCurso') {
                     <button (click)="emitirPrescripcion()"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-blue-700 hover:-translate-y-0.5 transition-all">
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md text-xs font-bold hover:bg-blue-700 transition-colors">
                         <ng-icon name="heroBeaker" class="text-sm"></ng-icon>
                         Emitir receta
                     </button>
@@ -88,20 +88,20 @@
                     <div class="flex flex-col gap-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="flex flex-col gap-1">
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Diagnóstico</p>
-                                <p class="text-sm font-semibold text-gray-800">{{ p.diagnostico }}</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Diagnóstico</p>
+                                <p class="text-sm font-semibold text-slate-800">{{ p.diagnostico }}</p>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Medicamentos</p>
-                                <p class="text-sm text-gray-700">{{ p.detalleMedicamentos }}</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Medicamentos</p>
+                                <p class="text-sm text-slate-700">{{ p.detalleMedicamentos }}</p>
                             </div>
                             <div class="flex flex-col gap-1">
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Indicaciones</p>
-                                <p class="text-sm text-gray-700">{{ p.indicaciones }}</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Indicaciones</p>
+                                <p class="text-sm text-slate-700">{{ p.indicaciones }}</p>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-                            <p class="text-xs text-gray-400">
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-200">
+                            <p class="text-xs text-slate-400">
                                 Emitida el {{ formatearFecha(p.fechaCreacion) }}
                             </p>
                             <a [routerLink]="['/prescripciones/nino', cita()?.ninoId]"
@@ -112,17 +112,17 @@
                     </div>
                     } @else if (cita()?.estado === 'EnCurso') {
                     <div class="flex flex-col items-center gap-3 py-6 text-center">
-                        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                        <div class="w-12 h-12 bg-blue-50 rounded-md flex items-center justify-center">
                             <ng-icon name="heroBeaker" class="text-blue-400 text-2xl"></ng-icon>
                         </div>
-                        <p class="text-sm text-gray-500">La consulta está en curso. Podés emitir la receta médica.</p>
+                        <p class="text-sm text-slate-500">La consulta está en curso. Podés emitir la receta médica.</p>
                     </div>
                     } @else {
                     <div class="flex flex-col items-center gap-3 py-6 text-center">
-                        <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
-                            <ng-icon name="heroClipboardDocumentList" class="text-gray-300 text-2xl"></ng-icon>
+                        <div class="w-12 h-12 bg-slate-50 rounded-md flex items-center justify-center">
+                            <ng-icon name="heroClipboardDocumentList" class="text-slate-300 text-2xl"></ng-icon>
                         </div>
-                        <p class="text-sm text-gray-400">No se emitió prescripción en esta consulta.</p>
+                        <p class="text-sm text-slate-400">No se emitió prescripción en esta consulta.</p>
                     </div>
                     }
                 </div>
@@ -133,13 +133,21 @@
         <div class="space-y-4">
 
             <!-- Cambio de estado -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Acciones</h3>
+            <div class="bg-white border border-slate-200 p-5">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Acciones</h3>
                 <div class="space-y-2">
 
+                    @if (!puedeAccionar() && (cita()?.estado === 'Pendiente')) {
+                    <div class="flex items-center gap-2 px-3 py-2.5 rounded-md bg-amber-50 border border-amber-200">
+                        <ng-icon name="heroClock" class="text-amber-500 text-base shrink-0"></ng-icon>
+                        <p class="text-xs text-amber-700 font-medium">Las acciones estarán disponibles a partir de <strong>{{ formatearFecha(cita()!.fechaHora) }}</strong></p>
+                    </div>
+                    }
+
                     @if (cita()?.estado === 'Pendiente') {
-                    <button (click)="cambiarEstado(EstadoCita.EnCurso)" [disabled]="cambiandoEstado()"
-                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-bold hover:bg-blue-100 transition-colors disabled:opacity-50">
+                    <button (click)="cambiarEstado(EstadoCita.EnCurso)"
+                        [disabled]="cambiandoEstado() || !puedeAccionar()"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-blue-200 bg-blue-50 text-blue-700 text-sm font-bold hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <ng-icon name="heroClock" class="text-base shrink-0"></ng-icon>
                         Iniciar consulta
                     </button>
@@ -147,20 +155,22 @@
 
                     @if (cita()?.estado === 'EnCurso') {
                     <button (click)="cambiarEstado(EstadoCita.Completada)" [disabled]="cambiandoEstado()"
-                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-green-200 bg-green-50 text-green-700 text-sm font-bold hover:bg-green-100 transition-colors disabled:opacity-50">
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-green-200 bg-green-50 text-green-700 text-sm font-bold hover:bg-green-100 transition-colors disabled:opacity-50">
                         <ng-icon name="heroCheckCircle" class="text-base shrink-0"></ng-icon>
                         Marcar completada
                     </button>
                     }
 
                     @if (cita()?.estado === 'Pendiente' || cita()?.estado === 'EnCurso') {
-                    <button (click)="cambiarEstado(EstadoCita.NoAsistio)" [disabled]="cambiandoEstado()"
-                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-600 text-sm font-bold hover:bg-gray-100 transition-colors disabled:opacity-50">
+                    <button (click)="cambiarEstado(EstadoCita.NoAsistio)"
+                        [disabled]="cambiandoEstado() || !puedeAccionar()"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-slate-200 bg-slate-50 text-slate-600 text-sm font-bold hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <ng-icon name="heroExclamationCircle" class="text-base shrink-0"></ng-icon>
                         No asistió
                     </button>
-                    <button (click)="cambiarEstado(EstadoCita.Cancelada)" [disabled]="cambiandoEstado()"
-                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-colors disabled:opacity-50">
+                    <button (click)="cambiarEstado(EstadoCita.Cancelada)"
+                        [disabled]="cambiandoEstado()"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-red-200 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <ng-icon name="heroXCircle" class="text-base shrink-0"></ng-icon>
                         Cancelar cita
                     </button>
@@ -168,28 +178,28 @@
 
                     @if (cita()?.estado === 'Completada' || cita()?.estado === 'NoAsistio' || cita()?.estado ===
                     'Cancelada') {
-                    <p class="text-xs text-gray-400 text-center py-3">Esta consulta ya fue procesada.</p>
+                    <p class="text-xs text-slate-400 text-center py-3">Esta consulta ya fue procesada.</p>
                     }
                 </div>
             </div>
 
             <!-- Accesos rápidos -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Accesos rápidos</h3>
+            <div class="bg-white border border-slate-200 p-5">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Accesos rápidos</h3>
                 <div class="space-y-1">
                     <a [routerLink]="['/medidas', cita()?.ninoId]"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-                        <ng-icon name="heroChartBar" class="text-gray-400 text-base shrink-0"></ng-icon>
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+                        <ng-icon name="heroChartBar" class="text-slate-400 text-base shrink-0"></ng-icon>
                         Ver medidas del paciente
                     </a>
                     <a [routerLink]="['/citas/nino', cita()?.ninoId]"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-                        <ng-icon name="heroCalendarDays" class="text-gray-400 text-base shrink-0"></ng-icon>
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+                        <ng-icon name="heroCalendarDays" class="text-slate-400 text-base shrink-0"></ng-icon>
                         Historial de citas
                     </a>
                     <a [routerLink]="['/prescripciones/nino', cita()?.ninoId]"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-                        <ng-icon name="heroBeaker" class="text-gray-400 text-base shrink-0"></ng-icon>
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+                        <ng-icon name="heroBeaker" class="text-slate-400 text-base shrink-0"></ng-icon>
                         Prescripciones del paciente
                     </a>
                 </div>

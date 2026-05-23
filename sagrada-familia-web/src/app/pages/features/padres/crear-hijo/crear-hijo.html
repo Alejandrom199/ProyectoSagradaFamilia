@@ -2,17 +2,16 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="max-w-5xl mx-auto">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col lg:flex-row">
+        <div class="bg-white border border-slate-200 overflow-hidden flex flex-col lg:flex-row">
 
-            <div class="lg:w-1/3 bg-gray-50/50 border-r border-gray-100 p-8">
+            <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
                 <div class="sticky top-8">
-                    <div
-                        class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 mb-6">
+                    <div class="w-12 h-12 bg-blue-600 rounded-md flex items-center justify-center mb-6">
                         <ng-icon name="heroUserPlus" color="white"></ng-icon>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-gray-800 leading-tight">Agregar hijo</h2>
-                    <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                    <h2 class="text-2xl font-bold text-slate-800 leading-tight">Agregar hijo</h2>
+                    <p class="text-sm text-slate-500 mt-3 leading-relaxed">
                         Registrando un nuevo hijo para
                         <strong>{{ padre()?.nombre }} {{ padre()?.apellido }}</strong>.
                     </p>
@@ -21,18 +20,15 @@
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="heroUser" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Identidad</h4>
-                                <p class="text-xs text-gray-500 mt-1">Nombre, apellido, fecha de nacimiento y sexo del
-                                    niño.</p>
+                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Identidad</h4>
+                                <p class="text-xs text-slate-500 mt-1">Nombre, apellido, fecha de nacimiento y sexo del niño.</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroTableCells" class="text-blue-500 text-lg"></ng-icon>
-                            </div>
+                            <div class="mt-1"><ng-icon name="heroTableCells" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Siguiente paso</h4>
-                                <p class="text-xs text-gray-500 mt-1">Una vez creado, podrás registrar medidas y citas
-                                    para este hijo.</p>
+                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Siguiente paso</h4>
+                                <p class="text-xs text-slate-500 mt-1">Una vez creado, podrás registrar medidas y citas para este hijo.</p>
                             </div>
                         </div>
                     </div>
@@ -44,27 +40,27 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Nombre *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Nombre *</label>
                             <input type="text" [(ngModel)]="form.nombre" placeholder="Ej. Lucas"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                         </div>
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Apellido *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Apellido *</label>
                             <input type="text" [(ngModel)]="form.apellido" placeholder="Ej. Pérez"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Fecha de nacimiento *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Fecha de nacimiento *</label>
                             <input type="date" [(ngModel)]="form.fechaNacimiento"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                         </div>
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Sexo *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Sexo *</label>
                             <select [(ngModel)]="form.sexo"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                                 <option value="">Seleccionar...</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Femenino</option>
@@ -73,23 +69,21 @@
                     </div>
 
                     @if (error()) {
-                    <div
-                        class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-semibold flex items-center gap-2">
+                    <div class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-md text-xs font-semibold flex items-center gap-2">
                         <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                         {{ error() }}
                     </div>
                     }
 
-                    <div class="pt-6 border-t border-gray-100 flex items-center justify-end gap-3">
+                    <div class="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
                         <a [routerLink]="['/padres', id, 'hijos']"
-                            class="px-4 py-2 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors">
+                            class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
                             Cancelar
                         </a>
                         <button (click)="guardar()" [disabled]="guardando()"
-                            class="px-8 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-100 hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 transition-all flex items-center gap-2">
+                            class="px-8 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2">
                             @if (guardando()) {
-                            <span
-                                class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             Guardando...
                             } @else {
                             <ng-icon name="heroUserPlus" class="text-lg"></ng-icon>

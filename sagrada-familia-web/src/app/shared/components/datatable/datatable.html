@@ -1,15 +1,15 @@
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 w-full max-w-full relative">
+<div class="bg-white border border-slate-200 w-full max-w-full relative">
     @if (menuActivo()) {
     <div class="fixed inset-0 z-[9998]" (click)="cerrarMenus()"></div>
     }
 
-    <div class="p-4 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100">
+    <div class="p-4 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200">
         <div class="relative w-full sm:w-96">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <ng-icon name="heroMagnifyingGlass" class="text-blue-600 text-lg"></ng-icon>
             </div>
             <input type="text"
-                class="w-full pl-10 pr-10 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 font-medium"
+                class="w-full pl-10 pr-10 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 font-medium"
                 placeholder="BUSCAR..." [(ngModel)]="busquedaGlobal" (ngModelChange)="onFilterChange()">
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <ng-icon name="heroFunnel" class="text-blue-600 text-lg"></ng-icon>
@@ -19,7 +19,7 @@
         <div class="flex items-center gap-2">
             @if (showActualizar){
             <button
-                class="w-9 h-9 flex items-center justify-center p-0 border border-gray-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none"
+                class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
                 tooltip="Actualizar" tooltipPosition="top" (click)="onActualizar.emit()">
                 <ng-icon name="heroArrowPath" class="text-xl"></ng-icon>
             </button>
@@ -28,27 +28,27 @@
             @if (showColumnas){
             <div class="relative">
                 <button #btnColumnas (click)="toggleMenuColumnas($event, btnColumnas)"
-                    class="w-9 h-9 flex items-center justify-center p-0 border border-gray-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none"
+                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
                     [class.bg-blue-50]="menuActivo() === 'columnas'">
                     <ng-icon name="heroViewColumns" class="text-xl"></ng-icon>
                 </button>
                 @if (menuActivo() === 'columnas') {
-                <div class="fixed w-48 bg-white rounded-xl shadow-lg z-[9999] overflow-hidden border border-gray-100 font-normal text-gray-700 animate-fade-in"
+                <div class="fixed w-48 bg-white rounded-md z-[9999] overflow-hidden border border-slate-200 font-normal text-slate-700 animate-fade-in"
                     [ngStyle]="columnasPosicion" (click)="$event.stopPropagation()">
                     <div class="p-2 flex flex-col gap-1 max-h-64 overflow-y-auto">
-                        <div class="px-2 py-1.5 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        <div class="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
                             Mostrar/Ocultar</div>
                         <button
-                            class="w-full text-left px-2 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            class="w-full text-left px-2 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                             (click)="toggleTodasLasColumnas()">
                             {{ todasLasColumnasVisibles ? 'Deseleccionar todas' : 'Seleccionar todas' }}
                         </button>
-                        <div class="border-t border-gray-100 my-1"></div>
+                        <div class="border-t border-slate-200 my-1"></div>
                         @for (col of columns; track col.key) {
                         <label
-                            class="flex items-center gap-3 px-2 py-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
+                            class="flex items-center gap-3 px-2 py-2 hover:bg-slate-50 rounded-md cursor-pointer transition-colors">
                             <input type="checkbox"
-                                class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                                class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                                 [checked]="!col.hidden" (change)="toggleVisibilidadColumna(col.key)">
                             <span class="text-sm font-medium select-none truncate">{{ col.label }}</span>
                         </label>
@@ -62,17 +62,17 @@
             @if (showExportar && (exportExcel || exportPdf)){
             <div class="relative">
                 <button #btnExportar (click)="toggleMenuExportar($event, btnExportar)"
-                    class="w-9 h-9 flex items-center justify-center p-0 border border-gray-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none"
+                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
                     [class.bg-blue-50]="menuActivo() === 'exportar'">
                     <ng-icon name="heroArrowDownTray" class="text-xl"></ng-icon>
                 </button>
                 @if (menuActivo() === 'exportar') {
-                <div class="fixed w-40 bg-white rounded-xl shadow-lg z-[9999] overflow-hidden divide-y divide-gray-100 font-normal text-gray-700 animate-fade-in"
+                <div class="fixed w-40 bg-white rounded-md z-[9999] overflow-hidden divide-y divide-slate-200 font-normal text-slate-700 animate-fade-in border border-slate-200"
                     [ngStyle]="exportarPosicion" (click)="$event.stopPropagation()">
                     <div class="p-1.5 flex flex-col gap-0.5">
                         @if (exportExcel) {
                         <button
-                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-green-50 hover:text-green-700 w-full focus:outline-none transition-colors rounded-lg group"
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-green-50 hover:text-green-700 w-full focus:outline-none transition-colors rounded-md group"
                             (click)="exportarExcel(); cerrarMenus()">
                             <ng-icon name="heroTableCells"
                                 class="text-lg text-green-600 opacity-80 group-hover:opacity-100"></ng-icon>
@@ -81,7 +81,7 @@
                         }
                         @if (exportPdf) {
                         <button
-                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-red-50 hover:text-red-700 w-full focus:outline-none transition-colors rounded-lg group"
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-red-50 hover:text-red-700 w-full focus:outline-none transition-colors rounded-md group"
                             (click)="exportarPdf(); cerrarMenus()">
                             <ng-icon name="heroDocumentArrowDown"
                                 class="text-lg text-red-600 opacity-80 group-hover:opacity-100"></ng-icon>
@@ -96,7 +96,7 @@
 
             @if (showConfiguracion) {
             <button
-                class="w-9 h-9 flex items-center justify-center p-0 border border-gray-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none"
+                class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
                 (click)="onConfiguracion.emit()">
                 <ng-icon name="heroCog8Tooth" class="text-xl"></ng-icon>
             </button>
@@ -108,14 +108,14 @@
         <table class="w-full min-w-full text-sm text-left relative">
 
             <thead>
-                <tr class="bg-[#F8FAFC] border-b border-gray-100">
+                <tr class="bg-[#F8FAFC] border-b border-slate-200">
 
                     @if (accionesProcesadas.length > 0) {
                     <th class="w-10 px-2 py-3 text-center"></th>
                     }
 
                     @for (col of columnasVisibles; track col.key) {
-                    <th class="px-4 py-3 font-medium text-gray-500 whitespace-nowrap">
+                    <th class="px-4 py-3 font-medium text-slate-500 whitespace-nowrap">
 
                         <div class="flex items-center justify-between w-full group">
                             <div class="flex items-center gap-1.5 cursor-pointer select-none hover:text-blue-700 transition-colors flex-1"
@@ -130,7 +130,7 @@
 
                             @if (col.filterable) {
                             <button #btnFiltro
-                                class="p-1 rounded-md transition-all hover:bg-gray-200 text-gray-400 focus:outline-none ml-4 flex-shrink-0"
+                                class="p-1 rounded-md transition-all hover:bg-slate-100 text-slate-400 focus:outline-none ml-4 flex-shrink-0"
                                 [class.!text-blue-600]="filtros[col.key] || menuActivo() === 'filtro-' + col.key"
                                 (click)="toggleFiltro(col.key, $event, btnFiltro)">
                                 <ng-icon name="heroFunnel" class="w-4 h-4"></ng-icon>
@@ -139,23 +139,23 @@
                         </div>
 
                         @if (menuActivo() === 'filtro-' + col.key) {
-                        <div class="fixed w-64 p-2 bg-white border border-gray-200 rounded-lg shadow-xl z-[9999] font-normal text-gray-700"
+                        <div class="fixed w-64 p-2 bg-white border border-slate-200 rounded-md z-[9999] font-normal text-slate-700"
                             [ngStyle]="filtroPosicion" (click)="$event.stopPropagation()">
                             <div class="p-1">
-                                <label class="text-xs text-gray-500 mb-1.5 block px-1">Filtrar {{ col.label }}</label>
+                                <label class="text-xs text-slate-500 mb-1.5 block px-1">Filtrar {{ col.label }}</label>
 
                                 <div class="relative mb-2">
                                     <ng-icon name="heroMagnifyingGlass"
-                                        class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></ng-icon>
+                                        class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></ng-icon>
                                     <input type="text"
-                                        class="w-full pl-7 pr-2 py-1.5 text-sm border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        class="w-full pl-7 pr-2 py-1.5 text-sm border border-slate-200 rounded-md bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         placeholder="Buscar..." [(ngModel)]="busquedaFiltro[col.key]">
                                 </div>
 
                                 <label
-                                    class="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer border-b border-gray-100 mb-1">
+                                    class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer border-b border-slate-200 mb-1">
                                     <input type="checkbox"
-                                        class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                                        class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                                         [checked]="todosLosValoresMarcados(col.key)"
                                         (change)="toggleTodosLosValores(col.key)">
                                     <span class="text-sm font-semibold text-blue-600">Seleccionar todo</span>
@@ -164,20 +164,20 @@
                                 <div class="max-h-48 overflow-y-auto">
                                     @for (valor of valoresUnicosFiltrados(col.key); track valor) {
                                     <label
-                                        class="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer">
+                                        class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer">
                                         <input type="checkbox"
-                                            class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                                            class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                                             [checked]="isValorMarcado(col.key, valor)"
                                             (change)="toggleValorFiltro(col.key, valor)">
                                         <span class="text-sm truncate" [title]="valor">{{ valor }}</span>
                                     </label>
                                     } @empty {
-                                    <p class="text-xs text-gray-400 text-center py-3">Sin coincidencias</p>
+                                    <p class="text-xs text-slate-400 text-center py-3">Sin coincidencias</p>
                                     }
                                 </div>
 
                                 @if (filtrosSeleccion[col.key]) {
-                                <div class="border-t border-gray-100 mt-1 pt-1">
+                                <div class="border-t border-slate-200 mt-1 pt-1">
                                     <button
                                         class="w-full text-left px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
                                         (click)="limpiarFiltroColumna(col.key)">
@@ -197,9 +197,9 @@
                 @if (columnasVisibles.length === 0) {
                 <tr>
                     <td [attr.colspan]="accionesProcesadas.length > 0 ? 1 : 0"
-                        class="px-4 py-16 text-center text-gray-400">
+                        class="px-4 py-16 text-center text-slate-400">
                         <div class="flex flex-col items-center justify-center gap-3">
-                            <ng-icon name="heroViewColumns" class="text-4xl text-gray-300"></ng-icon>
+                            <ng-icon name="heroViewColumns" class="text-4xl text-slate-300"></ng-icon>
                             <p class="text-base font-medium">No hay columnas visibles.</p>
                         </div>
                     </td>
@@ -208,9 +208,9 @@
                 @else if (datosPaginados.length === 0) {
                 <tr>
                     <td [attr.colspan]="columnasVisibles.length + (accionesProcesadas.length > 0 ? 1 : 0)"
-                        class="px-4 py-16 text-center text-gray-400">
+                        class="px-4 py-16 text-center text-slate-400">
                         <div class="flex flex-col items-center justify-center gap-3">
-                            <ng-icon name="heroCircleStack" class="text-4xl text-gray-300"></ng-icon>
+                            <ng-icon name="heroCircleStack" class="text-4xl text-slate-300"></ng-icon>
                             <p class="text-base font-medium">{{ emptyMessage }}</p>
                         </div>
                     </td>
@@ -219,14 +219,14 @@
                 @else {
 
                 @for (row of datosPaginados; track $index) {
-                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
 
                     @if (accionesProcesadas.length > 0 && columnasVisibles.length > 0) {
                     <td class="w-10 px-2 py-3 relative text-center">
                         <div class="flex items-center justify-center">
 
                             @if (accionesVisibles(row).length === 1) {
-                            <button class="p-1.5 rounded-lg hover:bg-gray-100 focus:outline-none transition-colors"
+                            <button class="p-1.5 rounded-md hover:bg-slate-100 focus:outline-none transition-colors"
                                 [class]="accionesVisibles(row)[0].class"
                                 [tooltip]="accionesVisibles(row)[0].label || ''" tooltipPosition="bottom"
                                 (click)="accionesVisibles(row)[0].onClick(row)">
@@ -237,18 +237,18 @@
 
                             } @else {
                             <button #btnAccion
-                                class="p-1 rounded-lg text-orange-600 hover:bg-orange-100 focus:outline-none"
+                                class="p-1 rounded-md text-orange-600 hover:bg-orange-100 focus:outline-none"
                                 (click)="toggleMenuAcciones($index, $event, btnAccion)">
                                 <ng-icon name="heroEllipsisVertical" class="text-lg font-bold"></ng-icon>
                             </button>
 
                             @if (menuActivo() === 'accion-' + $index) {
-                            <div class="fixed w-40 bg-white rounded-xl shadow-lg z-[9999] overflow-hidden divide-y divide-gray-100 font-normal text-gray-700"
+                            <div class="fixed w-40 bg-white rounded-md z-[9999] overflow-hidden divide-y divide-slate-200 font-normal text-slate-700 border border-slate-200"
                                 [ngStyle]="menuPosicion" (click)="$event.stopPropagation()">
                                 <div class="p-1.5 flex flex-col gap-0.5">
                                     @for (action of accionesVisibles(row); track $index) {
                                     <button
-                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-gray-50 w-full rounded-lg group"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 w-full rounded-md group"
                                         [class]="action.class" (click)="action.onClick(row); cerrarMenus()">
                                         @if (action.icon) {
                                         <ng-icon [name]="action.icon"
@@ -267,7 +267,7 @@
                     }
 
                     @for (col of columnasVisibles; track col.key) {
-                    <td class="px-4 py-4 text-gray-700 whitespace-nowrap" [class]="col.class ?? ''">
+                    <td class="px-4 py-4 text-slate-700 whitespace-nowrap" [class]="col.class ?? ''">
                         @if (col.render) {
                         <span [innerHTML]="col.render(row)"></span>
                         } @else {
@@ -283,12 +283,12 @@
     </div>
 
     @if (datosFiltrados.length > 0) {
-    <div class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-gray-500 border-t border-gray-100">
+    <div class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-slate-500 border-t border-slate-200">
 
         <div class="flex items-center gap-2">
             <span class="tracking-wide">REGISTROS POR PÁGINA:</span>
             <select
-                class="bg-transparent border border-gray-200 rounded text-gray-700 py-1 pl-2 pr-6 focus:ring-1 focus:ring-blue-500 outline-none cursor-pointer"
+                class="bg-transparent border border-slate-200 rounded text-slate-700 py-1 pl-2 pr-6 focus:ring-1 focus:ring-blue-500 outline-none cursor-pointer"
                 [ngModel]="pageSize" (ngModelChange)="cambiarTamanoPagina($event)">
                 @for (size of pageSizes; track size) {
                 <option [value]="size">{{ size }}</option>
@@ -300,24 +300,24 @@
             {{ inicio + 1 }} - {{ fin }} DE {{ datosFiltrados.length }}
         </span>
 
-        <div class="flex items-center gap-4 text-gray-400">
+        <div class="flex items-center gap-4 text-slate-400">
             <button
-                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors focus:outline-none"
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors focus:outline-none"
                 [disabled]="paginaActual() === 1" (click)="cambiarPagina(1)">
                 <ng-icon name="heroChevronDoubleLeft" class="text-lg"></ng-icon>
             </button>
             <button
-                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors focus:outline-none"
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors focus:outline-none"
                 [disabled]="paginaActual() === 1" (click)="cambiarPagina(paginaActual() - 1)">
                 <ng-icon name="heroChevronLeft" class="text-lg"></ng-icon>
             </button>
             <button
-                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors focus:outline-none"
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors focus:outline-none"
                 [disabled]="paginaActual() === totalPaginas" (click)="cambiarPagina(paginaActual() + 1)">
                 <ng-icon name="heroChevronRight" class="text-lg"></ng-icon>
             </button>
             <button
-                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors focus:outline-none"
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors focus:outline-none"
                 [disabled]="paginaActual() === totalPaginas" (click)="cambiarPagina(totalPaginas)">
                 <ng-icon name="heroChevronDoubleRight" class="text-lg"></ng-icon>
             </button>

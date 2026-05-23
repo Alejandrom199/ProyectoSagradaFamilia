@@ -2,15 +2,15 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-800">Roles y Permisos</h2>
-        <p class="text-gray-500 mt-1">Gestiona los permisos de acceso por rol</p>
+        <h2 class="text-3xl font-bold text-slate-800">Roles y Permisos</h2>
+        <p class="text-slate-500 mt-1">Gestiona los permisos de acceso por rol</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         @for (rol of roles(); track rol.id) {
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4">
+        <div class="bg-white border border-slate-200 p-6 flex flex-col gap-4">
             <div class="flex items-start justify-between">
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center" [class.bg-red-50]="!rol.editable"
+                <div class="w-11 h-11 rounded-md flex items-center justify-center" [class.bg-red-50]="!rol.editable"
                     [class.bg-blue-50]="rol.editable">
                     <ng-icon name="heroShieldCheck" [class.text-red-400]="!rol.editable"
                         [class.text-blue-500]="rol.editable" size="1.4em">
@@ -18,26 +18,26 @@
                 </div>
                 @if (!rol.editable) {
                 <span
-                    class="text-[10px] font-bold text-red-400 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
+                    class="text-[10px] font-bold text-red-400 bg-red-50 px-2 py-0.5 rounded-md border border-red-200">
                     Protegido
                 </span>
                 }
             </div>
 
             <div>
-                <p class="font-bold text-gray-900">{{ rol.nombre }}</p>
-                <p class="text-xs text-gray-400 mt-0.5">{{ rol.descripcion }}</p>
+                <p class="font-bold text-slate-900">{{ rol.nombre }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">{{ rol.descripcion }}</p>
             </div>
 
             @if (rol.editable) {
             <button (click)="gestionarPermisos(rol.id)"
-                class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-blue-200 text-blue-600 text-xs font-bold hover:bg-blue-50 transition-colors">
+                class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-blue-200 text-blue-600 text-xs font-bold hover:bg-blue-50 transition-colors">
                 <ng-icon name="heroPencilSquare" size="1em"></ng-icon>
                 Gestionar permisos
             </button>
             } @else {
             <div
-                class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-100 text-gray-300 text-xs font-medium cursor-not-allowed">
+                class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-slate-200 text-slate-300 text-xs font-medium cursor-not-allowed">
                 No modificable
             </div>
             }

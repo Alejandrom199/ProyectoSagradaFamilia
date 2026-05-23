@@ -4,18 +4,18 @@
     <!-- Header -->
     <div class="mb-6 flex items-end justify-between">
         <div>
-            <h2 class="text-3xl font-bold text-gray-800">Permisos — {{ nombreRol() }}</h2>
-            <p class="text-gray-500 mt-1">Configura qué puede hacer este rol en el sistema</p>
+            <h2 class="text-3xl font-bold text-slate-800">Permisos — {{ nombreRol() }}</h2>
+            <p class="text-slate-500 mt-1">Configura qué puede hacer este rol en el sistema</p>
         </div>
 
         @if (hayCambios()) {
         <div class="flex items-center gap-2">
             <button (click)="cancelar()"
-                class="px-4 py-2 rounded-xl border border-gray-200 text-gray-500 text-sm font-semibold hover:bg-gray-50 transition-colors">
+                class="px-4 py-2 rounded-md border border-slate-200 text-slate-500 text-sm font-semibold hover:bg-slate-50 transition-colors">
                 Cancelar
             </button>
             <button (click)="guardar()" [disabled]="guardando()"
-                class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors disabled:opacity-50">
+                class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors disabled:opacity-50">
                 {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
             </button>
         </div>
@@ -25,12 +25,12 @@
     <!-- Feedback -->
     @if (exitoso()) {
     <div
-        class="mb-4 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-sm font-semibold text-emerald-700">
+        class="mb-4 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-md text-sm font-semibold text-emerald-700">
         ✓ Permisos guardados correctamente
     </div>
     }
     @if (error()) {
-    <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm font-semibold text-red-600">
+    <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-md text-sm font-semibold text-red-600">
         {{ error() }}
     </div>
     }
@@ -39,11 +39,11 @@
     @if (cargando()) {
     <div class="flex flex-col gap-4">
         @for (i of [1, 2, 3]; track i) {
-        <div class="bg-white rounded-2xl border border-gray-100 p-6 animate-pulse">
-            <div class="h-3 bg-gray-200 rounded w-1/4 mb-5"></div>
+        <div class="bg-white border border-slate-200 p-6 animate-pulse">
+            <div class="h-3 bg-slate-200 rounded-md w-1/4 mb-5"></div>
             <div class="flex flex-col gap-3">
                 @for (j of [1, 2]; track j) {
-                <div class="h-10 bg-gray-100 rounded-lg"></div>
+                <div class="h-10 bg-slate-100 rounded-md"></div>
                 }
             </div>
         </div>
@@ -54,11 +54,11 @@
     <!-- Matriz de permisos -->
     <div class="flex flex-col gap-4">
         @for (modulo of modulos(); track trackModulo($index, modulo)) {
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="bg-white border border-slate-200 overflow-hidden">
 
             <!-- Header módulo -->
-            <div class="px-6 py-3 bg-gray-50 border-b border-gray-100">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">
+            <div class="px-6 py-3 bg-slate-50 border-b border-slate-200">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">
                     {{ modulo.moduloNombre }}
                 </p>
             </div>
@@ -67,13 +67,13 @@
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-gray-100">
+                        <tr class="border-b border-slate-200">
                             <th
-                                class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider w-1/2">
+                                class="text-left px-6 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider w-1/2">
                                 Opción
                             </th>
                             @for (accion of acciones; track accion) {
-                            <th class="text-center px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                            <th class="text-center px-6 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">
                                 {{ accion }}
                             </th>
                             }
@@ -81,8 +81,8 @@
                     </thead>
                     <tbody>
                         @for (opcion of modulo.opciones; track trackOpcion($index, opcion)) {
-                        <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
-                            <td class="px-6 py-4 text-sm font-medium text-gray-700">
+                        <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-slate-700">
                                 {{ opcion.opcionNombre }}
                             </td>
                             @for (accionNombre of acciones; track accionNombre) {
@@ -92,7 +92,7 @@
                                 <button (click)="togglePermiso(accion.opcionAccionId, accion.permitido)"
                                     class="w-6 h-6 rounded-md border-2 transition-all flex items-center justify-center mx-auto"
                                     [class.bg-blue-600]="accion.permitido" [class.border-blue-600]="accion.permitido"
-                                    [class.border-gray-300]="!accion.permitido" [class.bg-white]="!accion.permitido">
+                                    [class.border-slate-300]="!accion.permitido" [class.bg-white]="!accion.permitido">
                                     @if (accion.permitido) {
                                     <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24"
                                         stroke="currentColor" stroke-width="3">
@@ -101,7 +101,7 @@
                                     }
                                 </button>
                                 } @else {
-                                <span class="text-gray-200">—</span>
+                                <span class="text-slate-200">—</span>
                                 }
                             </td>
                             }

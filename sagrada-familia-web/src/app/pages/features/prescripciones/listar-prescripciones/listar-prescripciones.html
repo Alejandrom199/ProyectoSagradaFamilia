@@ -3,17 +3,16 @@
 
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-gray-800">Historial de prescripciones</h2>
+            <h2 class="text-3xl font-bold text-slate-800">Historial de prescripciones</h2>
         </div>
-
         <btn variant="primary" [routerLink]="['/prescripciones/crear']" [queryParams]="{ ninoId: ninoId }"
-            class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+            class="text-white cursor-pointer">
             <ng-icon name="heroPlus" class="mr-2"></ng-icon>
             Nueva receta
         </btn>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="border border-slate-200 overflow-hidden">
         <datatable title="Recetas médicas" [data]="prescripciones()" [columns]="columnas" [exportExcel]="true"
             exportFileName="prescripciones-paciente" [showActualizar]="true" [showExportar]="true"
             searchPlaceholder="Buscar por medicamento o médico..."

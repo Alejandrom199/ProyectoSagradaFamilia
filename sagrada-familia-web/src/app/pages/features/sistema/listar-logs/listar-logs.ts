@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroExclamationTriangle, heroDocumentText, heroCircleStack } from '@ng-icons/heroicons/outline';
@@ -6,9 +6,10 @@ import { heroExclamationTriangle, heroDocumentText, heroCircleStack } from '@ng-
 import { DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { LogSistemaResponse } from '../../../../shared/interfaces/sistema.interface';
 import { SistemaService } from '../../../../core/services/sistema';
+
+type NivelFiltro = 'Todo' | 'Information' | 'Warning' | 'Error';
 
 @Component({
   selector: 'app-listar-logs',
@@ -22,7 +23,16 @@ export class ListarLogs implements OnInit {
   private sistemaService = inject(SistemaService);
   private loadingBar = inject(LoadingBar);
 
-  logs = signal<LogSistemaResponse[]>([]);
+  private todosLogs = signal<LogSistemaResponse[]>([]);
+  nivelActivo = signal<NivelFiltro>('Todo');
+
+  logs = computed(() => {
+    const nivel = this.nivelActivo();
+    if (nivel === 'Todo') return this.todosLogs();
+    return this.todosLogs().filter(l => l.nivel === nivel);
+  });
+
+  readonly niveles: NivelFiltro[] = ['Todo', 'Information', 'Warning', 'Error'];
 
   columnas: DatatableColumn<LogSistemaResponse>[] = [
     {
@@ -37,7 +47,7 @@ export class ListarLogs implements OnInit {
       }
     },
     {
-      key: 'nivel', label: 'Nivel', sortable: true, filterable: true,
+      key: 'nivel', label: 'Nivel', sortable: true,
       render: (row) => this.badgeNivel(row.nivel)
     },
     {
@@ -60,18 +70,25 @@ export class ListarLogs implements OnInit {
 
   migajas: BreadcrumbItem[] = [
     { label: 'Sistema' },
-    { label: 'Logs de errores' },
+    { label: 'Logs del sistema' },
   ];
 
   ngOnInit(): void {
     this.cargarLogs();
   }
 
+  claseTab(nivel: NivelFiltro): string {
+    const base = 'px-4 py-1.5 rounded-xl text-sm font-bold transition-all';
+    return this.nivelActivo() === nivel
+      ? `${base} bg-blue-600 text-white shadow-sm`
+      : `${base} text-gray-600 bg-white border border-gray-200 hover:bg-gray-50`;
+  }
+
   cargarLogs(): void {
     this.loadingBar.show();
-    this.sistemaService.obtenerErroresRecientes().subscribe({
+    this.sistemaService.obtenerLogsRecientes().subscribe({
       next: (r) => {
-        if (r.success) this.logs.set(r.data);
+        if (r.success) this.todosLogs.set(r.data);
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
@@ -88,6 +105,4 @@ export class ListarLogs implements OnInit {
     const clase = mapa[nivel] || 'bg-gray-100 text-gray-700';
     return `<span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${clase}">${nivel}</span>`;
   }
-
-  protected readonly formatearFecha = formatearFecha;
 }

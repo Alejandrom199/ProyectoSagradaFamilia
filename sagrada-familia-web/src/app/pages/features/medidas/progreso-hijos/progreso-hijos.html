@@ -1,9 +1,9 @@
 <div class="max-w-7xl mx-auto p-4">
     <breadcrumb [items]="migajas" homeRoute="/pacientes"></breadcrumb>
     <div class="mb-8">
-        <h2 class="text-3xl font-extrabold text-gray-800">Progreso de {{
+        <h2 class="text-3xl font-extrabold text-slate-800">Progreso de {{
             ninoSeleccionado()?.nombre }} {{ninoSeleccionado()?.apellido }}</h2>
-        <p class="text-gray-500 mt-1 text-lg">
+        <p class="text-slate-500 mt-1 text-lg">
             Revisa el historial de crecimiento y medidas de tu pequeño
         </p>
     </div>
@@ -13,67 +13,65 @@
     @if (hayDatos() && ultimaMedida()) {
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div class="bg-white border border-slate-200 p-6 flex items-center justify-between">
             <div>
-                <span class="text-xs font-semibold text-gray-400 uppercase tracking-widest block">Peso Actual</span>
-                <h3 class="text-3xl font-black text-gray-800 mt-1">
-                    {{ ultimaMedida()?.peso }} <span class="text-lg font-normal text-gray-400">kg</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest block">Peso Actual</span>
+                <h3 class="text-3xl font-black text-slate-800 mt-1">
+                    {{ ultimaMedida()?.peso }} <span class="text-lg font-normal text-slate-400">kg</span>
                 </h3>
-                <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1">
+                <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
                     <ng-icon name="heroCalendarDays"></ng-icon>
                     Última visita: {{ formatearFecha(ultimaMedida()!.fechaMedicion) }}
                 </p>
             </div>
-            <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-xl">
+            <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-md flex items-center justify-center text-xl">
                 <ng-icon name="heroScale"></ng-icon>
             </div>
         </div>
 
-        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div class="bg-white border border-slate-200 p-6 flex items-center justify-between">
             <div>
-                <span class="text-xs font-semibold text-gray-400 uppercase tracking-widest block">Estatura Actual</span>
-                <h3 class="text-3xl font-black text-gray-800 mt-1">
-                    {{ ultimaMedida()?.talla }} <span class="text-lg font-normal text-gray-400">cm</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest block">Estatura Actual</span>
+                <h3 class="text-3xl font-black text-slate-800 mt-1">
+                    {{ ultimaMedida()?.talla }} <span class="text-lg font-normal text-slate-400">cm</span>
                 </h3>
-                <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1">
+                <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
                     <ng-icon name="heroChartBar"></ng-icon>
-                    <!-- 💡 CORREGIDO: Ahora usa percentilTalla como en el DTO -->
                     Percentil alcanzado: P{{ ultimaMedida()?.percentilTalla }}
                 </p>
             </div>
-            <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center text-xl">
+            <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-md flex items-center justify-center text-xl">
                 <ng-icon name="heroChartBar"></ng-icon>
             </div>
         </div>
 
-        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-widest block">Estado de Salud</span>
+        <div class="bg-white border border-slate-200 p-6 flex flex-col justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest block">Estado de Salud</span>
             <div class="mt-2">
-                <span class="inline-block px-3.5 py-1.5 rounded-xl text-sm font-bold border"
+                <span class="inline-block px-3.5 py-1.5 rounded-md text-sm font-bold border"
                     [ngClass]="obtenerClaseEstado(ultimaMedida()!.estadoNutricional)">
                     {{ ultimaMedida()?.estadoNutricional }}
                 </span>
             </div>
-            <p class="text-[11px] text-gray-400 mt-2 leading-relaxed">
+            <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
                 Evaluado según los estándares de la OMS para su edad.
             </p>
         </div>
     </div>
     }
 
-    <div
-        class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+    <div class="bg-white border border-slate-200 p-8">
         <div class="flex items-center justify-between mb-8">
-            <h3 class="text-xl font-bold flex items-center gap-3 text-gray-800">
+            <h3 class="text-xl font-bold flex items-center gap-3 text-slate-800">
                 <ng-icon name="heroChartBar" class="text-blue-600 text-2xl"></ng-icon>
                 Curva de Peso
             </h3>
         </div>
 
         @if (cargando()) {
-        <div class="w-full h-[380px] flex items-center justify-center bg-gray-50 rounded-2xl animate-pulse">
-            <span class="text-gray-400 font-medium flex items-center gap-2">
-                <svg class="animate-spin h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24">
+        <div class="w-full h-[380px] flex items-center justify-center bg-slate-50 animate-pulse">
+            <span class="text-slate-400 font-medium flex items-center gap-2">
+                <svg class="animate-spin h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
@@ -93,12 +91,11 @@
 
         } @else {
         <div class="flex flex-col items-center justify-center py-16 text-center">
-            <div
-                class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4 border border-gray-100 shadow-inner">
-                <ng-icon name="heroFaceSmile" class="text-5xl text-gray-300"></ng-icon>
+            <div class="w-20 h-20 bg-slate-50 rounded-md flex items-center justify-center mb-4 border border-slate-200">
+                <ng-icon name="heroFaceSmile" class="text-5xl text-slate-300"></ng-icon>
             </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-1">Aún no hay medidas registradas</h3>
-            <p class="text-sm text-gray-400 max-w-xs">El pediatra registrará las medidas de {{
+            <h3 class="text-xl font-bold text-slate-800 mb-1">Aún no hay medidas registradas</h3>
+            <p class="text-sm text-slate-400 max-w-xs">El pediatra registrará las medidas de {{
                 ninoSeleccionado()?.nombre }} {{ninoSeleccionado()?.apellido }} en su próxima cita médica.</p>
         </div>
         }

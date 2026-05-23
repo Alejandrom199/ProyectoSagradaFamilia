@@ -2,36 +2,31 @@
     <div class="mb-10">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-3xl font-bold text-gray-800">
+                <h2 class="text-3xl font-bold text-slate-800">
                     {{ saludoConfig().texto }}, {{ auth.currentUser()?.nombre }}
                     <ng-icon [name]="saludoConfig().icono" [ngClass]="saludoConfig().color" class="text-3xl"></ng-icon>
                 </h2>
-                <p class="text-gray-500 mt-1">Aquí tienes el resumen del crecimiento y desarrollo de tus hijos.</p>
+                <p class="text-slate-500 mt-1">Aquí tienes el resumen del crecimiento y desarrollo de tus hijos.</p>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @for (nino of ninos(); track nino.id) {
-        <div
-            class="group bg-white rounded-[2rem] p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col items-center text-center relative overflow-hidden">
+        <div class="bg-white border border-slate-200 p-8 flex flex-col items-center text-center">
 
-            <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-10 transition-transform group-hover:scale-150 duration-700"
-                [ngClass]="nino.sexo === 'M' ? 'bg-blue-400' : 'bg-pink-400'">
-            </div>
-
-            <div class="w-24 h-24 rounded-3xl flex items-center justify-center text-3xl font-black shadow-inner mb-6 transform group-hover:rotate-3 transition-transform"
+            <div class="w-20 h-20 rounded-md flex items-center justify-center text-3xl font-black mb-6"
                 [ngClass]="nino.sexo === 'M' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'">
                 {{ nino.nombre.charAt(0) }}
             </div>
 
             <div class="mb-6">
-                <h3 class="text-2xl font-bold text-gray-800 tracking-tight">
+                <h3 class="text-xl font-bold text-slate-800 tracking-tight">
                     {{ nino.nombre + ' ' + nino.apellido }}
                 </h3>
 
-                <div class="mt-4 inline-flex items-center px-4 py-1.5 rounded-full bg-gray-50 border border-gray-100">
-                    <span class="text-sm font-bold text-gray-700">
+                <div class="mt-3 inline-flex items-center px-3 py-1 rounded-md bg-slate-50 border border-slate-200">
+                    <span class="text-sm font-bold text-slate-700">
                         {{ nino.edadMeses }} meses de edad
                     </span>
                 </div>
@@ -39,26 +34,25 @@
 
             <div class="w-full flex items-center justify-center gap-4 mt-auto">
                 <btn variant="primary" (clicked)="verSeguimiento(nino.id)"
-                    class="w-14 h-12 flex items-center justify-center transition-transform hover:scale-105 text-white"
+                    class="w-14 h-12 flex items-center justify-center text-white"
                     tooltip="Ver Crecimiento" tooltipPosition="bottom">
                     <ng-icon name="heroChartBar" class="text-xl"></ng-icon>
                 </btn>
 
                 <btn variant="outline" (clicked)="verAlimentos(nino.id)"
-                    class="w-14 h-12 flex items-center justify-center transition-transform hover:scale-105 text-gray-600"
+                    class="w-14 h-12 flex items-center justify-center text-slate-600"
                     tooltip="Ver Alimentos" tooltipPosition="bottom">
                     <ng-icon name="heroCake" class="text-xl"></ng-icon>
                 </btn>
             </div>
         </div>
         } @empty {
-        <div
-            class="col-span-full py-20 flex flex-col items-center bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200">
-            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
-                <ng-icon name="heroUserCircle" class="text-gray-300 text-5xl"></ng-icon>
+        <div class="col-span-full py-20 flex flex-col items-center border-2 border-dashed border-slate-200 bg-slate-50">
+            <div class="w-20 h-20 bg-white rounded-md border border-slate-200 flex items-center justify-center mb-6">
+                <ng-icon name="heroUserCircle" class="text-slate-300 text-5xl"></ng-icon>
             </div>
-            <h3 class="text-2xl font-bold text-gray-800">No hay niños registrados</h3>
-            <p class="text-gray-500 mt-2 max-w-sm text-center">
+            <h3 class="text-2xl font-bold text-slate-800">No hay niños registrados</h3>
+            <p class="text-slate-500 mt-2 max-w-sm text-center">
                 Si eres representante y no ves a tus hijos aquí, solicita al pediatra que vincule tu cuenta.
             </p>
         </div>

@@ -9,6 +9,7 @@ import { finalize } from 'rxjs';
 import { PadresService } from '../../../../core/services/padres';
 import { AuthService } from '../../../../core/services/auth';
 import { PadreCreate } from '../../../../shared/interfaces/padre.interface';
+import { passwordValidator } from '../../../../shared/validators/password.validator';
 
 @Component({
   selector: 'crear-padre',
@@ -56,7 +57,7 @@ export class CrearPadre implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       apellido: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, passwordValidator]],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
     });
   }

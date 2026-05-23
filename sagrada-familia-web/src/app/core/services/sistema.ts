@@ -13,11 +13,32 @@ export class SistemaService {
 
   constructor(private http: HttpClient) { }
 
-  obtenerAuditoriaPorTabla(nombreTabla: string, pk: string): Observable<ApiResponse<AuditoriaResponse[]>> {
-    const params = new HttpParams().set('pk', pk);
+  obtenerAuditoriaReciente(top = 100): Observable<ApiResponse<AuditoriaResponse[]>> {
+    const params = new HttpParams().set('top', top);
+    return this.http.get<ApiResponse<AuditoriaResponse[]>>(
+      `${this.url}/auditoria`, { params, withCredentials: true }
+    );
+  }
+
+  obtenerMiActividad(): Observable<ApiResponse<AuditoriaResponse[]>> {
+    return this.http.get<ApiResponse<AuditoriaResponse[]>>(
+      `${this.url}/auditoria/mia`, { withCredentials: true }
+    );
+  }
+
+  obtenerAuditoriaPorTabla(nombreTabla: string, pk?: string): Observable<ApiResponse<AuditoriaResponse[]>> {
+    let params = new HttpParams();
+    if (pk?.trim()) params = params.set('pk', pk.trim());
     return this.http.get<ApiResponse<AuditoriaResponse[]>>(
       `${this.url}/auditoria/tabla/${nombreTabla}`,
       { params, withCredentials: true }
+    );
+  }
+
+  obtenerLogsRecientes(top = 100): Observable<ApiResponse<LogSistemaResponse[]>> {
+    const params = new HttpParams().set('top', top);
+    return this.http.get<ApiResponse<LogSistemaResponse[]>>(
+      `${this.url}/logs`, { params, withCredentials: true }
     );
   }
 

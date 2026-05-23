@@ -1,11 +1,11 @@
 <button [type]="type()" [disabled]="disabled()" (click)="onClick()" [style.width]="width()"
-  class="inline-flex items-center justify-center px-4 py-2 font-medium transition-colors rounded-lg focus:outline-none"
+  class="inline-flex items-center justify-center px-4 py-2 font-medium transition-colors rounded-md focus:outline-none"
   [ngClass]="{
     'bg-blue-600 text-white hover:bg-blue-700': variant() === 'primary',
-    'bg-gray-200 text-gray-800 hover:bg-gray-300': variant() === 'secondary',
+    'bg-slate-200 text-slate-800 hover:bg-slate-300': variant() === 'secondary',
     'bg-red-600 text-white hover:bg-red-700': variant() === 'danger',
-    'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50': variant() === 'outline',
-    'bg-transparent text-gray-600 hover:text-gray-900': variant() === 'ghost',
+    'border border-slate-300 text-slate-700 bg-white hover:bg-slate-50': variant() === 'outline',
+    'bg-transparent text-slate-600 hover:text-slate-900': variant() === 'ghost',
     'bg-[var(--color-surface-border)] opacity-50 cursor-not-allowed': disabled()
   }">
   <ng-content></ng-content>

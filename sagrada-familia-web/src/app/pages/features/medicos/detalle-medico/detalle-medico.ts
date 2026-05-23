@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroArrowLeft, heroPlus, heroPencil, heroTrash, heroAcademicCap } from '@ng-icons/heroicons/outline';
+import { heroArrowLeft, heroPlus, heroPencil, heroTrash, heroAcademicCap, heroKey } from '@ng-icons/heroicons/outline';
 
 import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
@@ -11,12 +11,14 @@ import { NinosService } from '../../../../core/services/ninos';
 import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { MedicosService } from '../../../../core/services/medicos';
+import { AuthService } from '../../../../core/services/auth';
+import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-detalle-medico',
   standalone: true,
-  imports: [Datatable, Breadcrumb],
-  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash, heroAcademicCap })],
+  imports: [NgIcon, Datatable, Breadcrumb, ConfirmModal],
+  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash, heroAcademicCap, heroKey })],
   templateUrl: './detalle-medico.html',
   styleUrl: './detalle-medico.css',
 })
@@ -27,9 +29,13 @@ export class DetalleMedico implements OnInit {
   private ninosService = inject(NinosService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
+  auth = inject(AuthService);
 
   medico = signal<MedicoResponse | null>(null);
   pacientes = signal<NinoResponse[]>([]);
+  mostrarModalReset = signal(false);
+  resetExito = signal(false);
+  resetError = signal('');
 
   formatearFecha = formatearFecha;
 
@@ -95,6 +101,20 @@ export class DetalleMedico implements OnInit {
           const pacientesDelMedico = r.data.filter(n => n.medicoId === parseInt(this.id));
           this.pacientes.set(pacientesDelMedico);
         }
+      }
+    });
+  }
+
+  confirmarRestablecerPassword(): void {
+    this.medicosService.restablecerPassword(parseInt(this.id)).subscribe({
+      next: () => {
+        this.mostrarModalReset.set(false);
+        this.resetExito.set(true);
+        this.resetError.set('');
+      },
+      error: (err) => {
+        this.mostrarModalReset.set(false);
+        this.resetError.set(err?.error?.message ?? 'No se pudo enviar el correo de restablecimiento.');
       }
     });
   }

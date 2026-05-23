@@ -14,6 +14,7 @@ import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 import { MedicosService } from '../../../../core/services/medicos';
 import { CitaCreate } from '../../../../shared/interfaces/cita.interface';
+import { ParametrosService } from '../../../../core/services/parametros';
 
 @Component({
   selector: 'app-crear-cita',
@@ -29,6 +30,7 @@ export class CrearCita implements OnInit {
   private ninosService = inject(NinosService);
   private medicosService = inject(MedicosService);
   private authService = inject(AuthService);
+  private parametrosService = inject(ParametrosService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
@@ -39,6 +41,9 @@ export class CrearCita implements OnInit {
 
   guardando = signal(false);
   error = signal<string | null>(null);
+
+  horaInicioAtencion = signal<string | null>(null);
+  horaFinAtencion = signal<string | null>(null);
 
   readonly fechaMinima = (() => {
     const hoy = new Date();
@@ -63,6 +68,7 @@ export class CrearCita implements OnInit {
 
     this.cargarPacientes();
     this.cargarMedicos();
+    this.cargarHorarioAtencion();
   }
 
   private initForm(): FormGroup {
@@ -104,17 +110,44 @@ export class CrearCita implements OnInit {
     });
   }
 
+  private cargarHorarioAtencion(): void {
+    this.parametrosService.obtenerPorGrupo('HORARIO_ATENCION').subscribe({
+        next: (r) => {
+            if (r.success) {
+                const inicio = r.data.find(p => p.codigo === 'HORA_INICIO' && p.activo);
+                const fin = r.data.find(p => p.codigo === 'HORA_FIN' && p.activo);
+                if (inicio) this.horaInicioAtencion.set(inicio.valor);
+                if (fin) this.horaFinAtencion.set(fin.valor);
+            }
+        }
+    });
+  }
+
   guardar(): void {
     if (this.formCita.invalid) {
       this.formCita.markAllAsTouched();
       return;
     }
 
+    const v = this.formCita.value;
+    const horaSeleccionada = v.hora as string;
+
+    const inicio = this.horaInicioAtencion();
+    const fin = this.horaFinAtencion();
+
+    if (inicio && horaSeleccionada < inicio) {
+        this.error.set(`Las citas solo pueden agendarse a partir de las ${inicio} horas.`);
+        return;
+    }
+    if (fin && horaSeleccionada >= fin) {
+        this.error.set(`Las citas no pueden agendarse después de las ${fin} horas.`);
+        return;
+    }
+
     this.guardando.set(true);
     this.error.set(null);
     this.loadingBar.show();
 
-    const v = this.formCita.value;
     const fechaHora = `${v.fecha}T${v.hora}:00`;
 
     const data: CitaCreate = {
@@ -136,7 +169,7 @@ export class CrearCita implements OnInit {
           if (res.success) this.router.navigate(['/citas']);
           else this.error.set(res.message);
         },
-        error: () => this.error.set('Ocurrió un error al programar la cita. Intente más tarde.')
+        error: (err) => this.error.set(err?.error?.message ?? 'Ocurrió un error al programar la cita. Intente más tarde.')
       });
   }
 

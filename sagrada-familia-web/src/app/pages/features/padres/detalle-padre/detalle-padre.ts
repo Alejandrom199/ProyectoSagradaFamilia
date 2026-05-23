@@ -1,14 +1,15 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroArrowLeft, heroPlus, heroPencil, heroTrash, heroUser } from '@ng-icons/heroicons/outline';
+import { heroArrowLeft, heroPlus, heroPencil, heroTrash, heroUser, heroKey } from '@ng-icons/heroicons/outline';
 import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { PadresService } from '../../../../core/services/padres';
 import { NinosService } from '../../../../core/services/ninos';
-import { PadreDetailResponse, PadreResponse } from '../../../../shared/interfaces/padre.interface';
+import { AuthService } from '../../../../core/services/auth';
+import { PadreDetailResponse } from '../../../../shared/interfaces/padre.interface';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
@@ -17,7 +18,7 @@ import { ConfirmModal } from "../../../../shared/components/confirm-modal/confir
 @Component({
   selector: 'detalle-padre',
   imports: [NgIcon, Datatable, Breadcrumb, ConfirmModal],
-  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash, heroUser })],
+  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash, heroUser, heroKey })],
   templateUrl: './detalle-padre.html',
   styleUrl: './detalle-padre.css',
 })
@@ -28,10 +29,14 @@ export class DetallePadre implements OnInit {
   private ninosService = inject(NinosService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
+  auth = inject(AuthService);
 
   padre = signal<PadreDetailResponse | null>(null);
   hijos = signal<NinoResponse[]>([]);
   hijoAEliminar = signal<NinoResponse | null>(null);
+  mostrarModalReset = signal(false);
+  resetExito = signal(false);
+  resetError = signal('');
 
   formatearFecha = formatearFecha;
 
@@ -106,12 +111,9 @@ export class DetallePadre implements OnInit {
   }
 
   cargarHijos() {
-    this.ninosService.obtenerTodos().subscribe({
+    this.ninosService.obtenerPorPadre(parseInt(this.id)).subscribe({
       next: (r) => {
-        if (r.success) {
-          const hijosDelPadre = r.data.filter(n => n.padreId === parseInt(this.id));
-          this.hijos.set(hijosDelPadre);
-        }
+        if (r.success) this.hijos.set(r.data);
       }
     });
   }
@@ -133,6 +135,20 @@ export class DetallePadre implements OnInit {
       error: () => {
         this.hijoAEliminar.set(null);
         this.loadingBar.complete();
+      }
+    });
+  }
+
+  confirmarRestablecerPassword() {
+    this.padresService.restablecerPassword(parseInt(this.id)).subscribe({
+      next: () => {
+        this.mostrarModalReset.set(false);
+        this.resetExito.set(true);
+        this.resetError.set('');
+      },
+      error: (err) => {
+        this.mostrarModalReset.set(false);
+        this.resetError.set(err?.error?.message ?? 'No se pudo enviar el correo de restablecimiento.');
       }
     });
   }

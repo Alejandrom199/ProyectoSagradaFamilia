@@ -2,29 +2,36 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-gray-800">Auditoría</h2>
-            <p class="text-gray-500 mt-1">Rastro de cambios sobre los registros del sistema</p>
+            <h2 class="text-3xl font-bold text-slate-800">Auditoría</h2>
+            <p class="text-slate-500 mt-1">
+                @if (auth.esAdmin()) { Rastro de todos los cambios en el sistema }
+                @else { Tu historial de actividad en el sistema }
+            </p>
         </div>
 
         <div class="flex gap-2">
+            @if (auth.esAdmin()) {
             <a routerLink="/sistema/logs"
-                class="px-4 py-2 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 transition-colors">
+                class="px-4 py-2 rounded-md text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors">
                 Logs
             </a>
+            }
             <a routerLink="/sistema/auditoria"
-                class="px-4 py-2 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-sm">
+                class="px-4 py-2 rounded-md text-sm font-bold bg-blue-600 text-white">
                 Auditoría
             </a>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+    @if (auth.esAdmin()) {
+    <div class="bg-white border border-slate-200 p-6 mb-6">
+        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Filtrar por registro</p>
         <form [formGroup]="formFiltro" (ngSubmit)="buscar()"
             class="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end">
             <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-gray-600 uppercase ml-1">Tabla *</label>
+                <label class="text-xs font-bold text-slate-600 uppercase ml-1">Tabla *</label>
                 <select formControlName="tabla"
-                    class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                    class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                     @for (t of tablas; track t) {
                     <option [value]="t">{{ t }}</option>
                     }
@@ -32,62 +39,125 @@
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-gray-600 uppercase ml-1">Clave primaria *</label>
-                <input formControlName="pk" type="text" placeholder="Ej. 42"
-                    class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
-                    [class.border-red-500]="f['pk'].invalid && f['pk'].touched">
+                <label class="text-xs font-bold text-slate-600 uppercase ml-1">Clave primaria <span
+                        class="text-slate-400 normal-case font-normal">(opcional)</span></label>
+                <input formControlName="pk" type="text"
+                    placeholder="Ej. 42 — dejar vacío para ver toda la tabla"
+                    class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
             </div>
 
             <button type="submit" [disabled]="formFiltro.invalid"
-                class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-100 hover:bg-blue-700 disabled:opacity-50 transition-all flex items-center gap-2 h-fit">
+                class="px-6 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 h-fit">
                 <ng-icon name="heroMagnifyingGlass"></ng-icon>
-                Consultar
+                Filtrar
             </button>
         </form>
     </div>
+    }
 
-    @if (busqueda()) {
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        <datatable title="Historial de cambios" [data]="registros()" [columns]="columnas" [actions]="acciones"
-            [exportExcel]="true" exportFileName="auditoria"
+    <div class="border border-slate-200 overflow-hidden">
+        <datatable [title]="auth.esAdmin() ? 'Historial de cambios' : 'Mi actividad'"
+            [data]="registros()" [columns]="columnasActivas" [actions]="acciones"
+            [exportExcel]="true" exportFileName="auditoria" [showActualizar]="true"
             searchPlaceholder="Buscar en el historial..."
-            emptyMessage="No hay registros auditables para esta búsqueda.">
+            emptyMessage="No hay registros de auditoría disponibles."
+            (onActualizar)="cargarInicial()">
         </datatable>
     </div>
-    } @else {
-    <div class="bg-white rounded-2xl border border-dashed border-gray-300 p-12 text-center">
-        <ng-icon name="heroTableCells" class="text-5xl text-gray-300"></ng-icon>
-        <p class="mt-4 text-gray-500 font-medium">Selecciona una tabla y el ID del registro para consultar su
-            historial de cambios.</p>
-    </div>
-    }
 
     @if (registroDetalle(); as d) {
     <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div class="bg-white rounded-md w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200">
+
+            <!-- Cabecera del modal -->
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-800">Detalle del cambio</h3>
-                    <p class="text-xs text-gray-500">{{ d.tabla }} #{{ d.clavePrimaria }} · {{ d.accion }}</p>
+                    <h3 class="text-lg font-bold text-slate-800">Detalle del cambio</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        @if (auth.esAdmin()) {
+                        {{ d.tabla }} #{{ d.clavePrimaria }} · {{ d.accion }} · {{ d.usuarioEmail || 'Sistema' }}
+                        } @else {
+                        {{ tablaAmigable(d.tabla) }} · {{ d.accion }}
+                        }
+                    </p>
                 </div>
                 <button (click)="registroDetalle.set(null)"
-                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+                    class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
             </div>
+
+            @if (auth.esAdmin()) {
+            <!-- Vista admin: JSON formateado -->
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-auto">
                 <div>
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Valores antiguos</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Valores
+                        anteriores</p>
                     <pre
-                        class="text-xs bg-red-50 p-3 rounded-xl border border-red-100 overflow-auto max-h-96 text-red-900">{{ d.valoresAntiguos || '—' }}</pre>
+                        class="text-xs bg-red-50 p-3 rounded-md border border-red-100 overflow-auto max-h-80 text-red-900 whitespace-pre-wrap">{{ d.valoresAntiguos | jsonFormat }}</pre>
                 </div>
                 <div>
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Valores nuevos</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Valores
+                        nuevos</p>
                     <pre
-                        class="text-xs bg-green-50 p-3 rounded-xl border border-green-100 overflow-auto max-h-96 text-green-900">{{ d.valoresNuevos || '—' }}</pre>
+                        class="text-xs bg-green-50 p-3 rounded-md border border-green-100 overflow-auto max-h-80 text-green-900 whitespace-pre-wrap">{{ d.valoresNuevos | jsonFormat }}</pre>
                 </div>
             </div>
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+            } @else {
+            <!-- Vista médico: tabla legible -->
+            <div class="p-6 overflow-auto">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
+                    @if (d.accion === 'Creación') { Datos registrados }
+                    @else if (d.accion === 'Eliminación') { Registro eliminado }
+                    @else { Campos modificados }
+                </p>
+
+                @if (camposModificados().length === 0) {
+                <p class="text-sm text-slate-400 italic text-center py-8">Sin detalle disponible</p>
+                } @else {
+                <div class="border border-slate-200 overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase w-1/3">
+                                    Campo</th>
+                                @if (d.accion === 'Actualización') {
+                                <th
+                                    class="text-left px-4 py-2.5 text-xs font-bold text-red-500 uppercase w-1/3">
+                                    Antes</th>
+                                <th
+                                    class="text-left px-4 py-2.5 text-xs font-bold text-green-600 uppercase w-1/3">
+                                    Después</th>
+                                } @else {
+                                <th
+                                    class="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase">
+                                    Valor</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (campo of camposModificados(); track campo.clave) {
+                            <tr class="border-b border-slate-100 last:border-0">
+                                <td class="px-4 py-2.5 font-medium text-slate-700">{{ campo.etiqueta }}</td>
+                                @if (d.accion === 'Actualización') {
+                                <td class="px-4 py-2.5 text-red-700">{{ campo.antes }}</td>
+                                <td class="px-4 py-2.5 text-green-700 font-medium">{{ campo.despues }}</td>
+                                } @else {
+                                <td class="px-4 py-2.5 text-slate-600">
+                                    {{ d.accion === 'Eliminación' ? campo.antes : campo.despues }}
+                                </td>
+                                }
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </div>
+            }
+
+            <!-- Pie del modal -->
+            <div class="px-6 py-4 border-t border-slate-200 flex justify-end shrink-0">
                 <button (click)="registroDetalle.set(null)"
-                    class="px-4 py-2 text-sm font-bold text-gray-600 hover:text-gray-800 transition-colors">
+                    class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">
                     Cerrar
                 </button>
             </div>

@@ -3,33 +3,36 @@
 
         <!-- Logo -->
         <div class="text-center mb-8">
-            <div class="inline-flex w-12 h-12 rounded-xl flex items-center items-center justify-center shrink-0 border border-blue-100 bg-blue-50/60 transition-all duration-200"
-                style="border-color: rgba(59, 130, 246, 0.15);">
-                <ng-icon name="heroHeart" class="text-blue-600 transition-transform hover:scale-105"
-                    style="font-size: 32px;"></ng-icon>
+            <div class="inline-flex w-12 h-12 rounded-md items-center justify-center border border-blue-200 bg-blue-50 mb-3">
+                <ng-icon name="heroHeart" class="text-blue-600" style="font-size: 28px;"></ng-icon>
             </div>
             <h1 class="text-2xl font-bold text-[var(--color-text-primary)]">La Sagrada Familia</h1>
             <p class="text-[var(--color-text-secondary)] text-sm mt-1">Sistema de Monitoreo Pediátrico</p>
         </div>
 
         <!-- Card -->
-        <div class="card bg-white/80 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
+        <div class="bg-white/65 backdrop-blur-md border border-white/40">
 
-            <div class="card-header text-center">Iniciar Sesión</div>
-            <div class="card-body">
+            <div class="px-6 py-4 border-b border-slate-200/60 text-center bg-white/50">
+                <p class="text-base font-bold auth-card-text">Iniciar Sesión</p>
+            </div>
+
+            <div class="p-6">
                 @if (error()) {
-                <div class="alert alert-error mb-4">{{ error() }}</div>
+                <div class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-xs font-semibold mb-4">
+                    {{ error() }}
+                </div>
                 }
 
-                <form [formGroup]="form" (ngSubmit)="onSubmit()">
-                    <div class="form-group mb-4">
-                        <label class="form-label">Correo electrónico</label>
+                <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold auth-card-text uppercase ml-1">Correo electrónico</label>
                         <input type="email"
-                            class="form-input bg-white text-gray-800 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500"
-                            [class.input-error]="!!error() || (form.get('email')?.invalid && form.get('email')?.touched)"
+                            class="w-full px-4 py-2.5 rounded-md border border-slate-300 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm auth-card-text"
+                            [class.border-red-400]="!!error() || (form.get('email')?.invalid && form.get('email')?.touched)"
                             placeholder="medico@sagrada.com" formControlName="email" required autocomplete="email">
                         @if (form.get('email')?.invalid && form.get('email')?.touched) {
-                        <div class="text-red-500 text-xs mt-1">
+                        <div class="text-red-500 text-xs ml-1">
                             @if (form.get('email')?.hasError('required')) {
                             El correo electrónico es requerido.
                             } @else if (form.get('email')?.hasError('email')) {
@@ -39,22 +42,22 @@
                         }
                     </div>
 
-                    <div class="form-group mb-6">
-                        <label class="form-label">Contraseña</label>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold auth-card-text uppercase ml-1">Contraseña</label>
                         <div class="relative">
                             <input [type]="mostrarPassword() ? 'text' : 'password'"
-                                class="form-input pr-10 bg-white text-gray-800 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500"
-                                [class.input-error]="!!error() || (form.get('password')?.invalid && form.get('password')?.touched)"
+                                class="w-full px-4 py-2.5 pr-10 rounded-md border border-slate-300 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm auth-card-text"
+                                [class.border-red-400]="!!error() || (form.get('password')?.invalid && form.get('password')?.touched)"
                                 placeholder="••••••••" formControlName="password" required
                                 autocomplete="current-password">
                             <button type="button"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                                 (click)="mostrarPassword.update(v => !v)">
                                 <ng-icon [name]="mostrarPassword() ? 'heroEyeSlash' : 'heroEye'"></ng-icon>
                             </button>
                         </div>
                         @if (form.get('password')?.invalid && form.get('password')?.touched) {
-                        <div class="text-red-500 text-xs mt-1">
+                        <div class="text-red-500 text-xs ml-1">
                             @if (form.get('password')?.hasError('required')) {
                             La contraseña es requerida.
                             }
@@ -62,13 +65,13 @@
                         }
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg w-full" [disabled]="cargando()">
+                    <button type="submit"
+                        class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 mt-2"
+                        [disabled]="cargando()">
                         @if (cargando()) {
-                        <span
-                            class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         Ingresando...
-                        }
-                        @else {
+                        } @else {
                         Ingresar
                         }
                     </button>

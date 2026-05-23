@@ -30,6 +30,10 @@ export class MedicosService {
     return this.http.delete<ApiResponse<null>>(`${this.url}/${id}`, { withCredentials: true });
   }
 
+  restablecerPassword(id: number): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${this.url}/${id}/reset-password`, {}, { withCredentials: true });
+  }
+
   /*
   // Descomentar cuando se agreguen los endpoints [HttpGet("{id:int}")] y [HttpPut("{id:int}")] en MedicoController.cs
   obtenerPorId(id: number): Observable<ApiResponse<MedicoDetailResponse>> {
