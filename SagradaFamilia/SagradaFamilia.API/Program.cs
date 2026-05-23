@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddDatabase(builder.Configuration)
     .AddJwtAuthentication(builder.Configuration)
+    .AddEmailService(builder.Configuration)
     .AddRepositories()
     .AddApplicationServices()
     .AddInfrastructureServices()
@@ -14,6 +15,7 @@ builder.Services
     .AddProphetClient(builder.Configuration)
     .AddAutoMapperProfiles()
     .AddValidators()
+    .AddHttpContext()
     .AddCorsPolicy()
     .AddSwagger()
     .AddControllers();

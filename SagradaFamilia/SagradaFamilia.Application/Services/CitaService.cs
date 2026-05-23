@@ -12,15 +12,21 @@ using SagradaFamilia.Domain.Interfaces.Repositories;
 public class CitaService : ICitaService
 {
     private readonly ICitaRepository _citaRepository;
+    private readonly IMedicoRepository _medicoRepository;
+    private readonly IParametroRepository _parametroRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<CitaService> _logger;
 
     public CitaService(
         ICitaRepository citaRepository,
+        IMedicoRepository medicoRepository,
+        IParametroRepository parametroRepository,
         IMapper mapper,
         ILogger<CitaService> logger)
     {
         _citaRepository = citaRepository;
+        _medicoRepository = medicoRepository;
+        _parametroRepository = parametroRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -68,10 +74,16 @@ public class CitaService : ICitaService
 
     public async Task<CitaDto.Response> CrearAsync(CitaDto.Create request, int usuarioId)
     {
-        _logger.LogInformation("Intentando agendar nueva cita para el Niño ID: {NinoId} con el Médico ID: {MedicoId}",
+        _logger.LogInformation("Intentando agendar nueva cita para el Niño ID: {NinoId} con el Médico UsuarioId: {UsuarioId}",
             request.NinoId, request.MedicoId);
 
+        var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(request.MedicoId)
+            ?? throw new NotFoundException("Médico", request.MedicoId);
+
+        await ValidarHorarioAtencionAsync(request.FechaHora);
+
         var cita = _mapper.Map<Cita>(request);
+        cita.MedicoId = medico.Id;
         cita.Estado = EstadoCita.Pendiente;
         cita.UsuarioCreacionId = usuarioId;
 
@@ -112,6 +124,9 @@ public class CitaService : ICitaService
         var cita = await _citaRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Cita", id);
 
+        if (nuevoEstado != EstadoCita.Cancelada && DateTime.Now < cita.FechaHora)
+            throw new BusinessException("No es posible gestionar esta cita antes de su fecha y hora programada.");
+
         var estadoAnterior = cita.Estado;
         cita.Estado = nuevoEstado;
 
@@ -146,6 +161,41 @@ public class CitaService : ICitaService
         _logger.LogInformation("Consultando agenda futura del médico ID: {MedicoId}", medicoId);
         var citas = await _citaRepository.ObtenerPendientesPorMedicoAsync(medicoId);
         return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
+    }
+
+    private async Task ValidarHorarioAtencionAsync(DateTime fechaHora)
+    {
+        var pHoraInicio = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "HORA_INICIO");
+        var pHoraFin = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "HORA_FIN");
+        var pDiasHabiles = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "DIAS_HABILES");
+
+        if (pHoraInicio is not null && TimeOnly.TryParse(pHoraInicio.Valor, out var horaInicio))
+        {
+            if (TimeOnly.FromDateTime(fechaHora) < horaInicio)
+                throw new BusinessException($"Las citas no pueden agendarse antes de las {pHoraInicio.Valor} horas.");
+        }
+
+        if (pHoraFin is not null && TimeOnly.TryParse(pHoraFin.Valor, out var horaFin))
+        {
+            if (TimeOnly.FromDateTime(fechaHora) >= horaFin)
+                throw new BusinessException($"Las citas no pueden agendarse después de las {pHoraFin.Valor} horas.");
+        }
+
+        if (pDiasHabiles is not null)
+        {
+            var diasHabiles = pDiasHabiles.Valor
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(d => int.TryParse(d.Trim(), out var n) ? (int?)n : null)
+                .Where(d => d.HasValue)
+                .Select(d => d!.Value)
+                .ToList();
+
+            // DayOfWeek: Sunday=0, Monday=1 ... pero el parámetro usa 1=Lunes, 7=Domingo
+            int diaSemana = fechaHora.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)fechaHora.DayOfWeek;
+
+            if (diasHabiles.Count > 0 && !diasHabiles.Contains(diaSemana))
+                throw new BusinessException("Las citas solo pueden agendarse en días hábiles de atención.");
+        }
     }
 
 }

@@ -24,6 +24,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             await _context.Citas
                 .Include(c => c.Nino)
                 .Include(c => c.Medico)
+                .Include(c => c.Prescripciones)
                 .Where(c => c.Medico.UsuarioId == usuarioId && !c.Eliminado)
                 .OrderByDescending(c => c.FechaHora)
                 .ToListAsync();

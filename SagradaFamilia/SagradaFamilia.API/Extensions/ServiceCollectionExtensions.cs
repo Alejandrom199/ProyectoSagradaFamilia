@@ -9,10 +9,12 @@ using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Interfaces.Services.External;
 using SagradaFamilia.Application.Mappings;
 using SagradaFamilia.Application.Services;
+using SagradaFamilia.Application.Settings;
 using SagradaFamilia.Application.Validators.Auth;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 using SagradaFamilia.Infrastructure.Authentication;
+using SagradaFamilia.Infrastructure.Email;
 using SagradaFamilia.Infrastructure.ExternalServices;
 using SagradaFamilia.Infrastructure.Persistence.Contexts;
 using SagradaFamilia.Infrastructure.Persistence.Repositories;
@@ -82,6 +84,17 @@ namespace SagradaFamilia.API.Extensions
             return services;
         }
 
+        public static IServiceCollection AddEmailService(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+            services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+            return services;
+        }
+
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -102,6 +115,8 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<ICitaRepository, CitaRepository>();
             services.AddScoped<IAuditoriaRepository, AuditoriaRepository>();
             services.AddScoped<ILogSistemaRepository, LogSistemaRepository>();
+            services.AddScoped<IParametroRepository, ParametroRepository>();
+            services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 
             return services;
         }
@@ -123,6 +138,7 @@ namespace SagradaFamilia.API.Extensions
 
             services.AddScoped<IAuditoriaService, AuditoriaService>();
             services.AddScoped<ILogSistemaService, LogSistemaService>();
+            services.AddScoped<IParametroService, ParametroService>();
 
             return services;
         }
@@ -150,6 +166,12 @@ namespace SagradaFamilia.API.Extensions
         {
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(typeof(AuthService).Assembly);
+            return services;
+        }
+
+        public static IServiceCollection AddHttpContext(this IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
             return services;
         }
 

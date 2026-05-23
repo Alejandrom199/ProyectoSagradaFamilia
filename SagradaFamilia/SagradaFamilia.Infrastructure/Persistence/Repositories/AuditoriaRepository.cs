@@ -11,12 +11,24 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
 
         public AuditoriaRepository(AppDbContext context) => _context = context;
 
-        public async Task<IEnumerable<Auditoria>> ObtenerPorTablaAsync(string nombreTabla, string clavePrimaria) =>
+        public async Task<IEnumerable<Auditoria>> ObtenerRecientesAsync(int top = 100) =>
             await _context.Auditorias
-                .Include(a => a.Usuario) 
-                .Where(a => a.Tabla == nombreTabla && a.ClavePrimaria == clavePrimaria)
-                .OrderByDescending(a => a.Fecha) 
+                .Include(a => a.Usuario)
+                .OrderByDescending(a => a.Fecha)
+                .Take(top)
                 .ToListAsync();
+
+        public async Task<IEnumerable<Auditoria>> ObtenerPorTablaAsync(string nombreTabla, string? clavePrimaria = null)
+        {
+            var query = _context.Auditorias
+                .Include(a => a.Usuario)
+                .Where(a => a.Tabla == nombreTabla);
+
+            if (!string.IsNullOrWhiteSpace(clavePrimaria))
+                query = query.Where(a => a.ClavePrimaria == clavePrimaria);
+
+            return await query.OrderByDescending(a => a.Fecha).ToListAsync();
+        }
 
         public async Task<IEnumerable<Auditoria>> ObtenerPorUsuarioAsync(int usuarioId) =>
             await _context.Auditorias

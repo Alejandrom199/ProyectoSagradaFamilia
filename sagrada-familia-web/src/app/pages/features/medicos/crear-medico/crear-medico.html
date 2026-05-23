@@ -2,50 +2,41 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="max-w-5xl mx-auto">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col lg:flex-row">
+        <div class="bg-white border border-slate-200 overflow-hidden flex flex-col lg:flex-row">
 
-            <div class="lg:w-1/3 bg-gray-50/50 border-r border-gray-100 p-8">
+            <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
                 <div class="sticky top-8">
-                    <div
-                        class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 mb-6">
+                    <div class="w-12 h-12 bg-blue-600 rounded-md flex items-center justify-center mb-6">
                         <ng-icon name="heroAcademicCap" color="white"></ng-icon>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-gray-800 leading-tight">Registro de Médico</h2>
-                    <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                    <h2 class="text-2xl font-bold text-slate-800 leading-tight">Registro de Médico</h2>
+                    <p class="text-sm text-slate-500 mt-3 leading-relaxed">
                         Estás registrando un profesional pediatra en <strong>La Sagrada Familia</strong>.
                     </p>
 
                     <div class="mt-8 space-y-6">
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroEnvelope" class="text-blue-500 text-lg"></ng-icon>
-                            </div>
+                            <div class="mt-1"><ng-icon name="heroEnvelope" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Acceso al sistema
-                                </h4>
-                                <p class="text-xs text-gray-500 mt-1">El correo electrónico será el <strong>usuario
-                                        único</strong> con el que el médico iniciará sesión.</p>
+                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Acceso al sistema</h4>
+                                <p class="text-xs text-slate-500 mt-1">El correo electrónico será el <strong>usuario único</strong> con el que el médico iniciará sesión.</p>
                             </div>
                         </div>
 
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroLockClosed" class="text-blue-500 text-lg"></ng-icon>
-                            </div>
+                            <div class="mt-1"><ng-icon name="heroLockClosed" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Seguridad</h4>
-                                <p class="text-xs text-gray-500 mt-1">Define una contraseña temporal. El médico podrá
-                                    cambiarla luego desde su perfil.</p>
+                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Seguridad</h4>
+                                <p class="text-xs text-slate-500 mt-1">Define una contraseña temporal. El médico podrá cambiarla luego desde su perfil.</p>
                             </div>
                         </div>
 
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroBriefcase" class="text-blue-500 text-lg"></ng-icon>
-                            </div>
+                            <div class="mt-1"><ng-icon name="heroBriefcase" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Siguiente paso</h4>
-                                <p class="text-xs text-gray-500 mt-1">Tras la creación, el médico podrá registrar
-                                    <strong>padres y pacientes</strong> asignados a su consulta.
-                                </p>
+                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Siguiente paso</h4>
+                                <p class="text-xs text-slate-500 mt-1">Tras la creación, el médico podrá registrar <strong>padres y pacientes</strong> asignados a su consulta.</p>
                             </div>
                         </div>
                     </div>
@@ -57,9 +48,9 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Nombre *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Nombre *</label>
                             <input formControlName="nombre" type="text" placeholder="Ej. Carlos"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                                 [class.border-red-500]="f['nombre'].invalid && f['nombre'].touched">
                             @if (f['nombre'].invalid && f['nombre'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Requerido</span>
@@ -67,9 +58,9 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Apellido *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Apellido *</label>
                             <input formControlName="apellido" type="text" placeholder="Ej. Méndez"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                                 [class.border-red-500]="f['apellido'].invalid && f['apellido'].touched">
                             @if (f['apellido'].invalid && f['apellido'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Requerido</span>
@@ -79,12 +70,12 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Email Institucional *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Email Institucional *</label>
                             <div class="relative">
                                 <ng-icon name="heroEnvelope"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></ng-icon>
+                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                                 <input formControlName="email" type="email" placeholder="medico@email.com"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                                     [class.border-red-500]="f['email'].invalid && f['email'].touched">
                             </div>
                             @if (f['email'].invalid && f['email'].touched) {
@@ -93,46 +84,56 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Contraseña Provisoria
-                                *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Contraseña Provisoria *</label>
                             <div class="relative">
                                 <ng-icon name="heroLockClosed"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></ng-icon>
+                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                                 <input formControlName="password" [type]="verPassword() ? 'text' : 'password'"
                                     placeholder="••••••••"
-                                    class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                    class="w-full pl-10 pr-10 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                                     [class.border-red-500]="f['password'].invalid && f['password'].touched">
                                 <button type="button" (click)="verPassword.set(!verPassword())"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors">
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors">
                                     <ng-icon [name]="verPassword() ? 'heroEyeSlash' : 'heroEye'"></ng-icon>
                                 </button>
                             </div>
-                            @if (f['password'].invalid && f['password'].touched) {
-                            <span class="text-[11px] text-red-500 font-medium ml-1">Mín. 6 caracteres</span>
+                            @if (f['password'].touched && f['password'].errors) {
+                            <div class="flex flex-col gap-0.5 ml-1">
+                              @if (f['password'].errors['minLength']) {
+                                <span class="text-[11px] text-red-500 font-medium">Mínimo 8 caracteres</span>
+                              }
+                              @if (f['password'].errors['uppercase']) {
+                                <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos una letra mayúscula</span>
+                              }
+                              @if (f['password'].errors['number']) {
+                                <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos un número</span>
+                              }
+                              @if (f['password'].errors['special']) {
+                                <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos un símbolo especial (!@#$...)</span>
+                              }
+                            </div>
                             }
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Especialidad</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Especialidad</label>
                             <div class="relative">
                                 <ng-icon name="heroBriefcase"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></ng-icon>
-                                <input formControlName="especialidad" type="text"
-                                    placeholder="Ej. Pediatría general"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
+                                <input formControlName="especialidad" type="text" placeholder="Ej. Pediatría general"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Teléfono Móvil (10
-                                dígitos)</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Teléfono Móvil (10 dígitos)</label>
                             <div class="relative">
                                 <ng-icon name="heroPhone"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></ng-icon>
+                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                                 <input formControlName="telefono" type="tel" placeholder="0999999999"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                                     [class.border-red-400]="f['telefono'].invalid && f['telefono'].touched">
                             </div>
                             @if (f['telefono'].invalid && f['telefono'].touched) {
@@ -142,23 +143,21 @@
                     </div>
 
                     @if (error()) {
-                    <div
-                        class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-semibold flex items-center gap-2 animate-shake">
+                    <div class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-md text-xs font-semibold flex items-center gap-2 animate-shake">
                         <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                         {{ error() }}
                     </div>
                     }
 
-                    <div class="pt-6 border-t border-gray-100 flex items-center justify-end gap-3">
+                    <div class="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
                         <a routerLink="/medicos"
-                            class="px-4 py-2 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors">
+                            class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
                             Cancelar
                         </a>
                         <button type="submit" [disabled]="guardando() || formMedico.invalid"
-                            class="px-8 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-100 hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 transition-all flex items-center gap-2">
+                            class="px-8 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2">
                             @if (guardando()) {
-                            <span
-                                class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             Guardando...
                             } @else {
                             <ng-icon name="heroAcademicCap" class="text-lg"></ng-icon>

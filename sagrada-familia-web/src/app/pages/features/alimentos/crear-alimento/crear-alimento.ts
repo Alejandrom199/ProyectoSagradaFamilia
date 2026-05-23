@@ -1,17 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { provideIcons } from '@ng-icons/core';
-import { heroArrowLeft } from '@ng-icons/heroicons/outline';
+import { provideIcons, NgIcon } from '@ng-icons/core';
+import { heroArchiveBox, heroArrowLeft, heroCalendarDays, heroClipboardDocumentList, heroTag } from '@ng-icons/heroicons/outline';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { AlimentosService } from '../../../../core/services/alimentos';
 import { AlimentoUpdate, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
 
 @Component({
-  selector: 'app-crear-alimento',
-  imports: [RouterLink, FormsModule, Breadcrumb],
-  viewProviders: [provideIcons({ heroArrowLeft })],
+  selector: 'crear-alimento',
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  viewProviders: [provideIcons({ heroArchiveBox, heroArrowLeft, heroTag, heroCalendarDays, heroClipboardDocumentList })],
   templateUrl: './crear-alimento.html',
   styleUrl: './crear-alimento.css',
 })

@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { adminGuard } from "../../../core/guards/admin-guard";
+import { roleGuard } from "../../../core/guards/role-guard";
 
 export const sistemaRoutes: Routes = [
     {
@@ -16,7 +17,7 @@ export const sistemaRoutes: Routes = [
     },
     {
         path: 'auditoria',
-        canActivate: [adminGuard],
+        canActivate: [roleGuard],
         loadComponent: () =>
             import('./listar-auditoria/listar-auditoria')
                 .then(m => m.ListarAuditoria),

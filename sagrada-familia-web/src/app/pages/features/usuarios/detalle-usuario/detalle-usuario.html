@@ -3,26 +3,25 @@
 
     @if (usuario(); as u) {
     <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-white border border-slate-200 overflow-hidden">
 
-            <div
-                class="bg-gradient-to-r from-blue-50 to-indigo-50 p-8 border-b border-gray-100 flex items-center gap-6">
+            <div class="bg-slate-50 p-8 border-b border-slate-200 flex items-center gap-6">
                 <div
-                    class="w-20 h-20 bg-white text-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black shadow-md">
+                    class="w-20 h-20 bg-white text-blue-600 rounded-md flex items-center justify-center text-3xl font-black border border-slate-200">
                     {{ u.email.charAt(0).toUpperCase() }}
                 </div>
                 <div class="flex-1">
-                    <h2 class="text-2xl font-bold text-gray-800">{{ u.email }}</h2>
+                    <h2 class="text-2xl font-bold text-slate-800">{{ u.email }}</h2>
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-blue-100 text-blue-700">
                             {{ u.rolNombre }}
                         </span>
                         @if (u.activo) {
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-green-100 text-green-700">
                             Activo
                         </span>
                         } @else {
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-red-100 text-red-700">
                             Inactivo
                         </span>
                         }
@@ -31,35 +30,35 @@
             </div>
 
             <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex gap-4 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+                <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
                     <ng-icon name="heroEnvelope" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Email</p>
-                        <p class="text-sm text-gray-800 font-medium break-all">{{ u.email }}</p>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</p>
+                        <p class="text-sm text-slate-800 font-medium break-all">{{ u.email }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-4 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+                <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
                     <ng-icon name="heroShieldCheck" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Rol</p>
-                        <p class="text-sm text-gray-800 font-medium">{{ u.rolNombre }} (ID: {{ u.rolId }})</p>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rol</p>
+                        <p class="text-sm text-slate-800 font-medium">{{ u.rolNombre }} (ID: {{ u.rolId }})</p>
                     </div>
                 </div>
 
-                <div class="flex gap-4 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+                <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
                     <ng-icon name="heroCalendarDays" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha de alta</p>
-                        <p class="text-sm text-gray-800 font-medium">{{ formatearFecha(u.fechaCreacion) }}</p>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fecha de alta</p>
+                        <p class="text-sm text-slate-800 font-medium">{{ formatearFecha(u.fechaCreacion) }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-4 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+                <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
                     <ng-icon name="heroUserCircle" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Perfil vinculado</p>
-                        <p class="text-sm text-gray-800 font-medium">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Perfil vinculado</p>
+                        <p class="text-sm text-slate-800 font-medium">
                             @if (u.medicoId) {
                             Médico #{{ u.medicoId }}
                             } @else if (u.padreId) {
@@ -72,13 +71,13 @@
                 </div>
             </div>
 
-            <div class="px-8 py-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
+            <div class="px-8 py-6 border-t border-slate-200 flex items-center justify-between">
                 <a routerLink="/usuarios"
-                    class="px-4 py-2 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors">
+                    class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
                     Volver
                 </a>
                 <button (click)="toggleEstado()" [disabled]="procesando()"
-                    class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
+                    class="px-6 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center gap-2"
                     [class.bg-red-600]="u.activo"
                     [class.text-white]="u.activo"
                     [class.hover:bg-red-700]="u.activo"

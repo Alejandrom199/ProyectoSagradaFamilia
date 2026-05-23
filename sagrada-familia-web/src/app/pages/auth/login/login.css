@@ -38,19 +38,22 @@
 
 .form-input {
     background-color: #ffffff;
-    /* Fondo blanco */
     color: #1f2937;
-    /* Texto oscuro para contrastar */
     border: 1px solid #e5e7eb;
-    /* Borde sutil */
-    /* Aquí van tus otros estilos de padding, border-radius, etc. */
 }
 
-/* Efecto al hacer clic (focus) */
 .form-input:focus {
     background-color: #ffffff;
     outline: none;
     border-color: #3b82f6;
-    /* Borde azul al enfocar */
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Textos oscuros dentro del card — anulan el !important del fondo */
+.login-background .auth-card-text {
+    color: var(--color-card-text) !important;
+}
+
+.login-background .auth-card-text-secondary {
+    color: var(--color-card-text-muted) !important;
 }

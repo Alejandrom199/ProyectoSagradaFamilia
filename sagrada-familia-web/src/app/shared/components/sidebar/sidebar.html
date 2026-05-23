@@ -8,7 +8,7 @@
         style="height: var(--header-height); border-bottom: 1px solid var(--color-surface-border);"
         [class.justify-start]="sidebarExpandido()" [class.justify-center]="!sidebarExpandido()">
 
-        <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-blue-50/60"
+        <div class="w-8 h-8 rounded-md flex items-center justify-center shrink-0 bg-blue-50/60"
             style="border: 1px solid rgba(59,130,246,0.15);">
             <ng-icon name="heroHeart" class="text-blue-600 transition-transform hover:scale-105"
                 style="font-size: 16px;"></ng-icon>
@@ -29,14 +29,14 @@
         <div class="mb-1">
             @if (sidebarExpandido()) {
             <a routerLink="/dashboard" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: true }"
-                class="sidebar-link flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+                class="sidebar-link flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150"
                 (click)="cerrarMovil.emit()">
                 <ng-icon name="heroHome" class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
                 <span class="truncate">Dashboard</span>
             </a>
             } @else {
             <a routerLink="/dashboard" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: true }"
-                class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto rounded-xl text-sm transition-all duration-150"
+                class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto rounded-md text-sm transition-all duration-150"
                 tooltip="Dashboard" tooltipPosition="right" (click)="cerrarMovil.emit()">
                 <ng-icon name="heroHome" class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
             </a>
@@ -51,7 +51,7 @@
         <div class="mb-1">
 
             <button (click)="toggleModulo(modulo.id)"
-                class="sidebar-modulo-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-150 group"
+                class="sidebar-modulo-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-all duration-150 group"
                 [class.modulo-abierto]="moduloEstaAbierto(modulo.id)">
 
                 <div class="flex items-center gap-2.5">
@@ -73,7 +73,7 @@
                     @for (opcion of modulo.opciones; track opcion.id) {
                     <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active"
                         [routerLinkActiveOptions]="{ exact: esExacta(opcion.ruta) }"
-                        class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150"
+                        class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-all duration-150"
                         [class.mb-2]="$last" (click)="cerrarMovil.emit()">
                         <ng-icon [name]="resolverIcono(opcion.icono)" class="sidebar-link-icon shrink-0"
                             style="font-size: 15px;"></ng-icon>
@@ -90,7 +90,7 @@
             @for (opcion of modulo.opciones; track opcion.id) {
             <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active"
                 [routerLinkActiveOptions]="{ exact: esExacta(opcion.ruta) }"
-                class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto mb-1 rounded-xl text-sm transition-all duration-150"
+                class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto mb-1 rounded-md text-sm transition-all duration-150"
                 [tooltip]="opcion.nombre" tooltipPosition="right" (click)="cerrarMovil.emit()">
                 <ng-icon [name]="resolverIcono(opcion.icono)" class="sidebar-link-icon shrink-0"
                     style="font-size: 16px;"></ng-icon>
@@ -106,11 +106,11 @@
         [ngClass]="sidebarExpandido() ? 'p-3' : 'py-3 px-1.5'">
 
         @if (sidebarExpandido()) {
-        <div class="flex items-center justify-between px-2 py-2 rounded-xl bg-[var(--color-surface-alt)]">
+        <div class="flex items-center justify-between px-2 py-2 rounded-md bg-[var(--color-surface-alt)]">
             <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
                 [sidebarExpandido]="true"></avatar>
             <button
-                class="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none flex-shrink-0"
+                class="flex items-center justify-center w-8 h-8 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none flex-shrink-0"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="top">
                 <ng-icon name="heroArrowRightOnRectangle" class="text-xl"></ng-icon>
             </button>
@@ -123,7 +123,7 @@
                 [tooltip]="(auth.currentUser()?.nombre ?? '') + ' - ' + (auth.currentUser()?.rol ?? '')"
                 tooltipPosition="right"></avatar>
             <button
-                class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none cursor-pointer"
+                class="flex items-center justify-center w-10 h-10 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none cursor-pointer"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="right">
                 <ng-icon name="heroArrowRightOnRectangle" class="text-[22px]"></ng-icon>
             </button>

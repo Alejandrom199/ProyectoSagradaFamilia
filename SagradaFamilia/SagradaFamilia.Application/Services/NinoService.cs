@@ -137,4 +137,15 @@ public class NinoService : INinoService
         return _mapper.Map<IEnumerable<NinoDto.ListResponse>>(ninos);
     }
 
+    public async Task<IEnumerable<NinoDto.ListResponse>> ObtenerMisPacientesPorUsuarioIdAsync(int usuarioId)
+    {
+        _logger.LogInformation("Obteniendo pacientes del médico con UsuarioId: {UsuarioId}", usuarioId);
+
+        var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(usuarioId)
+            ?? throw new NotFoundException("Médico", usuarioId);
+
+        var ninos = await _ninoRepository.ObtenerPorMedicoIdAsync(medico.Id);
+        return _mapper.Map<IEnumerable<NinoDto.ListResponse>>(ninos);
+    }
+
 }

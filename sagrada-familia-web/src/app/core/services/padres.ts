@@ -32,4 +32,8 @@ export class PadresService {
   obtenerPorId(id: number): Observable<ApiResponse<PadreDetailResponse>> {
     return this.http.get<ApiResponse<PadreDetailResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
+
+  restablecerPassword(id: number): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${this.url}/${id}/reset-password`, {}, { withCredentials: true });
+  }
 }

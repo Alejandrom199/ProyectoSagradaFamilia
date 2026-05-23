@@ -2,12 +2,11 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="max-w-5xl mx-auto">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col lg:flex-row">
+        <div class="bg-white border border-slate-200 overflow-hidden flex flex-col lg:flex-row">
 
-            <div class="lg:w-1/3 bg-gray-50/50 border-r border-gray-100 p-8">
+            <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
                 <div class="sticky top-8">
-                    <div
-                        class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl font-black mb-6">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-md flex items-center justify-center text-2xl font-black mb-6">
                         @if (medico()) {
                         {{ medico()?.nombre?.charAt(0) }}{{ medico()?.apellido?.charAt(0) }}
                         } @else {
@@ -15,28 +14,24 @@
                         }
                     </div>
 
-                    <h2 class="text-2xl font-bold text-gray-800 leading-tight">Editar Médico</h2>
-                    <p class="text-sm text-gray-500 mt-2 leading-relaxed">
+                    <h2 class="text-2xl font-bold text-slate-800 leading-tight">Editar Médico</h2>
+                    <p class="text-sm text-slate-500 mt-2 leading-relaxed">
                         Actualizando información del Dr(a):<br>
-                        <span class="text-blue-600 font-bold text-base">{{ medico()?.nombre }} {{
-                            medico()?.apellido }}</span>
+                        <span class="text-blue-600 font-bold text-base">{{ medico()?.nombre }} {{ medico()?.apellido }}</span>
                     </p>
 
                     <div class="mt-10 space-y-6">
-                        <div class="flex gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <div class="mt-1"><ng-icon name="heroEnvelope" class="text-blue-500 text-lg"></ng-icon>
-                            </div>
+                        <div class="flex gap-4 p-4 bg-white rounded-md border border-slate-200">
+                            <div class="mt-1"><ng-icon name="heroEnvelope" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Email Actual
-                                </h4>
-                                <p class="text-xs text-gray-700 font-medium break-all">{{ medico()?.email }}</p>
+                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Actual</h4>
+                                <p class="text-xs text-slate-700 font-medium break-all">{{ medico()?.email }}</p>
                             </div>
                         </div>
 
-                        <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <div class="p-4 bg-blue-50 rounded-md border border-blue-100">
                             <p class="text-[11px] text-blue-700 leading-relaxed italic">
-                                "El email no puede modificarse desde aquí, ya que constituye las credenciales del
-                                profesional."
+                                "El email no puede modificarse desde aquí, ya que constituye las credenciales del profesional."
                             </p>
                         </div>
                     </div>
@@ -48,9 +43,9 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Nombre(s) *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Nombre(s) *</label>
                             <input formControlName="nombre" type="text" placeholder="Ej. Carlos"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                                 [class.border-red-500]="f['nombre'].invalid && f['nombre'].touched">
                             @if (f['nombre'].invalid && f['nombre'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Campo requerido</span>
@@ -58,9 +53,9 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Apellido(s) *</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Apellido(s) *</label>
                             <input formControlName="apellido" type="text" placeholder="Ej. Méndez"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                                 [class.border-red-500]="f['apellido'].invalid && f['apellido'].touched">
                             @if (f['apellido'].invalid && f['apellido'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Campo requerido</span>
@@ -70,22 +65,22 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Correo Electrónico</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Correo Electrónico</label>
                             <div class="relative">
                                 <ng-icon name="heroEnvelope"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></ng-icon>
+                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                                 <input formControlName="email" type="email"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-100 text-gray-500 outline-none text-sm cursor-not-allowed">
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-100 text-slate-500 outline-none text-sm cursor-not-allowed">
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-gray-600 uppercase ml-1">Teléfono de contacto</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Teléfono de contacto</label>
                             <div class="relative">
                                 <ng-icon name="heroPhone"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></ng-icon>
+                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                                 <input formControlName="telefono" type="tel" placeholder="09XXXXXXXX"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                                     [class.border-red-500]="f['telefono'].invalid && f['telefono'].touched">
                             </div>
                             @if (f['telefono'].invalid && f['telefono'].touched) {
@@ -95,33 +90,31 @@
                     </div>
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-gray-600 uppercase ml-1">Especialidad</label>
+                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Especialidad</label>
                         <div class="relative">
                             <ng-icon name="heroBriefcase"
-                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></ng-icon>
+                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                             <input formControlName="especialidad" type="text" placeholder="Ej. Pediatría general"
-                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                         </div>
                     </div>
 
                     @if (error()) {
-                    <div
-                        class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-bold flex items-center gap-2 animate-shake">
+                    <div class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-md text-xs font-bold flex items-center gap-2 animate-shake">
                         <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                         {{ error() }}
                     </div>
                     }
 
-                    <div class="pt-6 border-t border-gray-100 flex items-center justify-end gap-3">
+                    <div class="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
                         <a routerLink="/medicos"
-                            class="px-4 py-2 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors">
+                            class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
                             Cancelar
                         </a>
                         <button type="submit" [disabled]="guardando() || formMedico.invalid"
-                            class="px-8 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-100 hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2">
+                            class="px-8 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2">
                             @if (guardando()) {
-                            <span
-                                class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             Actualizando...
                             } @else {
                             <ng-icon name="heroPencilSquare" class="text-lg"></ng-icon>

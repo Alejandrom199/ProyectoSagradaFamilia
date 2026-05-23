@@ -4,8 +4,12 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   heroHome, heroUsers, heroHeart, heroChartBar,
-  heroCake, heroArrowRightOnRectangle, heroBars3,
-  heroUserCircle, heroChevronLeft, heroChevronRight, heroChevronDown
+  heroArrowRightOnRectangle, heroBars3,
+  heroUserCircle, heroChevronLeft, heroChevronRight, heroChevronDown,
+  heroCog6Tooth, heroUserGroup, heroIdentification, heroShieldCheck,
+  heroCalendarDays, heroClock, heroClipboardDocumentList,
+  heroArrowTrendingUp, heroArchiveBox, heroMagnifyingGlass,
+  heroExclamationTriangle, heroTableCells
 } from '@ng-icons/heroicons/outline';
 
 import { Avatar } from '../avatar/avatar';
@@ -21,8 +25,12 @@ import { MenuResponse } from '../../interfaces/menu.interface';
   styleUrl: './sidebar.css',
   viewProviders: [provideIcons({
     heroHome, heroUsers, heroHeart, heroChartBar,
-    heroCake, heroArrowRightOnRectangle, heroBars3,
-    heroUserCircle, heroChevronLeft, heroChevronRight, heroChevronDown
+    heroArrowRightOnRectangle, heroBars3,
+    heroUserCircle, heroChevronLeft, heroChevronRight, heroChevronDown,
+    heroCog6Tooth, heroUserGroup, heroIdentification, heroShieldCheck,
+    heroCalendarDays, heroClock, heroClipboardDocumentList,
+    heroArrowTrendingUp, heroArchiveBox, heroMagnifyingGlass,
+    heroExclamationTriangle, heroTableCells
   })],
 })
 export class Sidebar implements OnInit {
@@ -42,17 +50,25 @@ export class Sidebar implements OnInit {
   logout = output<void>();
 
   private readonly iconoMap: Record<string, string> = {
-    'home': 'heroHome',
-    'users': 'heroUsers',
-    'baby': 'heroUsers',
-    'child': 'heroUsers',
-    'chart-bar': 'heroChartBar',
-    'chart-line': 'heroChartBar',
-    'trending-up': 'heroChartBar',
-    'apple': 'heroCake',
-    'food': 'heroCake',
-    'tag': 'heroCake',
-    'user-group': 'heroUsers',
+    // Módulos
+    'cog-6-tooth':            'heroCog6Tooth',
+    'heart':                  'heroHeart',
+    'clipboard-document-list':'heroClipboardDocumentList',
+    'arrow-trending-up':      'heroArrowTrendingUp',
+    'archive-box':            'heroArchiveBox',
+    'table-cells':            'heroTableCells',
+    // Opciones
+    'users':                  'heroUsers',
+    'user-group':             'heroUserGroup',
+    'identification':         'heroIdentification',
+    'shield-check':           'heroShieldCheck',
+    'calendar-days':          'heroCalendarDays',
+    'clock':                  'heroClock',
+    'magnifying-glass':       'heroMagnifyingGlass',
+    'exclamation-triangle':   'heroExclamationTriangle',
+    // Utilidades
+    'home':                   'heroHome',
+    'chart-bar':              'heroChartBar',
   };
 
   constructor() {
@@ -86,7 +102,7 @@ export class Sidebar implements OnInit {
   }
 
   resolverIcono(icono: string): string {
-    return this.iconoMap[icono] ?? 'heroHome';
+    return this.iconoMap[icono] ?? 'heroTableCells';
   }
 
   iniciales(): string {

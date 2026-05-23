@@ -29,7 +29,7 @@ public class NinosController : BaseController
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerTodos()
     {
-        var response = await _ninoService.ObtenerPorMedicoIdAsync(UsuarioId);
+        var response = await _ninoService.ObtenerMisPacientesPorUsuarioIdAsync(UsuarioId);
         return HandleResponse(response);
     }
 
@@ -38,6 +38,14 @@ public class NinosController : BaseController
     public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerTodosAdmin()
     {
         var response = await _ninoService.ObtenerTodosAsync();
+        return HandleResponse(response);
+    }
+
+    [HttpGet("padre/{padreId:int}")]
+    [Authorize(Roles = "Medico,Administrador")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerPorPadre(int padreId)
+    {
+        var response = await _ninoService.ObtenerPorPadreIdAsync(padreId);
         return HandleResponse(response);
     }
 

@@ -48,6 +48,13 @@ export class AuthService {
     );
   }
 
+  nuevaClave(token: string, nuevaClave: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(
+      `${environment.apiUrl}/auth/nueva-clave`,
+      { token, nuevaClave }
+    );
+  }
+
   logout(): void {
     this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
       next: () => this.limpiarSesion(),

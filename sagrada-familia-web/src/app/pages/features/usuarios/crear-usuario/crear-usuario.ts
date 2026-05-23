@@ -12,6 +12,7 @@ import { LoadingBar } from '../../../../core/services/loading-bar';
 import { UsuariosService } from '../../../../core/services/usuarios';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { UsuarioCreate } from '../../../../shared/interfaces/usuario.interface';
+import { passwordValidator } from '../../../../shared/validators/password.validator';
 
 // Roles del sistema (deben coincidir con SagradaFamilia.Domain.Enums.Rol)
 const ROLES = [
@@ -56,7 +57,7 @@ export class CrearUsuario implements OnInit {
   private initForm(): FormGroup {
     return this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, passwordValidator]],
       rolId: [null, Validators.required]
     });
   }

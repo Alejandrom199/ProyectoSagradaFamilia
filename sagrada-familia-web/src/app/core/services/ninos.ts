@@ -21,6 +21,11 @@ export class NinosService {
     return this.http.get<ApiResponse<NinoResponse[]>>(`${this.url}/mis-ninos`, { withCredentials: true });
   }
 
+  // Médico/Admin — hijos de un padre específico
+  obtenerPorPadre(padreId: number): Observable<ApiResponse<NinoResponse[]>> {
+    return this.http.get<ApiResponse<NinoResponse[]>>(`${this.url}/padre/${padreId}`, { withCredentials: true });
+  }
+
   obtenerPorId(id: number): Observable<ApiResponse<NinoDetailResponse>> {
     return this.http.get<ApiResponse<NinoDetailResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }

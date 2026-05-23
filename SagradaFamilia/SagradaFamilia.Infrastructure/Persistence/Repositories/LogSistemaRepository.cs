@@ -14,6 +14,14 @@ public class LogSistemaRepository : ILogSistemaRepository
         _context = context;
     }
 
+    public async Task<IEnumerable<LogSistema>> ObtenerRecientesAsync(int top = 100)
+    {
+        return await _context.Set<LogSistema>()
+            .OrderByDescending(l => l.FechaHora)
+            .Take(top)
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<LogSistema>> ObtenerErroresRecientesAsync(int top)
     {
         return await _context.Set<LogSistema>()

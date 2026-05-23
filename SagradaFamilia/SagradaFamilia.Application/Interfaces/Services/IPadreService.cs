@@ -12,6 +12,6 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<PadreDto.DetailResponse> CrearAsync(PadreDto.Create request);
         Task<PadreDto.DetailResponse> ActualizarAsync(int id, PadreDto.Update request);
         Task EliminarAsync(int id);
-
+        Task RestablecerPasswordAsync(int padreId);
     }
 }

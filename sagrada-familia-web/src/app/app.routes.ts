@@ -9,6 +9,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/auth/login/login').then(m => m.Login)
     },
     {
+        path: 'nueva-clave',
+        loadComponent: () => import('./pages/auth/nueva-clave/nueva-clave').then(m => m.NuevaClave)
+    },
+    {
         path: '',
         canActivate: [authGuard],
         loadComponent: () => import('./shared/components/admin-layout/admin-layout').then(m => m.AdminLayout),
@@ -66,6 +70,10 @@ export const routes: Routes = [
             {
                 path: 'predicciones',
                 loadChildren: () => import('./pages/features/predicciones/predicciones.routes').then(m => m.prediccionesRoutes)
+            },
+            {
+                path: 'parametros',
+                loadChildren: () => import('./pages/features/parametros/parametros.routes').then(m => m.parametrosRoutes)
             },
             {
                 path: '',

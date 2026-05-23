@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -35,6 +35,12 @@ export class DetalleCita implements OnInit {
   cambiandoEstado = signal(false);
   formatearFecha = formatearFecha;
   EstadoCita = EstadoCita;
+
+  puedeAccionar = computed(() => {
+    const c = this.cita();
+    if (!c) return false;
+    return new Date() >= new Date(c.fechaHora);
+  });
 
   migajas: BreadcrumbItem[] = [
     { label: 'Citas', ruta: '/citas' },

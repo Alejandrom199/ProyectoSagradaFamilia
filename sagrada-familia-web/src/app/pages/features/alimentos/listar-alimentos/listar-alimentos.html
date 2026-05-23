@@ -2,18 +2,16 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-gray-800">Gestión de Alimentos</h2>
-            <p class="text-gray-500 mt-1">Catálogo de alimentos recomendados por edad</p>
+            <h2 class="text-3xl font-bold text-slate-800">Gestión de Alimentos</h2>
+            <p class="text-slate-500 mt-1">Catálogo de alimentos recomendados por edad</p>
         </div>
-
-        <btn variant="primary" routerLink="/alimentos/crear"
-            class="text-white shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+        <btn variant="primary" routerLink="/alimentos/crear" class="text-white cursor-pointer">
             <ng-icon name="heroPlus" class="mr-2"></ng-icon>
             Agregar
         </btn>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="border border-slate-200 overflow-hidden">
         <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
             exportFileName="catalogo-alimentos" (onExportPdf)="descargarAlimentosPdf($event)" searchPlaceholder="Buscar"
             emptyMessage="No hay alimentos registrados en el sistema.">

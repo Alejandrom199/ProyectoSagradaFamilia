@@ -2,10 +2,10 @@
 
     <div class="relative">
         <ng-icon name="heroMagnifyingGlass"
-            class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></ng-icon>
+            class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></ng-icon>
         <input type="text" [value]="busqueda()" (input)="actualizarBusqueda($event)"
             placeholder="Buscar alimento por nombre o descripción..."
-            class="w-full pl-11 pr-4 py-3 bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all">
+            class="w-full pl-11 pr-4 py-3 bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all">
     </div>
 
     <div>
@@ -14,10 +14,10 @@
         <div class="flex overflow-x-auto gap-4 pb-4 select-none scrollbar-none">
 
             <button (click)="filtrarCategoria(null)"
-                class="flex-shrink-0 w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 cursor-pointer"
-                [class]="categoriaSeleccionadaId() === null 
-                    ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-lg shadow-[var(--color-primary)]/30 scale-105 font-bold' 
-                    : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-surface-border)] hover:border-gray-300'">
+                class="flex-shrink-0 w-20 h-20 rounded-md border-2 flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 cursor-pointer"
+                [class]="categoriaSeleccionadaId() === null
+                    ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] font-bold'
+                    : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-surface-border)] hover:border-slate-300'">
 
                 <ng-icon name="heroSparkles" class="text-2xl"></ng-icon>
                 <span class="text-xs text-center font-semibold leading-tight">Todas</span>
@@ -25,7 +25,7 @@
 
             @for (cat of categoriasEstilizadas(); track cat.id) {
             <button (click)="filtrarCategoria(cat.id)"
-                class="flex-shrink-0 w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 cursor-pointer"
+                class="flex-shrink-0 w-20 h-20 rounded-md border-2 flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 cursor-pointer"
                 [class]="categoriaSeleccionadaId() === cat.id ? cat.claseActiva : cat.claseInactiva">
 
                 <ng-icon name="heroSparkles" class="text-2xl opacity-80"></ng-icon>
@@ -40,7 +40,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             @for (item of itemsFiltrados(); track item.id) {
             <div
-                class="bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-2xl overflow-hidden hover:shadow-md transition-all flex flex-col max-w-xs mx-auto w-full">
+                class="bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-md overflow-hidden transition-all flex flex-col max-w-xs mx-auto w-full">
 
                 <div
                     class="h-28 bg-[var(--color-surface-alt)] border-b border-[var(--color-surface-border)] flex items-center justify-center relative overflow-hidden">
@@ -62,7 +62,7 @@
                 <div class="p-4 flex-1 flex flex-col justify-between">
                     <div>
                         <div class="flex mb-1.5">
-                            <span class="border px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
+                            <span class="border px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider"
                                 [ngClass]="obtenerClaseBadge(item.categoriaNombre)">
                                 {{ item.categoriaNombre }}
                             </span>
@@ -89,12 +89,12 @@
         </div>
         } @else {
         <div
-            class="flex flex-col items-center justify-center py-16 text-center bg-[var(--color-surface)] rounded-2xl border-2 border-dashed border-[var(--color-surface-border)]">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <ng-icon name="heroFaceSmile" class="text-4xl text-gray-400"></ng-icon>
+            class="flex flex-col items-center justify-center py-16 text-center bg-[var(--color-surface)] rounded-md border-2 border-dashed border-[var(--color-surface-border)]">
+            <div class="w-16 h-16 bg-slate-100 rounded-md flex items-center justify-center mb-4">
+                <ng-icon name="heroFaceSmile" class="text-4xl text-slate-400"></ng-icon>
             </div>
-            <p class="text-gray-600 font-medium mb-1">Sin elementos para mostrar</p>
-            <p class="text-sm text-gray-400 max-w-xs">Intenta cambiando los filtros.</p>
+            <p class="text-slate-600 font-medium mb-1">Sin elementos para mostrar</p>
+            <p class="text-sm text-slate-400 max-w-xs">Intenta cambiando los filtros.</p>
         </div>
         }
     </div>
