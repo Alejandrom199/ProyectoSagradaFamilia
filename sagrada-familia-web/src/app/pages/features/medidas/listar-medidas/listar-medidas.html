@@ -1,89 +1,116 @@
 <div class="page-container">
     <breadcrumb [items]="migajas()" homeRoute="/dashboard"></breadcrumb>
 
-    <div class="mb-6 flex justify-between items-end">
+    <!-- Encabezado -->
+    <div class="flex items-start justify-between mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">Medidas clínicas</h2>
+            <h1 class="text-lg font-semibold text-slate-900">Medidas clínicas</h1>
+            @if (nino()) {
+                <p class="text-sm text-slate-400 mt-0.5">
+                    {{ nino()?.nombre }} {{ nino()?.apellido }}
+                </p>
+            }
         </div>
-        <btn variant="primary" (clicked)="abrirModal()" class="text-white cursor-pointer">
-            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
-            Registrar medida
+        <btn variant="primary" (clicked)="abrirModal()">
+            <ng-icon name="heroPlus" size="14" class="mr-1.5 -ml-0.5"></ng-icon>
+            Nueva medida
         </btn>
     </div>
 
-    <div class="border border-slate-200 overflow-hidden">
-        <datatable [title]="'Registro clínico de ' + (nino()?.nombre || '...') + ' ' + (nino()?.apellido || '')"
-            [data]="medidas()" [columns]="columnas" [actions]="acciones"
-            searchPlaceholder="Buscar por fecha o estado..."
-            emptyMessage="No hay medidas registradas para este paciente." (onActualizar)="cargarMedidas()">
-        </datatable>
-    </div>
+    <!-- Tabla -->
+    <datatable
+        [title]="'Historial — ' + (nino()?.nombre || '...')"
+        [data]="medidas()"
+        [columns]="columnas"
+        [actions]="acciones"
+        searchPlaceholder="Buscar por fecha o estado..."
+        emptyMessage="Sin medidas registradas para este paciente."
+        (onActualizar)="cargarMedidas()">
+    </datatable>
 
-    <!-- Modal registrar / editar medida -->
+    <!-- Modal registrar / editar -->
     @if (modalAbierto()) {
-    <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-md border border-slate-200 w-full max-w-sm">
+    <div class="fixed inset-0 bg-black/25 z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-md border border-slate-200">
 
-            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            <!-- Cabecera del modal -->
+            <div class="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <span class="text-sm font-semibold text-slate-800">
                     {{ editando() ? 'Editar medida' : 'Nueva medida' }}
-                </h3>
+                </span>
                 <button (click)="cerrarModal()"
-                    class="text-slate-400 hover:text-slate-600 transition-colors text-lg leading-none">✕</button>
+                    class="h-6 w-6 flex items-center justify-center rounded text-slate-400
+                           hover:text-slate-600 hover:bg-slate-100 transition-colors text-xs leading-none">
+                    ✕
+                </button>
             </div>
 
-            <div class="px-6 py-5 space-y-4">
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-600 uppercase ml-1">Fecha de medición *</label>
+            <!-- Cuerpo del modal -->
+            <div class="px-5 py-5 space-y-4">
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-medium text-slate-500">Fecha de medición</label>
                     <input type="date" [(ngModel)]="form.fechaMedicion" [max]="hoy"
-                        class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                        class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md bg-white
+                               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                               transition-colors">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Peso (kg) *</label>
-                        <input type="number" [(ngModel)]="form.peso" step="0.1" min="0" placeholder="Ej. 12.5"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-medium text-slate-500">Peso (kg)</label>
+                        <input type="number" [(ngModel)]="form.peso"
+                            step="0.1" min="0.1" max="30" placeholder="0.0"
+                            class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md bg-white
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                   transition-colors">
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Talla (cm) *</label>
-                        <input type="number" [(ngModel)]="form.talla" step="0.1" min="0" placeholder="Ej. 85.0"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-medium text-slate-500">Talla (cm)</label>
+                        <input type="number" [(ngModel)]="form.talla"
+                            step="0.1" min="0.1" max="130" placeholder="0.0"
+                            class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md bg-white
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                   transition-colors">
                     </div>
                 </div>
 
                 @if (errorModal()) {
-                <div
-                    class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-xs font-semibold flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                <p class="text-xs text-red-600 bg-red-50 border border-red-100 rounded-md px-3 py-2">
                     {{ errorModal() }}
-                </div>
+                </p>
                 }
+
             </div>
 
-            <div class="px-6 py-4 border-t border-slate-200 flex justify-end gap-3">
+            <!-- Pie del modal -->
+            <div class="px-5 py-3.5 border-t border-slate-100 flex items-center justify-end gap-2">
                 <button (click)="cerrarModal()"
-                    class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                    class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700 transition-colors">
                     Cancelar
                 </button>
                 <button (click)="guardar()" [disabled]="guardando()"
-                    class="px-8 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2">
+                    class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700
+                           text-white text-sm font-medium rounded-md transition-colors disabled:opacity-50">
                     @if (guardando()) {
-                    <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                    Guardando...
-                    } @else {
-                    {{ editando() ? 'Actualizar' : 'Registrar' }}
+                        <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                     }
+                    {{ editando() ? 'Actualizar' : 'Registrar' }}
                 </button>
             </div>
+
         </div>
     </div>
     }
 
     <!-- Modal confirmar eliminación -->
     @if (medidaAEliminar()) {
-    <confirm-modal title="¿Eliminar medida?"
-        [message]="'Se eliminará la medida del ' + formatearFecha(medidaAEliminar()!.fechaMedicion) + '.'"
-        (confirm)="confirmarEliminar()" (cancel)="medidaAEliminar.set(null)">
+    <confirm-modal
+        title="Eliminar medida"
+        [message]="'Se eliminará la medida del ' + formatearFecha(medidaAEliminar()!.fechaMedicion) + '. Esta acción no se puede deshacer.'"
+        (confirm)="confirmarEliminar()"
+        (cancel)="medidaAEliminar.set(null)">
     </confirm-modal>
     }
+
 </div>

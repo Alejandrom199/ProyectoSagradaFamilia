@@ -1,8 +1,8 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroArrowLeft, heroPlus, heroTrash, heroPencil } from '@ng-icons/heroicons/outline';
+import { heroPlus, heroTrash, heroPencil } from '@ng-icons/heroicons/outline';
 import { CommonModule } from '@angular/common';
 
 import { Datatable, DatatableAction, DatatableColumn } from '../../../../shared/components/datatable/datatable';
@@ -10,17 +10,16 @@ import { Button } from '../../../../shared/components/button/button';
 import { NinosService } from '../../../../core/services/ninos';
 import { MedidasService } from '../../../../core/services/medidas';
 import { MedidaResponse } from '../../../../shared/interfaces/medida.interface';
-import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface'; // 💡 Actualizado a DetailResponse
+import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
-import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
-
+import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'listar-medidas',
   standalone: true,
   imports: [CommonModule, FormsModule, NgIcon, Datatable, Button, ConfirmModal, Breadcrumb],
-  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroTrash, heroPencil })],
+  viewProviders: [provideIcons({ heroPlus, heroTrash, heroPencil })],
   templateUrl: './listar-medidas.html',
 })
 export class ListarMedidas implements OnInit {
@@ -29,15 +28,15 @@ export class ListarMedidas implements OnInit {
   private medidasService = inject(MedidasService);
   private ninosService = inject(NinosService);
 
-  medidas = signal<MedidaResponse[]>([]);
-  nino = signal<NinoDetailResponse | null>(null); // 💡 Actualizado
-  migajas = signal<BreadcrumbItem[]>([]);
+  medidas    = signal<MedidaResponse[]>([]);
+  nino       = signal<NinoDetailResponse | null>(null);
+  migajas    = signal<BreadcrumbItem[]>([]);
 
-  modalAbierto = signal(false);
-  editando = signal<MedidaResponse | null>(null);
+  modalAbierto    = signal(false);
+  editando        = signal<MedidaResponse | null>(null);
   medidaAEliminar = signal<MedidaResponse | null>(null);
-  guardando = signal(false);
-  errorModal = signal('');
+  guardando       = signal(false);
+  errorModal      = signal('');
 
   hoy = new Date().toISOString().split('T')[0];
   readonly formatearFecha = formatearFecha;
@@ -45,56 +44,73 @@ export class ListarMedidas implements OnInit {
   form = { fechaMedicion: '', peso: 0, talla: 0 };
 
   columnas: DatatableColumn<MedidaResponse>[] = [
-    { key: 'fechaMedicion', label: 'Fecha', sortable: true, render: (r) => formatearFecha(r.fechaMedicion) },
-    { key: 'peso', label: 'Peso', sortable: true, render: (r) => `<span class="font-medium text-gray-700">${r.peso} kg</span>` },
-    { key: 'talla', label: 'Talla', sortable: true, render: (r) => `<span class="font-medium text-gray-700">${r.talla} cm</span>` },
+    {
+      key: 'fechaMedicion', label: 'Fecha', sortable: true,
+      render: (r) => formatearFecha(r.fechaMedicion)
+    },
+    {
+      key: 'peso', label: 'Peso', sortable: true,
+      render: (r) => `<span class="font-medium text-slate-700">${r.peso} kg</span>`
+    },
+    {
+      key: 'talla', label: 'Talla', sortable: true,
+      render: (r) => `<span class="font-medium text-slate-700">${r.talla} cm</span>`
+    },
     {
       key: 'estadoNutricional', label: 'Estado', sortable: true, filterable: true,
       render: (r) => {
-        const map: Record<string, string> = {
-          'Normal': 'bg-green-100 text-green-700 border-green-200',
-          'BajoPeso': 'bg-yellow-100 text-yellow-700 border-yellow-200',
-          'BajoPesoSevero': 'bg-red-100 text-red-700 border-red-200',
-          'Sobrepeso': 'bg-orange-100 text-orange-700 border-orange-200',
-          'Obesidad': 'bg-red-100 text-red-700 border-red-200'
+        const estilos: Record<string, string> = {
+          'Normal':         'bg-green-50 text-green-700',
+          'BajoPeso':       'bg-amber-50 text-amber-700',
+          'BajoPesoSevero': 'bg-red-50 text-red-700',
+          'Sobrepeso':      'bg-orange-50 text-orange-700',
+          'Obesidad':       'bg-red-50 text-red-700',
         };
-        const labels: Record<string, string> = {
-          'Normal': 'Normal', 'BajoPeso': 'Bajo peso',
-          'BajoPesoSevero': 'Bajo peso severo', 'Sobrepeso': 'Sobrepeso', 'Obesidad': 'Obesidad'
+        const etiquetas: Record<string, string> = {
+          'Normal':         'Normal',
+          'BajoPeso':       'Bajo peso',
+          'BajoPesoSevero': 'Bajo peso severo',
+          'Sobrepeso':      'Sobrepeso',
+          'Obesidad':       'Obesidad',
         };
-        const defaultClass = 'bg-gray-100 text-gray-700 border-gray-200';
-        return `<span class="px-3 py-1 rounded-full text-xs font-bold border ${map[r.estadoNutricional] ?? defaultClass}">${labels[r.estadoNutricional] ?? r.estadoNutricional}</span>`;
+        const cls = estilos[r.estadoNutricional] ?? 'bg-slate-100 text-slate-600';
+        return `<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium ${cls}">${etiquetas[r.estadoNutricional] ?? r.estadoNutricional}</span>`;
       }
     },
-    // 💡 Separado en dos columnas según el DTO actual
-    { key: 'percentilPeso', label: 'P. Peso', sortable: true, render: (r) => `<span class="text-gray-500 font-medium">P${r.percentilPeso}</span>` },
-    { key: 'percentilTalla', label: 'P. Talla', sortable: true, render: (r) => `<span class="text-gray-500 font-medium">P${r.percentilTalla}</span>` }
+    {
+      key: 'percentilPeso', label: 'P. Peso', sortable: true,
+      render: (r) => `<span class="text-xs text-slate-500">P${r.percentilPeso}</span>`
+    },
+    {
+      key: 'percentilTalla', label: 'P. Talla', sortable: true,
+      render: (r) => `<span class="text-xs text-slate-500">P${r.percentilTalla}</span>`
+    },
   ];
 
   acciones: DatatableAction<MedidaResponse>[] = [
-    { type: 'editar', onClick: (r) => this.abrirModal(r) },
-    { type: 'eliminar', onClick: (r) => this.medidaAEliminar.set(r) }
+    { type: 'editar',   onClick: (r) => this.abrirModal(r) },
+    { type: 'eliminar', onClick: (r) => this.medidaAEliminar.set(r) },
   ];
 
   ngOnInit() {
     const idUrl = this.route.snapshot.paramMap.get('id');
-    if (idUrl) {
-      this.id = idUrl;
-      const ninoId = parseInt(this.id, 10);
+    if (!idUrl) return;
 
-      this.ninosService.obtenerPorId(ninoId).subscribe(r => {
-        if (r.success && r.data) {
-          this.nino.set(r.data);
-          this.migajas.set([
-            { label: 'Pacientes', ruta: '/pacientes' },
-            { label: `${r.data.nombre} ${r.data.apellido}`, ruta: `/pacientes/${this.id}` },
-            { label: 'Medidas' },
-          ]);
-        }
-      });
+    this.id = idUrl;
+    const ninoId = parseInt(this.id, 10);
 
-      this.cargarMedidas();
-    }
+    this.ninosService.obtenerPorId(ninoId).subscribe(r => {
+      if (r.success && r.data) {
+        this.nino.set(r.data);
+        this.migajas.set([
+          { label: 'Pacientes', ruta: '/pacientes' },
+          { label: `${r.data.nombre} ${r.data.apellido}`, ruta: `/pacientes/${this.id}` },
+          { label: 'Medidas' },
+        ]);
+      }
+    });
+
+    this.cargarMedidas();
   }
 
   cargarMedidas() {
@@ -112,21 +128,47 @@ export class ListarMedidas implements OnInit {
     this.modalAbierto.set(true);
   }
 
-  cerrarModal() { this.modalAbierto.set(false); this.editando.set(null); }
+  cerrarModal() {
+    this.modalAbierto.set(false);
+    this.editando.set(null);
+  }
 
   guardar() {
     if (!this.form.fechaMedicion || !this.form.peso || !this.form.talla) {
-      this.errorModal.set('Completá todos los campos.'); return;
+      this.errorModal.set('Completá todos los campos obligatorios.');
+      return;
     }
+
     this.guardando.set(true);
+    this.errorModal.set('');
+
     const medida = this.editando();
     const obs = medida
       ? this.medidasService.actualizar(medida.id, this.form)
       : this.medidasService.crear({ ...this.form, ninoId: parseInt(this.id, 10) });
 
     obs.subscribe({
-      next: (r) => { if (r.success) { this.cargarMedidas(); this.cerrarModal(); } this.guardando.set(false); },
-      error: (err) => { this.errorModal.set(err.error?.message ?? 'Error al guardar.'); this.guardando.set(false); }
+      next: (r) => {
+        if (r.success) {
+          this.cargarMedidas();
+          this.cerrarModal();
+        } else {
+          this.errorModal.set(r.message ?? 'Error al guardar.');
+        }
+        this.guardando.set(false);
+      },
+      error: (err) => {
+        // Maneja tanto ApiResponse.Fail ({ message }) como ValidationProblemDetails ({ errors, title })
+        const msg =
+          err.error?.message ??
+          (err.error?.errors
+            ? (Object.values(err.error.errors) as string[][]).flat().join(' ')
+            : null) ??
+          err.error?.title ??
+          'Error al guardar. Intentá nuevamente.';
+        this.errorModal.set(msg);
+        this.guardando.set(false);
+      },
     });
   }
 
