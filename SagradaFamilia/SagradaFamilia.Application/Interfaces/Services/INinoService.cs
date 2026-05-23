@@ -18,5 +18,6 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<NinoDto.DetailResponse> ActualizarAsync(int id, NinoDto.Update request);
         Task EliminarAsync(int id);
         Task<IEnumerable<NinoDto.ListResponse>> ObtenerMisPorUsuarioIdAsync(int usuarioId);
+        Task<IEnumerable<NinoDto.ListResponse>> ObtenerMisPacientesPorUsuarioIdAsync(int usuarioId);
     }
 }

@@ -72,5 +72,13 @@ namespace SagradaFamilia.API.Controllers
             await _padreService.EliminarAsync(id);
             return HandleSuccess("Padre eliminado.");
         }
+
+        [HttpPost("{id:int}/reset-password")]
+        [Authorize(Roles = "Administrador, Medico")]
+        public async Task<ActionResult<ApiResponse>> ResetPassword(int id)
+        {
+            await _padreService.RestablecerPasswordAsync(id);
+            return HandleSuccess("Se ha enviado un enlace de restablecimiento al correo del representante.");
+        }
     }
 }

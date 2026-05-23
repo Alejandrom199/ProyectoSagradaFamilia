@@ -779,6 +779,74 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations
                     b.ToTable("Padres", (string)null);
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.ParametroSistema", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("Eliminado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Grupo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Valor")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("Grupo", "Codigo")
+                        .IsUnique()
+                        .HasFilter("[Eliminado] = 0");
+
+                    b.ToTable("ParametrosSistema", (string)null);
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Prediccion", b =>
                 {
                     b.Property<int>("Id")

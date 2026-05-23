@@ -28,6 +28,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             await AlimentoSeeder.SeedAsync(context);
             logger.LogInformation("AlimentoSeeder completado");
 
+            await ParametroSeeder.SeedAsync(context);
+            logger.LogInformation("ParametroSeeder completado");
+
             logger.LogInformation("Seeds completados exitosamente.");
         }
     }

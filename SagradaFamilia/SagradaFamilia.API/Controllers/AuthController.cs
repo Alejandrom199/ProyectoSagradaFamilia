@@ -5,6 +5,7 @@ using SagradaFamilia.Application.DTOs.Auth;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 
+
 namespace SagradaFamilia.API.Controllers
 {
     [ApiController]
@@ -52,6 +53,14 @@ namespace SagradaFamilia.API.Controllers
             Response.Cookies.Delete("refresh_token");
 
             return HandleSuccess("Sesión cerrada correctamente.");
+        }
+
+        [HttpPost("nueva-clave")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResponse>> NuevaClave([FromBody] NuevaClaveDto.Request request)
+        {
+            await _authService.NuevaClaveAsync(request);
+            return HandleSuccess("Contraseña actualizada correctamente. Ya puedes iniciar sesión.");
         }
 
         private void SetTokenCookies(string accessToken, string refreshToken)

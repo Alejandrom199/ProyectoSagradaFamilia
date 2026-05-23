@@ -1,9 +1,10 @@
-﻿namespace SagradaFamilia.Application.Services;
+namespace SagradaFamilia.Application.Services;
 
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 
 public class LogSistemaService : ILogSistemaService
@@ -22,26 +23,40 @@ public class LogSistemaService : ILogSistemaService
         _logger = logger;
     }
 
+    public async Task<IEnumerable<LogSistemaDto.Response>> ObtenerRecientesAsync(int top = 100)
+    {
+        var logs = await _logSistemaRepository.ObtenerRecientesAsync(top);
+        return _mapper.Map<IEnumerable<LogSistemaDto.Response>>(logs);
+    }
+
     public async Task<IEnumerable<LogSistemaDto.Response>> ObtenerErroresRecientesAsync(int top = 50)
     {
-        _logger.LogInformation("Consultando los {Top} errores más recientes registrados en el sistema.", top);
-
         var logs = await _logSistemaRepository.ObtenerErroresRecientesAsync(top);
-
-        _logger.LogInformation("Se recuperaron {Count} registros de errores críticos/excepciones.", logs.Count());
-
         return _mapper.Map<IEnumerable<LogSistemaDto.Response>>(logs);
     }
 
     public async Task<IEnumerable<LogSistemaDto.Response>> ObtenerPorNivelAsync(string nivel)
     {
-        _logger.LogInformation("Iniciando filtrado de logs del sistema por nivel: {Nivel}", nivel);
-
         var logs = await _logSistemaRepository.ObtenerPorNivelAsync(nivel);
-
-        _logger.LogInformation("Consulta finalizada. Registros encontrados para el nivel '{Nivel}': {Count}",
-            nivel, logs.Count());
-
         return _mapper.Map<IEnumerable<LogSistemaDto.Response>>(logs);
+    }
+
+    public async Task RegistrarEventoAsync(string nivel, string mensaje, string endpoint, int? usuarioId = null)
+    {
+        try
+        {
+            await _logSistemaRepository.RegistrarAsync(new LogSistema
+            {
+                FechaHora = DateTime.UtcNow,
+                Nivel = nivel,
+                Mensaje = mensaje,
+                Endpoint = endpoint,
+                UsuarioId = usuarioId
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "No se pudo registrar el evento de sistema: {Mensaje}", mensaje);
+        }
     }
 }

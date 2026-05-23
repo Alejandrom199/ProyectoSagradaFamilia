@@ -3,8 +3,10 @@
 using AutoMapper;
 using BCrypt.Net;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Settings;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
@@ -14,6 +16,10 @@ public class PadreService : IPadreService
 {
     private readonly IPadreRepository _padreRepository;
     private readonly IUsuarioRepository _usuarioRepository;
+    private readonly IPasswordResetTokenRepository _resetTokenRepository;
+    private readonly IEmailService _emailService;
+    private readonly IEmailTemplateService _emailTemplateService;
+    private readonly AppSettings _appSettings;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly ILogger<PadreService> _logger;
@@ -21,12 +27,20 @@ public class PadreService : IPadreService
     public PadreService(
         IPadreRepository padreRepository,
         IUsuarioRepository usuarioRepository,
+        IPasswordResetTokenRepository resetTokenRepository,
+        IEmailService emailService,
+        IEmailTemplateService emailTemplateService,
+        IOptions<AppSettings> appSettings,
         IUnitOfWork unitOfWork,
         IMapper mapper,
         ILogger<PadreService> logger)
     {
         _padreRepository = padreRepository;
         _usuarioRepository = usuarioRepository;
+        _resetTokenRepository = resetTokenRepository;
+        _emailService = emailService;
+        _emailTemplateService = emailTemplateService;
+        _appSettings = appSettings.Value;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _logger = logger;
@@ -152,5 +166,30 @@ public class PadreService : IPadreService
             _logger.LogError(ex, "Error al eliminar el padre ID: {Id}. Se realizó Rollback.", id);
             throw new BusinessException("No se pudo eliminar el registro del representante.");
         }
+    }
+
+    public async Task RestablecerPasswordAsync(int padreId)
+    {
+        _logger.LogInformation("Solicitud de restablecimiento de contraseña para padre ID: {Id}", padreId);
+
+        var padre = await _padreRepository.ObtenerPorIdAsync(padreId)
+            ?? throw new NotFoundException("Padre", padreId);
+
+        await _resetTokenRepository.InvalidarTokensAnterioresAsync(padre.UsuarioId);
+
+        var token = new PasswordResetToken
+        {
+            UsuarioId = padre.UsuarioId,
+            Token = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64)),
+            FechaExpiracion = DateTime.UtcNow.AddHours(24)
+        };
+        await _resetTokenRepository.CrearAsync(token);
+
+        var link = $"{_appSettings.FrontendUrl}/nueva-clave?token={token.Token}";
+        var nombre = $"{padre.Nombre} {padre.Apellido}";
+        var cuerpo = _emailTemplateService.GenerarResetPassword(nombre, link);
+
+        await _emailService.EnviarAsync(padre.Usuario.Email, "Restablecimiento de contraseña", cuerpo);
+        _logger.LogInformation("Email de restablecimiento enviado a {Email} para padre ID: {Id}", padre.Usuario.Email, padreId);
     }
 }

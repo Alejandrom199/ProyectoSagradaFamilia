@@ -23,7 +23,13 @@ public class AuditoriaService : IAuditoriaService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<AuditoriaDto.Response>> ObtenerPorTablaAsync(string nombreTabla, string clavePrimaria)
+    public async Task<IEnumerable<AuditoriaDto.Response>> ObtenerRecientesAsync(int top = 100)
+    {
+        var logs = await _auditoriaRepository.ObtenerRecientesAsync(top);
+        return _mapper.Map<IEnumerable<AuditoriaDto.Response>>(logs);
+    }
+
+    public async Task<IEnumerable<AuditoriaDto.Response>> ObtenerPorTablaAsync(string nombreTabla, string? clavePrimaria = null)
     {
         _logger.LogInformation("Consultando historial de auditoría - Tabla: {Tabla}, ID: {PK}", nombreTabla, clavePrimaria);
 

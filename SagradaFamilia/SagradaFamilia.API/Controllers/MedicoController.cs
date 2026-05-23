@@ -38,4 +38,12 @@ public class MedicoController : BaseController
         await _medicoService.EliminarAsync(id);
         return HandleSuccess("Médico eliminado.");
     }
+
+    [HttpPost("{id:int}/reset-password")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse>> ResetPassword(int id)
+    {
+        await _medicoService.RestablecerPasswordAsync(id);
+        return HandleSuccess("Se ha enviado un enlace de restablecimiento al correo del médico.");
+    }
 }

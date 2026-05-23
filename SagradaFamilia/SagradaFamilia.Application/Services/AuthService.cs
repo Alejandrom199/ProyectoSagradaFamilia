@@ -1,6 +1,5 @@
-﻿namespace SagradaFamilia.Application.Services;
+namespace SagradaFamilia.Application.Services;
 
-using AutoMapper;
 using BCrypt.Net;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs.Auth;
@@ -13,32 +12,43 @@ public class AuthService : IAuthService
 {
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IPasswordResetTokenRepository _resetTokenRepository;
+    private readonly ILogSistemaService _logSistema;
     private readonly ITokenService _tokenService;
     private readonly ILogger<AuthService> _logger;
 
     public AuthService(
         IUsuarioRepository usuarioRepository,
         IRefreshTokenRepository refreshTokenRepository,
+        IPasswordResetTokenRepository resetTokenRepository,
+        ILogSistemaService logSistema,
         ITokenService tokenService,
         ILogger<AuthService> logger)
     {
         _usuarioRepository = usuarioRepository;
         _refreshTokenRepository = refreshTokenRepository;
+        _resetTokenRepository = resetTokenRepository;
+        _logSistema = logSistema;
         _tokenService = tokenService;
         _logger = logger;
     }
 
     public async Task<LoginDto.Response> LoginAsync(LoginDto.Request request)
     {
-        _logger.LogInformation("Intento de login: {Email}", request.Email);
+        var usuario = await _usuarioRepository.ObtenerPorEmailAsync(request.Email);
 
-        var usuario = await _usuarioRepository.ObtenerPorEmailAsync(request.Email)
-            ?? throw new UnauthorizedException("Credenciales incorrectas.");
-
-        if (!usuario.Activo) throw new UnauthorizedException("La cuenta está desactivada.");
-
-        if (!BCrypt.Verify(request.Password, usuario.PasswordHash))
+        if (usuario == null || !BCrypt.Verify(request.Password, usuario.PasswordHash))
+        {
+            // Login fallido → Warning, capturado automáticamente por DatabaseLogger
+            _logger.LogWarning("Login fallido para el email: {Email}", request.Email);
             throw new UnauthorizedException("Credenciales incorrectas.");
+        }
+
+        if (!usuario.Activo)
+        {
+            _logger.LogWarning("Intento de login con cuenta inactiva: {Email}", request.Email);
+            throw new UnauthorizedException("La cuenta está desactivada.");
+        }
 
         var accessToken = _tokenService.GenerarAccessToken(usuario);
         var refreshToken = _tokenService.GenerarRefreshToken();
@@ -49,6 +59,17 @@ public class AuthService : IAuthService
             Token = refreshToken,
             FechaExpiracion = DateTime.UtcNow.AddDays(7)
         });
+
+        // Registrar login exitoso de Médico y Administrador (con UsuarioId)
+        // Los logins de Padre no se registran — no son relevantes para monitoreo
+        if (usuario.Rol.Nombre is "Medico" or "Administrador")
+        {
+            await _logSistema.RegistrarEventoAsync(
+                nivel: "Information",
+                mensaje: $"Login exitoso — {usuario.Rol.Nombre}: {usuario.Email}",
+                endpoint: "/api/auth/login",
+                usuarioId: usuario.Id);
+        }
 
         return new LoginDto.Response
         {
@@ -93,5 +114,24 @@ public class AuthService : IAuthService
             Rol = usuario.Rol.Nombre,
             Expiracion = DateTime.UtcNow.AddMinutes(60)
         };
+    }
+
+    public async Task NuevaClaveAsync(NuevaClaveDto.Request request)
+    {
+        var resetToken = await _resetTokenRepository.ObtenerTokenActivoAsync(request.Token)
+            ?? throw new BusinessException("El enlace de restablecimiento no es válido o ya expiró.");
+
+        var usuario = await _usuarioRepository.ObtenerPorIdAsync(resetToken.UsuarioId)
+            ?? throw new NotFoundException("Usuario", resetToken.UsuarioId);
+
+        usuario.PasswordHash = BCrypt.HashPassword(request.NuevaClave);
+        await _usuarioRepository.ActualizarAsync(usuario);
+        await _resetTokenRepository.MarcarUsadoAsync(resetToken);
+
+        await _logSistema.RegistrarEventoAsync(
+            nivel: "Information",
+            mensaje: $"Contraseña restablecida exitosamente — Usuario: {usuario.Email}",
+            endpoint: "/api/auth/nueva-clave",
+            usuarioId: usuario.Id);
     }
 }
