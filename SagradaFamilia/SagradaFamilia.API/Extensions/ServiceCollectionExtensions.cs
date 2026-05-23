@@ -1,9 +1,11 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using QuestPDF.Infrastructure;
+using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Interfaces.Services.External;
@@ -166,6 +168,22 @@ namespace SagradaFamilia.API.Extensions
         {
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(typeof(AuthService).Assembly);
+
+            // Unifica el formato de errores de validación con ApiResponse.Fail
+            // para que el frontend siempre reciba { success: false, message: "..." }
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errores = context.ModelState
+                        .Where(ms => ms.Value?.Errors.Count > 0)
+                        .SelectMany(ms => ms.Value!.Errors)
+                        .Select(e => e.ErrorMessage);
+
+                    return new BadRequestObjectResult(ApiResponse.Fail(string.Join(" | ", errores)));
+                };
+            });
+
             return services;
         }
 

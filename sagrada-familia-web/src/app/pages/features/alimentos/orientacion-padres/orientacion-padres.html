@@ -1,28 +1,66 @@
-<div class="container mx-auto">
-    <breadcrumb [items]="migajas" homeRoute="/pacientes"></breadcrumb>
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
-    <div class="mb-6">
-        <h2 class="text-2xl font-bold text-slate-800">
+    <!-- Encabezado -->
+    <div class="mb-8">
+        <h1 class="text-lg font-semibold text-slate-900">
             Orientación Alimentaria
-            @if(ninoSeleccionado()) {
-            de <span class="text-blue-600">{{ ninoSeleccionado()?.nombre }} {{
-                ninoSeleccionado()?.apellido }}</span>
+            @if (ninoSeleccionado()) {
+                <span class="font-normal text-slate-400"> — {{ ninoSeleccionado()!.nombre }} {{ ninoSeleccionado()!.apellido }}</span>
             }
-        </h2>
-        <p class="text-sm text-slate-500 mt-1">
-            Descubre qué puede comer tu hijo en esta etapa de crecimiento basado en su edad actual.
+        </h1>
+        <p class="text-sm text-slate-400 mt-0.5">
+            Alimentos recomendados según la edad actual de tu hijo.
         </p>
     </div>
 
-    @if(ninoSeleccionado() && itemsParaElNino().length >= 0) {
-    <explorador-visual [items]="itemsParaElNino()" [categorias]="categoriasMapeadas()"></explorador-visual>
-    } @else {
-    <div class="p-12 text-center bg-white border border-slate-200">
-        <div class="animate-pulse flex flex-col items-center">
-            <div class="w-12 h-12 bg-slate-200 rounded-md mb-4"></div>
-            <div class="h-4 bg-slate-200 rounded-md w-48 mb-2.5"></div>
-            <div class="h-3 bg-slate-200 rounded-md w-32"></div>
-        </div>
+    <!-- Error -->
+    @if (error()) {
+    <div class="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-100 rounded-md text-sm text-red-600 mb-6">
+        <ng-icon name="heroExclamationCircle" size="16"></ng-icon>
+        {{ error() }}
     </div>
     }
+
+    <!-- Cargando -->
+    @if (cargando()) {
+    <div class="space-y-4">
+        <div class="h-10 bg-slate-100 rounded-md animate-pulse w-72"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="h-32 bg-slate-100 rounded-md animate-pulse"></div>
+            }
+        </div>
+    </div>
+
+    <!-- Sin niño encontrado (cargó pero no hay hijo registrado) -->
+    } @else if (!ninoSeleccionado()) {
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-4">
+            <ng-icon name="heroFaceSmile" class="text-slate-400" size="22"></ng-icon>
+        </div>
+        <p class="text-sm font-medium text-slate-700">No hay niños registrados</p>
+        <p class="text-xs text-slate-400 mt-1">El médico debe registrar un paciente a tu nombre primero.</p>
+    </div>
+
+    <!-- Con niño, sin alimentos que coincidan -->
+    } @else if (itemsParaElNino().length === 0) {
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-4">
+            <ng-icon name="heroSparkles" class="text-slate-400" size="22"></ng-icon>
+        </div>
+        <p class="text-sm font-medium text-slate-700">Sin recomendaciones disponibles</p>
+        <p class="text-xs text-slate-400 mt-1 max-w-xs">
+            Aún no hay alimentos cargados para la edad de {{ ninoSeleccionado()!.nombre }} ({{ ninoSeleccionado()!.edadMeses }} meses).
+        </p>
+    </div>
+
+    <!-- Con niño y con alimentos -->
+    } @else {
+    <explorador-visual
+        [items]="itemsParaElNino()"
+        [categorias]="categoriasMapeadas()">
+    </explorador-visual>
+    }
+
 </div>

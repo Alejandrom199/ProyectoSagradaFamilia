@@ -1,26 +1,30 @@
-﻿using SagradaFamilia.Application.DTOs;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Interfaces.Services.External;
-using SagradaFamilia.Domain.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Repositories;
+using SagradaFamilia.Domain.Interfaces.Repositories;
 using SagradaFamilia.Domain.Exceptions;
+using SagradaFamilia.Domain.Enums;
 
 namespace SagradaFamilia.Application.Services;
 
 public class PrediccionService : IPrediccionService
 {
-    private readonly INinoRepository _ninoRepository;
-    private readonly IMedidaRepository _medidaRepository;
-    private readonly IProphetApiClient _prophetClient;
+    private readonly INinoRepository    _ninoRepository;
+    private readonly IMedidaRepository  _medidaRepository;
+    private readonly IOmsRepository     _omsRepository;
+    private readonly IProphetApiClient  _prophetClient;
 
     public PrediccionService(
-        INinoRepository ninoRepository,
+        INinoRepository   ninoRepository,
         IMedidaRepository medidaRepository,
+        IOmsRepository    omsRepository,
         IProphetApiClient prophetClient)
     {
-        _ninoRepository = ninoRepository;
+        _ninoRepository   = ninoRepository;
         _medidaRepository = medidaRepository;
-        _prophetClient = prophetClient;
+        _omsRepository    = omsRepository;
+        _prophetClient    = prophetClient;
     }
 
     public async Task<PrediccionDto.Response> ObtenerPrediccionesAsync(int ninoId)
@@ -28,7 +32,6 @@ public class PrediccionService : IPrediccionService
         var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId)
                    ?? throw new NotFoundException("Niño", ninoId);
 
-        // 1. Usamos el nombre exacto de tu interfaz: ObtenerPorNinoAsync
         var medidas = await _medidaRepository.ObtenerPorNinoAsync(ninoId);
 
         if (medidas.Count() < 3)
@@ -36,27 +39,29 @@ public class PrediccionService : IPrediccionService
             return new PrediccionDto.Response
             {
                 PuedePredecir = false,
-                Mensaje = "Se requieren al menos 3 medidas históricas para generar una predicción confiable.",
-                NinoId = ninoId
+                NinoId        = ninoId,
+                Mensaje       = "Se requieren al menos 3 medidas históricas para generar una predicción confiable."
             };
         }
+
+        int edadMeses = ((DateTime.Now.Year - nino.FechaNacimiento.Year) * 12)
+                      + DateTime.Now.Month - nino.FechaNacimiento.Month;
+
+        // Límites biológicos de la tabla OMS; si no hay datos se usan los defaults de Prophet
+        var oms   = await _omsRepository.ObtenerReferenciaAsync(nino.Sexo, edadMeses, TipoReferencia.Peso);
+        decimal cap   = oms?.Percentil97 ?? 22.0m;
+        decimal floor = oms?.Percentil3  ?? 2.5m;
 
         var historico = medidas
             .Select(m => (m.FechaMedicion, m.Peso))
             .ToList();
 
-        var ultimaMedida = medidas.OrderByDescending(m => m.FechaMedicion).First();
-
-        int edadMeses = ((DateTime.Now.Year - nino.FechaNacimiento.Year) * 12) +
-                         DateTime.Now.Month - nino.FechaNacimiento.Month;
-
         return await _prophetClient.PredecirPesoAsync(
-            edadMeses,
+            ninoId,
             nino.Sexo,
             historico,
-            ultimaMedida.Peso,
-            ultimaMedida.Talla
-        );
+            cap,
+            floor);
     }
 
     public async Task<PrediccionDto.Health> ObtenerEstadoServicioPrediccionAsync()

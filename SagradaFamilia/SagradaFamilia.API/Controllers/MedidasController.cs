@@ -27,7 +27,7 @@ public class MedidasController : BaseController
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse<MedidaDto.Response>>> Crear([FromBody] MedidaDto.Create request)
     {
-        var response = await _medidaService.CrearAsync(request, UsuarioId);
+        var response = await _medidaService.CrearAsync(request, MedicoId);
 
         return CreatedAtAction(nameof(ObtenerPorNino), new { ninoId = request.NinoId },
             ApiResponse<MedidaDto.Response>.Ok(response, "Medida registrada exitosamente."));
