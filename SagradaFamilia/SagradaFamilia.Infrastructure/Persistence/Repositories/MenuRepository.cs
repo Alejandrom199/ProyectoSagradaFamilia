@@ -124,5 +124,32 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             // 6. Retornar solo los módulos que tienen opciones válidas
             return modulos.Where(m => m.Opciones.Any());
         }
+
+        public async Task ActualizarPermisosRolAsync(int rolId, List<int> opcionAccionIds, bool permitido)
+        {
+            var permisosExistentes = await _context.RolPermisos
+                .Where(rp => rp.RolId == rolId && opcionAccionIds.Contains(rp.OpcionAccionId))
+                .ToListAsync();
+
+            foreach (var opcionAccionId in opcionAccionIds)
+            {
+                var existente = permisosExistentes.FirstOrDefault(p => p.OpcionAccionId == opcionAccionId);
+                if (existente != null)
+                    existente.Permitido = permitido;
+                else
+                    _context.RolPermisos.Add(new RolPermiso { RolId = rolId, OpcionAccionId = opcionAccionId, Permitido = permitido });
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Modulo>> ObtenerTodosLosModulosConOpcionesAsync() =>
+            await _context.Modulos
+                .Include(m => m.Opciones.Where(o => o.Activo && !o.Eliminado))
+                    .ThenInclude(o => o.OpcionAcciones)
+                        .ThenInclude(oa => oa.Accion)
+                .Where(m => m.Activo && !m.Eliminado)
+                .OrderBy(m => m.Orden)
+                .ToListAsync();
     }
 }

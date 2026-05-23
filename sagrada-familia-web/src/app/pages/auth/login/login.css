@@ -1,11 +1,11 @@
 /* login.css */
 
 .login-background {
-    background-image: url('../../../../assets/sagrada-familia.png');
+    background-image: url('../../../../assets/sagrada-familia-1.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(190, 121, 57, 0.3);
     background-blend-mode: overlay;
 }
 
@@ -23,4 +23,34 @@
 :host ::ng-deep .card {
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.7);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 1rem;
+}
+
+.form-input {
+    background-color: #ffffff;
+    /* Fondo blanco */
+    color: #1f2937;
+    /* Texto oscuro para contrastar */
+    border: 1px solid #e5e7eb;
+    /* Borde sutil */
+    /* Aquí van tus otros estilos de padding, border-radius, etc. */
+}
+
+/* Efecto al hacer clic (focus) */
+.form-input:focus {
+    background-color: #ffffff;
+    outline: none;
+    border-color: #3b82f6;
+    /* Borde azul al enfocar */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }

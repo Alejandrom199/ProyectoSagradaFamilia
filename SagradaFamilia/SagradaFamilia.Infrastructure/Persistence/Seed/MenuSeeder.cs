@@ -25,11 +25,17 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             {
                 new()
                 {
-                    Nombre = "Gestión de Usuarios", Icono = "users", Orden = 1, Activo = true,
+                    Nombre = "Administración", Icono = "users", Orden = 1, Activo = true,
                     Opciones = new List<Opcion>
                     {
+                        new() { Nombre = "Usuarios", Ruta = "/usuarios", Icono = "users", Orden = 1, Activo = true,
+                            OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
                         new() { Nombre = "Padres de Familia", Ruta = "/padres", Icono = "user-group", Orden = 2, Activo = true,
-                            OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
+                            OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
+                        new() { Nombre = "Médicos", Ruta = "/medicos", Icono = "stethoscope", Orden = 3, Activo = true,
+                            OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
+                        new() { Nombre = "Roles y Permisos", Ruta = "/roles", Icono = "shield-check", Orden = 4, Activo = true,
+                            OpcionAcciones = Acciones(GetIdAccion("Ver")) }
                     }
                 },
                 new()
@@ -56,7 +62,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 },
                 new()
                 {
-                    Nombre = "Predicciones", Icono = "chart-line", Orden = 3, Activo = true,
+                    Nombre = "Predicciones", Icono = "chart-line", Orden = 4, Activo = true,
                     Opciones = new List<Opcion>
                     {
                         new() { Nombre = "Predicciones de Crecimiento", Ruta = "/predicciones", Icono = "trending-up", Orden = 1, Activo = true,
@@ -65,13 +71,24 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 },
                 new()
                 {
-                    Nombre = "Orientación Alimentaria", Icono = "apple", Orden = 4, Activo = true,
+                    Nombre = "Orientación Alimentaria", Icono = "apple", Orden = 5, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Alimentos", Ruta = "/alimentos", Icono = "food", Orden = 2, Activo = true,
+                        new() { Nombre = "Alimentos", Ruta = "/alimentos", Icono = "food", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
                     }
-                }
+                },
+                new()
+                {
+                    Nombre = "Monitoreo", Icono = "chart-bar", Orden = 6, Activo = true,
+                    Opciones = new List<Opcion>
+                    {
+                        new() { Nombre = "Actividad del Sistema", Ruta = "/actividad", Icono = "clock", Orden = 1, Activo = true,
+                            OpcionAcciones = Acciones(GetIdAccion("Ver")) },
+                        new() { Nombre = "Eventos del Sistema", Ruta = "/eventos", Icono = "exclamation-triangle", Orden = 2, Activo = true,
+                            OpcionAcciones = Acciones(GetIdAccion("Ver")) }
+                    }
+                },
             };
 
             context.Modulos.AddRange(modulos);
@@ -89,6 +106,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             var todasLasOpcionAcciones = await context.OpcionAcciones
                 .Include(oa => oa.Opcion)
                     .ThenInclude(o => o.Modulo)
+                .Include(oa => oa.Accion)
                 .ToListAsync();
 
             var rolPermisos = new List<RolPermiso>();
@@ -97,15 +115,24 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             {
                 rolPermisos.Add(new RolPermiso { RolId = idAdmin, OpcionAccionId = oa.Id, Permitido = true });
 
-                rolPermisos.Add(new RolPermiso { RolId = idMedico, OpcionAccionId = oa.Id, Permitido = true });
+                var modulo = oa.Opcion.Modulo.Nombre;
+                var opcion = oa.Opcion.Nombre;
+                var accion = oa.Accion.Nombre;
 
-                bool esModuloUsuarios = oa.Opcion.Modulo.Nombre == "Gestión de Usuarios";
-                bool esAccionVer = oa.AccionId == idAccionVer;
 
-                if (!esModuloUsuarios && esAccionVer)
-                {
+                bool medicoTieneAcceso =
+                    (modulo == "Administración" && opcion == "Padres de Familia") ||
+                    modulo == "Gestión de Pacientes" ||
+                    modulo == "Atención Médica" ||
+                    modulo == "Predicciones" ||
+                    modulo == "Orientación Alimentaria" ||
+                    (modulo == "Monitoreo" && opcion == "Actividad del Sistema");
+
+                if (medicoTieneAcceso)
+                    rolPermisos.Add(new RolPermiso { RolId = idMedico, OpcionAccionId = oa.Id, Permitido = true });
+
+                if (modulo == "Gestión de Pacientes" && accion == "Ver")
                     rolPermisos.Add(new RolPermiso { RolId = idPadre, OpcionAccionId = oa.Id, Permitido = true });
-                }
             }
 
             context.RolPermisos.AddRange(rolPermisos);

@@ -15,6 +15,7 @@ export class AuthService {
   readonly rol = computed(() => this._currentUser()?.rol ?? null);
   readonly esMedico = computed(() => this.rol() === "Medico");
   readonly esPadre = computed(() => this.rol() === "Padre");
+  readonly esAdmin = computed(() => this.rol() === 'Administrador');
 
   constructor(private router: Router, private http: HttpClient) { }
 

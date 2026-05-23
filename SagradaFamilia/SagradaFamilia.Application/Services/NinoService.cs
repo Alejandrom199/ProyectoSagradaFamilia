@@ -12,17 +12,20 @@ public class NinoService : INinoService
 {
     private readonly INinoRepository _ninoRepository;
     private readonly IPadreRepository _padreRepository;
+    private readonly IMedicoRepository _medicoRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<NinoService> _logger;
 
     public NinoService(
         INinoRepository ninoRepository,
         IPadreRepository padreRepository,
+        IMedicoRepository medicoRepository,
         IMapper mapper,
         ILogger<NinoService> logger)
     {
         _ninoRepository = ninoRepository;
         _padreRepository = padreRepository;
+        _medicoRepository = medicoRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -81,6 +84,11 @@ public class NinoService : INinoService
         _logger.LogInformation("Registrando nuevo niño: {Nombre} {Apellido}", request.Nombre, request.Apellido);
 
         var nino = _mapper.Map<Nino>(request);
+
+        var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(request.MedicoId)
+            ?? throw new NotFoundException("Médico", request.MedicoId);
+
+        nino.MedicoId = medico.Id;
 
         var creado = await _ninoRepository.CrearAsync(nino);
 
