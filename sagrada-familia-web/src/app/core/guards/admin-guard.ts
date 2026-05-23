@@ -6,8 +6,8 @@ export const adminGuard: CanActivateFn = (route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (!auth.esMedico() && !auth.esPadre()) return true;
+  if (auth.esAdmin()) return true;
 
-  router.navigate(['/login']);
+  router.navigate(['/dashboard']);
   return false;
 };

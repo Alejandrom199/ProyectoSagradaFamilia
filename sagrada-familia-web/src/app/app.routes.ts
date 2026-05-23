@@ -24,6 +24,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/features/pacientes/mis-pequenos/mis-pequenos').then(m => m.MisPequenos)
             },
             {
+                path: 'roles',
+                loadChildren: () => import('./pages/features/roles/roles.routes').then(m => m.rolesRoutes)
+            },
+            {
                 path: 'pacientes',
                 loadChildren: () => import('./pages/features/pacientes/pacientes.routes').then(m => m.pacientesRoutes)
             },
