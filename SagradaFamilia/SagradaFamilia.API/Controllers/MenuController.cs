@@ -38,4 +38,20 @@ public class MenuController : BaseController
         await _menuService.RevocarPermisoAsync(usuarioId, opcionAccionId);
         return HandleSuccess("Permiso revocado exitosamente.");
     }
+
+    [HttpGet("permisos/rol/{rolId:int}")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<PermisoDto.ModuloPermisoResponse>>>> ObtenerPermisosRol(int rolId)
+    {
+        var response = await _menuService.ObtenerPermisosRolAsync(rolId);
+        return HandleResponse(response);
+    }
+
+    [HttpPatch("permisos/rol/{rolId:int}")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse>> ActualizarPermisoRol(int rolId, [FromBody] PermisoDto.ActualizarPermisoRolRequest request)
+    {
+        await _menuService.ActualizarPermisoRolAsync(rolId, request.OpcionAccionId, request.Permitido);
+        return HandleSuccess("Permiso actualizado.");
+    }
 }

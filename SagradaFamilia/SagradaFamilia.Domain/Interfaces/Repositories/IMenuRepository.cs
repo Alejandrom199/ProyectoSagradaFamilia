@@ -17,5 +17,7 @@ namespace SagradaFamilia.Domain.Interfaces.Repositories
         Task EliminarUsuarioPermisoAsync(int usuarioId, int opcionAccionId);
 
         Task<IEnumerable<Modulo>> ObtenerMenuPorUsuarioAsync(int usuarioId, int rolId);
+        Task ActualizarPermisosRolAsync(int rolId, List<int> opcionAccionIds, bool permitido);
+        Task<IEnumerable<Modulo>> ObtenerTodosLosModulosConOpcionesAsync();
     }
 }

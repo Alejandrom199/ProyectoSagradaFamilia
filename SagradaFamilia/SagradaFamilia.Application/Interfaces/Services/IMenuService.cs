@@ -8,5 +8,7 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<IEnumerable<MenuDto.MenuResponse>> ObtenerMenuPorUsuarioAsync(int usuarioId, int rolId);
         Task AsignarPermisoAsync(PermisoDto.AsignarRequest request);
         Task RevocarPermisoAsync(int usuarioId, int opcionAccionId);
+        Task<IEnumerable<PermisoDto.ModuloPermisoResponse>> ObtenerPermisosRolAsync(int rolId);
+        Task ActualizarPermisoRolAsync(int rolId, int opcionAccionId, bool permitido);
     }
 }

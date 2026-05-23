@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs.Auth;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 
 public class MenuService : IMenuService
@@ -53,5 +54,38 @@ public class MenuService : IMenuService
         await _menuRepository.EliminarUsuarioPermisoAsync(usuarioId, opcionAccionId);
 
         _logger.LogInformation("Permiso revocado para Usuario ID: {UId} en Acción ID: {AId}", usuarioId, opcionAccionId);
+    }
+
+    public async Task<IEnumerable<PermisoDto.ModuloPermisoResponse>> ObtenerPermisosRolAsync(int rolId)
+    {
+        var modulos = await _menuRepository.ObtenerTodosLosModulosConOpcionesAsync();
+        var permisos = await _menuRepository.ObtenerPermisosPorRolIdAsync(rolId);
+        var permitidos = permisos.Where(p => p.Permitido).Select(p => p.OpcionAccionId).ToHashSet();
+
+        return modulos.Select(m => new PermisoDto.ModuloPermisoResponse
+        {
+            ModuloId = m.Id,
+            ModuloNombre = m.Nombre,
+            Opciones = m.Opciones.Select(o => new PermisoDto.OpcionPermisoResponse
+            {
+                OpcionId = o.Id,
+                OpcionNombre = o.Nombre,
+                Acciones = o.OpcionAcciones.Select(oa => new PermisoDto.AccionPermisoResponse
+                {
+                    OpcionAccionId = oa.Id,
+                    AccionNombre = oa.Accion.Nombre,
+                    Permitido = permitidos.Contains(oa.Id)
+                }).ToList()
+            }).ToList()
+        });
+    }
+
+    public async Task ActualizarPermisoRolAsync(int rolId, int opcionAccionId, bool permitido)
+    {
+        // Admin nunca se toca
+        if (rolId == (int)RolEnum.Administrador)
+            throw new InvalidOperationException("No se pueden modificar los permisos del Administrador.");
+
+        await _menuRepository.ActualizarPermisosRolAsync(rolId, [opcionAccionId], permitido);
     }
 }
