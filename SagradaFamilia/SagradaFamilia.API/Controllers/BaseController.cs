@@ -14,6 +14,9 @@ namespace SagradaFamilia.API.Controllers
         // Obtiene el RolId personalizado que guardamos en el token
         protected int RolId => int.Parse(User.FindFirst("rolId")?.Value ?? "0");
 
+        // Obtiene el ID del perfil Medico (distinto de UsuarioId)
+        protected int MedicoId => int.Parse(User.FindFirst("medicoId")?.Value ?? "0");
+
         protected ActionResult<ApiResponse<T>> HandleResponse<T>(T data, string message = "Operación exitosa")
         {
             return Ok(ApiResponse<T>.Ok(data, message));
