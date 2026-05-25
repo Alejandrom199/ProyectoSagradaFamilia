@@ -1,0 +1,26 @@
+# ── Dependencias locales — se reinstalan con npm ci dentro del contenedor ─────
+node_modules/
+
+# ── Artefactos de build local ─────────────────────────────────────────────────
+dist/
+.angular/
+
+# ── Variables de entorno locales ──────────────────────────────────────────────
+.env
+.env.*
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── Control de versiones ──────────────────────────────────────────────────────
+.git
+.gitignore
+.gitattributes
+
+# ── IDEs ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+
+# ── Tests (no se necesitan en producción) ────────────────────────────────────
+*.spec.ts
