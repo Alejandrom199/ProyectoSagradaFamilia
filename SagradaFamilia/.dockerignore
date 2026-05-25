@@ -1,0 +1,25 @@
+# ── Artefactos de compilación local ──────────────────────────────────────────
+**/bin/
+**/obj/
+
+# ── IDEs ─────────────────────────────────────────────────────────────────────
+.vs/
+.vscode/
+*.user
+*.suo
+
+# ── SEGURIDAD: configuración con credenciales reales ─────────────────────────
+# appsettings.Development.json contiene contraseñas SMTP y otros secretos.
+# NUNCA debe entrar en la imagen Docker.
+**/appsettings.Development.json
+**/appsettings.*.json
+!**/appsettings.json
+
+# ── Control de versiones ──────────────────────────────────────────────────────
+.git
+.gitignore
+.gitattributes
+
+# ── Logs y temporales ─────────────────────────────────────────────────────────
+*.log
+*.tmp
