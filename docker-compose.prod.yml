@@ -1,0 +1,106 @@
+name: sagrada-familia
+
+# ══════════════════════════════════════════════════════════════════════════════
+# docker-compose.prod.yml — Despliegue desde Docker Hub
+#
+# A diferencia de docker-compose.yml (que compila desde código fuente),
+# este archivo descarga imágenes ya publicadas en Docker Hub.
+#
+# Uso:
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Requiere el archivo .env con las mismas variables que .env.example.
+# Reemplazar DOCKERHUB_USER con tu usuario real de Docker Hub,
+# o exportar la variable antes de levantar:
+#   export DOCKERHUB_USER=tu-usuario
+#   docker compose -f docker-compose.prod.yml up -d
+# ══════════════════════════════════════════════════════════════════════════════
+
+services:
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL",
+             "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q \"SELECT 1\" -b -o /dev/null -No"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - sagrada_net
+    restart: unless-stopped
+
+
+  predict:
+    image: ${DOCKERHUB_USER}/sagrada-familia-predict:latest
+    environment:
+      NET_BACKEND_URL: http://api:5000
+      PROPHET_MIN_MEDIDAS: "3"
+      PROPHET_INTERVAL_WIDTH: "0.80"
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - sagrada_net
+    restart: unless-stopped
+
+
+  api:
+    image: ${DOCKERHUB_USER}/sagrada-familia-api:latest
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=SagradaFamiliaDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
+      JwtSettings__SecretKey: ${JWT_SECRET_KEY}
+      JwtSettings__Issuer: SagradaFamiliaAPI
+      JwtSettings__Audience: SagradaFamiliaClient
+      JwtSettings__ExpirationMinutes: "60"
+      JwtSettings__RefreshTokenExpirationDays: "7"
+      ProphetApi__BaseUrl: http://predict:8000
+      AppSettings__FrontendUrl: http://localhost
+      SmtpSettings__Host: smtp.gmail.com
+      SmtpSettings__Port: "587"
+      SmtpSettings__EnableSsl: "true"
+      SmtpSettings__FromName: Sagrada Familia
+      SmtpSettings__FromEmail: ${SMTP_FROM_EMAIL}
+      SmtpSettings__Username: ${SMTP_USERNAME}
+      SmtpSettings__Password: ${SMTP_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+      predict:
+        condition: service_healthy
+    networks:
+      - sagrada_net
+    restart: unless-stopped
+
+
+  web:
+    image: ${DOCKERHUB_USER}/sagrada-familia-web:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - sagrada_net
+    restart: unless-stopped
+
+
+volumes:
+  sqlserver_data:
+
+
+networks:
+  sagrada_net:
+    driver: bridge
