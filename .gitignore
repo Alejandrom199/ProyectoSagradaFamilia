@@ -1,3 +1,7 @@
+# Claude Code
+.claude/
+CLAUDE.md
+
 #Ides
 .vs/
 .vscode/
@@ -30,5 +34,5 @@
 **/venv/
 **/.env
 
-# Excluir environments de Angular
-**/src/environments/*.ts
+# Los archivos de environment de Angular no contienen secretos (solo apiUrl).
+# Se incluyen en git para que el build de Docker funcione desde un clon limpio.
