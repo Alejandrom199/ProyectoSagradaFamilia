@@ -1,0 +1,20 @@
+# ── Web framework ─────────────────────────────────────────────────────────────
+fastapi>=0.100.0
+uvicorn>=0.20.0
+
+# ── ML / predicción ───────────────────────────────────────────────────────────
+# prophet es la dependencia crítica; el resto lo resuelve pip automáticamente.
+prophet>=1.3.0
+cmdstanpy>=1.0.0
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+holidays>=0.25
+
+# ── Validación ────────────────────────────────────────────────────────────────
+pydantic>=2.0
+
+# ── Utilidades ────────────────────────────────────────────────────────────────
+python-dateutil>=2.8
+tqdm>=4.0
+tzdata

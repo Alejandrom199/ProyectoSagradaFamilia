@@ -1,0 +1,19 @@
+# Entorno virtual local — se reinstala dentro del contenedor
+venv/
+
+# Cache de Python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Variables de entorno locales
+.env
+.env.*
+
+# Logs
+*.log
+
+# Control de versiones
+.git
+.gitignore
