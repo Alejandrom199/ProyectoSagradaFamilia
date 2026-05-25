@@ -1,0 +1,184 @@
+name: sagrada-familia
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Orden de arranque:
+#   db (healthcheck) → predict (healthcheck) → api → web
+#
+# Variables sensibles: no están hardcodeadas aquí.
+# docker-compose las lee del archivo .env en la misma carpeta.
+# Copiar .env.example → .env y rellenar los valores antes de levantar.
+#
+# Comandos útiles:
+#   docker compose up --build -d    → construir y levantar en background
+#   docker compose logs -f api      → seguir logs de un servicio
+#   docker compose down             → detener y eliminar contenedores
+#   docker compose down -v          → ídem + eliminar volúmenes (borra datos)
+# ══════════════════════════════════════════════════════════════════════════════
+
+services:
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # db — SQL Server 2022
+  # Primer servicio en estar listo. Los demás bloquean hasta su healthcheck.
+  # ════════════════════════════════════════════════════════════════════════════
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+      # Developer: licencia gratuita y completa, válida para desarrollo y tesis.
+      # En producción comercial: Express (gratis, 10 GB) o Standard/Enterprise (pago).
+      MSSQL_PID: Developer
+    ports:
+      # Expuesto solo para conectar SSMS o Azure Data Studio desde el host.
+      # En un servidor sin acceso local, comentar o eliminar esta línea.
+      - "1433:1433"
+    volumes:
+      # Volumen nombrado: los datos persisten aunque el contenedor sea destruido.
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      # sqlcmd está incluido en la imagen oficial de SQL Server.
+      # '$$' en docker-compose escapa el signo $ para el shell del contenedor,
+      # que lo expande leyendo $MSSQL_SA_PASSWORD de su propio entorno.
+      # -b: salida con código de error si el query falla.
+      # -o /dev/null: suprime la salida del query en los logs del contenedor.
+      # -No: deshabilita TLS (seguro dentro de la red privada de Docker).
+      test: ["CMD-SHELL",
+             "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q \"SELECT 1\" -b -o /dev/null -No"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s   # SQL Server tarda en inicializar; margen generoso
+    networks:
+      - sagrada_net
+    restart: unless-stopped
+
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # predict — Microservicio Python + Prophet
+  # Independiente de db. El backend .NET lo consulta por HTTP en cada predicción.
+  # ════════════════════════════════════════════════════════════════════════════
+  predict:
+    build:
+      context: ./sagrada-predict-api
+      dockerfile: Dockerfile
+      args:
+        # ARG de build: no queda almacenado en la imagen final.
+        APP_ENV: production
+    environment:
+      # Sobreescribe el default de config.py para apuntar al servicio .NET interno.
+      NET_BACKEND_URL: http://api:5000
+      PROPHET_MIN_MEDIDAS: "3"
+      PROPHET_INTERVAL_WIDTH: "0.80"
+    healthcheck:
+      # urllib.request es stdlib de Python — sin herramientas externas.
+      # Verifica que el endpoint GET /health de FastAPI responde 200.
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s   # Prophet/CmdStan tarda en importarse la primera vez
+    networks:
+      - sagrada_net
+    restart: unless-stopped
+
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # api — Backend .NET 8
+  # Arranca después de que db y predict estén healthy.
+  # Al iniciar, aplica migraciones EF Core y ejecuta los seeds automáticamente.
+  # ════════════════════════════════════════════════════════════════════════════
+  api:
+    build:
+      context: ./SagradaFamilia
+      dockerfile: Dockerfile
+      args:
+        # ARG de build: activa optimizaciones de Release. No queda en la imagen.
+        BUILD_CONFIGURATION: Release
+    environment:
+      # ── Base de datos ──────────────────────────────────────────────────────
+      # 'db' = nombre del servicio, resuelto por el DNS interno de Docker.
+      # SQL Server usa coma para separar host y puerto: Server=host,1433
+      # Autenticación por usuario/contraseña (no Windows Auth en Linux).
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=SagradaFamiliaDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
+
+      # ── JWT ────────────────────────────────────────────────────────────────
+      # ${JWT_SECRET_KEY} se interpola desde .env; nunca aparece hardcodeado aquí.
+      JwtSettings__SecretKey: ${JWT_SECRET_KEY}
+      JwtSettings__Issuer: SagradaFamiliaAPI
+      JwtSettings__Audience: SagradaFamiliaClient
+      JwtSettings__ExpirationMinutes: "60"
+      JwtSettings__RefreshTokenExpirationDays: "7"
+
+      # ── Servicios internos ─────────────────────────────────────────────────
+      # 'predict' y 'web' son nombres de servicio resueltos por Docker DNS.
+      ProphetApi__BaseUrl: http://predict:8000
+      # El frontend se sirve desde el mismo origen que nginx (puerto 80 del host).
+      AppSettings__FrontendUrl: http://localhost
+
+      # ── SMTP ───────────────────────────────────────────────────────────────
+      SmtpSettings__Host: smtp.gmail.com
+      SmtpSettings__Port: "587"
+      SmtpSettings__EnableSsl: "true"
+      SmtpSettings__FromName: Sagrada Familia
+      # Credenciales inyectadas desde .env; no hardcodeadas en este archivo.
+      SmtpSettings__FromEmail: ${SMTP_FROM_EMAIL}
+      SmtpSettings__Username: ${SMTP_USERNAME}
+      SmtpSettings__Password: ${SMTP_PASSWORD}
+
+    depends_on:
+      db:
+        condition: service_healthy   # SQL Server debe aceptar conexiones antes de migrar
+      predict:
+        condition: service_healthy   # Prophet debe estar listo antes de que la API arranque
+
+    # Descomentar para acceder a Swagger o Postman directamente sin pasar por nginx:
+    # ports:
+    #   - "5000:5000"
+
+    networks:
+      - sagrada_net
+    restart: unless-stopped
+
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # web — Angular + nginx
+  # Único servicio con puerto público (80).
+  # nginx sirve el SPA y hace proxy de /api/ → api:5000 en la red interna.
+  # Las peticiones HTTP del navegador nunca llegan directamente a api:5000.
+  # ════════════════════════════════════════════════════════════════════════════
+  web:
+    build:
+      context: ./sagrada-familia-web
+      dockerfile: Dockerfile
+      args:
+        # ARG de build: activa minificación, tree-shaking y environment.prod.ts.
+        BUILD_CONFIGURATION: production
+    ports:
+      - "80:80"   # Único servicio expuesto al exterior del stack
+    depends_on:
+      - api
+    networks:
+      - sagrada_net
+    restart: unless-stopped
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Volúmenes nombrados
+# ══════════════════════════════════════════════════════════════════════════════
+volumes:
+  sqlserver_data:
+    # Docker gestiona el ciclo de vida de este volumen.
+    # Persiste entre 'docker compose down' y 'docker compose up'.
+    # 'docker compose down -v' lo elimina junto con todos los datos de la BD.
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Red privada
+# ══════════════════════════════════════════════════════════════════════════════
+networks:
+  sagrada_net:
+    driver: bridge
+    # Red bridge aislada: los servicios se descubren entre sí por nombre.
+    # Solo web (80) y opcionalmente db (1433) son accesibles desde el host.
