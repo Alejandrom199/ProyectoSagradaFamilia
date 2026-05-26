@@ -1,34 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, signal, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, Input, OnChanges, signal, computed, Output, EventEmitter, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  heroChevronLeft,
-  heroChevronRight,
-  heroChevronDoubleLeft,
-  heroChevronDoubleRight,
-  heroXMark,
-  heroFunnel,
-  heroArrowUp,
-  heroArrowDown,
-  heroCircleStack,
-  heroUsers,
-  heroEye,
-  heroTrash,
-  heroPencil,
-  heroCog8Tooth,
-  heroArrowDownTray,
-  heroDocumentText,
-  heroTableCells,
-  heroDocumentArrowDown,
-  heroEllipsisVertical,
-  heroMagnifyingGlass,
-  heroArrowPath,
-  heroViewColumns
-} from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { Tooltip } from "../../directives/tooltip/tooltip";
 
 export type ActionType = 'ver' | 'editar' | 'eliminar' | 'medidas';
+export type Densidad = 'compacto' | 'normal' | 'espacioso';
+
+export interface ServerQuery {
+  page: number;
+  pageSize: number;
+  search: string;
+  sortBy: string;
+  sortDir: 'asc' | 'desc';
+}
 
 export interface DatatableColumn<T> {
   key: Extract<keyof T, string> | string;
@@ -54,13 +40,7 @@ export interface DatatableAction<T> {
   selector: 'datatable',
   standalone: true,
   imports: [CommonModule, FormsModule, NgIcon, Tooltip],
-  viewProviders: [provideIcons({
-    heroChevronLeft, heroChevronRight, heroChevronDoubleLeft, heroChevronDoubleRight,
-    heroXMark, heroFunnel, heroArrowUp, heroArrowDown, heroCircleStack,
-    heroPencil, heroTrash, heroEye, heroUsers, heroCog8Tooth,
-    heroArrowDownTray, heroDocumentText, heroTableCells, heroDocumentArrowDown,
-    heroEllipsisVertical, heroMagnifyingGlass, heroArrowPath, heroViewColumns
-  })],
+
   templateUrl: './datatable.html',
   styleUrl: './datatable.css',
   host: {
@@ -73,7 +53,7 @@ export class Datatable<T extends object> implements OnChanges {
   @Input() actions: DatatableAction<T>[] = [];
   @Input() data: T[] = [];
   @Input() pageSize = 10;
-  @Input() pageSizes = [5, 10, 25, 50];
+  @Input() pageSizes = [5, 10, 25, 50, 100];
   @Input() emptyMessage = 'No hay registros para mostrar.';
 
   @Input() exportExcel = true;
@@ -84,10 +64,20 @@ export class Datatable<T extends object> implements OnChanges {
   @Input() showColumnas = true;
   @Input() showExportar = true;
   @Input() showConfiguracion = true;
+  @Input() showPlantilla = false;
+  @Input() showImportar = false;
+
+  @Input() serverSide = false;
+  @Input() serverTotalItems = 0;
+  @Input() tooltipThreshold = 55;
 
   @Output() onActualizar = new EventEmitter<void>();
   @Output() onConfiguracion = new EventEmitter<void>();
   @Output() onExportPdf = new EventEmitter<Record<string | number | symbol, string>>();
+  @Output() onExportExcel = new EventEmitter<void>();
+  @Output() onPlantilla = new EventEmitter<void>();
+  @Output() onImportar = new EventEmitter<void>();
+  @Output() onServerQuery = new EventEmitter<ServerQuery>();
 
   filtrosSeleccion: Record<string, Set<string>> = {};
   busquedaFiltro: Record<string, string> = {};
@@ -99,25 +89,28 @@ export class Datatable<T extends object> implements OnChanges {
 
   menuActivo = signal<string | null>(null);
 
-  columnasPosicion = {
-    top: '0px',
-    left: '0px'
-  };
+  densidad = signal<Densidad>(
+    (localStorage.getItem('datatable-density') as Densidad | null) ?? 'normal'
+  );
 
-  exportarPosicion = {
-    top: '0px',
-    left: '0px'
-  };
+  columnWidths = signal<Record<string, number>>({});
+  readonly hasCustomWidths = computed(() => Object.keys(this.columnWidths()).length > 0);
 
-  menuPosicion = {
-    top: '0px',
-    left: '0px'
-  };
+  private resizingKey: string | null = null;
+  private resizeStartX = 0;
+  private resizeStartWidth = 0;
 
-  filtroPosicion = {
-    top: '0px',
-    left: '0px'
-  };
+  readonly densidadOpciones: { valor: Densidad; label: string; desc: string }[] = [
+    { valor: 'compacto', label: 'Compacto', desc: 'Más filas visibles' },
+    { valor: 'normal', label: 'Normal', desc: 'Vista estándar' },
+    { valor: 'espacioso', label: 'Espacioso', desc: 'Mayor legibilidad' },
+  ];
+
+  columnasPosicion = { top: '0px', left: '0px' };
+  exportarPosicion = { top: '0px', left: '0px' };
+  menuPosicion = { top: '0px', left: '0px' };
+  filtroPosicion = { top: '0px', left: '0px' };
+  configuracionPosicion = { top: '0px', left: '0px' };
 
   private readonly paginaActualSignal = signal(1);
   readonly paginaActual = this.paginaActualSignal.asReadonly();
@@ -229,6 +222,31 @@ export class Datatable<T extends object> implements OnChanges {
     }
   }
 
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private emitServerQuery() {
+    this.onServerQuery.emit({
+      page: this.paginaActual(),
+      pageSize: this.pageSize,
+      search: this.busquedaGlobal,
+      sortBy: this.sortKey,
+      sortDir: this.sortDir,
+    });
+  }
+
+  onSearchChange(value: string) {
+    this.busquedaGlobal = value;
+    if (this.serverSide) {
+      if (this.searchTimer) clearTimeout(this.searchTimer);
+      this.searchTimer = setTimeout(() => {
+        this.paginaActualSignal.set(1);
+        this.emitServerQuery();
+      }, 350);
+    } else {
+      this.onFilterChange();
+    }
+  }
+
   ngOnChanges() {
     this.paginaActualSignal.set(1);
   }
@@ -248,6 +266,13 @@ export class Datatable<T extends object> implements OnChanges {
     }, row);
   }
 
+  cellTooltip(row: T, col: DatatableColumn<T>): string {
+    const text = col.render
+      ? this.limpiarHtml(col.render(row))
+      : String(this.getCellValue(row, col.key) ?? '');
+    return text.length > this.tooltipThreshold ? text : '';
+  }
+
   private limpiarHtml(html: string): string {
     const div = document.createElement('div');
     div.innerHTML = html;
@@ -255,6 +280,11 @@ export class Datatable<T extends object> implements OnChanges {
   }
 
   exportarExcel() {
+    if (this.onExportExcel.observed) {
+      this.onExportExcel.emit();
+      return;
+    }
+
     if (this.datosFiltrados.length === 0) return;
 
     const headers = this.columns.map(c => c.label).join(';');
@@ -312,17 +342,23 @@ export class Datatable<T extends object> implements OnChanges {
         this.sortDir = 'asc';
       }
     }
+    if (this.serverSide) {
+      this.paginaActualSignal.set(1);
+      this.emitServerQuery();
+    }
   }
 
   cambiarPagina(p: number) {
     if (p >= 1 && p <= this.totalPaginas) {
       this.paginaActualSignal.set(p);
+      if (this.serverSide) this.emitServerQuery();
     }
   }
 
   cambiarTamanoPagina(nuevoTamano: number) {
     this.pageSize = nuevoTamano;
     this.paginaActualSignal.set(1);
+    if (this.serverSide) this.emitServerQuery();
   }
 
   toggleTodasLasColumnas() {
@@ -343,10 +379,10 @@ export class Datatable<T extends object> implements OnChanges {
 
   get accionesProcesadas(): DatatableAction<T>[] {
     const defaults: Record<ActionType, Partial<DatatableAction<T>>> = {
-      ver: { label: 'Ver', icon: 'heroEye', class: 'text-blue-600' },
-      editar: { label: 'Editar', icon: 'heroPencil', class: 'text-amber-600' },
-      eliminar: { label: 'Eliminar', icon: 'heroTrash', class: 'text-red-600' },
-      medidas: { label: 'Medidas', icon: 'heroChartBar', class: 'text-purple-600' },
+      ver: { label: 'Ver', icon: 'matVisibilityOutline', class: 'text-blue-600' },
+      editar: { label: 'Editar', icon: 'matEditOutline', class: 'text-amber-600' },
+      eliminar: { label: 'Eliminar', icon: 'matDeleteOutline', class: 'text-red-600' },
+      medidas: { label: 'Medidas', icon: 'matBarChartOutline', class: 'text-purple-600' },
     };
 
     return this.actions.map((action: DatatableAction<T>) => {
@@ -397,10 +433,80 @@ export class Datatable<T extends object> implements OnChanges {
     return Object.values(this.filtros).some(v => v && v.trim() !== '') || this.busquedaGlobal.trim() !== '';
   }
 
-  get totalPaginas() { return Math.ceil(this.datosFiltrados.length / this.pageSize) || 1; }
+  get totalPaginas() {
+    if (this.serverSide) return Math.ceil(this.serverTotalItems / this.pageSize) || 1;
+    return Math.ceil(this.datosFiltrados.length / this.pageSize) || 1;
+  }
   get inicio() { return (this.paginaActual() - 1) * this.pageSize; }
-  get fin() { return Math.min(this.inicio + this.pageSize, this.datosFiltrados.length); }
-  get datosPaginados() { return this.datosFiltrados.slice(this.inicio, this.fin); }
+  get fin() {
+    if (this.serverSide) return Math.min(this.inicio + this.pageSize, this.serverTotalItems);
+    return Math.min(this.inicio + this.pageSize, this.datosFiltrados.length);
+  }
+  get datosPaginados() {
+    if (this.serverSide) return this.data;
+    return this.datosFiltrados.slice(this.inicio, this.fin);
+  }
+
+  onResizeStart(event: MouseEvent, key: string, th: HTMLTableCellElement): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!this.hasCustomWidths()) {
+      const table = th.closest('table');
+      if (table) {
+        const allThs = table.querySelectorAll<HTMLTableCellElement>('thead tr th');
+        const offset = this.accionesProcesadas.length > 0 ? 1 : 0;
+        const widths: Record<string, number> = {};
+        this.columnasVisibles.forEach((col, i) => {
+          const el = allThs[i + offset];
+          if (el) widths[String(col.key)] = el.offsetWidth;
+        });
+        this.columnWidths.set(widths);
+      }
+    }
+
+    this.resizingKey = String(key);
+    this.resizeStartX = event.clientX;
+    this.resizeStartWidth = this.columnWidths()[String(key)] ?? th.offsetWidth;
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onResizeMove(event: MouseEvent): void {
+    if (!this.resizingKey) return;
+    const delta = event.clientX - this.resizeStartX;
+    const newWidth = Math.max(60, this.resizeStartWidth + delta);
+    this.columnWidths.update(w => ({ ...w, [this.resizingKey!]: newWidth }));
+  }
+
+  @HostListener('document:mouseup')
+  onResizeEnd(): void {
+    if (!this.resizingKey) return;
+    this.resizingKey = null;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+
+  setDensidad(d: Densidad) {
+    this.densidad.set(d);
+    localStorage.setItem('datatable-density', d);
+  }
+
+  toggleMenuConfiguracion(event: Event, btnElement: HTMLElement) {
+    event.stopPropagation();
+    if (this.menuActivo() === 'configuracion') {
+      this.menuActivo.set(null);
+      return;
+    }
+    const rect = btnElement.getBoundingClientRect();
+    this.configuracionPosicion = {
+      top: `${rect.bottom + 8}px`,
+      left: `${rect.right - 208}px`,
+    };
+    this.menuActivo.set('configuracion');
+  }
 
   cerrarMenus() {
     this.menuActivo.set(null);

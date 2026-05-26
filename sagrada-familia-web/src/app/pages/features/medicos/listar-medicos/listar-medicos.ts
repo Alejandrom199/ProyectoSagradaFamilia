@@ -1,9 +1,9 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlus, heroPencil, heroTrash, heroAcademicCap } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 
-import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+
+import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -16,7 +16,7 @@ import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
   selector: 'app-listar-medicos',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, ConfirmModal, Button, Breadcrumb],
-  viewProviders: [provideIcons({ heroPlus, heroPencil, heroTrash, heroAcademicCap })],
+
   templateUrl: './listar-medicos.html',
   styleUrl: './listar-medicos.css',
 })
@@ -25,8 +25,11 @@ export class ListarMedicos implements OnInit {
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
-  medicos = signal<MedicoResponse[]>([]);
+  medicos         = signal<MedicoResponse[]>([]);
+  totalMedicos    = signal(0);
   medicoAEliminar = signal<MedicoResponse | null>(null);
+
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
 
   columnas: DatatableColumn<MedicoResponse>[] = [
     {
@@ -86,21 +89,23 @@ export class ListarMedicos implements OnInit {
   }
 
   cargarMedicos(): void {
+    const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
     this.loadingBar.show();
-    this.medicosService.obtenerTodos().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.medicos.set(response.data);
-        } else {
-          console.error(response.message, response.errors);
+    this.medicosService.obtenerPaginado(page, pageSize, search, sortBy, sortDir === 'asc').subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.medicos.set(r.data);
+          this.totalMedicos.set(r.totalItems);
         }
         this.loadingBar.complete();
       },
-      error: (err) => {
-        console.error('Error al cargar médicos', err);
-        this.loadingBar.complete();
-      }
+      error: () => this.loadingBar.complete()
     });
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarMedicos();
   }
 
   confirmarEliminar(): void {

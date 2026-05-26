@@ -2,8 +2,8 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">Auditoría</h2>
-            <p class="text-slate-500 mt-1">
+            <h2 class="page-title">Auditoría</h2>
+            <p class="page-subtitle">
                 @if (auth.esAdmin()) { Rastro de todos los cambios en el sistema }
                 @else { Tu historial de actividad en el sistema }
             </p>
@@ -48,7 +48,7 @@
 
             <button type="submit" [disabled]="formFiltro.invalid"
                 class="px-6 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 h-fit">
-                <ng-icon name="heroMagnifyingGlass"></ng-icon>
+                <ng-icon name="matSearchOutline"></ng-icon>
                 Filtrar
             </button>
         </form>

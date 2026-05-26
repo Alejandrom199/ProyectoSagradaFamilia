@@ -1,8 +1,7 @@
 import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroMagnifyingGlass, heroTableCells } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -76,7 +75,6 @@ interface CampoModificado {
   selector: 'app-listar-auditoria',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, Breadcrumb, ReactiveFormsModule, JsonFormatPipe],
-  viewProviders: [provideIcons({ heroMagnifyingGlass, heroTableCells })],
   templateUrl: './listar-auditoria.html',
   styleUrl: './listar-auditoria.css',
 })

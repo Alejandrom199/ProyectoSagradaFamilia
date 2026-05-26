@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiResponse } from '../../shared/interfaces/api.interface';
+import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
 import {
   AlimentoResponse,
   CategoriaResponse,
   AlimentoCreate,
   AlimentoUpdate,
-  CategoriaCreate
+  CategoriaCreate,
+  ImportResultado
 } from '../../shared/interfaces/alimento.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -19,6 +20,24 @@ export class AlimentosService {
 
   obtenerTodos(): Observable<ApiResponse<AlimentoResponse[]>> {
     return this.http.get<ApiResponse<AlimentoResponse[]>>(this.url, { withCredentials: true });
+  }
+
+  obtenerPaginado(
+    page: number,
+    pageSize: number,
+    search: string,
+    sortBy: string,
+    asc: boolean
+  ): Observable<PagedResponse<AlimentoResponse>> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('pageSize', pageSize)
+      .set('asc', asc);
+    if (search) params = params.set('search', search);
+    if (sortBy) params = params.set('sortBy', sortBy);
+    return this.http.get<PagedResponse<AlimentoResponse>>(
+      `${this.url}/paginado`, { params, withCredentials: true }
+    );
   }
 
   obtenerPorEdad(edadMeses: number): Observable<ApiResponse<AlimentoResponse[]>> {
@@ -46,6 +65,28 @@ export class AlimentosService {
   crearCategoria(request: CategoriaCreate): Observable<ApiResponse<CategoriaResponse>> {
     return this.http.post<ApiResponse<CategoriaResponse>>(
       `${this.url}/categorias`, request, { withCredentials: true }
+    );
+  }
+
+  exportarExcel(): Observable<Blob> {
+    return this.http.get(`${this.url}/exportar`, {
+      responseType: 'blob',
+      withCredentials: true
+    });
+  }
+
+  descargarPlantilla(): Observable<Blob> {
+    return this.http.get(`${this.url}/plantilla`, {
+      responseType: 'blob',
+      withCredentials: true
+    });
+  }
+
+  importar(archivo: File): Observable<ApiResponse<ImportResultado>> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    return this.http.post<ApiResponse<ImportResultado>>(
+      `${this.url}/importar`, formData, { withCredentials: true }
     );
   }
 }

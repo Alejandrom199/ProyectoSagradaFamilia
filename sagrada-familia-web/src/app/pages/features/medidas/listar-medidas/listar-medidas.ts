@@ -1,8 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlus, heroTrash, heroPencil } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
 
 import { Datatable, DatatableAction, DatatableColumn } from '../../../../shared/components/datatable/datatable';
@@ -19,7 +18,6 @@ import { ConfirmModal } from '../../../../shared/components/confirm-modal/confir
   selector: 'listar-medidas',
   standalone: true,
   imports: [CommonModule, FormsModule, NgIcon, Datatable, Button, ConfirmModal, Breadcrumb],
-  viewProviders: [provideIcons({ heroPlus, heroTrash, heroPencil })],
   templateUrl: './listar-medidas.html',
 })
 export class ListarMedidas implements OnInit {
@@ -28,15 +26,15 @@ export class ListarMedidas implements OnInit {
   private medidasService = inject(MedidasService);
   private ninosService = inject(NinosService);
 
-  medidas    = signal<MedidaResponse[]>([]);
-  nino       = signal<NinoDetailResponse | null>(null);
-  migajas    = signal<BreadcrumbItem[]>([]);
+  medidas = signal<MedidaResponse[]>([]);
+  nino = signal<NinoDetailResponse | null>(null);
+  migajas = signal<BreadcrumbItem[]>([]);
 
-  modalAbierto    = signal(false);
-  editando        = signal<MedidaResponse | null>(null);
+  modalAbierto = signal(false);
+  editando = signal<MedidaResponse | null>(null);
   medidaAEliminar = signal<MedidaResponse | null>(null);
-  guardando       = signal(false);
-  errorModal      = signal('');
+  guardando = signal(false);
+  errorModal = signal('');
 
   hoy = new Date().toISOString().split('T')[0];
   readonly formatearFecha = formatearFecha;
@@ -60,18 +58,18 @@ export class ListarMedidas implements OnInit {
       key: 'estadoNutricional', label: 'Estado', sortable: true, filterable: true,
       render: (r) => {
         const estilos: Record<string, string> = {
-          'Normal':         'bg-green-50 text-green-700',
-          'BajoPeso':       'bg-amber-50 text-amber-700',
+          'Normal': 'bg-green-50 text-green-700',
+          'BajoPeso': 'bg-amber-50 text-amber-700',
           'BajoPesoSevero': 'bg-red-50 text-red-700',
-          'Sobrepeso':      'bg-orange-50 text-orange-700',
-          'Obesidad':       'bg-red-50 text-red-700',
+          'Sobrepeso': 'bg-orange-50 text-orange-700',
+          'Obesidad': 'bg-red-50 text-red-700',
         };
         const etiquetas: Record<string, string> = {
-          'Normal':         'Normal',
-          'BajoPeso':       'Bajo peso',
+          'Normal': 'Normal',
+          'BajoPeso': 'Bajo peso',
           'BajoPesoSevero': 'Bajo peso severo',
-          'Sobrepeso':      'Sobrepeso',
-          'Obesidad':       'Obesidad',
+          'Sobrepeso': 'Sobrepeso',
+          'Obesidad': 'Obesidad',
         };
         const cls = estilos[r.estadoNutricional] ?? 'bg-slate-100 text-slate-600';
         return `<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium ${cls}">${etiquetas[r.estadoNutricional] ?? r.estadoNutricional}</span>`;
@@ -88,7 +86,7 @@ export class ListarMedidas implements OnInit {
   ];
 
   acciones: DatatableAction<MedidaResponse>[] = [
-    { type: 'editar',   onClick: (r) => this.abrirModal(r) },
+    { type: 'editar', onClick: (r) => this.abrirModal(r) },
     { type: 'eliminar', onClick: (r) => this.medidaAEliminar.set(r) },
   ];
 

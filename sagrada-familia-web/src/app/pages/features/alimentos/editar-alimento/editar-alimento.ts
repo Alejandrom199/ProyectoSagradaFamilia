@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroArchiveBox, heroArrowLeft, heroCalendarDays, heroClipboardDocumentList, heroPencilSquare, heroTag } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { AlimentosService } from '../../../../core/services/alimentos';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
@@ -12,7 +12,7 @@ import { AlimentoResponse, AlimentoUpdate, CategoriaResponse } from '../../../..
   selector: 'editar-alimento',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
-  viewProviders: [provideIcons({ heroArrowLeft, heroPencilSquare, heroArchiveBox, heroTag, heroCalendarDays, heroClipboardDocumentList })],
+
   templateUrl: './editar-alimento.html',
   styleUrl: './editar-alimento.css',
 })

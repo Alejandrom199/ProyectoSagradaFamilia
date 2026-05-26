@@ -7,13 +7,13 @@
     <div class="mb-6 flex justify-between items-end">
         <div>
             <h2 class="text-2xl font-bold text-slate-800">{{ nino()?.nombre }} {{ nino()?.apellido }}</h2>
-            <p class="text-sm text-slate-500 mt-1">
+            <p class="page-subtitle">
                 {{ formatearEdad(nino()!.edadMeses) }} · {{ nino()?.sexo === 'M' ? 'Masculino' : 'Femenino' }}
             </p>
         </div>
         <a [routerLink]="['/pacientes', id, 'editar']"
             class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-50 transition-colors">
-            <ng-icon name="heroPencil" class="text-base"></ng-icon>
+            <ng-icon name="matEditOutline" class="text-base"></ng-icon>
             Editar
         </a>
     </div>
@@ -22,7 +22,7 @@
     <div class="bg-white border border-slate-200 mb-6">
         <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
             <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
-                <ng-icon name="heroUser" class="text-blue-500 text-base"></ng-icon>
+                <ng-icon name="matPersonOutline" class="text-blue-500 text-base"></ng-icon>
             </div>
             <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Información del paciente</h3>
         </div>
@@ -51,7 +51,7 @@
         <a [routerLink]="['/medidas', id]"
             class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
             <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                <ng-icon name="heroChartBar" class="text-blue-500"></ng-icon>
+                <ng-icon name="matBarChartOutline" class="text-blue-500"></ng-icon>
             </div>
             <div>
                 <p class="text-sm font-bold text-slate-800">Medidas</p>
@@ -61,7 +61,7 @@
         <a [routerLink]="['/citas/nino', id]"
             class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
             <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                <ng-icon name="heroCalendarDays" class="text-blue-500"></ng-icon>
+                <ng-icon name="matCalendarMonthOutline" class="text-blue-500"></ng-icon>
             </div>
             <div>
                 <p class="text-sm font-bold text-slate-800">Citas</p>
@@ -71,7 +71,7 @@
         <a [routerLink]="['/prescripciones/nino', id]"
             class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
             <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                <ng-icon name="heroBeaker" class="text-blue-500"></ng-icon>
+                <ng-icon name="matScienceOutline" class="text-blue-500"></ng-icon>
             </div>
             <div>
                 <p class="text-sm font-bold text-slate-800">Prescripciones</p>

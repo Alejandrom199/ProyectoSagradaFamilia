@@ -2,17 +2,18 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">Gestión de Padres de Familia</h2>
-            <p class="text-slate-500 mt-1">Gestión del directorio de padres y responsables legales</p>
+            <h2 class="page-title">Gestión de Padres de Familia</h2>
+            <p class="page-subtitle">Gestión del directorio de padres y responsables legales</p>
         </div>
         <btn variant="primary" routerLink="/padres/crear" class="text-white cursor-pointer">
-            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Agregar
         </btn>
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Listado de Padres de Familia" [data]="padres()" [columns]="columnas" [actions]="acciones"
+            [serverSide]="true" [serverTotalItems]="totalPadres()" (onServerQuery)="onServerQuery($event)"
             (onExportPdf)="descargarPadresPdf($event)" exportFileName="padres" searchPlaceholder="Buscar por nombre..."
             emptyMessage="No hay padres registrados en el sistema." (onActualizar)="cargarPadres()">
         </datatable>

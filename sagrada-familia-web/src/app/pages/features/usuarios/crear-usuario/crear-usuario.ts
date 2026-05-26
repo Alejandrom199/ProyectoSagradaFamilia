@@ -1,11 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
-import { provideIcons, NgIcon } from '@ng-icons/core';
-import {
-  heroEnvelope, heroEye, heroEyeSlash, heroLockClosed,
-  heroPlus, heroUserCircle, heroShieldCheck
-} from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { finalize } from 'rxjs';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -25,10 +22,7 @@ const ROLES = [
   selector: 'app-crear-usuario',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
-  viewProviders: [provideIcons({
-    heroEnvelope, heroLockClosed, heroEye, heroEyeSlash,
-    heroPlus, heroUserCircle, heroShieldCheck
-  })],
+
   templateUrl: './crear-usuario.html',
   styleUrl: './crear-usuario.css',
 })

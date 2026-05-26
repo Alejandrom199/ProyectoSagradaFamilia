@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroArrowLeft, heroPlus, heroPencil, heroTrash, heroUser, heroKey } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -18,7 +18,7 @@ import { ConfirmModal } from "../../../../shared/components/confirm-modal/confir
 @Component({
   selector: 'detalle-padre',
   imports: [NgIcon, Datatable, Breadcrumb, ConfirmModal],
-  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash, heroUser, heroKey })],
+
   templateUrl: './detalle-padre.html',
   styleUrl: './detalle-padre.css',
 })

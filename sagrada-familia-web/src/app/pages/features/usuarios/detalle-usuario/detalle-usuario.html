@@ -31,7 +31,7 @@
 
             <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
-                    <ng-icon name="heroEnvelope" class="text-blue-500 text-2xl mt-1"></ng-icon>
+                    <ng-icon name="matEmailOutline" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</p>
                         <p class="text-sm text-slate-800 font-medium break-all">{{ u.email }}</p>
@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
-                    <ng-icon name="heroShieldCheck" class="text-blue-500 text-2xl mt-1"></ng-icon>
+                    <ng-icon name="matAdminPanelSettingsOutline" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rol</p>
                         <p class="text-sm text-slate-800 font-medium">{{ u.rolNombre }} (ID: {{ u.rolId }})</p>
@@ -47,7 +47,7 @@
                 </div>
 
                 <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
-                    <ng-icon name="heroCalendarDays" class="text-blue-500 text-2xl mt-1"></ng-icon>
+                    <ng-icon name="matCalendarMonthOutline" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fecha de alta</p>
                         <p class="text-sm text-slate-800 font-medium">{{ formatearFecha(u.fechaCreacion) }}</p>
@@ -55,7 +55,7 @@
                 </div>
 
                 <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
-                    <ng-icon name="heroUserCircle" class="text-blue-500 text-2xl mt-1"></ng-icon>
+                    <ng-icon name="matAccountCircleOutline" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Perfil vinculado</p>
                         <p class="text-sm text-slate-800 font-medium">
@@ -85,10 +85,10 @@
                     [class.hover:bg-green-700]="!u.activo"
                     [class.text-white-]="!u.activo">
                     @if (u.activo) {
-                    <ng-icon name="heroLockClosed"></ng-icon>
+                    <ng-icon name="matLockOutline"></ng-icon>
                     Desactivar cuenta
                     } @else {
-                    <ng-icon name="heroLockOpen"></ng-icon>
+                    <ng-icon name="matLockOpenOutline"></ng-icon>
                     Activar cuenta
                     }
                 </button>

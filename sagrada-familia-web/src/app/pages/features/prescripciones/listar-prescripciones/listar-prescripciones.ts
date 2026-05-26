@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlus, heroBeaker, heroClipboardDocumentList } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
@@ -17,7 +17,7 @@ import { PrescripcionesService } from '../../../../core/services/prescripciones'
   selector: 'app-listar-prescripciones',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, Button, Breadcrumb],
-  viewProviders: [provideIcons({ heroPlus, heroBeaker, heroClipboardDocumentList })],
+
   templateUrl: './listar-prescripciones.html',
   styleUrl: './listar-prescripciones.css',
 })

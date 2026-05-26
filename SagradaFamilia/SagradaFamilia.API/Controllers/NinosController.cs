@@ -25,6 +25,17 @@ public class NinosController : BaseController
     }
         
 
+    [HttpGet("paginado")]
+    [Authorize(Roles = "Medico,Administrador")]
+    public async Task<ActionResult<PagedResponse<NinoDto.ListResponse>>> ObtenerPaginado(
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null, [FromQuery] string? sortBy = null, [FromQuery] bool asc = true)
+    {
+        int? medicoId = User.IsInRole("Medico") ? MedicoId : null;
+        var result = await _ninoService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc, medicoId);
+        return Ok(result);
+    }
+
     [HttpGet]
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerTodos()

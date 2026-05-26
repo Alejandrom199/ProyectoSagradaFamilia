@@ -1,7 +1,7 @@
 <div class="space-y-6">
 
     <div class="relative">
-        <ng-icon name="heroMagnifyingGlass"
+        <ng-icon name="matSearchOutline"
             class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></ng-icon>
         <input type="text" [value]="busqueda()" (input)="actualizarBusqueda($event)"
             placeholder="Buscar alimento por nombre o descripción..."
@@ -19,7 +19,7 @@
                     ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] font-bold'
                     : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-surface-border)] hover:border-slate-300'">
 
-                <ng-icon name="heroSparkles" class="text-2xl"></ng-icon>
+                <ng-icon name="matAutoAwesomeOutline" class="text-2xl"></ng-icon>
                 <span class="text-xs text-center font-semibold leading-tight">Todas</span>
             </button>
 
@@ -28,7 +28,7 @@
                 class="flex-shrink-0 w-20 h-20 rounded-md border-2 flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 cursor-pointer"
                 [class]="categoriaSeleccionadaId() === cat.id ? cat.claseActiva : cat.claseInactiva">
 
-                <ng-icon name="heroSparkles" class="text-2xl opacity-80"></ng-icon>
+                <ng-icon name="matAutoAwesomeOutline" class="text-2xl opacity-80"></ng-icon>
                 <span class="text-xs text-center font-semibold break-words leading-tight">{{ cat.nombre }}</span>
             </button>
             }
@@ -79,7 +79,7 @@
                     @if (item.edadMaxima) {
                     <div
                         class="mt-3 pt-2 border-t border-[var(--color-surface-border)] text-[10px] text-orange-600 font-bold flex items-center gap-1">
-                        <ng-icon name="heroExclamationTriangle" class="text-2xl opacity-80"></ng-icon> Hasta {{
+                        <ng-icon name="matWarningAmberOutline" class="text-2xl opacity-80"></ng-icon> Hasta {{
                         item.edadMaxima }} m.
                     </div>
                     }
@@ -91,7 +91,7 @@
         <div
             class="flex flex-col items-center justify-center py-16 text-center bg-[var(--color-surface)] rounded-md border-2 border-dashed border-[var(--color-surface-border)]">
             <div class="w-16 h-16 bg-slate-100 rounded-md flex items-center justify-center mb-4">
-                <ng-icon name="heroFaceSmile" class="text-4xl text-slate-400"></ng-icon>
+                <ng-icon name="matSentimentSatisfiedOutline" class="text-4xl text-slate-400"></ng-icon>
             </div>
             <p class="text-slate-600 font-medium mb-1">Sin elementos para mostrar</p>
             <p class="text-sm text-slate-400 max-w-xs">Intenta cambiando los filtros.</p>

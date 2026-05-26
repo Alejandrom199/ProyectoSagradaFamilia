@@ -3,8 +3,8 @@
 
     <div class="mb-6 flex justify-between items-end">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">Motor Predictivo Nutricional</h2>
-            <p class="text-sm text-slate-500 mt-1">
+            <h2 class="page-title">Motor Predictivo Nutricional</h2>
+            <p class="page-subtitle">
                 Proyecciones de peso a 3, 6 y 12 meses con Inteligencia Artificial.
             </p>
         </div>
@@ -23,7 +23,7 @@
     <div class="bg-white border border-slate-200 mb-6">
         <div class="p-5 flex items-center gap-4">
             <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
-                <ng-icon name="heroUser" class="text-blue-500 text-xl"></ng-icon>
+                <ng-icon name="matPersonOutline" class="text-blue-500 text-xl"></ng-icon>
             </div>
             <div class="flex-1 max-w-md">
                 <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
@@ -50,7 +50,7 @@
     @if (!prediccion()!.puedePredecir) {
     <div class="bg-white border border-slate-200 p-12 text-center">
         <div class="w-16 h-16 bg-red-50 rounded-md flex items-center justify-center mx-auto mb-4">
-            <ng-icon name="heroExclamationTriangle" class="text-red-500 text-3xl"></ng-icon>
+            <ng-icon name="matWarningAmberOutline" class="text-red-500 text-3xl"></ng-icon>
         </div>
         <h3 class="font-bold text-xl text-slate-800 mb-2">Datos insuficientes</h3>
         <p class="text-slate-500 max-w-md mx-auto text-sm leading-relaxed">
@@ -64,7 +64,7 @@
     <div class="bg-blue-600 rounded-md p-6 text-white mb-6 flex justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="w-14 h-14 bg-white/20 rounded-md flex items-center justify-center shrink-0">
-                <ng-icon name="heroChartBar" class="text-white text-2xl"></ng-icon>
+                <ng-icon name="matBarChartOutline" class="text-white text-2xl"></ng-icon>
             </div>
             <div>
                 <p class="text-blue-100 text-sm">Predicción calculada para:</p>
@@ -99,7 +99,7 @@
     @if (!cargando() && !prediccion() && !ninoSeleccionado()) {
     <div class="bg-slate-50 rounded-md border-2 border-dashed border-slate-200 p-16 text-center mt-6">
         <div class="w-20 h-20 bg-white rounded-md flex items-center justify-center mx-auto mb-4 border border-slate-200">
-            <ng-icon name="heroChartBar" class="text-blue-400 text-4xl"></ng-icon>
+            <ng-icon name="matBarChartOutline" class="text-blue-400 text-4xl"></ng-icon>
         </div>
         <h3 class="font-bold text-xl text-slate-700 mb-2">Módulo de Pronósticos</h3>
         <p class="text-slate-500 max-w-md mx-auto text-sm leading-relaxed">

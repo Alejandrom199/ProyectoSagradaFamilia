@@ -2,17 +2,18 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">Gestión de Médicos</h2>
-            <p class="text-slate-500 mt-1">Personal médico pediátrico del consultorio</p>
+            <h2 class="page-title">Gestión de Médicos</h2>
+            <p class="page-subtitle">Personal médico pediátrico del consultorio</p>
         </div>
         <btn variant="primary" routerLink="/medicos/crear" class="text-white cursor-pointer">
-            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Agregar
         </btn>
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Listado de Médicos" [data]="medicos()" [columns]="columnas" [actions]="acciones"
+            [serverSide]="true" [serverTotalItems]="totalMedicos()" (onServerQuery)="onServerQuery($event)"
             [exportExcel]="true" exportFileName="medicos" [showActualizar]="true" [showExportar]="true"
             [showColumnas]="true" searchPlaceholder="Buscar por nombre, email o especialidad..."
             emptyMessage="No hay médicos registrados en el sistema." (onActualizar)="cargarMedicos()">

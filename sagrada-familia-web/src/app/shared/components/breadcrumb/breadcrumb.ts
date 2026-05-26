@@ -1,7 +1,7 @@
 import { Component, Input, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroHome, heroChevronRight } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { CommonModule } from '@angular/common';
 
 export interface BreadcrumbItem {
@@ -11,7 +11,7 @@ export interface BreadcrumbItem {
 @Component({
   selector: 'breadcrumb',
   imports: [CommonModule, RouterLink, NgIcon],
-  viewProviders: [provideIcons({ heroHome, heroChevronRight })],
+
   templateUrl: './breadcrumb.html',
   styleUrl: './breadcrumb.css',
 })

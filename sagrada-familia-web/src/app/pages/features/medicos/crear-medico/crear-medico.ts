@@ -1,11 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
-import { provideIcons, NgIcon } from '@ng-icons/core';
-import {
-  heroChevronLeft, heroEnvelope, heroEye, heroEyeSlash, heroLockClosed,
-  heroPhone, heroPlus, heroAcademicCap, heroBriefcase
-} from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { finalize } from 'rxjs';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -18,10 +15,7 @@ import { passwordValidator } from '../../../../shared/validators/password.valida
   selector: 'app-crear-medico',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
-  viewProviders: [provideIcons({
-    heroAcademicCap, heroEnvelope, heroLockClosed,
-    heroPhone, heroChevronLeft, heroEye, heroEyeSlash, heroPlus, heroBriefcase
-  })],
+
   templateUrl: './crear-medico.html',
   styleUrl: './crear-medico.css',
 })

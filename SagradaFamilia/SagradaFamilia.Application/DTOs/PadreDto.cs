@@ -55,5 +55,10 @@
 
             public int? MedicoId { get; set; }
         }
+
+        public class ChangeEmail
+        {
+            public string Email { get; set; } = string.Empty;
+        }
     }
 }

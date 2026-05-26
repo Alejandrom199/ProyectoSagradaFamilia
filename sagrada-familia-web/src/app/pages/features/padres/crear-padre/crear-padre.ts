@@ -1,8 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
-import { provideIcons, NgIcon } from '@ng-icons/core';
-import { heroChevronLeft, heroEnvelope, heroEye, heroEyeSlash, heroLockClosed, heroPhone, heroPlus, heroUserPlus } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { finalize } from 'rxjs';
@@ -14,10 +13,6 @@ import { passwordValidator } from '../../../../shared/validators/password.valida
 @Component({
   selector: 'crear-padre',
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
-  viewProviders: [provideIcons({
-    heroUserPlus, heroEnvelope, heroLockClosed,
-    heroPhone, heroChevronLeft, heroEye, heroEyeSlash, heroPlus
-  })],
   templateUrl: './crear-padre.html',
   styleUrl: './crear-padre.css',
 })

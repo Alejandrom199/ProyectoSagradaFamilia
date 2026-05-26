@@ -22,6 +22,15 @@ public class UsuariosController : BaseController
         return HandleResponse(response);
     }
 
+    [HttpGet("paginado")]
+    public async Task<ActionResult<PagedResponse<UsuarioDto.ListResponse>>> ObtenerPaginado(
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null, [FromQuery] string? sortBy = null, [FromQuery] bool asc = true)
+    {
+        var result = await _usuarioService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc);
+        return Ok(result);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ApiResponse<UsuarioDto.DetailResponse>>> ObtenerPorId(int id)
     {

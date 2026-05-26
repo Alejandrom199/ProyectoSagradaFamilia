@@ -1,9 +1,9 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlus, heroPencil, heroTrash, heroUsers } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 
-import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+
+import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -20,7 +20,7 @@ import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
   selector: 'app-listar-padres',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, ConfirmModal, Button, Breadcrumb],
-  viewProviders: [provideIcons({ heroPlus, heroPencil, heroTrash, heroUsers })],
+
   templateUrl: './listar-padres.html',
   styleUrl: './listar-padres.css',
 })
@@ -32,7 +32,10 @@ export class ListarPadres implements OnInit {
   readonly auth = inject(AuthService);
 
   padres = signal<PadreResponse[]>([]);
+  totalPadres = signal(0);
   padreAEliminar = signal<PadreResponse | null>(null);
+
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
 
   columnas: DatatableColumn<PadreResponse>[] = [
     {
@@ -98,21 +101,23 @@ export class ListarPadres implements OnInit {
   }
 
   cargarPadres(): void {
+    const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
     this.loadingBar.show();
-    this.padresService.obtenerTodos().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.padres.set(response.data);
-        } else {
-          console.error(response.message, response.errors);
+    this.padresService.obtenerPaginado(page, pageSize, search, sortBy, sortDir === 'asc').subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.padres.set(r.data);
+          this.totalPadres.set(r.totalItems);
         }
         this.loadingBar.complete();
       },
-      error: (err) => {
-        console.error('Error al cargar padres', err);
-        this.loadingBar.complete();
-      }
+      error: () => this.loadingBar.complete()
     });
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarPadres();
   }
 
   confirmarEliminar(): void {

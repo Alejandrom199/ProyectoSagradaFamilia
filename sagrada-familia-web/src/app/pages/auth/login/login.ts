@@ -2,13 +2,13 @@ import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../../../core/services/auth';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroEye, heroEyeSlash, heroHeart } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, NgIcon],
-  viewProviders: [provideIcons({ heroEye, heroEyeSlash, heroHeart })],
+
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

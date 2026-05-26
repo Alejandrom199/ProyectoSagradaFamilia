@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlus, heroCheckCircle, heroXCircle, heroCalendarDays } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
@@ -18,7 +18,7 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
   selector: 'listar-citas',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, Button, Breadcrumb],
-  viewProviders: [provideIcons({ heroPlus, heroCheckCircle, heroXCircle, heroCalendarDays })],
+
   templateUrl: './listar-citas.html',
   styleUrl: './listar-citas.css',
 })
@@ -72,7 +72,7 @@ export class ListarCitas implements OnInit {
     {
       type: 'ver',
       label: 'Completar',
-      icon: 'heroCheckCircle',
+      icon: 'matCheckCircleOutline',
       class: 'text-green-600 hover:bg-green-50',
       visible: (row) => row.estado === 'Pendiente',
       onClick: (row) => this.cambiarEstado(row.id, EstadoCita.Completada)
@@ -80,7 +80,7 @@ export class ListarCitas implements OnInit {
     {
       type: 'eliminar',
       label: 'Cancelar',
-      icon: 'heroXCircle',
+      icon: 'matCancelOutline',
       class: 'text-red-600 hover:bg-red-50',
       visible: (row) => row.estado === 'Pendiente',
       onClick: (row) => this.cambiarEstado(row.id, EstadoCita.Cancelada)

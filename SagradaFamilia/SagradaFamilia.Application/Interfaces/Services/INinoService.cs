@@ -1,4 +1,5 @@
 ﻿using SagradaFamilia.Application.DTOs;
+using SagradaFamilia.Application.DTOs.Common;
 
 namespace SagradaFamilia.Application.Interfaces.Services
 {
@@ -6,6 +7,7 @@ namespace SagradaFamilia.Application.Interfaces.Services
     {
         Task<NinoDto.DetailResponse> ObtenerPorIdAsync(int id);
         Task<IEnumerable<NinoDto.ListResponse>> ObtenerTodosAsync();
+        Task<PagedResponse<NinoDto.ListResponse>> ObtenerPaginadoAsync(int page, int pageSize, string? search, string? sortBy, bool ascending, int? medicoId = null);
 
         Task<IEnumerable<NinoDto.ListResponse>> ObtenerPorPadreIdAsync(int padreId);
 

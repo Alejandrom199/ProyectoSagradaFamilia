@@ -1,0 +1,15 @@
+@keyframes progress-slide {
+    0%   { left: -40%; }
+    60%  { left: 100%; }
+    100% { left: 100%; }
+}
+
+.progress-bar {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 40%;
+    background-color: #2563eb;
+    border-radius: 9999px;
+    animation: progress-slide 1.4s ease-in-out infinite;
+}

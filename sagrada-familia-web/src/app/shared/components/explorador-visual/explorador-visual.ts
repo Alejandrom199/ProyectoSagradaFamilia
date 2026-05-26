@@ -1,7 +1,7 @@
 import { Component, input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroFaceSmile, heroSparkles, heroMagnifyingGlass, heroExclamationTriangle } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 export interface ItemExplorador {
   id: number;
@@ -28,7 +28,7 @@ interface CategoriaEstilizada extends CategoriaFiltro {
   selector: 'explorador-visual',
   standalone: true,
   imports: [CommonModule, NgIcon],
-  viewProviders: [provideIcons({ heroFaceSmile, heroSparkles, heroMagnifyingGlass, heroExclamationTriangle })],
+
   templateUrl: './explorador-visual.html'
 })
 export class ExploradorVisual {

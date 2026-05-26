@@ -1,16 +1,28 @@
-<div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-md transition-all duration-300">
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
 
-    <div class="flex flex-col items-center backdrop-blur-md transition-all duration-300">
+    <div class="bg-white border border-slate-200 rounded-md px-8 py-7 flex flex-col items-center gap-5 min-w-[220px] max-w-xs">
 
-        <svg class="animate-spin -ml-1 mr-3 h-12 w-12 text-blue-600 mb-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-            </path>
-        </svg>
+        <!-- Spinner sobre fondo azul suave -->
+        <div class="relative flex items-center justify-center w-12 h-12 rounded-md bg-blue-50">
+            <svg class="animate-spin w-6 h-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                <path class="opacity-90" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+        </div>
 
-        <p class="text-lg font-semibold text-slate-800 tracking-wide">{{ message() }}</p>
+        <!-- Texto -->
+        <div class="text-center">
+            <p class="text-sm font-semibold text-slate-800">{{ message() }}</p>
+            <p class="text-xs text-slate-400 mt-0.5">Por favor espere</p>
+        </div>
+
+        <!-- Barra de progreso indeterminada -->
+        <div class="w-full h-0.5 bg-slate-100 rounded-full relative overflow-hidden">
+            <div class="progress-bar"></div>
+        </div>
+
     </div>
 </div>

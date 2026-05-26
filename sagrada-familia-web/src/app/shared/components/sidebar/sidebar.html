@@ -31,14 +31,14 @@
             <a routerLink="/dashboard" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: true }"
                 class="sidebar-link flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150"
                 (click)="cerrarMovil.emit()">
-                <ng-icon name="heroHome" class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
+                <ng-icon name="matHomeOutline" class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
                 <span class="truncate">Dashboard</span>
             </a>
             } @else {
             <a routerLink="/dashboard" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: true }"
                 class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto rounded-md text-sm transition-all duration-150"
                 tooltip="Dashboard" tooltipPosition="right" (click)="cerrarMovil.emit()">
-                <ng-icon name="heroHome" class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
+                <ng-icon name="matHomeOutline" class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
             </a>
             }
         </div>
@@ -63,7 +63,7 @@
                     </span>
                 </div>
 
-                <ng-icon name="heroChevronDown"
+                <ng-icon name="matExpandMoreOutline"
                     class="sidebar-modulo-chevron shrink-0 transition-transform duration-200"
                     [class.rotate-180]="moduloEstaAbierto(modulo.id)" style="font-size: 14px;"></ng-icon>
             </button>
@@ -112,7 +112,7 @@
             <button
                 class="flex items-center justify-center w-8 h-8 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none flex-shrink-0"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="top">
-                <ng-icon name="heroArrowRightOnRectangle" class="text-xl"></ng-icon>
+                <ng-icon name="matLogoutOutline" class="text-xl"></ng-icon>
             </button>
         </div>
 
@@ -125,7 +125,7 @@
             <button
                 class="flex items-center justify-center w-10 h-10 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none cursor-pointer"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="right">
-                <ng-icon name="heroArrowRightOnRectangle" class="text-[22px]"></ng-icon>
+                <ng-icon name="matLogoutOutline" class="text-[22px]"></ng-icon>
             </button>
         </div>
         }

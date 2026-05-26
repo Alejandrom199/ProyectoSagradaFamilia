@@ -9,12 +9,12 @@
             <h2 class="text-2xl font-bold text-slate-800">
                 {{ padre()?.nombre }} {{ padre()?.apellido }}
             </h2>
-            <p class="text-sm text-slate-500 mt-1">Ficha del representante legal</p>
+            <p class="page-subtitle">Ficha del representante legal</p>
         </div>
         @if (auth.esMedico() || auth.esAdmin()) {
         <button (click)="mostrarModalReset.set(true)"
             class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-md transition-colors">
-            <ng-icon name="heroKey" class="text-base"></ng-icon>
+            <ng-icon name="matVpnKeyOutline" class="text-base"></ng-icon>
             Restablecer contraseña
         </button>
         }
@@ -36,7 +36,7 @@
     <div class="bg-white border border-slate-200 mb-6">
         <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
             <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
-                <ng-icon name="heroUser" class="text-blue-500 text-base"></ng-icon>
+                <ng-icon name="matPersonOutline" class="text-blue-500 text-base"></ng-icon>
             </div>
             <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">
                 Información del representante

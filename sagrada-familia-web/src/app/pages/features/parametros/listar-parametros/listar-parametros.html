@@ -3,12 +3,12 @@
 
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">Parámetros del Sistema</h2>
-            <p class="text-slate-500 mt-1">Configuración de valores globales administrables</p>
+            <h2 class="page-title">Parámetros del Sistema</h2>
+            <p class="page-subtitle">Configuración de valores globales administrables</p>
         </div>
         <button (click)="mostrarFormNuevo.set(!mostrarFormNuevo())"
             class="flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors">
-            <ng-icon name="heroPlus" size="1em"></ng-icon>
+            <ng-icon name="matAddOutline" size="1em"></ng-icon>
             Nuevo parámetro
         </button>
     </div>
@@ -17,7 +17,7 @@
     @if (mostrarFormNuevo()) {
     <div class="bg-white border border-blue-200 p-6 mb-6">
         <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <ng-icon name="heroPlus" size="1em" class="text-blue-500"></ng-icon>
+            <ng-icon name="matAddOutline" size="1em" class="text-blue-500"></ng-icon>
             Agregar nuevo parámetro
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -48,7 +48,7 @@
         <div class="flex gap-3 mt-4">
             <button (click)="crearParametro()" [disabled]="creando()"
                 class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50">
-                <ng-icon name="heroCheck" size="0.9em"></ng-icon>
+                <ng-icon name="matCheckOutline" size="0.9em"></ng-icon>
                 {{ creando() ? 'Guardando...' : 'Guardar' }}
             </button>
             <button (click)="mostrarFormNuevo.set(false)"
@@ -64,7 +64,7 @@
     <div class="bg-white border border-slate-200 mb-6">
         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-200">
             <div class="w-9 h-9 bg-blue-50 rounded-md flex items-center justify-center">
-                <ng-icon name="heroCog6Tooth" size="1.1em" class="text-blue-500"></ng-icon>
+                <ng-icon name="matSettingsOutline" size="1.1em" class="text-blue-500"></ng-icon>
             </div>
             <div>
                 <p class="font-bold text-slate-800 text-sm">{{ grupo.grupo }}</p>
@@ -94,12 +94,12 @@
                         <button (click)="iniciarEdicion(p)"
                             class="p-2 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                             title="Editar">
-                            <ng-icon name="heroPencil" size="1em"></ng-icon>
+                            <ng-icon name="matEditOutline" size="1em"></ng-icon>
                         </button>
                         <button (click)="parametroAEliminar.set(p)"
                             class="p-2 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                             title="Eliminar">
-                            <ng-icon name="heroTrash" size="1em"></ng-icon>
+                            <ng-icon name="matDeleteOutline" size="1em"></ng-icon>
                         </button>
                     </div>
                 </div>
@@ -135,12 +135,12 @@
                     <div class="flex gap-2 pt-1">
                         <button (click)="guardar()" [disabled]="guardando()"
                             class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50">
-                            <ng-icon name="heroCheck" size="0.85em"></ng-icon>
+                            <ng-icon name="matCheckOutline" size="0.85em"></ng-icon>
                             {{ guardando() ? 'Guardando...' : 'Guardar' }}
                         </button>
                         <button (click)="cancelarEdicion()"
                             class="px-3 py-1.5 text-xs text-slate-500 rounded-md border border-slate-200 hover:bg-slate-50 transition-colors">
-                            <ng-icon name="heroXMark" size="0.85em"></ng-icon>
+                            <ng-icon name="matCloseOutline" size="0.85em"></ng-icon>
                             Cancelar
                         </button>
                     </div>
@@ -154,7 +154,7 @@
 
     @if (grupos().length === 0) {
     <div class="text-center py-16 text-slate-400">
-        <ng-icon name="heroCog6Tooth" size="3em" class="mb-4 opacity-30"></ng-icon>
+        <ng-icon name="matSettingsOutline" size="3em" class="mb-4 opacity-30"></ng-icon>
         <p class="text-sm">No hay parámetros configurados.</p>
     </div>
     }

@@ -1,9 +1,9 @@
 <div class="max-w-7xl mx-auto p-4">
     <breadcrumb [items]="migajas" homeRoute="/pacientes"></breadcrumb>
     <div class="mb-8">
-        <h2 class="text-3xl font-extrabold text-slate-800">Progreso de {{
+        <h2 class="page-title">Progreso de {{
             ninoSeleccionado()?.nombre }} {{ninoSeleccionado()?.apellido }}</h2>
-        <p class="text-slate-500 mt-1 text-lg">
+        <p class="page-subtitle">
             Revisa el historial de crecimiento y medidas de tu pequeño
         </p>
     </div>
@@ -20,12 +20,12 @@
                     {{ ultimaMedida()?.peso }} <span class="text-lg font-normal text-slate-400">kg</span>
                 </h3>
                 <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
-                    <ng-icon name="heroCalendarDays"></ng-icon>
+                    <ng-icon name="matCalendarMonthOutline"></ng-icon>
                     Última visita: {{ formatearFecha(ultimaMedida()!.fechaMedicion) }}
                 </p>
             </div>
             <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-md flex items-center justify-center text-xl">
-                <ng-icon name="heroScale"></ng-icon>
+                <ng-icon name="matMonitorWeightOutline"></ng-icon>
             </div>
         </div>
 
@@ -36,12 +36,12 @@
                     {{ ultimaMedida()?.talla }} <span class="text-lg font-normal text-slate-400">cm</span>
                 </h3>
                 <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
-                    <ng-icon name="heroChartBar"></ng-icon>
+                    <ng-icon name="matBarChartOutline"></ng-icon>
                     Percentil alcanzado: P{{ ultimaMedida()?.percentilTalla }}
                 </p>
             </div>
             <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-md flex items-center justify-center text-xl">
-                <ng-icon name="heroChartBar"></ng-icon>
+                <ng-icon name="matBarChartOutline"></ng-icon>
             </div>
         </div>
 
@@ -63,7 +63,7 @@
     <div class="bg-white border border-slate-200 p-8">
         <div class="flex items-center justify-between mb-8">
             <h3 class="text-xl font-bold flex items-center gap-3 text-slate-800">
-                <ng-icon name="heroChartBar" class="text-blue-600 text-2xl"></ng-icon>
+                <ng-icon name="matBarChartOutline" class="text-blue-600 text-2xl"></ng-icon>
                 Curva de Peso
             </h3>
         </div>
@@ -92,7 +92,7 @@
         } @else {
         <div class="flex flex-col items-center justify-center py-16 text-center">
             <div class="w-20 h-20 bg-slate-50 rounded-md flex items-center justify-center mb-4 border border-slate-200">
-                <ng-icon name="heroFaceSmile" class="text-5xl text-slate-300"></ng-icon>
+                <ng-icon name="matSentimentSatisfiedOutline" class="text-5xl text-slate-300"></ng-icon>
             </div>
             <h3 class="text-xl font-bold text-slate-800 mb-1">Aún no hay medidas registradas</h3>
             <p class="text-sm text-slate-400 max-w-xs">El pediatra registrará las medidas de {{

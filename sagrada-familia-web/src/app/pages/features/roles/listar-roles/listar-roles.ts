@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroShieldCheck, heroPencilSquare } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { Button } from '../../../../shared/components/button/button';
 
@@ -16,7 +16,7 @@ interface RolItem {
   selector: 'app-listar-roles',
   standalone: true,
   imports: [Breadcrumb, NgIcon],
-  viewProviders: [provideIcons({ heroShieldCheck, heroPencilSquare })],
+
   templateUrl: './listar-roles.html',
 })
 export class ListarRoles {

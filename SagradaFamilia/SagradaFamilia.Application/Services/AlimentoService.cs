@@ -1,10 +1,14 @@
 ﻿namespace SagradaFamilia.Application.Services;
 
+using System.Globalization;
 using AutoMapper;
+using ClosedXML.Excel;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
+using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Exceptions;
 using SagradaFamilia.Domain.Interfaces.Repositories;
@@ -31,6 +35,14 @@ public class AlimentoService : IAlimentoService
 
         var alimentos = await _alimentoRepository.ObtenerTodosAsync();
         return _mapper.Map<IEnumerable<AlimentoDto.Response>>(alimentos);
+    }
+
+    public async Task<PagedResponse<AlimentoDto.Response>> ObtenerPaginadoAsync(
+        int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _alimentoRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending);
+        var dtos = _mapper.Map<IEnumerable<AlimentoDto.Response>>(items);
+        return PagedResponse<AlimentoDto.Response>.Ok(dtos, total, page, pageSize);
     }
 
     public async Task<AlimentoDto.Response> ObtenerPorIdAsync(int id)
@@ -158,5 +170,183 @@ public class AlimentoService : IAlimentoService
         await _alimentoRepository.EliminarCategoriaAsync(categoria.Id);
 
         _logger.LogInformation("Categoría ID: {Id} eliminada exitosamente.", id);
+    }
+
+    public async Task<byte[]> GenerarPlantillaAsync()
+    {
+        _logger.LogInformation("Generando plantilla Excel para importación masiva de alimentos.");
+        var categorias = await _alimentoRepository.ObtenerCategoriasAsync();
+        var nombres = categorias.Where(c => c.Activo).Select(c => c.Nombre).OrderBy(n => n).ToList();
+        return new AlimentosPlantillaDocument(nombres).GenerarBytes();
+    }
+
+    public async Task<byte[]> ExportarExcelAsync()
+    {
+        _logger.LogInformation("Exportando catálogo de alimentos a Excel.");
+        var alimentos = await _alimentoRepository.ObtenerTodosAsync();
+        var dtos = _mapper.Map<IEnumerable<AlimentoDto.Response>>(alimentos);
+        return new AlimentosExportDocument(dtos).GenerarBytes();
+    }
+
+    public async Task<AlimentoDto.ImportResultado> ImportarAsync(Stream archivoStream)
+    {
+        _logger.LogInformation("Iniciando importación masiva de alimentos desde Excel.");
+
+        var resultado = new AlimentoDto.ImportResultado();
+
+        // Cargar categorías activas para resolver nombre → ID
+        var categorias = await _alimentoRepository.ObtenerCategoriasAsync();
+        var categoriaMap = categorias
+            .Where(c => c.Activo)
+            .ToDictionary(
+                c => c.Nombre.Trim().ToLowerInvariant(),
+                c => c.Id);
+
+        // Cargar alimentos existentes para detectar duplicados por nombre (upsert)
+        var alimentosExistentes = await _alimentoRepository.ObtenerTodosAsync();
+        var alimentoMap = alimentosExistentes
+            .ToDictionary(
+                a => a.Nombre.Trim().ToLowerInvariant(),
+                a => a);
+
+        XLWorkbook workbook;
+        try
+        {
+            workbook = new XLWorkbook(archivoStream);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("El archivo subido no es un Excel válido: {Error}", ex.Message);
+            resultado.Errores.Add(new AlimentoDto.ImportError
+            {
+                Fila = 0,
+                Mensaje = "El archivo no es un Excel válido (.xlsx)."
+            });
+            return resultado;
+        }
+
+        using (workbook)
+        {
+            IXLWorksheet ws;
+            try
+            {
+                ws = workbook.Worksheet("Alimentos");
+            }
+            catch
+            {
+                resultado.Errores.Add(new AlimentoDto.ImportError
+                {
+                    Fila = 0,
+                    Mensaje = "No se encontró la hoja 'Alimentos'. Use la plantilla oficial."
+                });
+                return resultado;
+            }
+
+            const int DataStartRow = 7;
+            int lastRow = ws.LastRowUsed()?.RowNumber() ?? DataStartRow - 1;
+
+            for (int rowNum = DataStartRow; rowNum <= lastRow; rowNum++)
+            {
+                var row = ws.Row(rowNum);
+
+                string nombre = row.Cell(1).GetString().Trim();
+                string categoriaNombre = row.Cell(2).GetString().Trim();
+                string edadStr = row.Cell(3).GetString().Trim();
+                string descripcion = row.Cell(4).GetString().Trim();
+                string recomendacion = row.Cell(5).GetString().Trim();
+
+                // Ignorar filas completamente vacías
+                if (string.IsNullOrEmpty(nombre) && string.IsNullOrEmpty(categoriaNombre) && string.IsNullOrEmpty(edadStr))
+                    continue;
+
+                resultado.TotalProcesadas++;
+                var erroresFila = new List<string>();
+
+                // Validar Nombre
+                if (string.IsNullOrEmpty(nombre))
+                    erroresFila.Add("Nombre es obligatorio");
+                else if (nombre.Length > 200)
+                    erroresFila.Add("Nombre excede 200 caracteres");
+
+                // Validar y resolver Categoría
+                int categoriaId = 0;
+                if (string.IsNullOrEmpty(categoriaNombre))
+                    erroresFila.Add("Categoría es obligatoria");
+                else if (!categoriaMap.TryGetValue(categoriaNombre.ToLowerInvariant(), out categoriaId))
+                    erroresFila.Add($"Categoría '{categoriaNombre}' no existe en el sistema");
+
+                // Validar Edad mínima
+                int edadMinimaMeses = 0;
+                if (string.IsNullOrEmpty(edadStr))
+                {
+                    erroresFila.Add("Edad mínima es obligatoria");
+                }
+                else
+                {
+                    // Aceptar "6", "6.0", "6,0" por distintos formatos de Excel
+                    bool edadValida = double.TryParse(
+                        edadStr,
+                        NumberStyles.Any,
+                        CultureInfo.InvariantCulture,
+                        out double edadDouble)
+                        && edadDouble >= 0
+                        && edadDouble == Math.Floor(edadDouble)
+                        && edadDouble <= 240;
+
+                    if (!edadValida)
+                        erroresFila.Add("Edad mínima debe ser un entero entre 0 y 240");
+                    else
+                        edadMinimaMeses = (int)edadDouble;
+                }
+
+                // Validar longitudes opcionales
+                if (descripcion.Length > 500)
+                    erroresFila.Add("Descripción excede 500 caracteres");
+                if (recomendacion.Length > 1000)
+                    erroresFila.Add("Recomendación excede 1000 caracteres");
+
+                if (erroresFila.Count > 0)
+                {
+                    resultado.Errores.Add(new AlimentoDto.ImportError
+                    {
+                        Fila = rowNum,
+                        Mensaje = string.Join("; ", erroresFila)
+                    });
+                    continue;
+                }
+
+                string nombreKey = nombre.ToLowerInvariant();
+                if (alimentoMap.TryGetValue(nombreKey, out var existente))
+                {
+                    existente.CategoriaId = categoriaId;
+                    existente.Descripcion = string.IsNullOrEmpty(descripcion) ? null : descripcion;
+                    existente.EdadMinimaMeses = edadMinimaMeses;
+                    existente.Recomendacion = string.IsNullOrEmpty(recomendacion) ? null : recomendacion;
+                    existente.Activo = true;
+                    await _alimentoRepository.ActualizarAsync(existente);
+                    resultado.Actualizados++;
+                }
+                else
+                {
+                    var nuevo = new Alimento
+                    {
+                        CategoriaId = categoriaId,
+                        Nombre = nombre,
+                        Descripcion = string.IsNullOrEmpty(descripcion) ? null : descripcion,
+                        EdadMinimaMeses = edadMinimaMeses,
+                        Recomendacion = string.IsNullOrEmpty(recomendacion) ? null : recomendacion,
+                        Activo = true
+                    };
+                    await _alimentoRepository.CrearAsync(nuevo);
+                    resultado.Importados++;
+                }
+            }
+        }
+
+        _logger.LogInformation(
+            "Importación finalizada: {Importados} creados, {Actualizados} actualizados, {Errores} errores de {Total} filas procesadas.",
+            resultado.Importados, resultado.Actualizados, resultado.Errores.Count, resultado.TotalProcesadas);
+
+        return resultado;
     }
 }

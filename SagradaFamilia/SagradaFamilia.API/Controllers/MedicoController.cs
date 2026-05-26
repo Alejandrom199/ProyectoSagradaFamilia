@@ -23,6 +23,16 @@ public class MedicoController : BaseController
         return HandleResponse(result);
     }
 
+    [HttpGet("paginado")]
+    [Authorize(Roles = "Administrador, Medico")]
+    public async Task<ActionResult<PagedResponse<MedicoDto.ListResponse>>> GetPaginado(
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null, [FromQuery] string? sortBy = null, [FromQuery] bool asc = true)
+    {
+        var result = await _medicoService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc);
+        return Ok(result);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<MedicoDto.DetailResponse>>> Create([FromBody] MedicoDto.Create request)

@@ -1,7 +1,6 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroExclamationTriangle, heroDocumentText, heroCircleStack } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 
 import { DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -15,7 +14,6 @@ type NivelFiltro = 'Todo' | 'Information' | 'Warning' | 'Error';
   selector: 'app-listar-logs',
   standalone: true,
   imports: [RouterLink, Datatable, Breadcrumb],
-  viewProviders: [provideIcons({ heroExclamationTriangle, heroDocumentText, heroCircleStack })],
   templateUrl: './listar-logs.html',
   styleUrl: './listar-logs.css',
 })

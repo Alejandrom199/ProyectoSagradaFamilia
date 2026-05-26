@@ -4,6 +4,7 @@ using AutoMapper;
 using BCrypt.Net;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
+using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Exceptions;
@@ -30,6 +31,14 @@ public class UsuarioService : IUsuarioService
 
         var usuarios = await _usuarioRepository.ObtenerTodosAsync();
         return _mapper.Map<IEnumerable<UsuarioDto.ListResponse>>(usuarios);
+    }
+
+    public async Task<PagedResponse<UsuarioDto.ListResponse>> ObtenerPaginadoAsync(
+        int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _usuarioRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending);
+        var data = _mapper.Map<IEnumerable<UsuarioDto.ListResponse>>(items);
+        return PagedResponse<UsuarioDto.ListResponse>.Ok(data, total, page, pageSize);
     }
 
     public async Task<UsuarioDto.DetailResponse> ObtenerPorIdAsync(int id)

@@ -1,8 +1,8 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroFaceSmile, heroChartBar, heroScale, heroCalendarDays } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { NgApexchartsModule } from 'ng-apexcharts';
 import {
@@ -41,7 +41,7 @@ export type ChartOptions = {
   selector: 'progreso-hijos',
   standalone: true,
   imports: [CommonModule, NgIcon, NgApexchartsModule, Breadcrumb],
-  viewProviders: [provideIcons({ heroFaceSmile, heroChartBar, heroScale, heroCalendarDays })],
+
   templateUrl: './progreso-hijos.html',
   styleUrl: './progreso-hijos.css'
 })

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroShieldCheck } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { finalize } from 'rxjs';
 
 import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -18,7 +18,7 @@ const NOMBRES_ROL: Record<number, string> = { 2: 'Médico', 3: 'Padre' };
   selector: 'app-permisos-rol',
   standalone: true,
   imports: [Breadcrumb, AccionPorNombrePipe],
-  viewProviders: [provideIcons({ heroShieldCheck })],
+
   templateUrl: './permisos-rol.html',
 })
 export class PermisosRol implements OnInit {

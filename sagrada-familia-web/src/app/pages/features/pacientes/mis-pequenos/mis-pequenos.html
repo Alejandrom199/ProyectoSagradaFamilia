@@ -2,11 +2,11 @@
     <div class="mb-10">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-3xl font-bold text-slate-800">
+                <h2 class="page-title">
                     {{ saludoConfig().texto }}, {{ auth.currentUser()?.nombre }}
-                    <ng-icon [name]="saludoConfig().icono" [ngClass]="saludoConfig().color" class="text-3xl"></ng-icon>
+                    <ng-icon [name]="saludoConfig().icono" [ngClass]="saludoConfig().color" class="text-xl"></ng-icon>
                 </h2>
-                <p class="text-slate-500 mt-1">Aquí tienes el resumen del crecimiento y desarrollo de tus hijos.</p>
+                <p class="page-subtitle">Aquí tienes el resumen del crecimiento y desarrollo de tus hijos.</p>
             </div>
         </div>
     </div>
@@ -36,20 +36,20 @@
                 <btn variant="primary" (clicked)="verSeguimiento(nino.id)"
                     class="w-14 h-12 flex items-center justify-center text-white"
                     tooltip="Ver Crecimiento" tooltipPosition="bottom">
-                    <ng-icon name="heroChartBar" class="text-xl"></ng-icon>
+                    <ng-icon name="matBarChartOutline" class="text-xl"></ng-icon>
                 </btn>
 
                 <btn variant="outline" (clicked)="verAlimentos(nino.id)"
                     class="w-14 h-12 flex items-center justify-center text-slate-600"
                     tooltip="Ver Alimentos" tooltipPosition="bottom">
-                    <ng-icon name="heroCake" class="text-xl"></ng-icon>
+                    <ng-icon name="matCakeOutline" class="text-xl"></ng-icon>
                 </btn>
             </div>
         </div>
         } @empty {
         <div class="col-span-full py-20 flex flex-col items-center border-2 border-dashed border-slate-200 bg-slate-50">
             <div class="w-20 h-20 bg-white rounded-md border border-slate-200 flex items-center justify-center mb-6">
-                <ng-icon name="heroUserCircle" class="text-slate-300 text-5xl"></ng-icon>
+                <ng-icon name="matAccountCircleOutline" class="text-slate-300 text-5xl"></ng-icon>
             </div>
             <h3 class="text-2xl font-bold text-slate-800">No hay niños registrados</h3>
             <p class="text-slate-500 mt-2 max-w-sm text-center">

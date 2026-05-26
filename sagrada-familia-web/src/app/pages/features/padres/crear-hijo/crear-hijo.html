@@ -7,10 +7,10 @@
             <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
                 <div class="sticky top-8">
                     <div class="w-12 h-12 bg-blue-600 rounded-md flex items-center justify-center mb-6">
-                        <ng-icon name="heroUserPlus" color="white"></ng-icon>
+                        <ng-icon name="matPersonAddOutline" color="white"></ng-icon>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-slate-800 leading-tight">Agregar hijo</h2>
+                    <h2 class="panel-title">Agregar hijo</h2>
                     <p class="text-sm text-slate-500 mt-3 leading-relaxed">
                         Registrando un nuevo hijo para
                         <strong>{{ padre()?.nombre }} {{ padre()?.apellido }}</strong>.
@@ -18,14 +18,14 @@
 
                     <div class="mt-8 space-y-5">
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroUser" class="text-blue-500 text-lg"></ng-icon></div>
+                            <div class="mt-1"><ng-icon name="matPersonOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Identidad</h4>
                                 <p class="text-xs text-slate-500 mt-1">Nombre, apellido, fecha de nacimiento y sexo del niño.</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroTableCells" class="text-blue-500 text-lg"></ng-icon></div>
+                            <div class="mt-1"><ng-icon name="matTableChartOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Siguiente paso</h4>
                                 <p class="text-xs text-slate-500 mt-1">Una vez creado, podrás registrar medidas y citas para este hijo.</p>
@@ -86,7 +86,7 @@
                             <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             Guardando...
                             } @else {
-                            <ng-icon name="heroUserPlus" class="text-lg"></ng-icon>
+                            <ng-icon name="matPersonAddOutline" class="text-lg"></ng-icon>
                             Crear hijo
                             }
                         </button>

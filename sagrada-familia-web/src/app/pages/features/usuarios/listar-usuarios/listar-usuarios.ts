@@ -1,9 +1,8 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlus, heroPencil, heroLockOpen, heroLockClosed, heroUserCircle } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 
-import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -15,7 +14,7 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
   selector: 'app-listar-usuarios',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, Button, Breadcrumb],
-  viewProviders: [provideIcons({ heroPlus, heroPencil, heroLockOpen, heroLockClosed, heroUserCircle })],
+
   templateUrl: './listar-usuarios.html',
   styleUrl: './listar-usuarios.css',
 })
@@ -25,6 +24,8 @@ export class ListarUsuarios implements OnInit {
   private loadingBar = inject(LoadingBar);
 
   usuarios = signal<UsuarioResponse[]>([]);
+  totalUsuarios = signal(0);
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
 
   columnas: DatatableColumn<UsuarioResponse>[] = [
     {
@@ -68,14 +69,14 @@ export class ListarUsuarios implements OnInit {
     },
     {
       label: 'Desactivar',
-      icon: 'heroLockClosed',
+      icon: 'matLockOutline',
       class: 'text-red-600 hover:bg-red-50',
       visible: (row) => row.activo,
       onClick: (row) => this.toggleEstado(row, false)
     },
     {
       label: 'Activar',
-      icon: 'heroLockOpen',
+      icon: 'matLockOpenOutline',
       class: 'text-green-600 hover:bg-green-50',
       visible: (row) => !row.activo,
       onClick: (row) => this.toggleEstado(row, true)
@@ -91,14 +92,21 @@ export class ListarUsuarios implements OnInit {
   }
 
   cargarUsuarios(): void {
+    const q = this.queryActual;
     this.loadingBar.show();
-    this.usuariosService.obtenerTodos().subscribe({
-      next: (response) => {
-        if (response.success) this.usuarios.set(response.data);
+    this.usuariosService.obtenerPaginado(q.page, q.pageSize, q.search, q.sortBy, q.sortDir === 'asc').subscribe({
+      next: (res) => {
+        this.usuarios.set(res.data);
+        this.totalUsuarios.set(res.totalItems);
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
     });
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarUsuarios();
   }
 
   toggleEstado(usuario: UsuarioResponse, activo: boolean): void {

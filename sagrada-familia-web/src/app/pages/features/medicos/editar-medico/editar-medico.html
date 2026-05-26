@@ -10,11 +10,11 @@
                         @if (medico()) {
                         {{ medico()?.nombre?.charAt(0) }}{{ medico()?.apellido?.charAt(0) }}
                         } @else {
-                        <ng-icon name="heroAcademicCap"></ng-icon>
+                        <ng-icon name="matSchoolOutline"></ng-icon>
                         }
                     </div>
 
-                    <h2 class="text-2xl font-bold text-slate-800 leading-tight">Editar Médico</h2>
+                    <h2 class="panel-title">Editar Médico</h2>
                     <p class="text-sm text-slate-500 mt-2 leading-relaxed">
                         Actualizando información del Dr(a):<br>
                         <span class="text-blue-600 font-bold text-base">{{ medico()?.nombre }} {{ medico()?.apellido }}</span>
@@ -22,7 +22,7 @@
 
                     <div class="mt-10 space-y-6">
                         <div class="flex gap-4 p-4 bg-white rounded-md border border-slate-200">
-                            <div class="mt-1"><ng-icon name="heroEnvelope" class="text-blue-500 text-lg"></ng-icon></div>
+                            <div class="mt-1"><ng-icon name="matEmailOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Actual</h4>
                                 <p class="text-xs text-slate-700 font-medium break-all">{{ medico()?.email }}</p>
@@ -67,7 +67,7 @@
                         <div class="flex flex-col gap-1.5">
                             <label class="text-xs font-bold text-slate-600 uppercase ml-1">Correo Electrónico</label>
                             <div class="relative">
-                                <ng-icon name="heroEnvelope"
+                                <ng-icon name="matEmailOutline"
                                     class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                                 <input formControlName="email" type="email"
                                     class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-100 text-slate-500 outline-none text-sm cursor-not-allowed">
@@ -77,7 +77,7 @@
                         <div class="flex flex-col gap-1.5">
                             <label class="text-xs font-bold text-slate-600 uppercase ml-1">Teléfono de contacto</label>
                             <div class="relative">
-                                <ng-icon name="heroPhone"
+                                <ng-icon name="matPhoneOutline"
                                     class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                                 <input formControlName="telefono" type="tel" placeholder="09XXXXXXXX"
                                     class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
@@ -92,7 +92,7 @@
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-600 uppercase ml-1">Especialidad</label>
                         <div class="relative">
-                            <ng-icon name="heroBriefcase"
+                            <ng-icon name="matWorkOutline"
                                 class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                             <input formControlName="especialidad" type="text" placeholder="Ej. Pediatría general"
                                 class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
@@ -117,7 +117,7 @@
                             <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             Actualizando...
                             } @else {
-                            <ng-icon name="heroPencilSquare" class="text-lg"></ng-icon>
+                            <ng-icon name="matEditNoteOutline" class="text-lg"></ng-icon>
                             Guardar Cambios
                             }
                         </button>

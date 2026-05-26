@@ -10,7 +10,7 @@
             </div>
             <input type="text"
                 class="w-full pl-10 pr-10 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 font-medium"
-                placeholder="BUSCAR..." [(ngModel)]="busquedaGlobal" (ngModelChange)="onFilterChange()">
+                placeholder="BUSCAR..." [(ngModel)]="busquedaGlobal" (ngModelChange)="onSearchChange($event)">
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <ng-icon name="heroFunnel" class="text-blue-600 text-lg"></ng-icon>
             </div>
@@ -29,7 +29,7 @@
             <div class="relative">
                 <button #btnColumnas (click)="toggleMenuColumnas($event, btnColumnas)"
                     class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
-                    [class.bg-blue-50]="menuActivo() === 'columnas'">
+                    [class.bg-blue-50]="menuActivo() === 'columnas'" tooltip="Columnas" tooltipPosition="top">
                     <ng-icon name="heroViewColumns" class="text-xl"></ng-icon>
                 </button>
                 @if (menuActivo() === 'columnas') {
@@ -48,7 +48,7 @@
                         <label
                             class="flex items-center gap-3 px-2 py-2 hover:bg-slate-50 rounded-md cursor-pointer transition-colors">
                             <input type="checkbox"
-                                class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                                class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                                 [checked]="!col.hidden" (change)="toggleVisibilidadColumna(col.key)">
                             <span class="text-sm font-medium select-none truncate">{{ col.label }}</span>
                         </label>
@@ -59,22 +59,25 @@
             </div>
             }
 
-            @if (showExportar && (exportExcel || exportPdf)){
+            @if (showExportar && (exportExcel || exportPdf || showPlantilla || showImportar)){
             <div class="relative">
                 <button #btnExportar (click)="toggleMenuExportar($event, btnExportar)"
                     class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
-                    [class.bg-blue-50]="menuActivo() === 'exportar'">
+                    [class.bg-blue-50]="menuActivo() === 'exportar'" tooltip="Exportar / Importar"
+                    tooltipPosition="top">
                     <ng-icon name="heroArrowDownTray" class="text-xl"></ng-icon>
                 </button>
                 @if (menuActivo() === 'exportar') {
-                <div class="fixed w-40 bg-white rounded-md z-[9999] overflow-hidden divide-y divide-slate-200 font-normal text-slate-700 animate-fade-in border border-slate-200"
+                <div class="fixed w-44 bg-white rounded-md z-[9999] overflow-hidden font-normal text-slate-700 animate-fade-in border border-slate-200"
                     [ngStyle]="exportarPosicion" (click)="$event.stopPropagation()">
+
+                    @if (exportExcel || exportPdf) {
                     <div class="p-1.5 flex flex-col gap-0.5">
                         @if (exportExcel) {
                         <button
                             class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-green-50 hover:text-green-700 w-full focus:outline-none transition-colors rounded-md group"
                             (click)="exportarExcel(); cerrarMenus()">
-                            <ng-icon name="heroTableCells"
+                            <ng-icon name="matBorderAllOutline"
                                 class="text-lg text-green-600 opacity-80 group-hover:opacity-100"></ng-icon>
                             <span class="font-medium">Excel</span>
                         </button>
@@ -83,9 +86,75 @@
                         <button
                             class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-red-50 hover:text-red-700 w-full focus:outline-none transition-colors rounded-md group"
                             (click)="exportarPdf(); cerrarMenus()">
-                            <ng-icon name="heroDocumentArrowDown"
+                            <ng-icon name="matPictureAsPdfOutline"
                                 class="text-lg text-red-600 opacity-80 group-hover:opacity-100"></ng-icon>
                             <span class="font-medium">PDF</span>
+                        </button>
+                        }
+                    </div>
+                    }
+
+                    @if ((exportExcel || exportPdf) && (showPlantilla || showImportar)) {
+                    <div class="border-t border-slate-200"></div>
+                    }
+
+                    @if (showPlantilla || showImportar) {
+                    <div class="p-1.5 flex flex-col gap-0.5">
+                        @if (showPlantilla) {
+                        <button
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 hover:text-slate-900 w-full focus:outline-none transition-colors rounded-md group"
+                            (click)="onPlantilla.emit(); cerrarMenus()">
+                            <ng-icon name="heroArrowDownTray"
+                                class="text-lg text-slate-500 opacity-80 group-hover:opacity-100"></ng-icon>
+                            <span class="font-medium">Plantilla</span>
+                        </button>
+                        }
+                        @if (showImportar) {
+                        <button
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-blue-50 hover:text-blue-700 w-full focus:outline-none transition-colors rounded-md group"
+                            (click)="onImportar.emit(); cerrarMenus()">
+                            <ng-icon name="heroArrowUpTray"
+                                class="text-lg text-blue-500 opacity-80 group-hover:opacity-100"></ng-icon>
+                            <span class="font-medium">Carga masiva</span>
+                        </button>
+                        }
+                    </div>
+                    }
+
+                </div>
+                }
+            </div>
+            }
+
+            @if (showConfiguracion) {
+            <div class="relative">
+                <button #btnConfiguracion (click)="toggleMenuConfiguracion($event, btnConfiguracion)"
+                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
+                    [class.bg-blue-50]="menuActivo() === 'configuracion'" tooltip="Configuración" tooltipPosition="top">
+                    <ng-icon name="heroCog8Tooth" class="text-xl"></ng-icon>
+                </button>
+                @if (menuActivo() === 'configuracion') {
+                <div class="fixed w-52 bg-white rounded-md z-[9999] overflow-hidden border border-slate-200 animate-fade-in"
+                    [ngStyle]="configuracionPosicion" (click)="$event.stopPropagation()">
+                    <div class="p-2">
+                        <div class="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                            Densidad de filas
+                        </div>
+                        @for (op of densidadOpciones; track op.valor) {
+                        <button
+                            class="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700"
+                            [class.!text-blue-600]="densidad() === op.valor" (click)="setDensidad(op.valor)">
+                            <span class="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                                [class.border-blue-600]="densidad() === op.valor"
+                                [class.border-slate-300]="densidad() !== op.valor">
+                                @if (densidad() === op.valor) {
+                                <span class="w-2 h-2 rounded-full bg-blue-600 block"></span>
+                                }
+                            </span>
+                            <span class="flex flex-col text-left leading-tight">
+                                {{ op.label }}
+                                <span class="text-[10px] font-normal text-slate-400">{{ op.desc }}</span>
+                            </span>
                         </button>
                         }
                     </div>
@@ -93,19 +162,11 @@
                 }
             </div>
             }
-
-            @if (showConfiguracion) {
-            <button
-                class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
-                (click)="onConfiguracion.emit()">
-                <ng-icon name="heroCog8Tooth" class="text-xl"></ng-icon>
-            </button>
-            }
         </div>
     </div>
 
     <div class="w-full overflow-x-auto scrollbar-thin" (scroll)="cerrarMenus()">
-        <table class="w-full min-w-full text-sm text-left relative">
+        <table class="w-full min-w-full text-sm text-left relative" [class.table-fixed]="hasCustomWidths()">
 
             <thead>
                 <tr class="bg-[#F8FAFC] border-b border-slate-200">
@@ -115,12 +176,15 @@
                     }
 
                     @for (col of columnasVisibles; track col.key) {
-                    <th class="px-4 py-3 font-medium text-slate-500 whitespace-nowrap">
+                    <th #thEl
+                        class="px-4 py-3 font-medium text-slate-500 whitespace-nowrap relative group/resize overflow-visible"
+                        [style.width.px]="columnWidths()[col.key] || null">
 
                         <div class="flex items-center justify-between w-full group">
-                            <div class="flex items-center gap-1.5 cursor-pointer select-none hover:text-blue-700 transition-colors flex-1"
+                            <div class="flex items-center gap-1.5 cursor-pointer select-none hover:text-blue-700 transition-colors flex-1 overflow-hidden"
                                 (click)="col.sortable && ordenarPor(col.key)">
-                                <span>{{ col.label }}</span>
+
+                                <span class="truncate">{{ col.label }}</span>
 
                                 @if (sortKey === col.key) {
                                 <ng-icon [name]="sortDir === 'asc' ? 'heroArrowUp' : 'heroArrowDown'"
@@ -128,7 +192,7 @@
                                 }
                             </div>
 
-                            @if (col.filterable) {
+                            @if (col.filterable && !serverSide) {
                             <button #btnFiltro
                                 class="p-1 rounded-md transition-all hover:bg-slate-100 text-slate-400 focus:outline-none ml-4 flex-shrink-0"
                                 [class.!text-blue-600]="filtros[col.key] || menuActivo() === 'filtro-' + col.key"
@@ -155,7 +219,7 @@
                                 <label
                                     class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer border-b border-slate-200 mb-1">
                                     <input type="checkbox"
-                                        class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                                        class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                                         [checked]="todosLosValoresMarcados(col.key)"
                                         (change)="toggleTodosLosValores(col.key)">
                                     <span class="text-sm font-semibold text-blue-600">Seleccionar todo</span>
@@ -166,7 +230,7 @@
                                     <label
                                         class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer">
                                         <input type="checkbox"
-                                            class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                                            class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                                             [checked]="isValorMarcado(col.key, valor)"
                                             (change)="toggleValorFiltro(col.key, valor)">
                                         <span class="text-sm truncate" [title]="valor">{{ valor }}</span>
@@ -188,6 +252,11 @@
                             </div>
                         </div>
                         }
+
+                        <div class="absolute right-0 top-0 h-full w-2 cursor-col-resize opacity-0 group-hover/resize:opacity-100 transition-opacity z-10 flex items-center justify-center"
+                            (mousedown)="onResizeStart($event, col.key, thEl)">
+                            <div class="h-5 w-px bg-blue-400 rounded-full"></div>
+                        </div>
                     </th>
                     }
                 </tr>
@@ -267,11 +336,15 @@
                     }
 
                     @for (col of columnasVisibles; track col.key) {
-                    <td class="px-4 py-4 text-slate-700 whitespace-nowrap" [class]="col.class ?? ''">
+                    <td class="px-4 text-slate-700 whitespace-nowrap overflow-hidden"
+                        [ngClass]="densidad() === 'compacto' ? 'py-1.5' : densidad() === 'espacioso' ? 'py-6' : 'py-4'"
+                        [class]="col.class ?? ''">
                         @if (col.render) {
-                        <span [innerHTML]="col.render(row)"></span>
+                        <span [innerHTML]="col.render(row)" class="block truncate"
+                            [tooltip]="cellTooltip(row, col)" tooltipPosition="top"></span>
                         } @else {
-                        {{ getCellValue(row, col.key) }}
+                        <span class="block truncate"
+                            [tooltip]="cellTooltip(row, col)" tooltipPosition="top">{{ getCellValue(row, col.key) }}</span>
                         }
                     </td>
                     }
@@ -282,8 +355,9 @@
         </table>
     </div>
 
-    @if (datosFiltrados.length > 0) {
-    <div class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-slate-500 border-t border-slate-200">
+    @if (serverSide ? serverTotalItems > 0 : datosFiltrados.length > 0) {
+    <div
+        class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-slate-500 border-t border-slate-200">
 
         <div class="flex items-center gap-2">
             <span class="tracking-wide">REGISTROS POR PÁGINA:</span>
@@ -297,7 +371,7 @@
         </div>
 
         <span class="tracking-wide">
-            {{ inicio + 1 }} - {{ fin }} DE {{ datosFiltrados.length }}
+            {{ inicio + 1 }} - {{ fin }} DE {{ serverSide ? serverTotalItems : datosFiltrados.length }}
         </span>
 
         <div class="flex items-center gap-4 text-slate-400">

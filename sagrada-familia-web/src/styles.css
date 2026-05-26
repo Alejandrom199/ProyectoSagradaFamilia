@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* ── Escala tipográfica centralizada ─────────────────────────────────────────
+   Modificar aquí propaga el cambio a todo el sistema.
+   page-title  → encabezado principal de cada vista
+   page-subtitle → descripción debajo del título
+   panel-title → h2 dentro de paneles de formulario (columna lateral)
+   section-label → etiqueta de sección en uppercase
+   ─────────────────────────────────────────────────────────────────────────── */
+.page-title    { @apply text-xl font-bold text-slate-800; }
+.page-subtitle { @apply text-sm text-slate-500 mt-1; }
+.panel-title   { @apply text-lg font-bold text-slate-800 leading-tight; }
+.section-label { @apply text-xs font-bold text-slate-500 uppercase tracking-wider; }
+
 /* Definir la paleta de colores de La Sagrada Familia */
 :root {
     /* Fondo y superficies */

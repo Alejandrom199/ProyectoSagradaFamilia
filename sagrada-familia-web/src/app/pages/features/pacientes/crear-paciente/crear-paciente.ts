@@ -1,8 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { provideIcons, NgIcon } from '@ng-icons/core';
-import { heroArrowLeft, heroUserPlus } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { NinosService } from '../../../../core/services/ninos';
@@ -15,7 +15,7 @@ import { NinoCreate } from '../../../../shared/interfaces/nino.interface';
   selector: 'app-crear-paciente',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
-  viewProviders: [provideIcons({ heroArrowLeft, heroUserPlus })],
+
   templateUrl: './crear-paciente.html',
   styleUrl: './crear-paciente.css',
 })

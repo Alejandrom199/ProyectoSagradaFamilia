@@ -1,8 +1,8 @@
 import { Component, Input, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { provideIcons, NgIcon } from '@ng-icons/core';
-import { heroArrowLeft, heroUserPlus } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { PadreDetailResponse, PadreResponse } from '../../../../shared/interfaces/padre.interface';
@@ -15,7 +15,7 @@ import { PadresService } from '../../../../core/services/padres';
   selector: 'app-crear-hijo',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
-  viewProviders: [provideIcons({ heroArrowLeft, heroUserPlus })],
+
   templateUrl: './crear-hijo.html',
   styleUrl: './crear-hijo.css',
 })

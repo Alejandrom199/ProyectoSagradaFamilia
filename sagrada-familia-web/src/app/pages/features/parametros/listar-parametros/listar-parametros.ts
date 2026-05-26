@@ -1,8 +1,7 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPencil, heroCheck, heroXMark, heroPlus, heroTrash, heroCog6Tooth } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 import { ParametrosService } from '../../../../core/services/parametros';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -20,7 +19,6 @@ interface ParametroEditando {
     selector: 'listar-parametros',
     standalone: true,
     imports: [CommonModule, FormsModule, NgIcon, Breadcrumb, ConfirmModal],
-    viewProviders: [provideIcons({ heroPencil, heroCheck, heroXMark, heroPlus, heroTrash, heroCog6Tooth })],
     templateUrl: './listar-parametros.html'
 })
 export class ListarParametros implements OnInit {
