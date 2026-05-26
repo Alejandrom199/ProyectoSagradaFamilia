@@ -1,10 +1,13 @@
 ﻿using SagradaFamilia.Application.DTOs;
+using SagradaFamilia.Application.DTOs.Common;
 
 namespace SagradaFamilia.Application.Interfaces.Services
 {
     public interface IAlimentoService
     {
         Task<IEnumerable<AlimentoDto.Response>> ObtenerTodosAsync();
+        Task<PagedResponse<AlimentoDto.Response>> ObtenerPaginadoAsync(
+            int page, int pageSize, string? search, string? sortBy, bool ascending);
         Task<AlimentoDto.Response> ObtenerPorIdAsync(int id);
 
         Task<IEnumerable<AlimentoDto.Response>> ObtenerPorRangoEdadAsync(int edadMeses);
@@ -20,5 +23,9 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<CategoriaDto.Response> CrearCategoriaAsync(CategoriaDto.Create request);
         Task<CategoriaDto.Response> ActualizarCategoriaAsync(int id, CategoriaDto.Update request);
         Task EliminarCategoriaAsync(int id);
+
+        Task<byte[]> GenerarPlantillaAsync();
+        Task<byte[]> ExportarExcelAsync();
+        Task<AlimentoDto.ImportResultado> ImportarAsync(Stream archivoStream);
     }
 }

@@ -24,6 +24,39 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .Include(a => a.Categoria)
                 .FirstOrDefaultAsync(a => a.Id == id && !a.Eliminado);
 
+        public async Task<(IEnumerable<Alimento> Items, int TotalItems)> ObtenerPaginadoAsync(
+            int page, int pageSize, string? search, string? sortBy, bool ascending)
+        {
+            var query = _context.Alimentos
+                .Include(a => a.Categoria)
+                .Where(a => !a.Eliminado)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(a =>
+                    a.Nombre.ToLower().Contains(term) ||
+                    a.Categoria.Nombre.ToLower().Contains(term));
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "nombre"           => ascending ? query.OrderBy(a => a.Nombre)              : query.OrderByDescending(a => a.Nombre),
+                "categoriaNombre"  => ascending ? query.OrderBy(a => a.Categoria.Nombre)    : query.OrderByDescending(a => a.Categoria.Nombre),
+                "edadMinimaMeses"  => ascending ? query.OrderBy(a => a.EdadMinimaMeses)     : query.OrderByDescending(a => a.EdadMinimaMeses),
+                _                  => query.OrderBy(a => a.Categoria.Nombre).ThenBy(a => a.Nombre)
+            };
+
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, total);
+        }
+
         public async Task<IEnumerable<Alimento>> ObtenerPorRangoEdadAsync(int edadMeses) =>
             await _context.Alimentos
                 .Include(a => a.Categoria)

@@ -23,6 +23,16 @@ namespace SagradaFamilia.API.Controllers
             return HandleResponse(result);
         }
 
+        [HttpGet("paginado")]
+        [Authorize(Roles = "Administrador, Medico")]
+        public async Task<ActionResult<PagedResponse<PadreDto.ListResponse>>> GetPaginado(
+            [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null, [FromQuery] string? sortBy = null, [FromQuery] bool asc = true)
+        {
+            var result = await _padreService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc);
+            return Ok(result);
+        }
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ApiResponse<PadreDto.DetailResponse>>> GetById(int id)
         {
@@ -71,6 +81,14 @@ namespace SagradaFamilia.API.Controllers
         {
             await _padreService.EliminarAsync(id);
             return HandleSuccess("Padre eliminado.");
+        }
+
+        [HttpPatch("{id:int}/email")]
+        [Authorize(Roles = "Administrador, Medico")]
+        public async Task<ActionResult<ApiResponse>> CambiarEmail(int id, [FromBody] PadreDto.ChangeEmail request)
+        {
+            await _padreService.CambiarEmailAsync(id, request.Email);
+            return HandleSuccess("Correo electrónico actualizado correctamente.");
         }
 
         [HttpPost("{id:int}/reset-password")]

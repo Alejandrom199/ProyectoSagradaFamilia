@@ -5,6 +5,7 @@ using BCrypt.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SagradaFamilia.Application.DTOs;
+using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Settings;
 using SagradaFamilia.Domain.Entities;
@@ -52,6 +53,14 @@ public class PadreService : IPadreService
 
         var padres = await _padreRepository.ObtenerTodosAsync();
         return _mapper.Map<IEnumerable<PadreDto.ListResponse>>(padres);
+    }
+
+    public async Task<PagedResponse<PadreDto.ListResponse>> ObtenerPaginadoAsync(
+        int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _padreRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending);
+        var data = _mapper.Map<IEnumerable<PadreDto.ListResponse>>(items);
+        return PagedResponse<PadreDto.ListResponse>.Ok(data, total, page, pageSize);
     }
 
     public async Task<PadreDto.DetailResponse> ObtenerPorIdAsync(int id)
@@ -166,6 +175,27 @@ public class PadreService : IPadreService
             _logger.LogError(ex, "Error al eliminar el padre ID: {Id}. Se realizó Rollback.", id);
             throw new BusinessException("No se pudo eliminar el registro del representante.");
         }
+    }
+
+    public async Task CambiarEmailAsync(int padreId, string nuevoEmail)
+    {
+        _logger.LogInformation("Solicitud de cambio de email para padre ID: {Id}", padreId);
+
+        var padre = await _padreRepository.ObtenerPorIdAsync(padreId)
+            ?? throw new NotFoundException("Padre", padreId);
+
+        var emailNormalizado = nuevoEmail.Trim().ToLowerInvariant();
+
+        if (await _usuarioRepository.ExisteEmailAsync(emailNormalizado))
+            throw new BusinessException("El correo electrónico ya está en uso por otra cuenta.");
+
+        var usuario = await _usuarioRepository.ObtenerPorIdAsync(padre.UsuarioId)
+            ?? throw new NotFoundException("Usuario asociado al padre", padre.UsuarioId);
+
+        usuario.Email = emailNormalizado;
+        await _usuarioRepository.ActualizarAsync(usuario);
+
+        _logger.LogInformation("Email del padre ID: {Id} actualizado a {Email}.", padreId, emailNormalizado);
     }
 
     public async Task RestablecerPasswordAsync(int padreId)

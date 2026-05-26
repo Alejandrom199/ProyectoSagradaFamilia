@@ -23,6 +23,18 @@ public class AlimentosController : BaseController
         return HandleResponse(response);
     }
 
+    [HttpGet("paginado")]
+    public async Task<ActionResult<PagedResponse<AlimentoDto.Response>>> ObtenerPaginado(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] bool asc = true)
+    {
+        var response = await _alimentoService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc);
+        return Ok(response);
+    }
+
     [HttpGet("por-edad/{edadMeses:int}")]
     public async Task<ActionResult<ApiResponse<IEnumerable<AlimentoDto.Response>>>> ObtenerPorEdad(int edadMeses)
     {
@@ -68,5 +80,44 @@ public class AlimentosController : BaseController
     {
         var response = await _alimentoService.CrearCategoriaAsync(request);
         return HandleResponse(response, "Categoría creada.");
+    }
+
+    [HttpGet("exportar")]
+    [Authorize(Roles = "Medico")]
+    public async Task<IActionResult> ExportarExcel()
+    {
+        var bytes = await _alimentoService.ExportarExcelAsync();
+        string filename = $"alimentos-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
+    [HttpGet("plantilla")]
+    [Authorize(Roles = "Medico")]
+    public async Task<IActionResult> DescargarPlantilla()
+    {
+        var bytes = await _alimentoService.GenerarPlantillaAsync();
+        string filename = $"plantilla-alimentos-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
+    [HttpPost("importar")]
+    [Authorize(Roles = "Medico")]
+    public async Task<ActionResult<ApiResponse<AlimentoDto.ImportResultado>>> Importar(IFormFile archivo)
+    {
+        if (archivo is null || archivo.Length == 0)
+            return BadRequest(ApiResponse<AlimentoDto.ImportResultado>.Fail("No se recibió ningún archivo."));
+
+        var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+        if (extension != ".xlsx")
+            return BadRequest(ApiResponse<AlimentoDto.ImportResultado>.Fail("Solo se aceptan archivos .xlsx"));
+
+        using var stream = archivo.OpenReadStream();
+        var resultado = await _alimentoService.ImportarAsync(stream);
+
+        string mensaje = resultado.Errores.Count == 0
+            ? $"{resultado.Importados} creados, {resultado.Actualizados} actualizados correctamente."
+            : $"{resultado.Importados} creados, {resultado.Actualizados} actualizados, {resultado.Errores.Count} con errores.";
+
+        return HandleResponse(resultado, mensaje);
     }
 }

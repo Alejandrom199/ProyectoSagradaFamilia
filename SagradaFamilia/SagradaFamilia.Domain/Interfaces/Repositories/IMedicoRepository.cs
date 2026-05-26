@@ -7,6 +7,7 @@ namespace SagradaFamilia.Domain.Interfaces.Repositories
         Task<Medico?> ObtenerPorIdAsync(int id);
         Task<Medico?> ObtenerPorUsuarioIdAsync(int usuarioId);
         Task<IEnumerable<Medico>> ObtenerTodosAsync();
+        Task<(IEnumerable<Medico> Items, int TotalItems)> ObtenerPaginadoAsync(int page, int pageSize, string? search, string? sortBy, bool ascending);
         Task<Medico?> ObtenerConPacientesAsync(int id);
         Task<Medico> CrearAsync(Medico medico);
         Task<Medico> ActualizarAsync(Medico medico);

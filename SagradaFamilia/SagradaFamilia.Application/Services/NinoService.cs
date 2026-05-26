@@ -3,6 +3,7 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
+using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Exceptions;
@@ -37,6 +38,14 @@ public class NinoService : INinoService
 
         var ninos = await _ninoRepository.ObtenerTodosAsync();
         return _mapper.Map<IEnumerable<NinoDto.ListResponse>>(ninos);
+    }
+
+    public async Task<PagedResponse<NinoDto.ListResponse>> ObtenerPaginadoAsync(
+        int page, int pageSize, string? search, string? sortBy, bool ascending, int? medicoId = null)
+    {
+        var (items, total) = await _ninoRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending, medicoId);
+        var data = _mapper.Map<IEnumerable<NinoDto.ListResponse>>(items);
+        return PagedResponse<NinoDto.ListResponse>.Ok(data, total, page, pageSize);
     }
 
     public async Task<NinoDto.DetailResponse> ObtenerPorIdAsync(int id)

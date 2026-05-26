@@ -34,6 +34,39 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .ThenBy(p => p.Nombre)
                 .ToListAsync();
 
+        public async Task<(IEnumerable<Padre> Items, int TotalItems)> ObtenerPaginadoAsync(
+            int page, int pageSize, string? search, string? sortBy, bool ascending)
+        {
+            var query = _context.Padres
+                .Include(p => p.Usuario)
+                .Include(p => p.Medico)
+                .Include(p => p.Ninos.Where(n => !n.Eliminado))
+                .Where(p => !p.Eliminado)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(p =>
+                    p.Nombre.ToLower().Contains(term) ||
+                    p.Apellido.ToLower().Contains(term) ||
+                    p.Usuario.Email.ToLower().Contains(term));
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "nombre"        => ascending ? query.OrderBy(p => p.Nombre)              : query.OrderByDescending(p => p.Nombre),
+                "apellido"      => ascending ? query.OrderBy(p => p.Apellido)            : query.OrderByDescending(p => p.Apellido),
+                "email"         => ascending ? query.OrderBy(p => p.Usuario.Email)       : query.OrderByDescending(p => p.Usuario.Email),
+                "fechacreacion" => ascending ? query.OrderBy(p => p.FechaCreacion)       : query.OrderByDescending(p => p.FechaCreacion),
+                _               => query.OrderBy(p => p.Apellido).ThenBy(p => p.Nombre)
+            };
+
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, total);
+        }
+
         public async Task<Padre> CrearAsync(Padre padre)
         {
             _context.Padres.Add(padre);

@@ -5,6 +5,7 @@ using BCrypt.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SagradaFamilia.Application.DTOs;
+using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Settings;
 using SagradaFamilia.Domain.Entities;
@@ -52,6 +53,14 @@ public class MedicoService : IMedicoService
 
         var medicos = await _medicoRepository.ObtenerTodosAsync();
         return _mapper.Map<IEnumerable<MedicoDto.ListResponse>>(medicos);
+    }
+
+    public async Task<PagedResponse<MedicoDto.ListResponse>> ObtenerPaginadoAsync(
+        int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _medicoRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending);
+        var data = _mapper.Map<IEnumerable<MedicoDto.ListResponse>>(items);
+        return PagedResponse<MedicoDto.ListResponse>.Ok(data, total, page, pageSize);
     }
 
     public async Task<MedicoDto.DetailResponse> ObtenerPorIdAsync(int id)

@@ -25,69 +25,69 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             {
                 new()
                 {
-                    Nombre = "Administración", Icono = "cog-6-tooth", Orden = 1, Activo = true,
+                    Nombre = "Administración", Icono = "settings", Orden = 1, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Usuarios", Ruta = "/usuarios", Icono = "users", Orden = 1, Activo = true,
+                        new() { Nombre = "Usuarios", Ruta = "/usuarios", Icono = "people", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
-                        new() { Nombre = "Padres de Familia", Ruta = "/padres", Icono = "user-group", Orden = 2, Activo = true,
+                        new() { Nombre = "Padres de Familia", Ruta = "/padres", Icono = "groups", Orden = 2, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
-                        new() { Nombre = "Médicos", Ruta = "/medicos", Icono = "identification", Orden = 3, Activo = true,
+                        new() { Nombre = "Médicos", Ruta = "/medicos", Icono = "badge", Orden = 3, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
-                        new() { Nombre = "Roles y Permisos", Ruta = "/roles", Icono = "shield-check", Orden = 4, Activo = true,
+                        new() { Nombre = "Roles y Permisos", Ruta = "/roles", Icono = "verified-user", Orden = 4, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver")) },
-                        new() { Nombre = "Parámetros del Sistema", Ruta = "/parametros", Icono = "cog-6-tooth", Orden = 5, Activo = true,
+                        new() { Nombre = "Parámetros del Sistema", Ruta = "/parametros", Icono = "settings", Orden = 5, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
                     }
                 },
                 new()
                 {
-                    Nombre = "Gestión de Pacientes", Icono = "heart", Orden = 2, Activo = true,
+                    Nombre = "Gestión de Pacientes", Icono = "monitor-heart", Orden = 2, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Pacientes", Ruta = "/pacientes", Icono = "heart", Orden = 1, Activo = true,
+                        new() { Nombre = "Pacientes", Ruta = "/pacientes", Icono = "child-care", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
                     }
                 },
                 new()
                 {
-                    Nombre = "Atención Médica", Icono = "clipboard-document-list", Orden = 3, Activo = true,
+                    Nombre = "Atención Médica", Icono = "assignment", Orden = 3, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Agenda de Citas", Ruta = "/citas", Icono = "calendar-days", Orden = 1, Activo = true,
+                        new() { Nombre = "Agenda de Citas", Ruta = "/citas", Icono = "calendar-month", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
-                        new() { Nombre = "Historial de Citas", Ruta = "/citas/historial", Icono = "clock", Orden = 2, Activo = true,
+                        new() { Nombre = "Historial de Citas", Ruta = "/citas/historial", Icono = "schedule", Orden = 2, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver")) },
-                        new() { Nombre = "Historial de Prescripciones", Ruta = "/prescripciones", Icono = "clipboard-document-list", Orden = 3, Activo = true,
+                        new() { Nombre = "Historial de Prescripciones", Ruta = "/prescripciones", Icono = "assignment", Orden = 3, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
                     }
                 },
                 new()
                 {
-                    Nombre = "Predicciones", Icono = "arrow-trending-up", Orden = 4, Activo = true,
+                    Nombre = "Predicciones", Icono = "trending-up", Orden = 4, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Predicciones de Crecimiento", Ruta = "/predicciones", Icono = "arrow-trending-up", Orden = 1, Activo = true,
+                        new() { Nombre = "Predicciones de Crecimiento", Ruta = "/predicciones", Icono = "batch-prediction", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver")) }
                     }
                 },
                 new()
                 {
-                    Nombre = "Orientación Alimentaria", Icono = "archive-box", Orden = 5, Activo = true,
+                    Nombre = "Orientación Alimentaria", Icono = "set-meal", Orden = 5, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Alimentos", Ruta = "/alimentos", Icono = "archive-box", Orden = 1, Activo = true,
+                        new() { Nombre = "Alimentos", Ruta = "/alimentos", Icono = "set-meal", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
                     }
                 },
                 new()
                 {
-                    Nombre = "Monitoreo", Icono = "table-cells", Orden = 6, Activo = true,
+                    Nombre = "Monitoreo", Icono = "table-chart", Orden = 6, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Actividad del Sistema", Ruta = "/sistema/auditoria", Icono = "magnifying-glass", Orden = 1, Activo = true,
+                        new() { Nombre = "Actividad del Sistema", Ruta = "/sistema/auditoria", Icono = "search", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver")) },
-                        new() { Nombre = "Eventos del Sistema", Ruta = "/sistema/logs", Icono = "exclamation-triangle", Orden = 2, Activo = true,
+                        new() { Nombre = "Eventos del Sistema", Ruta = "/sistema/logs", Icono = "warning-amber", Orden = 2, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver")) }
                     }
                 },

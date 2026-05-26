@@ -41,6 +41,38 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .Where(u => !u.Eliminado)
                 .ToListAsync();
 
+        public async Task<(IEnumerable<Usuario> Items, int TotalItems)> ObtenerPaginadoAsync(
+            int page, int pageSize, string? search, string? sortBy, bool ascending)
+        {
+            var query = _context.Usuarios
+                .Include(u => u.Rol)
+                .Include(u => u.Padre)
+                .Include(u => u.Medico)
+                .Where(u => !u.Eliminado)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(u =>
+                    u.Email.ToLower().Contains(term) ||
+                    u.Rol.Nombre.ToLower().Contains(term));
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "email"         => ascending ? query.OrderBy(u => u.Email)            : query.OrderByDescending(u => u.Email),
+                "rolnombre"     => ascending ? query.OrderBy(u => u.Rol.Nombre)       : query.OrderByDescending(u => u.Rol.Nombre),
+                "activo"        => ascending ? query.OrderBy(u => u.Activo)           : query.OrderByDescending(u => u.Activo),
+                "fechacreacion" => ascending ? query.OrderBy(u => u.FechaCreacion)    : query.OrderByDescending(u => u.FechaCreacion),
+                _               => query.OrderBy(u => u.Email)
+            };
+
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, total);
+        }
+
         public async Task<Usuario?> ObtenerConRolesYPermisosAsync(int id) =>
             await _context.Usuarios
                 .Include(u => u.Rol)
