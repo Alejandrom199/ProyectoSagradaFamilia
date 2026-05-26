@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroChartBar, heroUserCircle, heroHeart, heroCake, heroSun, heroCloud, heroMoon } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { CommonModule } from '@angular/common';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -16,7 +16,7 @@ import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
   selector: 'mis-pequenos',
   standalone: true,
   imports: [CommonModule, NgIcon, Button, Tooltip],
-  viewProviders: [provideIcons({ heroChartBar, heroUserCircle, heroHeart, heroCake, heroSun, heroCloud, heroMoon })],
+
   templateUrl: './mis-pequenos.html',
 })
 export class MisPequenos implements OnInit {

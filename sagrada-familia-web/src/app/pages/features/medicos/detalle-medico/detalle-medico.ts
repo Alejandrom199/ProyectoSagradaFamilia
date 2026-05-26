@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroArrowLeft, heroPlus, heroPencil, heroTrash, heroAcademicCap, heroKey } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
@@ -18,7 +18,7 @@ import { ConfirmModal } from '../../../../shared/components/confirm-modal/confir
   selector: 'app-detalle-medico',
   standalone: true,
   imports: [NgIcon, Datatable, Breadcrumb, ConfirmModal],
-  viewProviders: [provideIcons({ heroArrowLeft, heroPlus, heroPencil, heroTrash, heroAcademicCap, heroKey })],
+
   templateUrl: './detalle-medico.html',
   styleUrl: './detalle-medico.css',
 })

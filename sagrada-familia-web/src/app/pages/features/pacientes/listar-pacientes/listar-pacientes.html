@@ -2,11 +2,11 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="mb-6 flex justify-between items-end">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">Gestión de Pacientes</h2>
-            <p class="text-sm text-slate-500 mt-1">Gestión clínica de niños registrados en el sistema</p>
+            <h2 class="page-title">Gestión de Pacientes</h2>
+            <p class="page-subtitle">Gestión clínica de niños registrados en el sistema</p>
         </div>
         <btn variant="primary" routerLink="/pacientes/crear" class="text-white cursor-pointer">
-            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Agregar
         </btn>
     </div>
@@ -14,7 +14,8 @@
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Listado de Pacientes" [data]="ninos()" [columns]="columnas" [actions]="acciones"
             (onExportPdf)="descargarPacientesPdf($event)" exportFileName="catalogo-pacientes" searchPlaceholder="Buscar"
-            emptyMessage="No hay pacientes registrados en el sistema.">
+            emptyMessage="No hay pacientes registrados en el sistema."
+            [serverSide]="true" [serverTotalItems]="totalNinos()" (onServerQuery)="onServerQuery($event)">
         </datatable>
     </div>
 

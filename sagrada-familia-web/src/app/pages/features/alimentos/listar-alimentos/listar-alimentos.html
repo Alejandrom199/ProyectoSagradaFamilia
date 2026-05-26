@@ -2,18 +2,28 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">Gestión de Alimentos</h2>
-            <p class="text-slate-500 mt-1">Catálogo de alimentos recomendados por edad</p>
+            <h2 class="page-title">Gestión de Alimentos</h2>
+            <p class="page-subtitle">Catálogo de alimentos recomendados por edad</p>
         </div>
-        <btn variant="primary" routerLink="/alimentos/crear" class="text-white cursor-pointer">
-            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
-            Agregar
-        </btn>
+        <div class="flex items-center gap-2">
+            <btn variant="primary" routerLink="/alimentos/crear" class="text-white cursor-pointer">
+                <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
+                Agregar
+            </btn>
+        </div>
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
-        <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
-            exportFileName="catalogo-alimentos" (onExportPdf)="descargarAlimentosPdf($event)" searchPlaceholder="Buscar"
+        <datatable title="Listado de alimentos"
+            [data]="alimentos()" [columns]="columnas" [actions]="acciones"
+            [serverSide]="true" [serverTotalItems]="totalAlimentos()"
+            (onServerQuery)="onServerQuery($event)"
+            exportFileName="catalogo-alimentos"
+            (onExportPdf)="descargarAlimentosPdf($event)"
+            (onExportExcel)="descargarExcel()"
+            [showPlantilla]="true" (onPlantilla)="descargarPlantilla()"
+            [showImportar]="true" (onImportar)="mostrarModalImport.set(true)"
+            (onActualizar)="cargarDatos()"
             emptyMessage="No hay alimentos registrados en el sistema.">
         </datatable>
     </div>
@@ -23,5 +33,15 @@
         [message]="'Esta acción eliminará a ' + alimentoAEliminar()?.nombre + ' del catálogo general. Esta acción no se puede deshacer.'"
         (confirm)="confirmarEliminar()" (cancel)="alimentoAEliminar.set(null)">
     </confirm-modal>
+    }
+
+    @if (mostrarModalImport()) {
+    <import-modal
+        titulo="Importación masiva de alimentos"
+        subtitulo="Use la plantilla oficial para garantizar el formato correcto."
+        [importFn]="importarFn"
+        (cerrado)="mostrarModalImport.set(false)"
+        (importacionExitosa)="cargarDatos()">
+    </import-modal>
     }
 </div>

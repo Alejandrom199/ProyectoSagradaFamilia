@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroEye, heroCalendarDays } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -14,7 +14,7 @@ import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.int
   selector: 'historial-citas',
   standalone: true,
   imports: [Datatable, Breadcrumb],
-  viewProviders: [provideIcons({ heroEye, heroCalendarDays })],
+
   templateUrl: './historial-citas.html',
 })
 export class HistorialCitas implements OnInit {
@@ -73,7 +73,7 @@ export class HistorialCitas implements OnInit {
     {
       type: 'ver',
       label: 'Ver detalle',
-      icon: 'heroEye',
+      icon: 'matVisibilityOutline',
       onClick: (row) => this.router.navigate(['/citas', row.id])
     }
   ];

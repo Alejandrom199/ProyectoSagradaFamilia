@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroUserCircle, heroEnvelope, heroShieldCheck, heroCalendarDays, heroLockOpen, heroLockClosed } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -13,9 +13,7 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
   selector: 'app-detalle-usuario',
   standalone: true,
   imports: [NgIcon, RouterLink, Breadcrumb],
-  viewProviders: [provideIcons({
-    heroUserCircle, heroEnvelope, heroShieldCheck, heroCalendarDays, heroLockOpen, heroLockClosed
-  })],
+
   templateUrl: './detalle-usuario.html',
   styleUrl: './detalle-usuario.css',
 })

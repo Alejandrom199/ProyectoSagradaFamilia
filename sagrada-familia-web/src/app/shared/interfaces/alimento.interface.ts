@@ -44,3 +44,15 @@ export interface CategoriaUpdate {
     descripcion?: string;
     activo: boolean;
 }
+
+export interface ImportError {
+    fila: number;
+    mensaje: string;
+}
+
+export interface ImportResultado {
+    totalProcesadas: number;
+    importados: number;
+    actualizados: number;
+    errores: ImportError[];
+}

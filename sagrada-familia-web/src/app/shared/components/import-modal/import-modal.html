@@ -1,0 +1,168 @@
+<div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" (click.self)="cerrar()">
+    <div class="bg-white rounded-md border border-slate-200 w-full max-w-lg">
+
+        <!-- Cabecera -->
+        <div class="flex items-start justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+            <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-md bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
+                    <ng-icon name="matCloudUploadOutline" class="text-blue-600 text-xl"></ng-icon>
+                </div>
+                <div>
+                    <h3 class="text-base font-semibold text-slate-800">{{ titulo() }}</h3>
+                    <p class="text-sm text-slate-400 mt-0.5">{{ subtitulo() }}</p>
+                </div>
+            </div>
+            <button (click)="cerrar()"
+                class="h-7 w-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors ml-4 mt-0.5">
+                <ng-icon name="matCloseOutline" size="18"></ng-icon>
+            </button>
+        </div>
+
+        <!-- Estado: selección de archivo -->
+        @if (estado() === 'seleccion') {
+        <div class="px-6 py-5 space-y-4">
+            <input #fileInput type="file" accept=".xlsx" class="hidden" (change)="onArchivoSeleccionado($event)">
+
+            <!-- Zona drag-and-drop -->
+            <div class="border-2 border-dashed rounded-md py-10 flex flex-col items-center gap-3 cursor-pointer transition-all"
+                [class.border-blue-400]="dragging()" [class.bg-blue-50]="dragging()"
+                [class.border-slate-200]="!dragging()" [class.hover:border-slate-300]="!dragging()"
+                (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave()"
+                (drop)="onDrop($event)">
+                <div class="w-12 h-12 rounded-md flex items-center justify-center transition-colors"
+                    [class.bg-blue-100]="dragging()" [class.bg-slate-100]="!dragging()">
+                    <ng-icon name="matCloudUploadOutline" size="26" [class.text-blue-500]="dragging()"
+                        [class.text-slate-400]="!dragging()"></ng-icon>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm font-medium text-slate-700">
+                        {{ dragging() ? 'Suelta el archivo aquí' : 'Arrastra tu archivo aquí' }}
+                    </p>
+                    <p class="text-xs text-slate-400 mt-0.5">o haz clic para seleccionar — solo <span
+                            class="font-medium">.xlsx</span></p>
+                </div>
+            </div>
+
+            <!-- Archivo seleccionado -->
+            @if (archivoSeleccionado()) {
+            <div class="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-md">
+                <ng-icon name="matInsertDriveFileOutline" size="18" class="text-emerald-500 shrink-0"></ng-icon>
+                <span class="text-sm font-medium text-slate-700 truncate flex-1">{{ archivoSeleccionado()!.name
+                    }}</span>
+                <ng-icon name="matTaskAltOutline" size="18" class="text-emerald-500 shrink-0"></ng-icon>
+            </div>
+            }
+        </div>
+
+        <div class="flex justify-end gap-2 px-6 pb-6">
+            <btn variant="outline" (clicked)="cerrar()">Cancelar</btn>
+            <btn class="text-white" variant="primary" (clicked)="ejecutarImport()"
+                [class.opacity-40]="!archivoSeleccionado()" [class.pointer-events-none]="!archivoSeleccionado()">
+                <ng-icon name="matFileUploadOutline" size="15" class="mr-1.5"></ng-icon>
+                Importar
+            </btn>
+        </div>
+        }
+
+        <!-- Estado: procesando -->
+        @if (estado() === 'cargando') {
+        <div class="px-6 py-14 flex flex-col items-center gap-4">
+            <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center">
+                <svg class="animate-spin w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+            </div>
+            <div class="text-center">
+                <p class="text-sm font-semibold text-slate-700">Procesando archivo</p>
+                <p class="text-xs text-slate-400 mt-0.5">Por favor espere, esto puede tomar unos segundos…</p>
+            </div>
+        </div>
+        }
+
+        <!-- Estado: resultado -->
+        @if (estado() === 'resultado' && resultado()) {
+        <div class="px-6 py-5 space-y-4">
+
+            <!-- Resumen de contadores -->
+            <div class="grid grid-cols-3 gap-3">
+                <div
+                    class="flex flex-col items-center gap-1.5 px-4 py-4 bg-emerald-50 border border-emerald-100 rounded-md text-center">
+                    <ng-icon name="matTaskAltOutline" size="22" class="text-emerald-500"></ng-icon>
+                    <p class="text-2xl font-bold text-emerald-700 leading-none">{{ resultado()!.importados }}</p>
+                    <p class="text-xs text-emerald-600 font-medium">creados</p>
+                </div>
+                <div
+                    class="flex flex-col items-center gap-1.5 px-4 py-4 bg-blue-50 border border-blue-100 rounded-md text-center">
+                    <ng-icon name="matCheckCircleOutline" size="22" class="text-blue-500"></ng-icon>
+                    <p class="text-2xl font-bold text-blue-700 leading-none">{{ resultado()!.actualizados }}</p>
+                    <p class="text-xs text-blue-600 font-medium">actualizados</p>
+                </div>
+                <div class="flex flex-col items-center gap-1.5 px-4 py-4 rounded-md text-center border"
+                    [class.bg-red-50]="resultado()!.errores.length > 0"
+                    [class.border-red-100]="resultado()!.errores.length > 0"
+                    [class.bg-slate-50]="resultado()!.errores.length === 0"
+                    [class.border-slate-100]="resultado()!.errores.length === 0">
+                    <ng-icon name="matReportProblemOutline" size="22"
+                        [class.text-red-500]="resultado()!.errores.length > 0"
+                        [class.text-slate-300]="resultado()!.errores.length === 0"></ng-icon>
+                    <p class="text-2xl font-bold leading-none" [class.text-red-700]="resultado()!.errores.length > 0"
+                        [class.text-slate-400]="resultado()!.errores.length === 0">
+                        {{ resultado()!.errores.length }}
+                    </p>
+                    <p class="text-xs font-medium" [class.text-red-600]="resultado()!.errores.length > 0"
+                        [class.text-slate-400]="resultado()!.errores.length === 0">
+                        con errores
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tabla de errores -->
+            @if (resultado()!.errores.length > 0) {
+            <div class="border border-slate-200 rounded-md overflow-hidden">
+                <div class="flex items-center gap-2 bg-red-50 px-3 py-2 border-b border-red-100">
+                    <ng-icon name="matErrorOutline" size="14" class="text-red-500 shrink-0"></ng-icon>
+                    <p class="text-xs font-medium text-red-700">Detalle de errores por fila</p>
+                </div>
+                <div class="max-h-48 overflow-y-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-100">
+                                <th class="text-left px-3 py-2 text-slate-500 font-medium w-16">Fila</th>
+                                <th class="text-left px-3 py-2 text-slate-500 font-medium">Motivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (error of resultado()!.errores; track error.fila) {
+                            <tr class="border-b border-slate-100 last:border-0 hover:bg-red-50 transition-colors">
+                                <td class="px-3 py-2 text-slate-500 font-medium">{{ error.fila }}</td>
+                                <td class="px-3 py-2 text-red-600">{{ error.mensaje }}</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            } @else {
+            <div class="flex items-center gap-2 px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-md">
+                <ng-icon name="matCheckCircleOutline" size="16" class="text-emerald-500 shrink-0"></ng-icon>
+                <p class="text-sm text-emerald-700 font-medium">Importación completada sin errores.</p>
+            </div>
+            }
+        </div>
+
+        <div class="flex justify-end gap-2 px-6 pb-6">
+            @if (resultado()!.errores.length > 0) {
+            <btn variant="outline" (clicked)="volverASeleccion()">
+                <ng-icon name="matFileUploadOutline" size="14" class="mr-1.5"></ng-icon>
+                Volver a importar
+            </btn>
+            }
+            <btn variant="primary" (clicked)="cerrar()">Cerrar</btn>
+        </div>
+        }
+
+    </div>
+</div>

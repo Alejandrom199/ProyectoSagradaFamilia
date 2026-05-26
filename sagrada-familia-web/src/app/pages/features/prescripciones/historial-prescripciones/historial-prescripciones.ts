@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroEye, heroBeaker } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -14,7 +14,7 @@ import { PrescripcionResponse } from '../../../../shared/interfaces/prescripcion
   selector: 'app-listar-prescripciones',
   standalone: true,
   imports: [Datatable, Breadcrumb],
-  viewProviders: [provideIcons({ heroEye, heroBeaker })],
+
   templateUrl: './historial-prescripciones.html',
 })
 export class HistorialPrescripciones implements OnInit {
@@ -67,7 +67,7 @@ export class HistorialPrescripciones implements OnInit {
     {
       type: 'ver',
       label: 'Ver cita',
-      icon: 'heroEye',
+      icon: 'matVisibilityOutline',
       onClick: (row) => this.router.navigate(['/citas', row.citaId])
     }
   ];

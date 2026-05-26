@@ -2,10 +2,8 @@ import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  heroPencilSquare, heroEnvelope, heroPhone, heroChevronLeft, heroAcademicCap, heroBriefcase
-} from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { MedicoDetailResponse } from '../../../../shared/interfaces/medico.interface';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -16,9 +14,7 @@ import { MedicosService } from '../../../../core/services/medicos';
   selector: 'app-editar-medico',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, Breadcrumb, NgIcon],
-  viewProviders: [provideIcons({
-    heroPencilSquare, heroEnvelope, heroPhone, heroChevronLeft, heroAcademicCap, heroBriefcase
-  })],
+
   templateUrl: './editar-medico.html',
   styleUrl: './editar-medico.css',
 })

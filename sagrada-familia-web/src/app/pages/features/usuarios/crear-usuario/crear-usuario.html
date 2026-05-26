@@ -7,17 +7,17 @@
             <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
                 <div class="sticky top-8">
                     <div class="w-12 h-12 bg-blue-600 rounded-md flex items-center justify-center mb-6">
-                        <ng-icon name="heroUserCircle" color="white"></ng-icon>
+                        <ng-icon name="matAccountCircleOutline" color="white"></ng-icon>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-slate-800 leading-tight">Crear usuario</h2>
+                    <h2 class="panel-title">Crear usuario</h2>
                     <p class="text-sm text-slate-500 mt-3 leading-relaxed">
                         Registra una nueva cuenta de acceso al sistema con el rol que corresponda.
                     </p>
 
                     <div class="mt-8 space-y-6">
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroEnvelope" class="text-blue-500 text-lg"></ng-icon></div>
+                            <div class="mt-1"><ng-icon name="matEmailOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Acceso</h4>
                                 <p class="text-xs text-slate-500 mt-1">El email funciona como credencial única de ingreso.</p>
@@ -25,7 +25,7 @@
                         </div>
 
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroLockClosed" class="text-blue-500 text-lg"></ng-icon></div>
+                            <div class="mt-1"><ng-icon name="matLockOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Contraseña</h4>
                                 <p class="text-xs text-slate-500 mt-1">Mínimo 8 caracteres, una mayúscula, un número y un símbolo especial.</p>
@@ -33,7 +33,7 @@
                         </div>
 
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="heroShieldCheck" class="text-blue-500 text-lg"></ng-icon></div>
+                            <div class="mt-1"><ng-icon name="matAdminPanelSettingsOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Rol</h4>
                                 <p class="text-xs text-slate-500 mt-1">Define los permisos y el menú disponible para el usuario.</p>
@@ -49,7 +49,7 @@
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-600 uppercase ml-1">Email *</label>
                         <div class="relative">
-                            <ng-icon name="heroEnvelope"
+                            <ng-icon name="matEmailOutline"
                                 class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                             <input formControlName="email" type="email" placeholder="usuario@email.com"
                                 class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
@@ -64,7 +64,7 @@
                         <div class="flex flex-col gap-1.5">
                             <label class="text-xs font-bold text-slate-600 uppercase ml-1">Contraseña *</label>
                             <div class="relative">
-                                <ng-icon name="heroLockClosed"
+                                <ng-icon name="matLockOutline"
                                     class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
                                 <input formControlName="password" [type]="verPassword() ? 'text' : 'password'"
                                     placeholder="••••••••"
@@ -72,7 +72,7 @@
                                     [class.border-red-500]="f['password'].invalid && f['password'].touched">
                                 <button type="button" (click)="verPassword.set(!verPassword())"
                                     class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors">
-                                    <ng-icon [name]="verPassword() ? 'heroEyeSlash' : 'heroEye'"></ng-icon>
+                                    <ng-icon [name]="verPassword() ? 'matVisibilityOffOutline' : 'matVisibilityOutline'"></ng-icon>
                                 </button>
                             </div>
                             @if (f['password'].touched && f['password'].errors) {
@@ -127,7 +127,7 @@
                             <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             Guardando...
                             } @else {
-                            <ng-icon name="heroUserCircle" class="text-lg"></ng-icon>
+                            <ng-icon name="matAccountCircleOutline" class="text-lg"></ng-icon>
                             Crear cuenta
                             }
                         </button>

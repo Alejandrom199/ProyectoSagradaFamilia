@@ -2,11 +2,11 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">Gestión de Usuarios</h2>
-            <p class="text-slate-500 mt-1">Cuentas administrativas, médicos y padres del sistema</p>
+            <h2 class="page-title">Gestión de Usuarios</h2>
+            <p class="page-subtitle">Cuentas administrativas, médicos y padres del sistema</p>
         </div>
         <btn variant="primary" routerLink="/usuarios/crear" width="170px" class="text-white cursor-pointer">
-            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Nuevo usuario
         </btn>
     </div>
@@ -15,7 +15,8 @@
         <datatable title="Cuentas del sistema" [data]="usuarios()" [columns]="columnas" [actions]="acciones"
             [exportExcel]="true" exportFileName="usuarios" [showActualizar]="true" [showExportar]="true"
             [showColumnas]="true" searchPlaceholder="Buscar por email o rol..."
-            emptyMessage="No hay usuarios registrados." (onActualizar)="cargarUsuarios()">
+            emptyMessage="No hay usuarios registrados." (onActualizar)="cargarUsuarios()"
+            [serverSide]="true" [serverTotalItems]="totalUsuarios()" (onServerQuery)="onServerQuery($event)">
         </datatable>
     </div>
 </div>

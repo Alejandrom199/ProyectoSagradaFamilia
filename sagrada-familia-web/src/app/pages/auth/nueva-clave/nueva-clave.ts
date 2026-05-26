@@ -1,8 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroLockClosed, heroEye, heroEyeSlash, heroCheckCircle, heroXCircle } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 import { AuthService } from '../../../core/services/auth';
 import { passwordValidator } from '../../../shared/validators/password.validator';
 
@@ -10,7 +9,6 @@ import { passwordValidator } from '../../../shared/validators/password.validator
   selector: 'app-nueva-clave',
   standalone: true,
   imports: [ReactiveFormsModule, NgIcon],
-  viewProviders: [provideIcons({ heroLockClosed, heroEye, heroEyeSlash, heroCheckCircle, heroXCircle })],
   templateUrl: './nueva-clave.html',
   styleUrl: './nueva-clave.css',
 })

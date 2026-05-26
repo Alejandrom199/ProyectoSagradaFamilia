@@ -1,13 +1,9 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
+import { NgIcon } from '@ng-icons/core';
 import { forkJoin, of, switchMap, finalize } from 'rxjs';
 
-import {
-  heroVariable, heroFaceSmile, heroCake, heroGlobeAlt,
-  heroBeaker, heroSparkles, heroExclamationCircle
-} from '@ng-icons/heroicons/outline';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { CategoriaFiltro, ExploradorVisual, ItemExplorador } from '../../../../shared/components/explorador-visual/explorador-visual';
@@ -21,10 +17,6 @@ import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface
   selector: 'orientacion-padres',
   standalone: true,
   imports: [CommonModule, NgIcon, ExploradorVisual, Breadcrumb],
-  viewProviders: [provideIcons({
-    heroVariable, heroFaceSmile, heroCake, heroGlobeAlt,
-    heroBeaker, heroSparkles, heroExclamationCircle
-  })],
   templateUrl: './orientacion-padres.html'
 })
 export class OrientacionPadres implements OnInit {
@@ -120,12 +112,12 @@ export class OrientacionPadres implements OnInit {
 
   private estiloCategoria(nombre: string): { icono: string; color: string } {
     const mapa: Record<string, { icono: string; color: string }> = {
-      'Frutas':               { icono: 'heroFaceSmile', color: 'bg-orange-100 text-orange-600' },
-      'Verduras':             { icono: 'heroVariable',  color: 'bg-green-100 text-green-600' },
-      'Proteínas':            { icono: 'heroCake',      color: 'bg-red-100 text-red-600' },
-      'Cereales y tubérculos':{ icono: 'heroGlobeAlt',  color: 'bg-amber-100 text-amber-700' },
-      'Lácteos':              { icono: 'heroBeaker',    color: 'bg-blue-100 text-blue-600' },
+      'Frutas':               { icono: 'matSentimentSatisfiedOutline', color: 'bg-orange-100 text-orange-600' },
+      'Verduras':             { icono: 'matEcoOutline',                color: 'bg-green-100 text-green-600' },
+      'Proteínas':            { icono: 'matCakeOutline',               color: 'bg-red-100 text-red-600' },
+      'Cereales y tubérculos':{ icono: 'matPublicOutline',             color: 'bg-amber-100 text-amber-700' },
+      'Lácteos':              { icono: 'matScienceOutline',            color: 'bg-blue-100 text-blue-600' },
     };
-    return mapa[nombre] ?? { icono: 'heroSparkles', color: 'bg-slate-100 text-slate-600' };
+    return mapa[nombre] ?? { icono: 'matAutoAwesomeOutline', color: 'bg-slate-100 text-slate-600' };
   }
 }

@@ -1,8 +1,8 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroChartBar, heroExclamationTriangle, heroUser } from '@ng-icons/heroicons/outline'; // Añadí heroUser
+import { NgIcon } from '@ng-icons/core';
+ // Añadí heroUser
 import { Predicciones as PrediccionesService } from '../../../../core/services/predicciones';
 import { Datatable, DatatableColumn } from '../../../../shared/components/datatable/datatable';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -30,7 +30,6 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
     PredictionChart,
     Breadcrumb
   ],
-  viewProviders: [provideIcons({ heroChartBar, heroExclamationTriangle, heroUser })],
   templateUrl: './listar-predicciones.html',
   styleUrl: './listar-predicciones.css',
 })

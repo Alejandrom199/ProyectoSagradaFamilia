@@ -2,8 +2,8 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="mb-8">
-        <h2 class="text-3xl font-bold text-slate-800">Roles y Permisos</h2>
-        <p class="text-slate-500 mt-1">Gestiona los permisos de acceso por rol</p>
+        <h2 class="page-title">Roles y Permisos</h2>
+        <p class="page-subtitle">Gestiona los permisos de acceso por rol</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -12,7 +12,7 @@
             <div class="flex items-start justify-between">
                 <div class="w-11 h-11 rounded-md flex items-center justify-center" [class.bg-red-50]="!rol.editable"
                     [class.bg-blue-50]="rol.editable">
-                    <ng-icon name="heroShieldCheck" [class.text-red-400]="!rol.editable"
+                    <ng-icon name="matAdminPanelSettingsOutline" [class.text-red-400]="!rol.editable"
                         [class.text-blue-500]="rol.editable" size="1.4em">
                     </ng-icon>
                 </div>
@@ -32,7 +32,7 @@
             @if (rol.editable) {
             <button (click)="gestionarPermisos(rol.id)"
                 class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-blue-200 text-blue-600 text-xs font-bold hover:bg-blue-50 transition-colors">
-                <ng-icon name="heroPencilSquare" size="1em"></ng-icon>
+                <ng-icon name="matEditNoteOutline" size="1em"></ng-icon>
                 Gestionar permisos
             </button>
             } @else {

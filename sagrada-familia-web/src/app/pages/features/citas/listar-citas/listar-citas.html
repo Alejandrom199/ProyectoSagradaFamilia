@@ -3,11 +3,11 @@
 
     <div class="mb-6 flex justify-between items-end">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">Citas del paciente</h2>
+            <h2 class="page-title">Citas del paciente</h2>
         </div>
         <btn variant="primary" [routerLink]="['/citas/crear']" [queryParams]="{ ninoId: ninoId }"
             class="text-white cursor-pointer">
-            <ng-icon name="heroPlus" class="mr-2"></ng-icon>
+            <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Nueva cita
         </btn>
     </div>

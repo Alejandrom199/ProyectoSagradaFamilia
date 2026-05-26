@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroArrowLeft, heroUser } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
@@ -14,7 +14,7 @@ import { PadreDetailResponse, PadreResponse } from '../../../../shared/interface
   selector: 'app-editar-hijo',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
-  viewProviders: [provideIcons({ heroArrowLeft, heroUser })],
+
   templateUrl: './editar-hijo.html',
 })
 export class EditarHijo implements OnInit {

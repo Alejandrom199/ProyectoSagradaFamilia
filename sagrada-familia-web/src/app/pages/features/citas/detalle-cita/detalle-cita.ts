@@ -1,11 +1,7 @@
 import { Component, Input, OnInit, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  heroCalendarDays, heroUser, heroBeaker, heroCheckCircle,
-  heroXCircle, heroClock, heroExclamationCircle,
-  heroClipboardDocumentList, heroChartBar
-} from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { CitasService } from '../../../../core/services/citas';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
@@ -17,11 +13,7 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
   selector: 'detalle-cita',
   standalone: true,
   imports: [RouterLink, NgIcon, Breadcrumb],
-  viewProviders: [provideIcons({
-    heroCalendarDays, heroUser, heroBeaker, heroCheckCircle,
-    heroXCircle, heroClock, heroExclamationCircle,
-    heroClipboardDocumentList, heroChartBar
-  })],
+
   templateUrl: './detalle-cita.html',
 })
 export class DetalleCita implements OnInit {

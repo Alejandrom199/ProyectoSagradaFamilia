@@ -4,11 +4,11 @@
     <!-- Header -->
     <div class="mb-6 flex items-end justify-between">
         <div>
-            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Mi Agenda</h2>
-            <p class="text-sm text-slate-400 mt-0.5">Citas de hoy y próximas</p>
+            <h2 class="page-title">Mi Agenda</h2>
+            <p class="page-subtitle">Citas de hoy y próximas</p>
         </div>
         <btn variant="primary" routerLink="/citas/crear" class="cursor-pointer text-white">
-            <ng-icon name="heroPlus" class="mr-1.5"></ng-icon>
+            <ng-icon name="matAddOutline" class="mr-1.5"></ng-icon>
             Nueva cita
         </btn>
     </div>
@@ -47,12 +47,12 @@
             <div class="flex items-center justify-between mb-5">
                 <button (click)="mesAnterior()"
                     class="w-8 h-8 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors">
-                    <ng-icon name="heroChevronLeft" size="1em"></ng-icon>
+                    <ng-icon name="matChevronLeftOutline" size="1em"></ng-icon>
                 </button>
                 <p class="text-sm font-bold text-slate-800 capitalize">{{ nombreMes() }}</p>
                 <button (click)="mesSiguiente()"
                     class="w-8 h-8 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors">
-                    <ng-icon name="heroChevronRight" size="1em"></ng-icon>
+                    <ng-icon name="matChevronRightOutline" size="1em"></ng-icon>
                 </button>
             </div>
 
@@ -151,7 +151,7 @@
                 } @else if (citasDelDiaSeleccionado().length === 0) {
                 <div class="flex flex-col items-center justify-center py-16 text-center">
                     <div class="w-14 h-14 bg-slate-100 rounded-md flex items-center justify-center mb-4">
-                        <ng-icon name="heroCalendarDays" size="1.75em" class="text-slate-300"></ng-icon>
+                        <ng-icon name="matCalendarMonthOutline" size="1.75em" class="text-slate-300"></ng-icon>
                     </div>
                     <p class="text-sm font-semibold text-slate-500">Sin citas este día</p>
                     <p class="text-xs text-slate-400 mt-1 max-w-48">

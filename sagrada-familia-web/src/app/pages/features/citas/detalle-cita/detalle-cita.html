@@ -7,7 +7,7 @@
     <div class="mb-6 flex justify-between items-end">
         <div>
             <h2 class="text-2xl font-bold text-slate-800">{{ cita()?.nombreNino }}</h2>
-            <p class="text-sm text-slate-500 mt-1">
+            <p class="page-subtitle">
                 {{ formatearFecha(cita()!.fechaHora) }} · Dr(a). {{ cita()?.nombreMedico }}
             </p>
         </div>
@@ -25,7 +25,7 @@
             <div class="bg-white border border-slate-200">
                 <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
                     <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
-                        <ng-icon name="heroCalendarDays" class="text-blue-500 text-base"></ng-icon>
+                        <ng-icon name="matCalendarMonthOutline" class="text-blue-500 text-base"></ng-icon>
                     </div>
                     <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Datos de la consulta</h3>
                 </div>
@@ -69,14 +69,14 @@
                 <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
-                            <ng-icon name="heroBeaker" class="text-blue-500 text-base"></ng-icon>
+                            <ng-icon name="matScienceOutline" class="text-blue-500 text-base"></ng-icon>
                         </div>
                         <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Prescripción</h3>
                     </div>
                     @if (!cita()?.tienePrescripcion && cita()?.estado === 'EnCurso') {
                     <button (click)="emitirPrescripcion()"
                         class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md text-xs font-bold hover:bg-blue-700 transition-colors">
-                        <ng-icon name="heroBeaker" class="text-sm"></ng-icon>
+                        <ng-icon name="matScienceOutline" class="text-sm"></ng-icon>
                         Emitir receta
                     </button>
                     }
@@ -113,14 +113,14 @@
                     } @else if (cita()?.estado === 'EnCurso') {
                     <div class="flex flex-col items-center gap-3 py-6 text-center">
                         <div class="w-12 h-12 bg-blue-50 rounded-md flex items-center justify-center">
-                            <ng-icon name="heroBeaker" class="text-blue-400 text-2xl"></ng-icon>
+                            <ng-icon name="matScienceOutline" class="text-blue-400 text-2xl"></ng-icon>
                         </div>
                         <p class="text-sm text-slate-500">La consulta está en curso. Podés emitir la receta médica.</p>
                     </div>
                     } @else {
                     <div class="flex flex-col items-center gap-3 py-6 text-center">
                         <div class="w-12 h-12 bg-slate-50 rounded-md flex items-center justify-center">
-                            <ng-icon name="heroClipboardDocumentList" class="text-slate-300 text-2xl"></ng-icon>
+                            <ng-icon name="matAssignmentOutline" class="text-slate-300 text-2xl"></ng-icon>
                         </div>
                         <p class="text-sm text-slate-400">No se emitió prescripción en esta consulta.</p>
                     </div>
@@ -139,7 +139,7 @@
 
                     @if (!puedeAccionar() && (cita()?.estado === 'Pendiente')) {
                     <div class="flex items-center gap-2 px-3 py-2.5 rounded-md bg-amber-50 border border-amber-200">
-                        <ng-icon name="heroClock" class="text-amber-500 text-base shrink-0"></ng-icon>
+                        <ng-icon name="matScheduleOutline" class="text-amber-500 text-base shrink-0"></ng-icon>
                         <p class="text-xs text-amber-700 font-medium">Las acciones estarán disponibles a partir de <strong>{{ formatearFecha(cita()!.fechaHora) }}</strong></p>
                     </div>
                     }
@@ -148,7 +148,7 @@
                     <button (click)="cambiarEstado(EstadoCita.EnCurso)"
                         [disabled]="cambiandoEstado() || !puedeAccionar()"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-blue-200 bg-blue-50 text-blue-700 text-sm font-bold hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <ng-icon name="heroClock" class="text-base shrink-0"></ng-icon>
+                        <ng-icon name="matScheduleOutline" class="text-base shrink-0"></ng-icon>
                         Iniciar consulta
                     </button>
                     }
@@ -156,7 +156,7 @@
                     @if (cita()?.estado === 'EnCurso') {
                     <button (click)="cambiarEstado(EstadoCita.Completada)" [disabled]="cambiandoEstado()"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-green-200 bg-green-50 text-green-700 text-sm font-bold hover:bg-green-100 transition-colors disabled:opacity-50">
-                        <ng-icon name="heroCheckCircle" class="text-base shrink-0"></ng-icon>
+                        <ng-icon name="matTaskAltOutline" class="text-base shrink-0"></ng-icon>
                         Marcar completada
                     </button>
                     }
@@ -165,13 +165,13 @@
                     <button (click)="cambiarEstado(EstadoCita.NoAsistio)"
                         [disabled]="cambiandoEstado() || !puedeAccionar()"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-slate-200 bg-slate-50 text-slate-600 text-sm font-bold hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <ng-icon name="heroExclamationCircle" class="text-base shrink-0"></ng-icon>
+                        <ng-icon name="matErrorOutline" class="text-base shrink-0"></ng-icon>
                         No asistió
                     </button>
                     <button (click)="cambiarEstado(EstadoCita.Cancelada)"
                         [disabled]="cambiandoEstado()"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-red-200 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <ng-icon name="heroXCircle" class="text-base shrink-0"></ng-icon>
+                        <ng-icon name="matCancelOutline" class="text-base shrink-0"></ng-icon>
                         Cancelar cita
                     </button>
                     }
@@ -189,17 +189,17 @@
                 <div class="space-y-1">
                     <a [routerLink]="['/medidas', cita()?.ninoId]"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
-                        <ng-icon name="heroChartBar" class="text-slate-400 text-base shrink-0"></ng-icon>
+                        <ng-icon name="matBarChartOutline" class="text-slate-400 text-base shrink-0"></ng-icon>
                         Ver medidas del paciente
                     </a>
                     <a [routerLink]="['/citas/nino', cita()?.ninoId]"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
-                        <ng-icon name="heroCalendarDays" class="text-slate-400 text-base shrink-0"></ng-icon>
+                        <ng-icon name="matCalendarMonthOutline" class="text-slate-400 text-base shrink-0"></ng-icon>
                         Historial de citas
                     </a>
                     <a [routerLink]="['/prescripciones/nino', cita()?.ninoId]"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
-                        <ng-icon name="heroBeaker" class="text-slate-400 text-base shrink-0"></ng-icon>
+                        <ng-icon name="matScienceOutline" class="text-slate-400 text-base shrink-0"></ng-icon>
                         Prescripciones del paciente
                     </a>
                 </div>

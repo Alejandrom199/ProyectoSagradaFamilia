@@ -1,12 +1,8 @@
 import { Component, computed, OnInit, signal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
+import { NgIcon } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
-import {
-  heroCake, heroChartBar, heroHeart, heroUsers,
-  heroSun, heroCloud, heroMoon, heroCalendarDays,
-  heroBeaker, heroChartBarSquare, heroArrowRight
-} from '@ng-icons/heroicons/outline';
+
 
 import { AuthService } from '../../core/services/auth';
 import { NinosService } from '../../core/services/ninos';
@@ -17,11 +13,7 @@ import { CitasService } from '../../core/services/citas';
   selector: 'dashboard',
   standalone: true,
   imports: [CommonModule, RouterLink, NgIcon],
-  viewProviders: [provideIcons({
-    heroUsers, heroHeart, heroChartBar, heroCake,
-    heroSun, heroCloud, heroMoon, heroCalendarDays,
-    heroBeaker, heroChartBarSquare, heroArrowRight
-  })],
+
   templateUrl: './dashboard.html',
 })
 export class Dashboard implements OnInit {
@@ -31,10 +23,10 @@ export class Dashboard implements OnInit {
   private citasService = inject(CitasService);
 
   stats = signal([
-    { label: 'Pacientes', valor: '—', icon: 'heroUsers', color: '#2563eb', bgColor: '#dbeafe', ruta: '/pacientes' },
-    { label: 'Citas hoy', valor: '—', icon: 'heroCalendarDays', color: '#7c3aed', bgColor: '#ede9fe', ruta: '/citas' },
-    { label: 'Alimentos', valor: '—', icon: 'heroCake', color: '#d97706', bgColor: '#fef3c7', ruta: '/alimentos' },
-    { label: 'Predicciones', valor: '—', icon: 'heroChartBar', color: '#16a34a', bgColor: '#dcfce7', ruta: '/predicciones' },
+    { label: 'Pacientes', valor: '—', icon: 'matPeopleOutline', color: '#2563eb', bgColor: '#dbeafe', ruta: '/pacientes' },
+    { label: 'Citas hoy', valor: '—', icon: 'matCalendarMonthOutline', color: '#7c3aed', bgColor: '#ede9fe', ruta: '/citas' },
+    { label: 'Alimentos', valor: '—', icon: 'matCakeOutline', color: '#d97706', bgColor: '#fef3c7', ruta: '/alimentos' },
+    { label: 'Predicciones', valor: '—', icon: 'matBarChartOutline', color: '#16a34a', bgColor: '#dcfce7', ruta: '/predicciones' },
   ]);
 
   ngOnInit() {

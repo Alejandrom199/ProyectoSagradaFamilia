@@ -17,14 +17,14 @@
                 <button
                     class="hidden lg:flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-[var(--color-surface-alt)]"
                     (click)="toggleExpandido()" [title]="sidebarExpandido() ? 'Contraer' : 'Expandir'">
-                    <ng-icon [name]="sidebarExpandido() ? 'heroChevronLeft' : 'heroChevronRight'"
+                    <ng-icon [name]="sidebarExpandido() ? 'matChevronLeftOutline' : 'matChevronRightOutline'"
                         style="font-size: 16px; color: var(--sidebar-text);"></ng-icon>
                 </button>
 
                 <button
                     class="flex lg:hidden items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-[var(--color-surface-alt)]"
                     (click)="toggleMovil()">
-                    <ng-icon name="heroBars3" style="font-size: 16px; color: var(--sidebar-text);"></ng-icon>
+                    <ng-icon name="matMenuOutline" style="font-size: 16px; color: var(--sidebar-text);"></ng-icon>
                 </button>
             </div>
 

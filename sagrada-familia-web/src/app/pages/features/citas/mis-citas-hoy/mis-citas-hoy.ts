@@ -1,8 +1,8 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlus, heroCheckCircle, heroXCircle, heroCalendarDays, heroClock } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -15,7 +15,7 @@ import { finalize, forkJoin } from 'rxjs';
   selector: 'app-mis-citas-hoy',
   standalone: true,
   imports: [CommonModule, NgIcon, RouterLink, Button, Breadcrumb],
-  viewProviders: [provideIcons({ heroCheckCircle, heroXCircle, heroCalendarDays, heroClock, heroPlus })],
+
   templateUrl: './mis-citas-hoy.html',
   styleUrl: './mis-citas-hoy.css',
 })

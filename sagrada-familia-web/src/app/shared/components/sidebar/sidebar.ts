@@ -1,21 +1,13 @@
 import { Component, input, output, inject, signal, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  heroHome, heroUsers, heroHeart, heroChartBar,
-  heroArrowRightOnRectangle, heroBars3,
-  heroUserCircle, heroChevronLeft, heroChevronRight, heroChevronDown,
-  heroCog6Tooth, heroUserGroup, heroIdentification, heroShieldCheck,
-  heroCalendarDays, heroClock, heroClipboardDocumentList,
-  heroArrowTrendingUp, heroArchiveBox, heroMagnifyingGlass,
-  heroExclamationTriangle, heroTableCells
-} from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
 
 import { Avatar } from '../avatar/avatar';
 import { Tooltip } from '../../directives/tooltip/tooltip';
 import { AuthService } from '../../../core/services/auth';
 import { MenuResponse } from '../../interfaces/menu.interface';
+import { SIDEBAR_ICON_MAP } from '../../../core/icons/app-icons';
 
 @Component({
   selector: 'sidebar',
@@ -23,15 +15,6 @@ import { MenuResponse } from '../../interfaces/menu.interface';
   imports: [CommonModule, RouterLink, RouterLinkActive, NgIcon, Avatar, Tooltip],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
-  viewProviders: [provideIcons({
-    heroHome, heroUsers, heroHeart, heroChartBar,
-    heroArrowRightOnRectangle, heroBars3,
-    heroUserCircle, heroChevronLeft, heroChevronRight, heroChevronDown,
-    heroCog6Tooth, heroUserGroup, heroIdentification, heroShieldCheck,
-    heroCalendarDays, heroClock, heroClipboardDocumentList,
-    heroArrowTrendingUp, heroArchiveBox, heroMagnifyingGlass,
-    heroExclamationTriangle, heroTableCells
-  })],
 })
 export class Sidebar implements OnInit {
   readonly auth = inject(AuthService);
@@ -49,27 +32,7 @@ export class Sidebar implements OnInit {
   cerrarMovil = output<void>();
   logout = output<void>();
 
-  private readonly iconoMap: Record<string, string> = {
-    // Módulos
-    'cog-6-tooth':            'heroCog6Tooth',
-    'heart':                  'heroHeart',
-    'clipboard-document-list':'heroClipboardDocumentList',
-    'arrow-trending-up':      'heroArrowTrendingUp',
-    'archive-box':            'heroArchiveBox',
-    'table-cells':            'heroTableCells',
-    // Opciones
-    'users':                  'heroUsers',
-    'user-group':             'heroUserGroup',
-    'identification':         'heroIdentification',
-    'shield-check':           'heroShieldCheck',
-    'calendar-days':          'heroCalendarDays',
-    'clock':                  'heroClock',
-    'magnifying-glass':       'heroMagnifyingGlass',
-    'exclamation-triangle':   'heroExclamationTriangle',
-    // Utilidades
-    'home':                   'heroHome',
-    'chart-bar':              'heroChartBar',
-  };
+  private readonly iconoMap = SIDEBAR_ICON_MAP;
 
   constructor() {
     effect(() => {
@@ -102,7 +65,7 @@ export class Sidebar implements OnInit {
   }
 
   resolverIcono(icono: string): string {
-    return this.iconoMap[icono] ?? 'heroTableCells';
+    return this.iconoMap[icono] ?? 'matGridViewOutline';
   }
 
   iniciales(): string {

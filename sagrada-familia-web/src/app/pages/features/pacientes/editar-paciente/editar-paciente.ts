@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroUser } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { NinosService } from '../../../../core/services/ninos';
@@ -11,7 +11,7 @@ import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface
 @Component({
   selector: 'app-editar-paciente',
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
-  viewProviders: [provideIcons({ heroUser })],
+
   templateUrl: './editar-paciente.html',
 })
 export class EditarPaciente implements OnInit {

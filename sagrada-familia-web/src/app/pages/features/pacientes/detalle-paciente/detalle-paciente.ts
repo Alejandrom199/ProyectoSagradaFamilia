@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroUser, heroCalendarDays, heroBeaker, heroChartBar, heroPencil } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { NinosService } from '../../../../core/services/ninos';
 import { CitasService } from '../../../../core/services/citas';
@@ -18,7 +18,7 @@ import { DatatableColumn, Datatable } from '../../../../shared/components/datata
   selector: 'detalle-paciente',
   standalone: true,
   imports: [RouterLink, NgIcon, Breadcrumb, Datatable],
-  viewProviders: [provideIcons({ heroUser, heroCalendarDays, heroBeaker, heroChartBar, heroPencil })],
+
   templateUrl: './detalle-paciente.html',
 })
 export class DetallePaciente implements OnInit {

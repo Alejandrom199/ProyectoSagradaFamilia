@@ -42,3 +42,7 @@ export interface PadreUpdate {
     telefono?: string;
     medicoId: number;
 }
+
+export interface PadreCambiarEmail {
+    email: string;
+}

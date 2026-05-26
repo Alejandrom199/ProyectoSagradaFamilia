@@ -53,7 +53,7 @@
                             <button type="button"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                                 (click)="mostrarPassword.update(v => !v)">
-                                <ng-icon [name]="mostrarPassword() ? 'heroEyeSlash' : 'heroEye'"></ng-icon>
+                                <ng-icon [name]="mostrarPassword() ? 'matVisibilityOffOutline' : 'matVisibilityOutline'"></ng-icon>
                             </button>
                         </div>
                         @if (form.get('password')?.invalid && form.get('password')?.touched) {

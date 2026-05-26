@@ -1,10 +1,8 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { NgIcon, provideIcons } from "@ng-icons/core";
-import {
-  heroBars3, heroChevronLeft, heroChevronRight
-} from '@ng-icons/heroicons/outline';
+import { NgIcon } from "@ng-icons/core";
+
 
 import { LoadingBar } from '../loading-bar/loading-bar';
 import { Sidebar } from '../sidebar/sidebar';
@@ -25,9 +23,7 @@ import { MenuService } from '../../../core/services/menu';
   ],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css',
-  viewProviders: [provideIcons({
-    heroBars3, heroChevronLeft, heroChevronRight
-  })],
+
 })
 export class AdminLayout implements OnInit {
   readonly auth = inject(AuthService);

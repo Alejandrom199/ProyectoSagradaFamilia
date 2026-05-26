@@ -1,9 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  heroPlus, heroPencil, heroTrash, heroEye, heroChartBar, heroUserCircle
-} from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { ApiResponse } from '../../../../shared/interfaces/api.interface';
@@ -12,8 +10,7 @@ import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.uti
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-
-import { Datatable, DatatableAction, DatatableColumn } from '../../../../shared/components/datatable/datatable';
+import { Datatable, DatatableAction, DatatableColumn, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -35,9 +32,7 @@ import { Reportes } from '../../../../core/services/reportes';
     Button,
     Breadcrumb
   ],
-  viewProviders: [provideIcons({
-    heroPlus, heroPencil, heroTrash, heroEye, heroChartBar, heroUserCircle
-  })],
+
   templateUrl: './listar-pacientes.html',
   styleUrl: './listar-pacientes.css',
 })
@@ -48,7 +43,9 @@ export class ListarPacientes implements OnInit {
   private loadingBar = inject(LoadingBar);
 
   ninos = signal<NinoResponse[]>([]);
+  totalNinos = signal(0);
   ninoAEliminar = signal<NinoResponse | null>(null);
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
 
   columnas: DatatableColumn<NinoResponse>[] = [
     {
@@ -98,16 +95,21 @@ export class ListarPacientes implements OnInit {
   }
 
   cargarNinos(): void {
+    const q = this.queryActual;
     this.loadingBar.show();
-    this.ninosService.obtenerTodos().subscribe({
-      next: (res: ApiResponse<NinoResponse[]>) => {
-        if (res.success) {
-          this.ninos.set(res.data);
-        }
+    this.ninosService.obtenerPaginado(q.page, q.pageSize, q.search, q.sortBy, q.sortDir === 'asc').subscribe({
+      next: (res) => {
+        this.ninos.set(res.data);
+        this.totalNinos.set(res.totalItems);
+        this.loadingBar.complete();
       },
-      complete: () => this.loadingBar.complete(),
       error: () => this.loadingBar.complete()
     });
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarNinos();
   }
 
   confirmarEliminar(): void {

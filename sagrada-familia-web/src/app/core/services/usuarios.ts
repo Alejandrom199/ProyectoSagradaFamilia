@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiResponse } from '../../shared/interfaces/api.interface';
+import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
 import {
   UsuarioCreate,
   UsuarioDetailResponse,
@@ -32,6 +32,16 @@ export class UsuariosService {
 
   crearAdmin(request: UsuarioCreate): Observable<ApiResponse<UsuarioDetailResponse>> {
     return this.http.post<ApiResponse<UsuarioDetailResponse>>(this.url, request, { withCredentials: true });
+  }
+
+  obtenerPaginado(page: number, pageSize: number, search: string, sortBy: string, asc: boolean): Observable<PagedResponse<UsuarioResponse>> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('pageSize', pageSize)
+      .set('asc', asc);
+    if (search) params = params.set('search', search);
+    if (sortBy) params = params.set('sortBy', sortBy);
+    return this.http.get<PagedResponse<UsuarioResponse>>(`${this.url}/paginado`, { params, withCredentials: true });
   }
 
   actualizarEstado(id: number, activo: boolean): Observable<ApiResponse<null>> {

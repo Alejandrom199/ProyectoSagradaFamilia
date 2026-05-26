@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
-import { provideIcons, NgIcon } from '@ng-icons/core';
-import { heroBeaker, heroClipboardDocumentList, heroUser, heroCalendarDays } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { finalize } from 'rxjs';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -17,7 +17,7 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
   selector: 'app-crear-prescripcion',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
-  viewProviders: [provideIcons({ heroBeaker, heroClipboardDocumentList, heroUser, heroCalendarDays })],
+
   templateUrl: './crear-prescripcion.html',
 })
 export class CrearPrescripcion implements OnInit {

@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
-import { provideIcons, NgIcon } from '@ng-icons/core';
-import { heroCalendarDays, heroClock, heroDocumentText, heroPlus, heroUser } from '@ng-icons/heroicons/outline';
+import { NgIcon } from '@ng-icons/core';
+
 import { finalize } from 'rxjs';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -20,7 +20,7 @@ import { ParametrosService } from '../../../../core/services/parametros';
   selector: 'app-crear-cita',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
-  viewProviders: [provideIcons({ heroCalendarDays, heroClock, heroDocumentText, heroPlus, heroUser })],
+
   templateUrl: './crear-cita.html',
   styleUrl: './crear-cita.css',
 })
