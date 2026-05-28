@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
 
-import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -33,6 +33,8 @@ export class ListarCitas implements OnInit {
   // SOLUCIÓN: Cambiado a NinoDetailResponse para que acepte los datos del GET por ID sin romper tipado
   nino = signal<NinoDetailResponse | null>(null);
   citas = signal<CitaResponse[]>([]);
+  totalCitas = signal(0);
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
 
   formatearFecha = formatearFecha;
 
@@ -125,13 +127,23 @@ export class ListarCitas implements OnInit {
 
   cargarCitas(): void {
     const id = parseInt(this.ninoId);
-    this.citasService.obtenerPorNino(id).subscribe({
+    const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
+    this.loadingBar.show();
+    this.citasService.obtenerPaginadoPorNino(id, page, pageSize, search, sortBy, sortDir === 'asc').subscribe({
       next: (r) => {
-        if (r.success) this.citas.set(r.data);
+        if (r.success) {
+          this.citas.set(r.data);
+          this.totalCitas.set(r.totalItems);
+        }
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
     });
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarCitas();
   }
 
   cambiarEstado(citaId: number, nuevoEstado: EstadoCita): void {

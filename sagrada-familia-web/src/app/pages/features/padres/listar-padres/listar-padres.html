@@ -14,8 +14,11 @@
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Listado de Padres de Familia" [data]="padres()" [columns]="columnas" [actions]="acciones"
             [serverSide]="true" [serverTotalItems]="totalPadres()" (onServerQuery)="onServerQuery($event)"
-            (onExportPdf)="descargarPadresPdf($event)" exportFileName="padres" searchPlaceholder="Buscar por nombre..."
-            emptyMessage="No hay padres registrados en el sistema." (onActualizar)="cargarPadres()">
+            (onExportPdf)="descargarPadresPdf($event)" (onExportExcel)="descargarExcel()" exportFileName="padres"
+            searchPlaceholder="Buscar por nombre..." emptyMessage="No hay padres registrados en el sistema."
+            [showPlantilla]="true" (onPlantilla)="descargarPlantilla()"
+            [showImportar]="true" (onImportar)="mostrarModalImport.set(true)"
+            (onActualizar)="cargarPadres()">
         </datatable>
     </div>
 
@@ -24,5 +27,15 @@
         [message]="'Esta acción eliminará a ' + padreAEliminar()?.nombre + ' ' + padreAEliminar()?.apellido + ' del sistema y desvinculará a los pacientes asociados a esta cuenta.'"
         (confirm)="confirmarEliminar()" (cancel)="padreAEliminar.set(null)">
     </confirm-modal>
+    }
+
+    @if (mostrarModalImport()) {
+    <import-modal
+        titulo="Importación masiva de representantes"
+        subtitulo="Use la plantilla oficial para garantizar el formato correcto."
+        [importFn]="importarFn"
+        (cerrado)="mostrarModalImport.set(false)"
+        (importacionExitosa)="cargarPadres()">
+    </import-modal>
     }
 </div>

@@ -95,7 +95,7 @@
     </div>
 
     <!-- Prescripciones recientes -->
-    <div>
+    <div class="mb-6">
         <div class="mb-3 flex justify-between items-end">
             <h3 class="text-lg font-bold text-slate-800">Prescripciones recientes</h3>
             <a [routerLink]="['/prescripciones/nino', id]"
@@ -108,6 +108,66 @@
             </datatable>
         </div>
     </div>
+
+    <!-- Evolución clínica -->
+    @if (medidas().length >= 2) {
+    <div>
+        <div class="mb-3">
+            <h3 class="text-lg font-bold text-slate-800">Evolución clínica</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+                {{ medidas().length }} mediciones registradas.
+            </p>
+        </div>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+
+            <!-- Curva Peso + Talla -->
+            <div class="border border-slate-200 p-5">
+                <h4 class="text-sm font-bold text-slate-700 mb-4">Curva de Crecimiento</h4>
+                @if (chartPesoTalla()) {
+                <apx-chart
+                    [series]="chartPesoTalla()!.series!"
+                    [chart]="chartPesoTalla()!.chart!"
+                    [xaxis]="chartPesoTalla()!.xaxis!"
+                    [yaxis]="chartPesoTalla()!.yaxis!"
+                    [stroke]="chartPesoTalla()!.stroke!"
+                    [dataLabels]="chartPesoTalla()!.dataLabels!"
+                    [markers]="chartPesoTalla()!.markers!"
+                    [colors]="chartPesoTalla()!.colors!"
+                    [tooltip]="chartPesoTalla()!.tooltip!"
+                    [legend]="chartPesoTalla()!.legend!">
+                </apx-chart>
+                }
+            </div>
+
+            <!-- IMC en el tiempo -->
+            <div class="border border-slate-200 p-5">
+                <div class="flex items-start justify-between mb-4">
+                    <h4 class="text-sm font-bold text-slate-700">Índice de Masa Corporal</h4>
+                    <span class="text-[10px] text-slate-400 text-right leading-tight">
+                        Líneas ref.: 18.5 y 25<br>orientativas
+                    </span>
+                </div>
+                @if (chartIMC()) {
+                <apx-chart
+                    [series]="chartIMC()!.series!"
+                    [chart]="chartIMC()!.chart!"
+                    [xaxis]="chartIMC()!.xaxis!"
+                    [yaxis]="chartIMC()!.yaxis!"
+                    [stroke]="chartIMC()!.stroke!"
+                    [fill]="chartIMC()!.fill!"
+                    [dataLabels]="chartIMC()!.dataLabels!"
+                    [markers]="chartIMC()!.markers!"
+                    [colors]="chartIMC()!.colors!"
+                    [annotations]="chartIMC()!.annotations!"
+                    [tooltip]="chartIMC()!.tooltip!"
+                    [legend]="chartIMC()!.legend!">
+                </apx-chart>
+                }
+            </div>
+
+        </div>
+    </div>
+    }
 
     }
 </div>

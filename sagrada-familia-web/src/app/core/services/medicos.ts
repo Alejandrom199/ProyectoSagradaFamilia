@@ -9,6 +9,7 @@ import {
   MedicoResponse,
   MedicoUpdate
 } from '../../shared/interfaces/medico.interface';
+import { ImportResult } from '../../shared/interfaces/import.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +40,20 @@ export class MedicosService {
 
   restablecerPassword(id: number): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${this.url}/${id}/reset-password`, {}, { withCredentials: true });
+  }
+
+  exportarExcel(): Observable<Blob> {
+    return this.http.get(`${this.url}/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
+  descargarPlantilla(): Observable<Blob> {
+    return this.http.get(`${this.url}/plantilla`, { responseType: 'blob', withCredentials: true });
+  }
+
+  importar(archivo: File): Observable<ApiResponse<ImportResult>> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    return this.http.post<ApiResponse<ImportResult>>(`${this.url}/importar`, formData, { withCredentials: true });
   }
 
   /*

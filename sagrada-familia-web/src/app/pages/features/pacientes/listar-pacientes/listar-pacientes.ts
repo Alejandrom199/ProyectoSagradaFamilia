@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { Datatable, DatatableAction, DatatableColumn, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
+import { ImportModal } from '../../../../shared/components/import-modal/import-modal';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
@@ -29,6 +30,7 @@ import { Reportes } from '../../../../core/services/reportes';
     RouterLink,
     Datatable,
     ConfirmModal,
+    ImportModal,
     Button,
     Breadcrumb
   ],
@@ -45,7 +47,10 @@ export class ListarPacientes implements OnInit {
   ninos = signal<NinoResponse[]>([]);
   totalNinos = signal(0);
   ninoAEliminar = signal<NinoResponse | null>(null);
+  mostrarModalImport = signal(false);
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
+
+  readonly importarFn = (file: File) => this.ninosService.importar(file);
 
   columnas: DatatableColumn<NinoResponse>[] = [
     {
@@ -142,6 +147,38 @@ export class ListarPacientes implements OnInit {
         const link = document.createElement('a');
         link.href = url;
         link.download = `pacientes_${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarExcel(): void {
+    this.loadingBar.show();
+    this.ninosService.exportarExcel().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `pacientes-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarPlantilla(): void {
+    this.loadingBar.show();
+    this.ninosService.descargarPlantilla().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `plantilla-pacientes-${new Date().toISOString().split('T')[0]}.xlsx`;
         link.click();
         window.URL.revokeObjectURL(url);
         this.loadingBar.complete();

@@ -93,8 +93,6 @@ export class MisCitasHoy implements OnInit {
         next: ({ hoy, proximas }) => {
           if (hoy.success) this.citasHoy.set(hoy.data);
           if (proximas.success) this.citasProximas.set(proximas.data);
-          console.log(this.citasHoy());
-          console.log(this.citasProximas());
         }
       });
   }

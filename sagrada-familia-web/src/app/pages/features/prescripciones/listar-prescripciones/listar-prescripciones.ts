@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
 
-import { DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+import { DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -32,6 +32,8 @@ export class ListarPrescripciones implements OnInit {
   // SOLUCIÓN: Cambiado a NinoDetailResponse para alinearse con el servicio de consulta por ID
   nino = signal<NinoDetailResponse | null>(null);
   prescripciones = signal<PrescripcionResponse[]>([]);
+  totalPrescripciones = signal(0);
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
 
   columnas: DatatableColumn<PrescripcionResponse>[] = [
     {
@@ -97,12 +99,22 @@ export class ListarPrescripciones implements OnInit {
 
   cargarPrescripciones(): void {
     const id = parseInt(this.ninoId);
-    this.prescripcionesService.obtenerHistorialPorNino(id).subscribe({
+    const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
+    this.loadingBar.show();
+    this.prescripcionesService.obtenerPaginadoPorNino(id, page, pageSize, search, sortBy, sortDir === 'asc').subscribe({
       next: (r) => {
-        if (r.success) this.prescripciones.set(r.data);
+        if (r.success) {
+          this.prescripciones.set(r.data);
+          this.totalPrescripciones.set(r.totalItems);
+        }
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
     });
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarPrescripciones();
   }
 }

@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiResponse } from '../../shared/interfaces/api.interface';
+import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
 import { CitaCreate, CitaResponse, CitaUpdate, EstadoCita } from '../../shared/interfaces/cita.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -23,6 +23,13 @@ export class CitasService {
   // Médico — citas futuras/pendientes
   obtenerProximas(): Observable<ApiResponse<CitaResponse[]>> {
     return this.http.get<ApiResponse<CitaResponse[]>>(`${this.url}/proximas`, { withCredentials: true });
+  }
+
+  obtenerPaginadoPorNino(ninoId: number, page: number, pageSize: number, search: string, sortBy: string, asc: boolean): Observable<PagedResponse<CitaResponse>> {
+    const params = new HttpParams()
+      .set('page', page).set('pageSize', pageSize)
+      .set('search', search).set('sortBy', sortBy).set('asc', asc);
+    return this.http.get<PagedResponse<CitaResponse>>(`${this.url}/nino/${ninoId}/paginado`, { params, withCredentials: true });
   }
 
   // Médico y Padre — citas de un niño específico

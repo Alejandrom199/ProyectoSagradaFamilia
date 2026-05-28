@@ -5,6 +5,7 @@ import { NgIcon } from '@ng-icons/core';
 
 import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
+import { ImportModal } from '../../../../shared/components/import-modal/import-modal';
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -15,7 +16,7 @@ import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 @Component({
   selector: 'app-listar-medicos',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, ConfirmModal, Button, Breadcrumb],
+  imports: [NgIcon, RouterLink, Datatable, ConfirmModal, ImportModal, Button, Breadcrumb],
 
   templateUrl: './listar-medicos.html',
   styleUrl: './listar-medicos.css',
@@ -28,8 +29,11 @@ export class ListarMedicos implements OnInit {
   medicos         = signal<MedicoResponse[]>([]);
   totalMedicos    = signal(0);
   medicoAEliminar = signal<MedicoResponse | null>(null);
+  mostrarModalImport = signal(false);
 
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
+
+  readonly importarFn = (file: File) => this.medicosService.importar(file);
 
   columnas: DatatableColumn<MedicoResponse>[] = [
     {
@@ -128,6 +132,38 @@ export class ListarMedicos implements OnInit {
         this.medicoAEliminar.set(null);
         this.loadingBar.complete();
       }
+    });
+  }
+
+  descargarExcel(): void {
+    this.loadingBar.show();
+    this.medicosService.exportarExcel().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `medicos-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarPlantilla(): void {
+    this.loadingBar.show();
+    this.medicosService.descargarPlantilla().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `plantilla-medicos-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
     });
   }
 }

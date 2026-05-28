@@ -1,45 +1,161 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
+import { NgApexchartsModule } from 'ng-apexcharts';
+import type {
+  ApexAxisChartSeries, ApexChart, ApexXAxis, ApexYAxis,
+  ApexStroke, ApexDataLabels, ApexTooltip, ApexLegend,
+  ApexMarkers, ApexFill, ApexAnnotations
+} from 'ng-apexcharts';
 
-import { NinosService } from '../../../../core/services/ninos';
-import { CitasService } from '../../../../core/services/citas';
+import { NinosService }        from '../../../../core/services/ninos';
+import { CitasService }        from '../../../../core/services/citas';
 import { PrescripcionesService } from '../../../../core/services/prescripciones';
-import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
-import { CitaResponse } from '../../../../shared/interfaces/cita.interface';
+import { MedidasService }      from '../../../../core/services/medidas';
+import { NinoDetailResponse }  from '../../../../shared/interfaces/nino.interface';
+import { CitaResponse }        from '../../../../shared/interfaces/cita.interface';
 import { PrescripcionResponse } from '../../../../shared/interfaces/prescripcion.interface';
+import { MedidaResponse }      from '../../../../shared/interfaces/medida.interface';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
-import { LoadingBar } from '../../../../core/services/loading-bar';
+import { LoadingBar }          from '../../../../core/services/loading-bar';
 import { formatearFecha, formatearEdad } from '../../../../shared/utils/date.utils';
 import { DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+
+type ChartOpts = {
+  series:      ApexAxisChartSeries;
+  chart:       ApexChart;
+  xaxis:       ApexXAxis;
+  yaxis:       ApexYAxis | ApexYAxis[];
+  stroke:      ApexStroke;
+  dataLabels:  ApexDataLabels;
+  tooltip:     ApexTooltip;
+  legend:      ApexLegend;
+  markers:     ApexMarkers;
+  fill?:       ApexFill;
+  annotations?: ApexAnnotations;
+  colors:      string[];
+};
 
 @Component({
   selector: 'detalle-paciente',
   standalone: true,
-  imports: [RouterLink, NgIcon, Breadcrumb, Datatable],
-
+  imports: [RouterLink, NgIcon, Breadcrumb, Datatable, NgApexchartsModule],
   templateUrl: './detalle-paciente.html',
 })
 export class DetallePaciente implements OnInit {
   @Input() id!: string;
 
-  private ninosService = inject(NinosService);
-  private citasService = inject(CitasService);
+  private ninosService        = inject(NinosService);
+  private citasService        = inject(CitasService);
   private prescripcionesService = inject(PrescripcionesService);
-  private loadingBar = inject(LoadingBar);
+  private medidasService      = inject(MedidasService);
+  private loadingBar          = inject(LoadingBar);
 
-  nino = signal<NinoDetailResponse | null>(null);
-  citas = signal<CitaResponse[]>([]);
+  nino           = signal<NinoDetailResponse | null>(null);
+  citas          = signal<CitaResponse[]>([]);
   prescripciones = signal<PrescripcionResponse[]>([]);
+  medidas        = signal<MedidaResponse[]>([]);
 
   formatearFecha = formatearFecha;
-  formatearEdad = formatearEdad;
+  formatearEdad  = formatearEdad;
 
   migajas: BreadcrumbItem[] = [
     { label: 'Pacientes', ruta: '/pacientes' },
     { label: 'Ficha del paciente' },
   ];
+
+  // ──────────────────────────────────────────────
+  // Gráfica 1: Curva Peso + Talla
+  // ──────────────────────────────────────────────
+  chartPesoTalla = computed<Partial<ChartOpts> | null>(() => {
+    const m = this.medidasOrdenadas();
+    if (m.length < 2) return null;
+    const ts = (f: string) => new Date(f + 'T00:00:00').getTime();
+    return {
+      series: [
+        { name: 'Peso (kg)',  data: m.map(x => ({ x: ts(x.fechaMedicion), y: x.peso  })) },
+        { name: 'Talla (cm)', data: m.map(x => ({ x: ts(x.fechaMedicion), y: x.talla })) },
+      ],
+      chart:  { type: 'line', height: 280, toolbar: { show: false }, fontFamily: 'inherit', zoom: { enabled: false } },
+      colors: ['#2563eb', '#7c3aed'],
+      stroke: { curve: 'smooth', width: [2.5, 2.5] },
+      dataLabels: { enabled: false },
+      markers: { size: 4, strokeWidth: 0 },
+      xaxis: {
+        type: 'datetime',
+        labels: { datetimeUTC: false, style: { colors: '#64748b', fontSize: '11px' } }
+      },
+      yaxis: [
+        {
+          title:  { text: 'Peso (kg)',  style: { color: '#2563eb', fontWeight: 600 } },
+          labels: { style: { colors: ['#2563eb'], fontSize: '11px' } }
+        },
+        {
+          opposite: true,
+          title:  { text: 'Talla (cm)', style: { color: '#7c3aed', fontWeight: 600 } },
+          labels: { style: { colors: ['#7c3aed'], fontSize: '11px' } }
+        },
+      ],
+      tooltip: { x: { format: 'dd MMM yyyy' } },
+      legend:  { show: true, position: 'top', fontSize: '12px', fontFamily: 'inherit' },
+    };
+  });
+
+  // ──────────────────────────────────────────────
+  // Gráfica 2: Índice de Masa Corporal
+  // ──────────────────────────────────────────────
+  chartIMC = computed<Partial<ChartOpts> | null>(() => {
+    const m = this.medidasOrdenadas();
+    if (m.length < 2) return null;
+    const ts  = (f: string) => new Date(f + 'T00:00:00').getTime();
+    const imc = (x: MedidaResponse) =>
+      parseFloat((x.peso / Math.pow(x.talla / 100, 2)).toFixed(1));
+    return {
+      series: [{ name: 'IMC', data: m.map(x => ({ x: ts(x.fechaMedicion), y: imc(x) })) }],
+      chart:  { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'inherit', zoom: { enabled: false } },
+      colors: ['#0891b2'],
+      fill:   { opacity: 0.12 },
+      stroke: { curve: 'smooth', width: 2.5 },
+      dataLabels: {
+        enabled: true,
+        style: { fontSize: '10px', colors: ['#0891b2'], fontFamily: 'inherit' },
+        background: { enabled: false }
+      },
+      markers: { size: 0 },
+      xaxis: {
+        type: 'datetime',
+        labels: { datetimeUTC: false, style: { colors: '#64748b', fontSize: '11px' } }
+      },
+      yaxis: {
+        title:  { text: 'IMC (kg/m²)', style: { color: '#64748b', fontWeight: 600 } },
+        labels: { style: { colors: ['#64748b'], fontSize: '11px' } },
+        min: 10
+      },
+      annotations: {
+        yaxis: [
+          {
+            y: 18.5,
+            borderColor: '#f59e0b', borderWidth: 1,
+            label: { text: '18.5', position: 'left', style: { color: '#92400e', fontSize: '10px', background: 'transparent', padding: { left: 0, right: 4, top: 1, bottom: 1 } } }
+          },
+          {
+            y: 25,
+            borderColor: '#f97316', borderWidth: 1,
+            label: { text: '25', position: 'left', style: { color: '#7c2d12', fontSize: '10px', background: 'transparent', padding: { left: 0, right: 4, top: 1, bottom: 1 } } }
+          },
+        ]
+      },
+      tooltip: { x: { format: 'dd MMM yyyy' } },
+      legend:  { show: false },
+    };
+  });
+
+  private medidasOrdenadas = computed(() =>
+    [...this.medidas()].sort((a, b) =>
+      new Date(a.fechaMedicion).getTime() - new Date(b.fechaMedicion).getTime()
+    )
+  );
 
   columnasCitas: DatatableColumn<CitaResponse>[] = [
     {
@@ -54,15 +170,15 @@ export class DetallePaciente implements OnInit {
       key: 'estado', label: 'Estado',
       render: (row) => {
         const mapa: Record<string, string> = {
-          'Pendiente': 'bg-yellow-100 text-yellow-700',
-          'EnCurso': 'bg-blue-100 text-blue-700',
+          'Pendiente':  'bg-yellow-100 text-yellow-700',
+          'EnCurso':    'bg-blue-100 text-blue-700',
           'Completada': 'bg-green-100 text-green-700',
-          'Cancelada': 'bg-red-100 text-red-600',
-          'NoAsistio': 'bg-gray-100 text-gray-600',
+          'Cancelada':  'bg-red-100 text-red-600',
+          'NoAsistio':  'bg-gray-100 text-gray-600',
         };
         const clase = mapa[row.estado] || 'bg-gray-100 text-gray-600';
-        const label = row.estado === 'NoAsistio' ? 'No asistió' :
-          row.estado === 'EnCurso' ? 'En curso' : row.estado;
+        const label = row.estado === 'NoAsistio' ? 'No asistió'
+          : row.estado === 'EnCurso' ? 'En curso' : row.estado;
         return `<span class="px-2 py-1 rounded-full text-xs font-bold ${clase}">${label}</span>`;
       }
     }
@@ -95,7 +211,6 @@ export class DetallePaciente implements OnInit {
       next: (r) => {
         if (r.success) {
           this.nino.set(r.data);
-          // ✅ migas dinámicas
           this.migajas = [
             { label: 'Pacientes', ruta: '/pacientes' },
             { label: `${r.data.nombre} ${r.data.apellido}` },
@@ -109,8 +224,12 @@ export class DetallePaciente implements OnInit {
     });
 
     this.prescripcionesService.obtenerHistorialPorNino(id).subscribe({
+      next: (r) => { if (r.success) this.prescripciones.set(r.data.slice(0, 5)); }
+    });
+
+    this.medidasService.obtenerPorNino(id).subscribe({
       next: (r) => {
-        if (r.success) this.prescripciones.set(r.data.slice(0, 5));
+        if (r.success) this.medidas.set(r.data);
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()

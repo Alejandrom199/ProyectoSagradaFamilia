@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
 
-import { Datatable, DatatableAction, DatatableColumn } from '../../../../shared/components/datatable/datatable';
+import { Datatable, DatatableAction, DatatableColumn, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { Button } from '../../../../shared/components/button/button';
 import { NinosService } from '../../../../core/services/ninos';
 import { MedidasService } from '../../../../core/services/medidas';
@@ -27,7 +27,9 @@ export class ListarMedidas implements OnInit {
   private ninosService = inject(NinosService);
 
   medidas = signal<MedidaResponse[]>([]);
+  totalMedidas = signal(0);
   nino = signal<NinoDetailResponse | null>(null);
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
   migajas = signal<BreadcrumbItem[]>([]);
 
   modalAbierto = signal(false);
@@ -112,9 +114,18 @@ export class ListarMedidas implements OnInit {
   }
 
   cargarMedidas() {
-    this.medidasService.obtenerPorNino(parseInt(this.id, 10)).subscribe(r => {
-      if (r.success) this.medidas.set(r.data);
+    const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
+    this.medidasService.obtenerPaginadoPorNino(parseInt(this.id, 10), page, pageSize, search, sortBy, sortDir === 'asc').subscribe(r => {
+      if (r.success) {
+        this.medidas.set(r.data);
+        this.totalMedidas.set(r.totalItems);
+      }
     });
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarMedidas();
   }
 
   abrirModal(medida?: MedidaResponse) {
