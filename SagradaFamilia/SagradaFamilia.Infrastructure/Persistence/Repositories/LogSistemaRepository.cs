@@ -39,6 +39,33 @@ public class LogSistemaRepository : ILogSistemaRepository
             .ToListAsync();
     }
 
+    public async Task<(IEnumerable<LogSistema> Items, int TotalItems)> ObtenerPaginadoAsync(
+        int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var query = _context.Set<LogSistema>().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.ToLower();
+            query = query.Where(l =>
+                l.Mensaje.ToLower().Contains(term) ||
+                l.Nivel.ToLower().Contains(term) ||
+                (l.Endpoint != null && l.Endpoint.ToLower().Contains(term)));
+        }
+
+        query = sortBy?.ToLower() switch
+        {
+            "fechahora" => ascending ? query.OrderBy(l => l.FechaHora)    : query.OrderByDescending(l => l.FechaHora),
+            "nivel"     => ascending ? query.OrderBy(l => l.Nivel)        : query.OrderByDescending(l => l.Nivel),
+            "mensaje"   => ascending ? query.OrderBy(l => l.Mensaje)      : query.OrderByDescending(l => l.Mensaje),
+            _           => query.OrderByDescending(l => l.FechaHora)
+        };
+
+        var total = await query.CountAsync();
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        return (items, total);
+    }
+
     public async Task RegistrarAsync(LogSistema log)
     {
         await _context.Set<LogSistema>().AddAsync(log);

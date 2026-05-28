@@ -62,6 +62,37 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .OrderBy(c => c.FechaHora)
                 .ToListAsync();
 
+        public async Task<(IEnumerable<Cita> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
+            int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending)
+        {
+            var query = _context.Citas
+                .Include(c => c.Medico)
+                .Where(c => c.NinoId == ninoId && !c.Eliminado)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(c =>
+                    (c.Motivo != null && c.Motivo.ToLower().Contains(term)) ||
+                    c.Medico.Nombre.ToLower().Contains(term) ||
+                    c.Medico.Apellido.ToLower().Contains(term));
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "fechahora"   => ascending ? query.OrderBy(c => c.FechaHora)           : query.OrderByDescending(c => c.FechaHora),
+                "nombremedico"=> ascending ? query.OrderBy(c => c.Medico.Apellido)     : query.OrderByDescending(c => c.Medico.Apellido),
+                "motivo"      => ascending ? query.OrderBy(c => c.Motivo)              : query.OrderByDescending(c => c.Motivo),
+                "estado"      => ascending ? query.OrderBy(c => c.Estado)              : query.OrderByDescending(c => c.Estado),
+                _             => query.OrderByDescending(c => c.FechaHora)
+            };
+
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, total);
+        }
+
         public async Task<Cita> CrearAsync(Cita cita)
         {
             _context.Citas.Add(cita);

@@ -38,7 +38,6 @@ public class AlimentosController : BaseController
     [HttpGet("por-edad/{edadMeses:int}")]
     public async Task<ActionResult<ApiResponse<IEnumerable<AlimentoDto.Response>>>> ObtenerPorEdad(int edadMeses)
     {
-        // 💡 Corregido: Nombre exacto de la interfaz IAlimentoService
         var response = await _alimentoService.ObtenerPorRangoEdadAsync(edadMeses);
         return HandleResponse(response);
     }
@@ -102,7 +101,7 @@ public class AlimentosController : BaseController
 
     [HttpPost("importar")]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<AlimentoDto.ImportResultado>>> Importar(IFormFile archivo)
+    public async Task<ActionResult<ApiResponse<AlimentoDto.ImportResultado>>> Importar([FromForm] IFormFile archivo)
     {
         if (archivo is null || archivo.Length == 0)
             return BadRequest(ApiResponse<AlimentoDto.ImportResultado>.Fail("No se recibió ningún archivo."));

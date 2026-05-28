@@ -8,6 +8,7 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<CitaDto.Response> ObtenerPorIdAsync(int id);
         Task<IEnumerable<CitaDto.Response>> ObtenerHistorialPorMedicoAsync(int usuarioId);
         Task<IEnumerable<CitaDto.Response>> ObtenerPorNinoIdAsync(int ninoId);
+        Task<(IEnumerable<CitaDto.Response> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending);
 
         Task<IEnumerable<CitaDto.Response>> ObtenerPorMedicoIdAsync(int medicoId, DateOnly fecha);
 

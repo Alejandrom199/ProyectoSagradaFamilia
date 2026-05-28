@@ -19,6 +19,32 @@ public class SistemaController : BaseController
         _logService = logService;
     }
 
+    [HttpGet("auditoria/paginado")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<PagedResponse<AuditoriaDto.Response>>> AuditoriaPaginado(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] bool asc = false)
+    {
+        var (items, total) = await _auditoriaService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc);
+        return PagedResponse<AuditoriaDto.Response>.Ok(items, total, page, pageSize);
+    }
+
+    [HttpGet("logs/paginado")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<PagedResponse<LogSistemaDto.Response>>> LogsPaginado(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] bool asc = false)
+    {
+        var (items, total) = await _logService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc);
+        return PagedResponse<LogSistemaDto.Response>.Ok(items, total, page, pageSize);
+    }
+
     [HttpGet("auditoria")]
     [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<IEnumerable<AuditoriaDto.Response>>>> AuditoriaReciente([FromQuery] int top = 100)

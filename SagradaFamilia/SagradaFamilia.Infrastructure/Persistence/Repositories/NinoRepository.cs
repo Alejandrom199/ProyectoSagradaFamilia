@@ -111,7 +111,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var nino = await ObtenerPorIdAsync(id);
             if (nino is null) return;
 
-            _context.Ninos.Remove(nino);
+            nino.Eliminado = true;
+            nino.FechaEliminacion = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
     }

@@ -1,6 +1,5 @@
 ﻿namespace SagradaFamilia.Application.Services;
 
-using System.Globalization;
 using AutoMapper;
 using ClosedXML.Excel;
 using Microsoft.Extensions.Logging;
@@ -205,9 +204,8 @@ public class AlimentoService : IAlimentoService
         // Cargar alimentos existentes para detectar duplicados por nombre (upsert)
         var alimentosExistentes = await _alimentoRepository.ObtenerTodosAsync();
         var alimentoMap = alimentosExistentes
-            .ToDictionary(
-                a => a.Nombre.Trim().ToLowerInvariant(),
-                a => a);
+            .GroupBy(a => a.Nombre.Trim().ToLowerInvariant())
+            .ToDictionary(g => g.Key, g => g.First());
 
         XLWorkbook workbook;
         try
@@ -251,12 +249,12 @@ public class AlimentoService : IAlimentoService
 
                 string nombre = row.Cell(1).GetString().Trim();
                 string categoriaNombre = row.Cell(2).GetString().Trim();
-                string edadStr = row.Cell(3).GetString().Trim();
                 string descripcion = row.Cell(4).GetString().Trim();
                 string recomendacion = row.Cell(5).GetString().Trim();
+                string activoStr = row.Cell(6).GetString().Trim().ToUpperInvariant();
 
                 // Ignorar filas completamente vacías
-                if (string.IsNullOrEmpty(nombre) && string.IsNullOrEmpty(categoriaNombre) && string.IsNullOrEmpty(edadStr))
+                if (string.IsNullOrEmpty(nombre) && string.IsNullOrEmpty(categoriaNombre) && row.Cell(3).IsEmpty())
                     continue;
 
                 resultado.TotalProcesadas++;
@@ -275,28 +273,36 @@ public class AlimentoService : IAlimentoService
                 else if (!categoriaMap.TryGetValue(categoriaNombre.ToLowerInvariant(), out categoriaId))
                     erroresFila.Add($"Categoría '{categoriaNombre}' no existe en el sistema");
 
-                // Validar Edad mínima
+                // Validar Edad mínima — TryGetValue lee el valor numérico directo, sin problemas de locale
                 int edadMinimaMeses = 0;
-                if (string.IsNullOrEmpty(edadStr))
+                var celdaEdad = row.Cell(3);
+                if (celdaEdad.IsEmpty())
                 {
                     erroresFila.Add("Edad mínima es obligatoria");
                 }
                 else
                 {
-                    // Aceptar "6", "6.0", "6,0" por distintos formatos de Excel
-                    bool edadValida = double.TryParse(
-                        edadStr,
-                        NumberStyles.Any,
-                        CultureInfo.InvariantCulture,
-                        out double edadDouble)
+                    bool edadValida = celdaEdad.TryGetValue(out double edadDouble)
                         && edadDouble >= 0
-                        && edadDouble == Math.Floor(edadDouble)
-                        && edadDouble <= 240;
+                        && edadDouble <= 240
+                        && edadDouble == Math.Floor(edadDouble);
 
                     if (!edadValida)
                         erroresFila.Add("Edad mínima debe ser un entero entre 0 y 240");
                     else
                         edadMinimaMeses = (int)edadDouble;
+                }
+
+                // Validar Activo
+                bool activo = true;
+                if (!string.IsNullOrEmpty(activoStr))
+                {
+                    activo = activoStr switch
+                    {
+                        "ACTIVO" or "A" or "SÍ" or "SI" or "1" or "TRUE" => true,
+                        "INACTIVO" or "I" or "NO" or "0" or "FALSE"       => false,
+                        _ => true
+                    };
                 }
 
                 // Validar longitudes opcionales
@@ -322,7 +328,7 @@ public class AlimentoService : IAlimentoService
                     existente.Descripcion = string.IsNullOrEmpty(descripcion) ? null : descripcion;
                     existente.EdadMinimaMeses = edadMinimaMeses;
                     existente.Recomendacion = string.IsNullOrEmpty(recomendacion) ? null : recomendacion;
-                    existente.Activo = true;
+                    existente.Activo = activo;
                     await _alimentoRepository.ActualizarAsync(existente);
                     resultado.Actualizados++;
                 }
@@ -335,7 +341,7 @@ public class AlimentoService : IAlimentoService
                         Descripcion = string.IsNullOrEmpty(descripcion) ? null : descripcion,
                         EdadMinimaMeses = edadMinimaMeses,
                         Recomendacion = string.IsNullOrEmpty(recomendacion) ? null : recomendacion,
-                        Activo = true
+                        Activo = activo
                     };
                     await _alimentoRepository.CrearAsync(nuevo);
                     resultado.Importados++;

@@ -7,6 +7,7 @@ namespace SagradaFamilia.Domain.Interfaces.Repositories
         Task<IEnumerable<Auditoria>> ObtenerRecientesAsync(int top = 100);
         Task<IEnumerable<Auditoria>> ObtenerPorTablaAsync(string nombreTabla, string? clavePrimaria = null);
         Task<IEnumerable<Auditoria>> ObtenerPorUsuarioAsync(int usuarioId);
+        Task<(IEnumerable<Auditoria> Items, int TotalItems)> ObtenerPaginadoAsync(int page, int pageSize, string? search, string? sortBy, bool ascending);
         Task RegistrarAsync(Auditoria auditoria);
     }
 }

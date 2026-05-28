@@ -31,6 +31,35 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
 
+        public async Task<(IEnumerable<Prescripcion> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
+            int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending)
+        {
+            var query = _context.Prescripciones
+                .Include(p => p.Medico)
+                .Where(p => p.NinoId == ninoId && !p.Eliminado)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(p =>
+                    p.DetalleMedicamentos.ToLower().Contains(term) ||
+                    (p.Indicaciones != null && p.Indicaciones.ToLower().Contains(term)) ||
+                    p.Medico.Nombre.ToLower().Contains(term) ||
+                    p.Medico.Apellido.ToLower().Contains(term));
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "nombremedico"  => ascending ? query.OrderBy(p => p.Medico.Apellido) : query.OrderByDescending(p => p.Medico.Apellido),
+                _               => query.OrderByDescending(p => p.Id)
+            };
+
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, total);
+        }
+
         public async Task<Prescripcion> CrearAsync(Prescripcion prescripcion)
         {
             _context.Prescripciones.Add(prescripcion);

@@ -1,10 +1,12 @@
 ﻿namespace SagradaFamilia.Application.Services;
 
 using AutoMapper;
+using ClosedXML.Excel;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Exceptions;
 using SagradaFamilia.Domain.Interfaces.Repositories;
@@ -14,6 +16,7 @@ public class NinoService : INinoService
     private readonly INinoRepository _ninoRepository;
     private readonly IPadreRepository _padreRepository;
     private readonly IMedicoRepository _medicoRepository;
+    private readonly IUsuarioRepository _usuarioRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<NinoService> _logger;
 
@@ -21,12 +24,14 @@ public class NinoService : INinoService
         INinoRepository ninoRepository,
         IPadreRepository padreRepository,
         IMedicoRepository medicoRepository,
+        IUsuarioRepository usuarioRepository,
         IMapper mapper,
         ILogger<NinoService> logger)
     {
         _ninoRepository = ninoRepository;
         _padreRepository = padreRepository;
         _medicoRepository = medicoRepository;
+        _usuarioRepository = usuarioRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -157,4 +162,160 @@ public class NinoService : INinoService
         return _mapper.Map<IEnumerable<NinoDto.ListResponse>>(ninos);
     }
 
+    public async Task<byte[]> GenerarPlantillaAsync()
+    {
+        _logger.LogInformation("Generando plantilla Excel para importación masiva de pacientes.");
+        return new NinosPlantillaDocument().GenerarBytes();
+    }
+
+    public async Task<byte[]> ExportarExcelAsync()
+    {
+        _logger.LogInformation("Exportando listado de pacientes a Excel.");
+        var ninos = await _ninoRepository.ObtenerTodosAsync();
+        var dtos = _mapper.Map<IEnumerable<NinoDto.ListResponse>>(ninos);
+        return new NinosExportDocument(dtos).GenerarBytes();
+    }
+
+    public async Task<NinoDto.ImportResultado> ImportarAsync(Stream archivoStream, int medicoId)
+    {
+        _logger.LogInformation("Iniciando importación masiva de pacientes desde Excel para médico ID: {MedicoId}", medicoId);
+        var resultado = new NinoDto.ImportResultado();
+
+        XLWorkbook workbook;
+        try { workbook = new XLWorkbook(archivoStream); }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("Archivo Excel inválido: {Error}", ex.Message);
+            resultado.Errores.Add(new NinoDto.ImportError { Fila = 0, Mensaje = "El archivo no es un Excel válido (.xlsx)." });
+            return resultado;
+        }
+
+        using (workbook)
+        {
+            IXLWorksheet ws;
+            try { ws = workbook.Worksheet("Pacientes"); }
+            catch
+            {
+                resultado.Errores.Add(new NinoDto.ImportError { Fila = 0, Mensaje = "No se encontró la hoja 'Pacientes'. Use la plantilla oficial." });
+                return resultado;
+            }
+
+            var todosLosNinos = await _ninoRepository.ObtenerTodosAsync();
+            var ninoMap = todosLosNinos
+                .GroupBy(n => $"{n.Nombre.Trim().ToLowerInvariant()}|{n.Apellido.Trim().ToLowerInvariant()}|{n.FechaNacimiento:yyyy-MM-dd}")
+                .ToDictionary(g => g.Key, g => g.First());
+
+            const int DataStartRow = 7;
+            int lastRow = ws.LastRowUsed()?.RowNumber() ?? DataStartRow - 1;
+
+            for (int rowNum = DataStartRow; rowNum <= lastRow; rowNum++)
+            {
+                var row = ws.Row(rowNum);
+                string nombre       = row.Cell(1).GetString().Trim();
+                string apellido     = row.Cell(2).GetString().Trim();
+                string emailPadre   = row.Cell(3).GetString().Trim().ToLowerInvariant();
+                string sexoStr      = row.Cell(4).GetString().Trim().ToUpperInvariant();
+                var celdaFecha      = row.Cell(5);
+
+                if (string.IsNullOrEmpty(nombre) && string.IsNullOrEmpty(apellido) && string.IsNullOrEmpty(emailPadre))
+                    continue;
+
+                resultado.TotalProcesadas++;
+                var erroresFila = new List<string>();
+
+                if (string.IsNullOrEmpty(nombre))        erroresFila.Add("Nombre es obligatorio");
+                else if (nombre.Length > 100)            erroresFila.Add("Nombre excede 100 caracteres");
+
+                if (string.IsNullOrEmpty(apellido))      erroresFila.Add("Apellido es obligatorio");
+                else if (apellido.Length > 100)          erroresFila.Add("Apellido excede 100 caracteres");
+
+                if (string.IsNullOrEmpty(emailPadre))
+                    erroresFila.Add("Email del representante es obligatorio");
+                else if (!EsEmailValido(emailPadre))
+                    erroresFila.Add("Email del representante no tiene formato válido");
+
+                char sexo = 'M';
+                if (string.IsNullOrEmpty(sexoStr))
+                    erroresFila.Add("Sexo es obligatorio");
+                else
+                {
+                    sexo = sexoStr switch
+                    {
+                        "M" or "MASCULINO" => 'M',
+                        "F" or "FEMENINO"  => 'F',
+                        _ => '\0'
+                    };
+                    if (sexo == '\0')
+                        erroresFila.Add("Sexo debe ser Masculino o Femenino");
+                }
+
+                DateOnly fechaNacimiento = default;
+                if (celdaFecha.IsEmpty())
+                    erroresFila.Add("Fecha de nacimiento es obligatoria");
+                else if (celdaFecha.TryGetValue(out DateTime fechaDt))
+                    fechaNacimiento = DateOnly.FromDateTime(fechaDt);
+                else if (DateOnly.TryParseExact(celdaFecha.GetString().Trim(), ["yyyy-MM-dd", "dd/MM/yyyy", "MM/dd/yyyy"], out var fechaParsed))
+                    fechaNacimiento = fechaParsed;
+                else
+                    erroresFila.Add("Fecha de nacimiento no tiene formato válido (use yyyy-MM-dd)");
+
+                if (erroresFila.Count > 0)
+                {
+                    resultado.Errores.Add(new NinoDto.ImportError { Fila = rowNum, Mensaje = string.Join("; ", erroresFila) });
+                    continue;
+                }
+
+                var usuarioPadre = await _usuarioRepository.ObtenerPorEmailAsync(emailPadre);
+                if (usuarioPadre == null)
+                {
+                    resultado.Errores.Add(new NinoDto.ImportError { Fila = rowNum, Mensaje = $"No existe un representante registrado con el email '{emailPadre}'." });
+                    continue;
+                }
+
+                var padre = await _padreRepository.ObtenerPorUsuarioIdAsync(usuarioPadre.Id);
+                if (padre == null)
+                {
+                    resultado.Errores.Add(new NinoDto.ImportError { Fila = rowNum, Mensaje = $"El email '{emailPadre}' existe pero no tiene perfil de representante." });
+                    continue;
+                }
+
+                string clave = $"{nombre.ToLowerInvariant()}|{apellido.ToLowerInvariant()}|{fechaNacimiento:yyyy-MM-dd}";
+
+                if (ninoMap.TryGetValue(clave, out var ninoExistente))
+                {
+                    ninoExistente.PadreId = padre.Id;
+                    ninoExistente.Sexo    = sexo;
+                    await _ninoRepository.ActualizarAsync(ninoExistente);
+                    resultado.Actualizados++;
+                }
+                else
+                {
+                    var nuevoNino = new Nino
+                    {
+                        Nombre          = nombre,
+                        Apellido        = apellido,
+                        FechaNacimiento = fechaNacimiento,
+                        Sexo            = sexo,
+                        PadreId         = padre.Id,
+                        MedicoId        = medicoId
+                    };
+                    var creado = await _ninoRepository.CrearAsync(nuevoNino);
+                    ninoMap[clave] = creado;
+                    resultado.Importados++;
+                }
+            }
+        }
+
+        _logger.LogInformation(
+            "Importación de pacientes finalizada: {I} creados, {A} actualizados, {E} errores de {T} filas.",
+            resultado.Importados, resultado.Actualizados, resultado.Errores.Count, resultado.TotalProcesadas);
+
+        return resultado;
+    }
+
+    private static bool EsEmailValido(string email)
+    {
+        try { var a = new System.Net.Mail.MailAddress(email); return a.Address == email; }
+        catch { return false; }
+    }
 }

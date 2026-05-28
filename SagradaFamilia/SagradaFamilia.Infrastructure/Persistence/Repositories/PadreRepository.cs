@@ -84,11 +84,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
         public async Task EliminarAsync(int id)
         {
             var padre = await ObtenerPorIdAsync(id);
-            if (padre != null)
-            {
-                _context.Padres.Remove(padre);
-                await _context.SaveChangesAsync();
-            }
+            if (padre is null) return;
+
+            padre.Eliminado = true;
+            padre.FechaEliminacion = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
         }
     }
 }

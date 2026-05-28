@@ -93,7 +93,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var alimento = await ObtenerPorIdAsync(id);
             if (alimento is null) return;
 
-            _context.Alimentos.Remove(alimento);
+            alimento.Eliminado = true;
+            alimento.FechaEliminacion = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
 
@@ -127,7 +128,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var categoria = await ObtenerCategoriaPorIdAsync(id);
             if (categoria is null) return;
 
-            _context.CategoriasAlimentos.Remove(categoria);
+            categoria.Eliminado = true;
+            categoria.FechaEliminacion = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
     }

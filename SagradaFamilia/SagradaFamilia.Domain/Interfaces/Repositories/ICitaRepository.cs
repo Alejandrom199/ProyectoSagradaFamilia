@@ -10,6 +10,7 @@ namespace SagradaFamilia.Domain.Interfaces.Repositories
         Task<IEnumerable<Cita>> ObtenerPorMedicoIdAsync(int medicoId, DateOnly fecha);
         Task<IEnumerable<Cita>> ObtenerPendientesPorMedicoAsync(int medicoId);
         Task<IEnumerable<Cita>> ObtenerPorPadreIdAsync(int padreId);
+        Task<(IEnumerable<Cita> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending);
         Task<Cita> CrearAsync(Cita cita);
         Task<Cita> ActualizarAsync(Cita cita);
         Task EliminarAsync(int id);

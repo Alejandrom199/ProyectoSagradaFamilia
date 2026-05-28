@@ -103,7 +103,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var usuario = await ObtenerPorIdAsync(id);
             if (usuario is null) return;
 
-            _context.Usuarios.Remove(usuario);
+            usuario.Eliminado = true;
+            usuario.FechaEliminacion = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
     }

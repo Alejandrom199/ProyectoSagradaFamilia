@@ -56,6 +56,13 @@ public class CitaService : ICitaService
         return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
     }
 
+    public async Task<(IEnumerable<CitaDto.Response> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
+        int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _citaRepository.ObtenerPaginadoPorNinoAsync(ninoId, page, pageSize, search, sortBy, ascending);
+        return (_mapper.Map<IEnumerable<CitaDto.Response>>(items), total);
+    }
+
     public async Task<IEnumerable<CitaDto.Response>> ObtenerPorMedicoIdAsync(int medicoId, DateOnly fecha)
     {
         _logger.LogInformation("Consultando agenda del médico ID: {MedicoId} para la fecha: {Fecha}", medicoId, fecha);

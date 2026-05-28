@@ -21,5 +21,9 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task EliminarAsync(int id);
         Task<IEnumerable<NinoDto.ListResponse>> ObtenerMisPorUsuarioIdAsync(int usuarioId);
         Task<IEnumerable<NinoDto.ListResponse>> ObtenerMisPacientesPorUsuarioIdAsync(int usuarioId);
+
+        Task<byte[]> GenerarPlantillaAsync();
+        Task<byte[]> ExportarExcelAsync();
+        Task<NinoDto.ImportResultado> ImportarAsync(Stream archivoStream, int medicoId);
     }
 }
