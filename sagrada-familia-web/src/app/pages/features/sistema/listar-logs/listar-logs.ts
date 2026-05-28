@@ -1,8 +1,8 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
-import { DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+import { DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { LogSistemaResponse } from '../../../../shared/interfaces/sistema.interface';
@@ -21,14 +21,10 @@ export class ListarLogs implements OnInit {
   private sistemaService = inject(SistemaService);
   private loadingBar = inject(LoadingBar);
 
-  private todosLogs = signal<LogSistemaResponse[]>([]);
+  logs = signal<LogSistemaResponse[]>([]);
+  totalLogs = signal(0);
   nivelActivo = signal<NivelFiltro>('Todo');
-
-  logs = computed(() => {
-    const nivel = this.nivelActivo();
-    if (nivel === 'Todo') return this.todosLogs();
-    return this.todosLogs().filter(l => l.nivel === nivel);
-  });
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
 
   readonly niveles: NivelFiltro[] = ['Todo', 'Information', 'Warning', 'Error'];
 
@@ -83,14 +79,31 @@ export class ListarLogs implements OnInit {
   }
 
   cargarLogs(): void {
+    const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
+    const nivel = this.nivelActivo();
+    const searchParam = nivel !== 'Todo' ? nivel : search;
     this.loadingBar.show();
-    this.sistemaService.obtenerLogsRecientes().subscribe({
+    this.sistemaService.obtenerLogsPaginado(page, pageSize, searchParam, sortBy, sortDir === 'asc').subscribe({
       next: (r) => {
-        if (r.success) this.todosLogs.set(r.data);
+        if (r.success) {
+          this.logs.set(r.data);
+          this.totalLogs.set(r.totalItems);
+        }
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
     });
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarLogs();
+  }
+
+  cambiarNivel(nivel: NivelFiltro): void {
+    this.nivelActivo.set(nivel);
+    this.queryActual = { ...this.queryActual, page: 1, search: '' };
+    this.cargarLogs();
   }
 
   private badgeNivel(nivel: string): string {

@@ -23,7 +23,7 @@ public class AlimentosPlantillaDocument : BaseExcelTemplate
 
         var ws = workbook.Worksheets.Add("Alimentos");
 
-        string[] headers = ["Nombre *", "Categoría *", "Edad Mínima (meses) *", "Descripción", "Recomendación"];
+        string[] headers = ["Nombre *", "Categoría *", "Edad Mínima (meses) *", "Descripción", "Recomendación", "Activo *"];
         int totalCols = headers.Length;
 
         // Filas 1-3: encabezado decorativo (logo + título + fecha)
@@ -31,7 +31,7 @@ public class AlimentosPlantillaDocument : BaseExcelTemplate
 
         // Fila 4: instrucciones
         AgregarFilaInstruccion(ws, 4, totalCols,
-            "* = Campo obligatorio   |   Seleccione la categoría del desplegable   |   Edad mínima: número entero en meses (ej: 6, 12, 18)");
+            "* = Campo obligatorio   |   Seleccione la categoría del desplegable   |   Edad mínima: número entero en meses (ej: 6, 12, 18)   |   Activo: Activo o Inactivo");
 
         // Fila 5: encabezados de columna
         EstilarEncabezadoColumnas(ws, 5, headers);
@@ -42,6 +42,7 @@ public class AlimentosPlantillaDocument : BaseExcelTemplate
         ws.Cell(6, 3).Value = 6;
         ws.Cell(6, 4).Value = "Fruta suave, dulce y fácil de hacer puré";
         ws.Cell(6, 5).Value = "Ofrecer rallada o en puré sin cáscara";
+        ws.Cell(6, 6).Value = "Activo";
         EstilarFilaEjemplo(ws, 6, totalCols);
 
         // Desde fila 7: zona de datos con validaciones
@@ -58,11 +59,18 @@ public class AlimentosPlantillaDocument : BaseExcelTemplate
         dvEdad.ErrorTitle   = "Valor inválido";
         dvEdad.ErrorMessage = "Ingrese un número entero entre 0 y 240.";
 
+        var dvActivo = ws.Range("F7:F1000").CreateDataValidation();
+        dvActivo.List("\"Activo,Inactivo\"", true);
+        dvActivo.ErrorStyle   = XLErrorStyle.Stop;
+        dvActivo.ErrorTitle   = "Valor inválido";
+        dvActivo.ErrorMessage = "Seleccione Activo o Inactivo del desplegable.";
+
         ws.Column(1).Width = 32;
         ws.Column(2).Width = 26;
         ws.Column(3).Width = 24;
         ws.Column(4).Width = 42;
         ws.Column(5).Width = 48;
+        ws.Column(6).Width = 14;
 
         ws.SheetView.FreezeRows(6);
         ws.SetTabActive();

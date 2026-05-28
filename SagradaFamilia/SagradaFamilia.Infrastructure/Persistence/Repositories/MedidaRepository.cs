@@ -31,12 +31,47 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .OrderByDescending(m => m.FechaMedicion)
                 .FirstOrDefaultAsync();
 
+        public async Task<IEnumerable<Medida>> ObtenerTodosAsync() =>
+            await _context.Medidas
+                .Include(m => m.Nino)
+                .Include(m => m.Medico)
+                .Where(m => !m.Eliminado)
+                .OrderByDescending(m => m.FechaMedicion)
+                .ToListAsync();
+
+        public async Task<Medida?> ObtenerPorNinoYMesAsync(int ninoId, int mes, int anio) =>
+            await _context.Medidas
+                .FirstOrDefaultAsync(m => m.NinoId == ninoId
+                                       && !m.Eliminado
+                                       && m.FechaMedicion.Year == anio
+                                       && m.FechaMedicion.Month == mes);
+
         public async Task<bool> ExisteMedidaEnMesAsync(int ninoId, int mes, int anio) =>
             await _context.Medidas
                 .AnyAsync(m => m.NinoId == ninoId
                             && !m.Eliminado
                             && m.FechaMedicion.Year == anio
                             && m.FechaMedicion.Month == mes);
+
+        public async Task<(IEnumerable<Medida> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
+            int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending)
+        {
+            var query = _context.Medidas
+                .Include(m => m.Medico)
+                .Where(m => m.NinoId == ninoId && !m.Eliminado)
+                .AsQueryable();
+
+            query = sortBy?.ToLower() switch
+            {
+                "peso"  => ascending ? query.OrderBy(m => m.Peso)  : query.OrderByDescending(m => m.Peso),
+                "talla" => ascending ? query.OrderBy(m => m.Talla) : query.OrderByDescending(m => m.Talla),
+                _       => ascending ? query.OrderBy(m => m.FechaMedicion) : query.OrderByDescending(m => m.FechaMedicion)
+            };
+
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, total);
+        }
 
         public async Task<Medida> CrearAsync(Medida medida)
         {
@@ -57,7 +92,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var medida = await ObtenerPorIdAsync(id);
             if (medida is null) return;
 
-            _context.Medidas.Remove(medida);
+            medida.Eliminado = true;
+            medida.FechaEliminacion = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
     }

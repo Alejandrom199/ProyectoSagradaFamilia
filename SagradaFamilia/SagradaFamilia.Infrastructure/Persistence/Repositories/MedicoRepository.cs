@@ -87,7 +87,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             var medico = await ObtenerPorIdAsync(id);
             if (medico is null) return;
 
-            _context.Medicos.Remove(medico);
+            medico.Eliminado = true;
+            medico.FechaEliminacion = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
     }

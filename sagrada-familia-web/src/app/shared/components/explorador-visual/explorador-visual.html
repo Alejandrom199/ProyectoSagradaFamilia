@@ -1,101 +1,105 @@
-<div class="space-y-6">
+<div class="space-y-5">
 
+    <!-- Búsqueda -->
     <div class="relative">
-        <ng-icon name="matSearchOutline"
-            class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></ng-icon>
+        <ng-icon name="matSearchOutline" size="16"
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></ng-icon>
         <input type="text" [value]="busqueda()" (input)="actualizarBusqueda($event)"
             placeholder="Buscar alimento por nombre o descripción..."
-            class="w-full pl-11 pr-4 py-3 bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all">
+            class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-md text-sm bg-white
+                   focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors">
     </div>
 
+    <!-- Filtros de categoría -->
     <div>
-        <p class="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-3 px-1">Grupos
-            Alimenticios</p>
-        <div class="flex overflow-x-auto gap-4 pb-4 select-none scrollbar-none">
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">Grupos alimenticios</p>
+        <div class="flex flex-wrap gap-2">
 
             <button (click)="filtrarCategoria(null)"
-                class="flex-shrink-0 w-20 h-20 rounded-md border-2 flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 cursor-pointer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold border transition-colors cursor-pointer"
                 [class]="categoriaSeleccionadaId() === null
-                    ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] font-bold'
-                    : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-surface-border)] hover:border-slate-300'">
-
-                <ng-icon name="matAutoAwesomeOutline" class="text-2xl"></ng-icon>
-                <span class="text-xs text-center font-semibold leading-tight">Todas</span>
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'">
+                <ng-icon name="matAutoAwesomeOutline" size="14"></ng-icon>
+                Todas
             </button>
 
             @for (cat of categoriasEstilizadas(); track cat.id) {
             <button (click)="filtrarCategoria(cat.id)"
-                class="flex-shrink-0 w-20 h-20 rounded-md border-2 flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 cursor-pointer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold border transition-colors cursor-pointer"
                 [class]="categoriaSeleccionadaId() === cat.id ? cat.claseActiva : cat.claseInactiva">
-
-                <ng-icon name="matAutoAwesomeOutline" class="text-2xl opacity-80"></ng-icon>
-                <span class="text-xs text-center font-semibold break-words leading-tight">{{ cat.nombre }}</span>
+                <ng-icon [name]="cat.icono" size="14"></ng-icon>
+                {{ cat.nombre }}
             </button>
             }
+
         </div>
     </div>
 
-    <div class="animate-in fade-in duration-500">
+    <!-- Grid de alimentos -->
+    <div>
         @if (itemsFiltrados().length > 0) {
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+
+        <p class="text-xs text-slate-400 mb-3">
+            {{ itemsFiltrados().length }} alimento{{ itemsFiltrados().length !== 1 ? 's' : '' }} encontrado{{ itemsFiltrados().length !== 1 ? 's' : '' }}
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             @for (item of itemsFiltrados(); track item.id) {
-            <div
-                class="bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-md overflow-hidden transition-all flex flex-col max-w-xs mx-auto w-full">
+            <div class="border rounded-md p-4 flex flex-col gap-3 transition-colors"
+                 [ngClass]="claseTarjeta(item.categoriaNombre)">
 
-                <div
-                    class="h-28 bg-[var(--color-surface-alt)] border-b border-[var(--color-surface-border)] flex items-center justify-center relative overflow-hidden">
-                    @if (item.imagenUrl) {
-                    <img [src]="item.imagenUrl" [alt]="item.nombre" class="w-full h-full object-cover">
-                    } @else {
-                    <span class="text-xs text-[var(--color-text-secondary)] font-medium opacity-60">Foto de {{
-                        item.nombre }}</span>
-                    }
-
-                    @if (item.badge) {
-                    <span
-                        class="absolute top-2 right-2 bg-[var(--color-primary)] text-white text-[10px] font-black px-2 py-0.5 rounded-md">
-                        {{ item.badge }}
+                <!-- Icono + badge de categoría -->
+                <div class="flex items-start justify-between gap-2">
+                    <div class="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
+                        [ngClass]="colorDeCategoria(item.categoriaNombre)">
+                        <ng-icon [name]="iconoDeCategoria(item.categoriaNombre)" size="16"></ng-icon>
+                    </div>
+                    <span class="text-[9px] font-bold uppercase tracking-wide border px-1.5 py-0.5 rounded-md leading-none self-start mt-1.5"
+                        [ngClass]="obtenerClaseBadge(item.categoriaNombre)">
+                        {{ item.categoriaNombre }}
                     </span>
-                    }
                 </div>
 
-                <div class="p-4 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex mb-1.5">
-                            <span class="border px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider"
-                                [ngClass]="obtenerClaseBadge(item.categoriaNombre)">
-                                {{ item.categoriaNombre }}
-                            </span>
-                        </div>
+                <!-- Nombre -->
+                <h4 class="text-sm font-semibold text-slate-800 leading-snug">{{ item.nombre }}</h4>
 
-                        <h4 class="font-bold text-base text-[var(--color-text-primary)] mb-1 leading-tight">
-                            {{ item.nombre }}
-                        </h4>
-                        <p class="text-xs text-[var(--color-text-secondary)] leading-relaxed italic line-clamp-2">
-                            "{{ item.descripcion }}"
-                        </p>
-                    </div>
+                <!-- Descripción -->
+                <p class="text-xs text-slate-500 leading-relaxed line-clamp-3 flex-1">
+                    {{ item.descripcion }}
+                </p>
 
-                    @if (item.edadMaxima) {
-                    <div
-                        class="mt-3 pt-2 border-t border-[var(--color-surface-border)] text-[10px] text-orange-600 font-bold flex items-center gap-1">
-                        <ng-icon name="matWarningAmberOutline" class="text-2xl opacity-80"></ng-icon> Hasta {{
-                        item.edadMaxima }} m.
-                    </div>
-                    }
+                <!-- Desde qué edad -->
+                @if (item.badge) {
+                <div class="flex items-center gap-1.5 text-xs text-blue-600 font-medium pt-2.5 border-t border-slate-100">
+                    <ng-icon name="matScheduleOutline" size="13"></ng-icon>
+                    {{ item.badge }}
                 </div>
+                }
+
+                <!-- Hasta qué edad -->
+                @if (item.edadMaxima) {
+                <div class="flex items-center gap-1.5 text-xs text-amber-600 font-medium -mt-1">
+                    <ng-icon name="matWarningAmberOutline" size="13"></ng-icon>
+                    Hasta los {{ item.edadMaxima }} meses
+                </div>
+                }
+
             </div>
             }
         </div>
+
         } @else {
-        <div
-            class="flex flex-col items-center justify-center py-16 text-center bg-[var(--color-surface)] rounded-md border-2 border-dashed border-[var(--color-surface-border)]">
-            <div class="w-16 h-16 bg-slate-100 rounded-md flex items-center justify-center mb-4">
-                <ng-icon name="matSentimentSatisfiedOutline" class="text-4xl text-slate-400"></ng-icon>
+
+        <div class="flex flex-col items-center justify-center py-16 text-center border border-dashed border-slate-200 rounded-md">
+            <div class="w-10 h-10 bg-slate-100 rounded-md flex items-center justify-center mb-3">
+                <ng-icon name="matNoMealsOutline" class="text-slate-400" size="20"></ng-icon>
             </div>
-            <p class="text-slate-600 font-medium mb-1">Sin elementos para mostrar</p>
-            <p class="text-sm text-slate-400 max-w-xs">Intenta cambiando los filtros.</p>
+            <p class="text-sm font-semibold text-slate-700">Sin resultados</p>
+            <p class="text-xs text-slate-400 mt-1">Intenta cambiando el filtro o la búsqueda.</p>
         </div>
+
         }
     </div>
+
 </div>

@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 
-import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { SistemaService } from '../../../../core/services/sistema';
@@ -86,7 +86,9 @@ export class ListarAuditoria implements OnInit {
 
   formFiltro: FormGroup;
   registros = signal<AuditoriaResponse[]>([]);
+  totalRegistros = signal(0);
   registroDetalle = signal<AuditoriaResponse | null>(null);
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
 
   tablas = TABLAS_AUDITABLES;
 
@@ -202,17 +204,33 @@ export class ListarAuditoria implements OnInit {
 
   cargarInicial(): void {
     this.loadingBar.show();
-    const fuente$ = this.auth.esAdmin()
-      ? this.sistemaService.obtenerAuditoriaReciente()
-      : this.sistemaService.obtenerMiActividad();
 
-    fuente$.subscribe({
-      next: (r) => {
-        if (r.success) this.registros.set(r.data);
-        this.loadingBar.complete();
-      },
-      error: () => this.loadingBar.complete()
-    });
+    if (this.auth.esAdmin()) {
+      const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
+      this.sistemaService.obtenerAuditoriaPaginado(page, pageSize, search, sortBy, sortDir === 'asc').subscribe({
+        next: (r) => {
+          if (r.success) {
+            this.registros.set(r.data);
+            this.totalRegistros.set(r.totalItems);
+          }
+          this.loadingBar.complete();
+        },
+        error: () => this.loadingBar.complete()
+      });
+    } else {
+      this.sistemaService.obtenerMiActividad().subscribe({
+        next: (r) => {
+          if (r.success) this.registros.set(r.data);
+          this.loadingBar.complete();
+        },
+        error: () => this.loadingBar.complete()
+      });
+    }
+  }
+
+  onServerQuery(query: ServerQuery): void {
+    this.queryActual = query;
+    this.cargarInicial();
   }
 
   buscar(): void {

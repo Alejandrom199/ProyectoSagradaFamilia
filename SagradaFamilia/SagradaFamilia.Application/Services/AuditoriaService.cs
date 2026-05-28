@@ -29,6 +29,13 @@ public class AuditoriaService : IAuditoriaService
         return _mapper.Map<IEnumerable<AuditoriaDto.Response>>(logs);
     }
 
+    public async Task<(IEnumerable<AuditoriaDto.Response> Items, int TotalItems)> ObtenerPaginadoAsync(
+        int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _auditoriaRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending);
+        return (_mapper.Map<IEnumerable<AuditoriaDto.Response>>(items), total);
+    }
+
     public async Task<IEnumerable<AuditoriaDto.Response>> ObtenerPorTablaAsync(string nombreTabla, string? clavePrimaria = null)
     {
         _logger.LogInformation("Consultando historial de auditoría - Tabla: {Tabla}, ID: {PK}", nombreTabla, clavePrimaria);

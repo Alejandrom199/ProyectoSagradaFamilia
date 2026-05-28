@@ -64,6 +64,13 @@ public class PrescripcionService : IPrescripcionService
         return _mapper.Map<IEnumerable<PrescripcionDto.Response>>(prescripciones);
     }
 
+    public async Task<(IEnumerable<PrescripcionDto.Response> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
+        int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _prescripcionRepository.ObtenerPaginadoPorNinoAsync(ninoId, page, pageSize, search, sortBy, ascending);
+        return (_mapper.Map<IEnumerable<PrescripcionDto.Response>>(items), total);
+    }
+
     public async Task<IEnumerable<PrescripcionDto.Response>> ObtenerPorMedicoAsync(int usuarioId)
     {
         _logger.LogInformation("Consultando prescripciones del médico con usuario ID: {UsuarioId}", usuarioId);

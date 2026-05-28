@@ -1,10 +1,12 @@
 namespace SagradaFamilia.Application.Services;
 
 using AutoMapper;
+using ClosedXML.Excel;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Interfaces.Repositories;
+using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
@@ -66,6 +68,14 @@ public class MedidaService : IMedidaService
         }
 
         return lista;
+    }
+
+    public async Task<(IEnumerable<MedidaDto.Response> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
+        int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _medidaRepository.ObtenerPaginadoPorNinoAsync(ninoId, page, pageSize, search, sortBy, ascending);
+        var dtos = _mapper.Map<IEnumerable<MedidaDto.Response>>(items);
+        return (dtos, total);
     }
 
     public async Task<MedidaDto.Response?> ObtenerUltimaMedidaAsync(int ninoId)
@@ -190,5 +200,147 @@ public class MedidaService : IMedidaService
         if (valor <= oms.Percentil85) return 85;
         if (valor <  oms.Percentil97) return 90;
         return 97;
+    }
+
+    public async Task<byte[]> GenerarPlantillaAsync()
+    {
+        _logger.LogInformation("Generando plantilla Excel para importación masiva de medidas.");
+        return new MedidasPlantillaDocument().GenerarBytes();
+    }
+
+    public async Task<byte[]> ExportarExcelAsync()
+    {
+        _logger.LogInformation("Exportando listado de medidas a Excel.");
+        var medidas = await _medidaRepository.ObtenerTodosAsync();
+        var dtos = _mapper.Map<IEnumerable<MedidaDto.Response>>(medidas);
+        return new MedidasExportDocument(dtos).GenerarBytes();
+    }
+
+    public async Task<MedidaDto.ImportResultado> ImportarAsync(Stream archivoStream, int medicoId)
+    {
+        _logger.LogInformation("Iniciando importación masiva de medidas desde Excel para médico ID: {MedicoId}", medicoId);
+        var resultado = new MedidaDto.ImportResultado();
+
+        XLWorkbook workbook;
+        try { workbook = new XLWorkbook(archivoStream); }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("Archivo Excel inválido: {Error}", ex.Message);
+            resultado.Errores.Add(new MedidaDto.ImportError { Fila = 0, Mensaje = "El archivo no es un Excel válido (.xlsx)." });
+            return resultado;
+        }
+
+        using (workbook)
+        {
+            IXLWorksheet ws;
+            try { ws = workbook.Worksheet("Medidas"); }
+            catch
+            {
+                resultado.Errores.Add(new MedidaDto.ImportError { Fila = 0, Mensaje = "No se encontró la hoja 'Medidas'. Use la plantilla oficial." });
+                return resultado;
+            }
+
+            var todosLosNinos = await _ninoRepository.ObtenerPorMedicoIdAsync(medicoId);
+            var ninoMap = todosLosNinos
+                .GroupBy(n => $"{n.Nombre.Trim().ToLowerInvariant()}|{n.Apellido.Trim().ToLowerInvariant()}")
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            const int DataStartRow = 7;
+            int lastRow = ws.LastRowUsed()?.RowNumber() ?? DataStartRow - 1;
+
+            for (int rowNum = DataStartRow; rowNum <= lastRow; rowNum++)
+            {
+                var row = ws.Row(rowNum);
+                string nombre   = row.Cell(1).GetString().Trim();
+                string apellido = row.Cell(2).GetString().Trim();
+                var celdaFecha  = row.Cell(3);
+                var celdaPeso   = row.Cell(4);
+                var celdaTalla  = row.Cell(5);
+
+                if (string.IsNullOrEmpty(nombre) && string.IsNullOrEmpty(apellido) && celdaFecha.IsEmpty())
+                    continue;
+
+                resultado.TotalProcesadas++;
+                var erroresFila = new List<string>();
+
+                if (string.IsNullOrEmpty(nombre))   erroresFila.Add("Nombre del paciente es obligatorio");
+                if (string.IsNullOrEmpty(apellido)) erroresFila.Add("Apellido del paciente es obligatorio");
+
+                DateOnly fechaMedicion = default;
+                if (celdaFecha.IsEmpty())
+                    erroresFila.Add("Fecha de medición es obligatoria");
+                else if (celdaFecha.TryGetValue(out DateTime fechaDt))
+                    fechaMedicion = DateOnly.FromDateTime(fechaDt);
+                else if (DateOnly.TryParseExact(celdaFecha.GetString().Trim(), ["yyyy-MM-dd", "dd/MM/yyyy", "MM/dd/yyyy"], out var fechaParsed))
+                    fechaMedicion = fechaParsed;
+                else
+                    erroresFila.Add("Fecha de medición no tiene formato válido (use yyyy-MM-dd)");
+
+                decimal peso = 0;
+                if (celdaPeso.IsEmpty())
+                    erroresFila.Add("Peso es obligatorio");
+                else if (!celdaPeso.TryGetValue(out double pesoDouble) || pesoDouble <= 0 || pesoDouble > 300)
+                    erroresFila.Add("Peso debe ser un número positivo en kg (máx 300)");
+                else
+                    peso = (decimal)pesoDouble;
+
+                decimal talla = 0;
+                if (celdaTalla.IsEmpty())
+                    erroresFila.Add("Talla es obligatoria");
+                else if (!celdaTalla.TryGetValue(out double tallaDouble) || tallaDouble <= 0 || tallaDouble > 250)
+                    erroresFila.Add("Talla debe ser un número positivo en cm (máx 250)");
+                else
+                    talla = (decimal)tallaDouble;
+
+                if (erroresFila.Count > 0)
+                {
+                    resultado.Errores.Add(new MedidaDto.ImportError { Fila = rowNum, Mensaje = string.Join("; ", erroresFila) });
+                    continue;
+                }
+
+                string clave = $"{nombre.ToLowerInvariant()}|{apellido.ToLowerInvariant()}";
+                if (!ninoMap.TryGetValue(clave, out var candidatos) || candidatos.Count == 0)
+                {
+                    resultado.Errores.Add(new MedidaDto.ImportError { Fila = rowNum, Mensaje = $"No se encontró el paciente '{nombre} {apellido}' asignado a este médico." });
+                    continue;
+                }
+                if (candidatos.Count > 1)
+                {
+                    resultado.Errores.Add(new MedidaDto.ImportError { Fila = rowNum, Mensaje = $"Existen {candidatos.Count} pacientes con el nombre '{nombre} {apellido}'. Use el formulario individual para desambiguar." });
+                    continue;
+                }
+
+                var nino = candidatos[0];
+                var medidaExistente = await _medidaRepository.ObtenerPorNinoYMesAsync(nino.Id, fechaMedicion.Month, fechaMedicion.Year);
+
+                if (medidaExistente != null)
+                {
+                    medidaExistente.FechaMedicion = fechaMedicion;
+                    medidaExistente.Peso          = peso;
+                    medidaExistente.Talla         = talla;
+                    await _medidaRepository.ActualizarAsync(medidaExistente);
+                    resultado.Actualizados++;
+                }
+                else
+                {
+                    var nuevaMedida = new Medida
+                    {
+                        NinoId        = nino.Id,
+                        MedicoId      = medicoId,
+                        FechaMedicion = fechaMedicion,
+                        Peso          = peso,
+                        Talla         = talla
+                    };
+                    await _medidaRepository.CrearAsync(nuevaMedida);
+                    resultado.Importados++;
+                }
+            }
+        }
+
+        _logger.LogInformation(
+            "Importación de medidas finalizada: {I} creadas, {A} actualizadas, {E} errores de {T} filas.",
+            resultado.Importados, resultado.Actualizados, resultado.Errores.Count, resultado.TotalProcesadas);
+
+        return resultado;
     }
 }

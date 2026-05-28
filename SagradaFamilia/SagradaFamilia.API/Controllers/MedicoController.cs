@@ -56,4 +56,43 @@ public class MedicoController : BaseController
         await _medicoService.RestablecerPasswordAsync(id);
         return HandleSuccess("Se ha enviado un enlace de restablecimiento al correo del médico.");
     }
+
+    [HttpGet("exportar")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> ExportarExcel()
+    {
+        var bytes = await _medicoService.ExportarExcelAsync();
+        string filename = $"medicos-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
+    [HttpGet("plantilla")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> DescargarPlantilla()
+    {
+        var bytes = await _medicoService.GenerarPlantillaAsync();
+        string filename = $"plantilla-medicos-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
+    [HttpPost("importar")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse<MedicoDto.ImportResultado>>> Importar([FromForm] IFormFile archivo)
+    {
+        if (archivo is null || archivo.Length == 0)
+            return BadRequest(ApiResponse<MedicoDto.ImportResultado>.Fail("No se recibió ningún archivo."));
+
+        var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+        if (extension != ".xlsx")
+            return BadRequest(ApiResponse<MedicoDto.ImportResultado>.Fail("Solo se aceptan archivos .xlsx"));
+
+        using var stream = archivo.OpenReadStream();
+        var resultado = await _medicoService.ImportarAsync(stream);
+
+        string mensaje = resultado.Errores.Count == 0
+            ? $"{resultado.Importados} creados, {resultado.Actualizados} actualizados correctamente."
+            : $"{resultado.Importados} creados, {resultado.Actualizados} actualizados, {resultado.Errores.Count} con errores.";
+
+        return HandleResponse(resultado, mensaje);
+    }
 }

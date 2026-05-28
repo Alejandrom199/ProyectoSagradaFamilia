@@ -8,6 +8,7 @@ import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
+import { ImportModal } from '../../../../shared/components/import-modal/import-modal';
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
@@ -19,7 +20,7 @@ import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
 @Component({
   selector: 'app-listar-padres',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, ConfirmModal, Button, Breadcrumb],
+  imports: [NgIcon, RouterLink, Datatable, ConfirmModal, ImportModal, Button, Breadcrumb],
 
   templateUrl: './listar-padres.html',
   styleUrl: './listar-padres.css',
@@ -34,8 +35,11 @@ export class ListarPadres implements OnInit {
   padres = signal<PadreResponse[]>([]);
   totalPadres = signal(0);
   padreAEliminar = signal<PadreResponse | null>(null);
+  mostrarModalImport = signal(false);
 
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
+
+  readonly importarFn = (file: File) => this.padresService.importar(file);
 
   columnas: DatatableColumn<PadreResponse>[] = [
     {
@@ -153,6 +157,38 @@ export class ListarPadres implements OnInit {
         const link = document.createElement('a');
         link.href = url;
         link.download = `padres_${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarExcel(): void {
+    this.loadingBar.show();
+    this.padresService.exportarExcel().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `padres-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarPlantilla(): void {
+    this.loadingBar.show();
+    this.padresService.descargarPlantilla().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `plantilla-padres-${new Date().toISOString().split('T')[0]}.xlsx`;
         link.click();
         window.URL.revokeObjectURL(url);
         this.loadingBar.complete();

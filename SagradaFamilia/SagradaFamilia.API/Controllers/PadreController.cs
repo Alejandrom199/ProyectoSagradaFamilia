@@ -98,5 +98,48 @@ namespace SagradaFamilia.API.Controllers
             await _padreService.RestablecerPasswordAsync(id);
             return HandleSuccess("Se ha enviado un enlace de restablecimiento al correo del representante.");
         }
+
+        [HttpGet("exportar")]
+        [Authorize(Roles = "Administrador, Medico")]
+        public async Task<IActionResult> ExportarExcel()
+        {
+            var bytes = await _padreService.ExportarExcelAsync();
+            string filename = $"representantes-{DateTime.Now:yyyyMMdd}.xlsx";
+            return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+        }
+
+        [HttpGet("plantilla")]
+        [Authorize(Roles = "Administrador, Medico")]
+        public async Task<IActionResult> DescargarPlantilla()
+        {
+            var bytes = await _padreService.GenerarPlantillaAsync();
+            string filename = $"plantilla-representantes-{DateTime.Now:yyyyMMdd}.xlsx";
+            return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+        }
+
+        [HttpPost("importar")]
+        [Authorize(Roles = "Administrador, Medico")]
+        public async Task<ActionResult<ApiResponse<PadreDto.ImportResultado>>> Importar([FromForm] IFormFile archivo)
+        {
+            if (archivo is null || archivo.Length == 0)
+                return BadRequest(ApiResponse<PadreDto.ImportResultado>.Fail("No se recibió ningún archivo."));
+
+            var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+            if (extension != ".xlsx")
+                return BadRequest(ApiResponse<PadreDto.ImportResultado>.Fail("Solo se aceptan archivos .xlsx"));
+
+            var medicoIdClaim = User.FindFirst("medicoId")?.Value;
+            if (!int.TryParse(medicoIdClaim, out int medicoId) || medicoId <= 0)
+                return BadRequest(ApiResponse<PadreDto.ImportResultado>.Fail("No se pudo determinar el médico responsable."));
+
+            using var stream = archivo.OpenReadStream();
+            var resultado = await _padreService.ImportarAsync(stream, medicoId);
+
+            string mensaje = resultado.Errores.Count == 0
+                ? $"{resultado.Importados} creados, {resultado.Actualizados} actualizados correctamente."
+                : $"{resultado.Importados} creados, {resultado.Actualizados} actualizados, {resultado.Errores.Count} con errores.";
+
+            return HandleResponse(resultado, mensaje);
+        }
     }
 }

@@ -29,6 +29,13 @@ public class LogSistemaService : ILogSistemaService
         return _mapper.Map<IEnumerable<LogSistemaDto.Response>>(logs);
     }
 
+    public async Task<(IEnumerable<LogSistemaDto.Response> Items, int TotalItems)> ObtenerPaginadoAsync(
+        int page, int pageSize, string? search, string? sortBy, bool ascending)
+    {
+        var (items, total) = await _logSistemaRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending);
+        return (_mapper.Map<IEnumerable<LogSistemaDto.Response>>(items), total);
+    }
+
     public async Task<IEnumerable<LogSistemaDto.Response>> ObtenerErroresRecientesAsync(int top = 50)
     {
         var logs = await _logSistemaRepository.ObtenerErroresRecientesAsync(top);

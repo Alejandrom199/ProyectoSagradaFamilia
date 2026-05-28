@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
 import { NinoCreate, NinoDetailResponse, NinoResponse, NinoUpdate } from '../../shared/interfaces/nino.interface';
+import { ImportResult } from '../../shared/interfaces/import.interface';
 
 @Injectable({ providedIn: 'root' })
 export class NinosService {
@@ -50,5 +51,19 @@ export class NinosService {
 
   eliminar(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.url}/${id}`, { withCredentials: true });
+  }
+
+  exportarExcel(): Observable<Blob> {
+    return this.http.get(`${this.url}/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
+  descargarPlantilla(): Observable<Blob> {
+    return this.http.get(`${this.url}/plantilla`, { responseType: 'blob', withCredentials: true });
+  }
+
+  importar(archivo: File): Observable<ApiResponse<ImportResult>> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    return this.http.post<ApiResponse<ImportResult>>(`${this.url}/importar`, formData, { withCredentials: true });
   }
 }

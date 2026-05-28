@@ -8,6 +8,7 @@ namespace SagradaFamilia.Domain.Interfaces.Repositories
         Task<IEnumerable<LogSistema>> ObtenerErroresRecientesAsync(int top);
         Task<IEnumerable<LogSistema>> ObtenerPorNivelAsync(string nivel);
 
+        Task<(IEnumerable<LogSistema> Items, int TotalItems)> ObtenerPaginadoAsync(int page, int pageSize, string? search, string? sortBy, bool ascending);
         Task RegistrarAsync(LogSistema log);
     }
 }

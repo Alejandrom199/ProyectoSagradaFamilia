@@ -44,5 +44,19 @@
             public string? Especialidad { get; set; }
             public string? Telefono { get; set; }
         }
+
+        public class ImportResultado
+        {
+            public int TotalProcesadas { get; set; }
+            public int Importados { get; set; }
+            public int Actualizados { get; set; }
+            public List<ImportError> Errores { get; set; } = [];
+        }
+
+        public class ImportError
+        {
+            public int Fila { get; set; }
+            public string Mensaje { get; set; } = string.Empty;
+        }
     }
 }

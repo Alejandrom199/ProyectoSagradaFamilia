@@ -2,11 +2,13 @@
 
 using AutoMapper;
 using BCrypt.Net;
+using ClosedXML.Excel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Application.Settings;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
@@ -213,5 +215,156 @@ public class MedicoService : IMedicoService
 
         await _emailService.EnviarAsync(medico.Usuario.Email, "Restablecimiento de contraseña", cuerpo);
         _logger.LogInformation("Email de restablecimiento enviado a {Email} para médico ID: {Id}", medico.Usuario.Email, medicoId);
+    }
+
+    public async Task<byte[]> GenerarPlantillaAsync()
+    {
+        _logger.LogInformation("Generando plantilla Excel para importación masiva de médicos.");
+        return new MedicosPlantillaDocument().GenerarBytes();
+    }
+
+    public async Task<byte[]> ExportarExcelAsync()
+    {
+        _logger.LogInformation("Exportando listado de médicos a Excel.");
+        var medicos = await _medicoRepository.ObtenerTodosAsync();
+        var dtos = _mapper.Map<IEnumerable<MedicoDto.ListResponse>>(medicos);
+        return new MedicosExportDocument(dtos).GenerarBytes();
+    }
+
+    public async Task<MedicoDto.ImportResultado> ImportarAsync(Stream archivoStream)
+    {
+        _logger.LogInformation("Iniciando importación masiva de médicos desde Excel.");
+        var resultado = new MedicoDto.ImportResultado();
+
+        XLWorkbook workbook;
+        try { workbook = new XLWorkbook(archivoStream); }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("Archivo Excel inválido: {Error}", ex.Message);
+            resultado.Errores.Add(new MedicoDto.ImportError { Fila = 0, Mensaje = "El archivo no es un Excel válido (.xlsx)." });
+            return resultado;
+        }
+
+        using (workbook)
+        {
+            IXLWorksheet ws;
+            try { ws = workbook.Worksheet("Medicos"); }
+            catch
+            {
+                resultado.Errores.Add(new MedicoDto.ImportError { Fila = 0, Mensaje = "No se encontró la hoja 'Medicos'. Use la plantilla oficial." });
+                return resultado;
+            }
+
+            const int DataStartRow = 7;
+            int lastRow = ws.LastRowUsed()?.RowNumber() ?? DataStartRow - 1;
+
+            for (int rowNum = DataStartRow; rowNum <= lastRow; rowNum++)
+            {
+                var row = ws.Row(rowNum);
+                string nombre      = row.Cell(1).GetString().Trim();
+                string apellido    = row.Cell(2).GetString().Trim();
+                string email       = row.Cell(3).GetString().Trim().ToLowerInvariant();
+                string telefono    = row.Cell(4).GetString().Trim();
+                string especialidad = row.Cell(5).GetString().Trim();
+
+                if (string.IsNullOrEmpty(nombre) && string.IsNullOrEmpty(apellido) && string.IsNullOrEmpty(email))
+                    continue;
+
+                resultado.TotalProcesadas++;
+                var erroresFila = new List<string>();
+
+                if (string.IsNullOrEmpty(nombre))           erroresFila.Add("Nombre es obligatorio");
+                else if (nombre.Length > 100)               erroresFila.Add("Nombre excede 100 caracteres");
+
+                if (string.IsNullOrEmpty(apellido))         erroresFila.Add("Apellido es obligatorio");
+                else if (apellido.Length > 100)             erroresFila.Add("Apellido excede 100 caracteres");
+
+                if (string.IsNullOrEmpty(email))
+                    erroresFila.Add("Email es obligatorio");
+                else if (!EsEmailValido(email))
+                    erroresFila.Add("Email no tiene formato válido");
+                else if (email.Length > 200)
+                    erroresFila.Add("Email excede 200 caracteres");
+
+                if (telefono.Length > 20) erroresFila.Add("Teléfono excede 20 caracteres");
+                if (especialidad.Length > 200) erroresFila.Add("Especialidad excede 200 caracteres");
+
+                if (erroresFila.Count > 0)
+                {
+                    resultado.Errores.Add(new MedicoDto.ImportError { Fila = rowNum, Mensaje = string.Join("; ", erroresFila) });
+                    continue;
+                }
+
+                var usuarioExistente = await _usuarioRepository.ObtenerPorEmailAsync(email);
+
+                if (usuarioExistente != null)
+                {
+                    if (usuarioExistente.RolId != (int)RolEnum.Medico)
+                    {
+                        resultado.Errores.Add(new MedicoDto.ImportError { Fila = rowNum, Mensaje = $"El email '{email}' pertenece a un usuario con otro rol." });
+                        continue;
+                    }
+
+                    var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(usuarioExistente.Id);
+                    if (medico == null)
+                    {
+                        resultado.Errores.Add(new MedicoDto.ImportError { Fila = rowNum, Mensaje = $"El email '{email}' existe pero no tiene perfil de médico." });
+                        continue;
+                    }
+
+                    medico.Nombre      = nombre;
+                    medico.Apellido    = apellido;
+                    medico.Telefono    = string.IsNullOrEmpty(telefono)     ? null : telefono;
+                    medico.Especialidad = string.IsNullOrEmpty(especialidad) ? null : especialidad;
+                    await _medicoRepository.ActualizarAsync(medico);
+                    resultado.Actualizados++;
+                }
+                else
+                {
+                    await _unitOfWork.BeginTransactionAsync();
+                    try
+                    {
+                        var usuario = new Usuario
+                        {
+                            Email        = email,
+                            PasswordHash = BCrypt.HashPassword(Guid.NewGuid().ToString("N")[..8] + "Aa1!"),
+                            RolId        = (int)RolEnum.Medico,
+                            Activo       = true
+                        };
+                        await _usuarioRepository.CrearAsync(usuario);
+
+                        var medico = new Medico
+                        {
+                            UsuarioId   = usuario.Id,
+                            Nombre      = nombre,
+                            Apellido    = apellido,
+                            Telefono    = string.IsNullOrEmpty(telefono)     ? null : telefono,
+                            Especialidad = string.IsNullOrEmpty(especialidad) ? null : especialidad
+                        };
+                        await _medicoRepository.CrearAsync(medico);
+                        await _unitOfWork.CommitAsync();
+                        resultado.Importados++;
+                    }
+                    catch (Exception ex)
+                    {
+                        await _unitOfWork.RollbackAsync();
+                        _logger.LogError(ex, "Error al crear médico con email {Email} en fila {Fila}", email, rowNum);
+                        resultado.Errores.Add(new MedicoDto.ImportError { Fila = rowNum, Mensaje = "Error interno al crear el médico." });
+                    }
+                }
+            }
+        }
+
+        _logger.LogInformation(
+            "Importación de médicos finalizada: {I} creados, {A} actualizados, {E} errores de {T} filas.",
+            resultado.Importados, resultado.Actualizados, resultado.Errores.Count, resultado.TotalProcesadas);
+
+        return resultado;
+    }
+
+    private static bool EsEmailValido(string email)
+    {
+        try { var a = new System.Net.Mail.MailAddress(email); return a.Address == email; }
+        catch { return false; }
     }
 }

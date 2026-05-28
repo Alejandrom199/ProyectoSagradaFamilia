@@ -93,6 +93,26 @@ public class CitasController : BaseController
         return HandleResponse(response);
     }
 
+    [HttpGet("nino/{ninoId:int}/paginado")]
+    [Authorize(Roles = "Medico,Padre,Administrador")]
+    public async Task<ActionResult<PagedResponse<CitaDto.Response>>> PorNinoPaginado(
+        int ninoId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] bool asc = false)
+    {
+        if (User.IsInRole("Padre"))
+        {
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, UsuarioId);
+            if (!esSuHijo) return Forbid();
+        }
+
+        var (items, total) = await _citaService.ObtenerPaginadoPorNinoAsync(ninoId, page, pageSize, search, sortBy, asc);
+        return PagedResponse<CitaDto.Response>.Ok(items, total, page, pageSize);
+    }
+
     [HttpGet("nino/{ninoId:int}")]
     [Authorize(Roles = "Medico,Padre")]
     public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> PorNino(int ninoId)

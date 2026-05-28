@@ -13,9 +13,13 @@
 
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Listado de Pacientes" [data]="ninos()" [columns]="columnas" [actions]="acciones"
-            (onExportPdf)="descargarPacientesPdf($event)" exportFileName="catalogo-pacientes" searchPlaceholder="Buscar"
+            (onExportPdf)="descargarPacientesPdf($event)" (onExportExcel)="descargarExcel()"
+            exportFileName="catalogo-pacientes" searchPlaceholder="Buscar"
             emptyMessage="No hay pacientes registrados en el sistema."
-            [serverSide]="true" [serverTotalItems]="totalNinos()" (onServerQuery)="onServerQuery($event)">
+            [serverSide]="true" [serverTotalItems]="totalNinos()" (onServerQuery)="onServerQuery($event)"
+            [showPlantilla]="true" (onPlantilla)="descargarPlantilla()"
+            [showImportar]="true" (onImportar)="mostrarModalImport.set(true)"
+            (onActualizar)="cargarNinos()">
         </datatable>
     </div>
 
@@ -24,5 +28,15 @@
         [message]="'Esta acción eliminará a ' + ninoAEliminar()?.nombre + ' ' + ninoAEliminar()?.apellido + ' del sistema. Se perderá todo su historial médico.'"
         (confirm)="confirmarEliminar()" (cancel)="ninoAEliminar.set(null)">
     </confirm-modal>
+    }
+
+    @if (mostrarModalImport()) {
+    <import-modal
+        titulo="Importación masiva de pacientes"
+        subtitulo="Use la plantilla oficial. El representante debe estar registrado con su email. Los pacientes se asignan al médico que realiza la importación."
+        [importFn]="importarFn"
+        (cerrado)="mostrarModalImport.set(false)"
+        (importacionExitosa)="cargarNinos()">
+    </import-modal>
     }
 </div>

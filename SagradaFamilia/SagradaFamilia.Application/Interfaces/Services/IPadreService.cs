@@ -16,5 +16,9 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task EliminarAsync(int id);
         Task RestablecerPasswordAsync(int padreId);
         Task CambiarEmailAsync(int padreId, string nuevoEmail);
+
+        Task<byte[]> GenerarPlantillaAsync();
+        Task<byte[]> ExportarExcelAsync();
+        Task<PadreDto.ImportResultado> ImportarAsync(Stream archivoStream, int medicoId);
     }
 }

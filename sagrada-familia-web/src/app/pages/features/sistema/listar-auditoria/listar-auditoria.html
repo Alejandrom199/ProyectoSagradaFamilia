@@ -58,6 +58,7 @@
     <div class="border border-slate-200 overflow-hidden">
         <datatable [title]="auth.esAdmin() ? 'Historial de cambios' : 'Mi actividad'"
             [data]="registros()" [columns]="columnasActivas" [actions]="acciones"
+            [serverSide]="auth.esAdmin()" [serverTotalItems]="totalRegistros()" (onServerQuery)="onServerQuery($event)"
             [exportExcel]="true" exportFileName="auditoria" [showActualizar]="true"
             searchPlaceholder="Buscar en el historial..."
             emptyMessage="No hay registros de auditoría disponibles."

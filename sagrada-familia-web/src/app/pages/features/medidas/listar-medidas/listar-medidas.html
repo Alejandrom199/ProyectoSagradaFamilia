@@ -19,7 +19,8 @@
 
     <!-- Tabla -->
     <datatable [title]="'Historial — ' + (nino()?.nombre || '...')" [data]="medidas()" [columns]="columnas"
-        [actions]="acciones" searchPlaceholder="Buscar por fecha o estado..."
+        [actions]="acciones" [serverSide]="true" [serverTotalItems]="totalMedidas()" (onServerQuery)="onServerQuery($event)"
+        searchPlaceholder="Buscar por estado nutricional..."
         emptyMessage="Sin medidas registradas para este paciente." (onActualizar)="cargarMedidas()">
     </datatable>
 

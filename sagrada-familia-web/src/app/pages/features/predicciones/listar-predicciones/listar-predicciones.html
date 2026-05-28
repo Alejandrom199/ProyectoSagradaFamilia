@@ -79,19 +79,88 @@
         </div>
     </div>
 
-    <!-- Contenido principal -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div class="h-full">
-            <prediction-chart title="Evolución de Peso Proyectada (3, 6 y 12 meses)"></prediction-chart>
+    <!-- Cards de resumen (3 / 6 / 12 meses) -->
+    @if (resumenPredicciones().length > 0) {
+    <div class="grid grid-cols-3 gap-4 mb-6">
+        @for (item of resumenPredicciones(); track item.mes) {
+        <div class="border border-slate-200 p-4">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                En {{ item.mes }} meses
+            </p>
+            <p class="text-3xl font-black text-slate-800 leading-none">
+                {{ item.punto.pesoPredicho.toFixed(1) }}
+                <span class="text-base font-normal text-slate-400">kg</span>
+            </p>
+            <p class="text-xs text-slate-400 mt-1.5">
+                Rango: {{ item.punto.pesoMinimo.toFixed(1) }} – {{ item.punto.pesoMaximo.toFixed(1) }} kg
+            </p>
+            <p class="text-[10px] text-slate-300 mt-0.5">{{ formatearFecha(item.punto.fechaObjetivo) }}</p>
         </div>
+        }
+    </div>
+    }
+
+    <!-- Gráficas -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+
+        <!-- Gráfica 1: predicción con banda de confianza -->
+        <prediction-chart
+            title="Evolución de Peso Proyectada (3, 6 y 12 meses)"
+            [predicciones]="prediccion()!.predicciones">
+        </prediction-chart>
+
+        <!-- Gráfica 2: precisión histórica (si hay datos reales) -->
+        @if (chartPrecision()) {
+        <div class="border border-slate-200 p-5">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-700">Precisión histórica del modelo</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Diferencia entre peso real medido y peso predicho.</p>
+                </div>
+                <div class="text-[10px] text-slate-400 text-right leading-tight shrink-0 ml-4">
+                    +: pesó más<br>−: pesó menos
+                </div>
+            </div>
+            <apx-chart
+                [series]="chartPrecision()!['series']"
+                [chart]="chartPrecision()!['chart']"
+                [xaxis]="chartPrecision()!['xaxis']"
+                [yaxis]="chartPrecision()!['yaxis']"
+                [plotOptions]="chartPrecision()!['plotOptions']"
+                [dataLabels]="chartPrecision()!['dataLabels']"
+                [annotations]="chartPrecision()!['annotations']"
+                [colors]="chartPrecision()!['colors']"
+                [tooltip]="chartPrecision()!['tooltip']"
+                [legend]="chartPrecision()!['legend']">
+            </apx-chart>
+        </div>
+
+        } @else {
+        <!-- Sin datos reales: mostrar tabla en lugar del segundo chart -->
         <div class="border border-slate-200 overflow-hidden">
             <datatable
-                [title]="'Desglose de peso estimado para ' + ninoSeleccionado()?.nombre + ' ' + ninoSeleccionado()?.apellido"
-                [data]="prediccion()!.predicciones" [columns]="columnas" searchPlaceholder="Filtrar meses..."
+                [title]="'Desglose · ' + ninoSeleccionado()?.nombre + ' ' + ninoSeleccionado()?.apellido"
+                [data]="prediccion()!.predicciones" [columns]="columnas"
+                searchPlaceholder="Filtrar meses..."
                 emptyMessage="No hay predicciones." [pageSize]="6">
             </datatable>
         </div>
+        }
+
     </div>
+
+    <!-- Tabla completa (solo cuando se muestra el chart de precisión) -->
+    @if (chartPrecision()) {
+    <div class="border border-slate-200 overflow-hidden">
+        <datatable
+            [title]="'Desglose · ' + ninoSeleccionado()?.nombre + ' ' + ninoSeleccionado()?.apellido"
+            [data]="prediccion()!.predicciones" [columns]="columnas"
+            searchPlaceholder="Filtrar meses..."
+            emptyMessage="No hay predicciones." [pageSize]="6">
+        </datatable>
+    </div>
+    }
+
     }
     }
 

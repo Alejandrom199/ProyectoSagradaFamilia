@@ -100,15 +100,6 @@
 
                     @if (showPlantilla || showImportar) {
                     <div class="p-1.5 flex flex-col gap-0.5">
-                        @if (showPlantilla) {
-                        <button
-                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 hover:text-slate-900 w-full focus:outline-none transition-colors rounded-md group"
-                            (click)="onPlantilla.emit(); cerrarMenus()">
-                            <ng-icon name="heroArrowDownTray"
-                                class="text-lg text-slate-500 opacity-80 group-hover:opacity-100"></ng-icon>
-                            <span class="font-medium">Plantilla</span>
-                        </button>
-                        }
                         @if (showImportar) {
                         <button
                             class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-blue-50 hover:text-blue-700 w-full focus:outline-none transition-colors rounded-md group"
@@ -116,6 +107,15 @@
                             <ng-icon name="heroArrowUpTray"
                                 class="text-lg text-blue-500 opacity-80 group-hover:opacity-100"></ng-icon>
                             <span class="font-medium">Carga masiva</span>
+                        </button>
+                        }
+                        @if (showPlantilla) {
+                        <button
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 hover:text-slate-900 w-full focus:outline-none transition-colors rounded-md group"
+                            (click)="onPlantilla.emit(); cerrarMenus()">
+                            <ng-icon name="heroArrowDownTray"
+                                class="text-lg text-slate-500 opacity-80 group-hover:opacity-100"></ng-icon>
+                            <span class="font-medium">Plantilla</span>
                         </button>
                         }
                     </div>
@@ -340,11 +340,11 @@
                         [ngClass]="densidad() === 'compacto' ? 'py-1.5' : densidad() === 'espacioso' ? 'py-6' : 'py-4'"
                         [class]="col.class ?? ''">
                         @if (col.render) {
-                        <span [innerHTML]="col.render(row)" class="block truncate"
-                            [tooltip]="cellTooltip(row, col)" tooltipPosition="top"></span>
+                        <span [innerHTML]="col.render(row)" class="block truncate" [tooltip]="cellTooltip(row, col)"
+                            tooltipPosition="top"></span>
                         } @else {
-                        <span class="block truncate"
-                            [tooltip]="cellTooltip(row, col)" tooltipPosition="top">{{ getCellValue(row, col.key) }}</span>
+                        <span class="block truncate" [tooltip]="cellTooltip(row, col)" tooltipPosition="top">{{
+                            getCellValue(row, col.key) }}</span>
                         }
                     </td>
                     }

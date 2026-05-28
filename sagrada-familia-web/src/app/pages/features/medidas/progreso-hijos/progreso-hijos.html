@@ -1,104 +1,119 @@
 <div class="max-w-7xl mx-auto p-4">
-    <breadcrumb [items]="migajas" homeRoute="/pacientes"></breadcrumb>
+    <breadcrumb [items]="migajas" homeRoute="/mis-pequenos"></breadcrumb>
+
     <div class="mb-8">
-        <h2 class="page-title">Progreso de {{
-            ninoSeleccionado()?.nombre }} {{ninoSeleccionado()?.apellido }}</h2>
+        <h2 class="page-title">Crecimiento de {{ ninoSeleccionado()?.nombre ?? 'tu hijo' }}</h2>
         <p class="page-subtitle">
-            Revisa el historial de crecimiento y medidas de tu pequeño
+            @if (ninoSeleccionado()) {
+            {{ formatearEdad(ninoSeleccionado()!.edadMeses) }}
+            @if (ultimaMedida()) {
+            &nbsp;·&nbsp;Última medición: {{ formatearFecha(ultimaMedida()!.fechaMedicion) }}
+            }
+            } @else {
+            Revisa el estado de salud y el historial de crecimiento.
+            }
         </p>
     </div>
 
-    @if (ninoSeleccionado()) {
+    @if (!ninoSeleccionado()) {
+    <div class="text-sm text-slate-400 text-center py-16">No hay niño seleccionado.</div>
 
-    @if (hayDatos() && ultimaMedida()) {
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-        <div class="bg-white border border-slate-200 p-6 flex items-center justify-between">
-            <div>
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest block">Peso Actual</span>
-                <h3 class="text-3xl font-black text-slate-800 mt-1">
-                    {{ ultimaMedida()?.peso }} <span class="text-lg font-normal text-slate-400">kg</span>
-                </h3>
-                <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
-                    <ng-icon name="matCalendarMonthOutline"></ng-icon>
-                    Última visita: {{ formatearFecha(ultimaMedida()!.fechaMedicion) }}
-                </p>
-            </div>
-            <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-md flex items-center justify-center text-xl">
-                <ng-icon name="matMonitorWeightOutline"></ng-icon>
-            </div>
+    } @else if (cargando()) {
+    <div class="space-y-4">
+        <div class="h-28 bg-slate-100 rounded-md animate-pulse"></div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="h-36 bg-slate-100 rounded-md animate-pulse"></div>
+            <div class="h-36 bg-slate-100 rounded-md animate-pulse"></div>
         </div>
+        <div class="h-48 bg-slate-100 rounded-md animate-pulse"></div>
+    </div>
 
-        <div class="bg-white border border-slate-200 p-6 flex items-center justify-between">
-            <div>
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest block">Estatura Actual</span>
-                <h3 class="text-3xl font-black text-slate-800 mt-1">
-                    {{ ultimaMedida()?.talla }} <span class="text-lg font-normal text-slate-400">cm</span>
-                </h3>
-                <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
-                    <ng-icon name="matBarChartOutline"></ng-icon>
-                    Percentil alcanzado: P{{ ultimaMedida()?.percentilTalla }}
-                </p>
-            </div>
-            <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-md flex items-center justify-center text-xl">
-                <ng-icon name="matBarChartOutline"></ng-icon>
-            </div>
+    } @else if (!hayDatos()) {
+    <div
+        class="flex flex-col items-center justify-center py-20 text-center border border-dashed border-slate-200 rounded-md">
+        <div class="w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-4">
+            <ng-icon name="matSentimentSatisfiedOutline" class="text-slate-400" size="22"></ng-icon>
         </div>
+        <p class="text-sm font-medium text-slate-700">Aún no hay medidas registradas</p>
+        <p class="text-xs text-slate-400 mt-1 max-w-xs">
+            El pediatra registrará las medidas de {{ ninoSeleccionado()!.nombre }} en su próxima cita médica.
+        </p>
+    </div>
 
-        <div class="bg-white border border-slate-200 p-6 flex flex-col justify-between">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest block">Estado de Salud</span>
-            <div class="mt-2">
-                <span class="inline-block px-3.5 py-1.5 rounded-md text-sm font-bold border"
-                    [ngClass]="obtenerClaseEstado(ultimaMedida()!.estadoNutricional)">
-                    {{ ultimaMedida()?.estadoNutricional }}
-                </span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
-                Evaluado según los estándares de la OMS para su edad.
+    } @else {
+
+    <!-- Banner estado nutricional -->
+    @if (estadoBanner()) {
+    <div class="p-5 border mb-5 flex items-center gap-4" [ngClass]="[estadoBanner()!.fondo, estadoBanner()!.borde]">
+        <div class="w-12 h-12 rounded-md flex items-center justify-center shrink-0" [ngClass]="estadoBanner()!.texto">
+            <ng-icon [name]="estadoBanner()!.icono" size="24"></ng-icon>
+        </div>
+        <div>
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-0.5" [ngClass]="estadoBanner()!.texto">Estado
+                nutricional</p>
+            <h3 class="text-xl font-black leading-tight" [ngClass]="estadoBanner()!.texto">
+                {{ estadoBanner()!.titulo }}
+            </h3>
+            <p class="text-sm mt-0.5" [ngClass]="estadoBanner()!.texto">
+                {{ estadoBanner()!.descripcion }}
             </p>
         </div>
     </div>
     }
 
-    <div class="bg-white border border-slate-200 p-8">
-        <div class="flex items-center justify-between mb-8">
-            <h3 class="text-xl font-bold flex items-center gap-3 text-slate-800">
-                <ng-icon name="matBarChartOutline" class="text-blue-600 text-2xl"></ng-icon>
-                Curva de Peso
-            </h3>
-        </div>
+    <!-- Medidas actuales -->
+    <div class="grid grid-cols-2 gap-4 mb-5">
 
-        @if (cargando()) {
-        <div class="w-full h-[380px] flex items-center justify-center bg-slate-50 animate-pulse">
-            <span class="text-slate-400 font-medium flex items-center gap-2">
-                <svg class="animate-spin h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                </svg>
-                Cargando curva...
-            </span>
-        </div>
-        } @else if (hayDatos() && chartOptions) {
-
-        <div class="w-full">
-            <apx-chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [xaxis]="chartOptions.xaxis!"
-                [yaxis]="chartOptions.yaxis!" [dataLabels]="chartOptions.dataLabels!" [stroke]="chartOptions.stroke!"
-                [colors]="chartOptions.colors!" [tooltip]="chartOptions.tooltip!" [theme]="chartOptions.theme!">
-            </apx-chart>
-        </div>
-
-        } @else {
-        <div class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="w-20 h-20 bg-slate-50 rounded-md flex items-center justify-center mb-4 border border-slate-200">
-                <ng-icon name="matSentimentSatisfiedOutline" class="text-5xl text-slate-300"></ng-icon>
+        <div class="border border-blue-100 bg-blue-50 p-5">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Peso actual</span>
+                <div class="w-8 h-8 bg-blue-100 text-blue-500 rounded-md flex items-center justify-center">
+                    <ng-icon name="matMonitorWeightOutline" size="16"></ng-icon>
+                </div>
             </div>
-            <h3 class="text-xl font-bold text-slate-800 mb-1">Aún no hay medidas registradas</h3>
-            <p class="text-sm text-slate-400 max-w-xs">El pediatra registrará las medidas de {{
-                ninoSeleccionado()?.nombre }} {{ninoSeleccionado()?.apellido }} en su próxima cita médica.</p>
+            <p class="text-4xl font-black text-blue-800 leading-none">{{ ultimaMedida()!.peso }}</p>
+            <span class="text-sm text-blue-400 mt-1 block">kilogramos</span>
         </div>
-        }
+
+        <div class="border border-indigo-100 bg-indigo-50 p-5">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Estatura</span>
+                <div class="w-8 h-8 bg-indigo-100 text-indigo-500 rounded-md flex items-center justify-center">
+                    <ng-icon name="matStraightenOutline" size="16"></ng-icon>
+                </div>
+            </div>
+            <p class="text-4xl font-black text-indigo-800 leading-none">{{ ultimaMedida()!.talla }}</p>
+            <span class="text-sm text-indigo-400 mt-1 block">centímetros</span>
+        </div>
+
     </div>
+
+    <!-- Historial de medidas -->
+    @if (todasMedidas().length > 1) {
+    <div class="border border-slate-200">
+        <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-2">
+            <ng-icon name="matHistoryOutline" class="text-slate-400" size="15"></ng-icon>
+            <h3 class="text-sm font-bold text-slate-700">Historial de medidas</h3>
+        </div>
+        <div class="divide-y divide-slate-100">
+            @for (m of todasMedidas().slice(0, 5); track m.id) {
+            <div class="px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-7 h-7 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
+                        <ng-icon name="matCalendarMonthOutline" class="text-slate-400" size="13"></ng-icon>
+                    </div>
+                    <span class="text-sm text-slate-600">{{ formatearFecha(m.fechaMedicion) }}</span>
+                </div>
+                <div class="flex items-center gap-5 text-sm">
+                    <span class="text-slate-500">Peso: <strong class="text-slate-800">{{ m.peso }} kg</strong></span>
+                    <span class="text-slate-500">Talla: <strong class="text-slate-800">{{ m.talla }} cm</strong></span>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
     }
 </div>

@@ -14,6 +14,7 @@ namespace SagradaFamilia.Domain.Interfaces.Repositories
         Task<IEnumerable<Prescripcion>> ObtenerHistorialPorNinoAsync(int ninoId);
         Task<IEnumerable<Prescripcion>> ObtenerPorMedicoAsync(int medicoId);
 
+        Task<(IEnumerable<Prescripcion> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending);
         Task<Prescripcion> CrearAsync(Prescripcion prescripcion);
         Task<Prescripcion> ActualizarAsync(Prescripcion prescripcion);
         Task EliminarAsync(int id);
