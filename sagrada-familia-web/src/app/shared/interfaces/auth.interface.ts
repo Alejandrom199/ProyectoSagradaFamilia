@@ -5,13 +5,17 @@ export interface LoginRequest {
 
 export interface LoginResponse {
     id: number;
+    medicoId?: number;
     nombre: string;
+    apellido: string;
     rol: string;
     expiracion: string;
 }
 
 export interface SessionUser {
     id: number;
+    medicoId?: number;
     nombre: string;
+    apellido: string;
     rol: string;
 }

@@ -76,6 +76,7 @@
                     class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
                     Volver
                 </a>
+                @if (!esPropioUsuario()) {
                 <button (click)="toggleEstado()" [disabled]="procesando()"
                     class="px-6 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center gap-2"
                     [class.bg-red-600]="u.activo"
@@ -92,6 +93,7 @@
                     Activar cuenta
                     }
                 </button>
+                }
             </div>
         </div>
     </div>

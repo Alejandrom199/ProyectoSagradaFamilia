@@ -3,7 +3,8 @@
 
         <!-- Logo -->
         <div class="text-center mb-8">
-            <div class="inline-flex w-12 h-12 rounded-md items-center justify-center border border-blue-200 bg-blue-50 mb-3">
+            <div
+                class="inline-flex w-12 h-12 rounded-md items-center justify-center border border-blue-200 bg-blue-50 mb-3">
                 <ng-icon name="heroHeart" class="text-blue-600" style="font-size: 28px;"></ng-icon>
             </div>
             <h1 class="text-2xl font-bold text-[var(--color-text-primary)]">La Sagrada Familia</h1>
@@ -13,6 +14,8 @@
         <!-- Card -->
         <div class="bg-white/65 backdrop-blur-md border border-white/40">
 
+            <!-- ── VISTA: LOGIN ─────────────────────────────────────────── -->
+            @if (vistaActual() === 'login') {
             <div class="px-6 py-4 border-b border-slate-200/60 text-center bg-white/50">
                 <p class="text-base font-bold auth-card-text">Iniciar Sesión</p>
             </div>
@@ -33,11 +36,8 @@
                             placeholder="medico@sagrada.com" formControlName="email" required autocomplete="email">
                         @if (form.get('email')?.invalid && form.get('email')?.touched) {
                         <div class="text-red-500 text-xs ml-1">
-                            @if (form.get('email')?.hasError('required')) {
-                            El correo electrónico es requerido.
-                            } @else if (form.get('email')?.hasError('email')) {
-                            Ingresa un correo válido.
-                            }
+                            @if (form.get('email')?.hasError('required')) { El correo electrónico es requerido. }
+                            @else if (form.get('email')?.hasError('email')) { Ingresa un correo válido. }
                         </div>
                         }
                     </div>
@@ -53,14 +53,13 @@
                             <button type="button"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                                 (click)="mostrarPassword.update(v => !v)">
-                                <ng-icon [name]="mostrarPassword() ? 'matVisibilityOffOutline' : 'matVisibilityOutline'"></ng-icon>
+                                <ng-icon
+                                    [name]="mostrarPassword() ? 'matVisibilityOffOutline' : 'matVisibilityOutline'"></ng-icon>
                             </button>
                         </div>
                         @if (form.get('password')?.invalid && form.get('password')?.touched) {
                         <div class="text-red-500 text-xs ml-1">
-                            @if (form.get('password')?.hasError('required')) {
-                            La contraseña es requerida.
-                            }
+                            @if (form.get('password')?.hasError('required')) { La contraseña es requerida. }
                         </div>
                         }
                     </div>
@@ -69,14 +68,93 @@
                         class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 mt-2"
                         [disabled]="cargando()">
                         @if (cargando()) {
-                        <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        <span
+                            class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         Ingresando...
                         } @else {
                         Ingresar
                         }
                     </button>
                 </form>
+
+                <div class="mt-4 text-center">
+                    <button type="button" (click)="vistaActual.set('reset')"
+                        class="text-xs text-slate-400 hover:text-blue-600 transition-colors">
+                        ¿Olvidaste tu contraseña?
+                    </button>
+                </div>
             </div>
+            }
+
+            <!-- ── VISTA: FORMULARIO RESET ─────────────────────────────── -->
+            @else if (vistaActual() === 'reset') {
+            <div class="px-6 py-4 border-b border-slate-200/60 text-center bg-white/50">
+                <p class="text-base font-bold auth-card-text">Restablecer contraseña</p>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <p class="text-sm auth-card-text-secondary text-center leading-relaxed">
+                    Ingresá tu correo médico y te enviaremos un enlace para restablecer tu contraseña.
+                </p>
+
+                @if (errorReset()) {
+                <div class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-xs font-semibold">
+                    {{ errorReset() }}
+                </div>
+                }
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold auth-card-text uppercase ml-1">Correo electrónico</label>
+                    <input type="email" [value]="emailReset()" (input)="emailReset.set($any($event.target).value)"
+                        placeholder="medico@sagrada.com"
+                        class="w-full px-4 py-2.5 rounded-md border border-slate-300 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm auth-card-text"
+                        autocomplete="email">
+                </div>
+
+                <button type="button" (click)="enviarReset()" [disabled]="enviandoReset()"
+                    class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+                    @if (enviandoReset()) {
+                    <span
+                        class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    Enviando...
+                    } @else {
+                    Enviar enlace
+                    }
+                </button>
+
+                <div class="text-center">
+                    <button type="button" (click)="irALogin()"
+                        class="text-xs text-slate-400 hover:text-blue-600 transition-colors">
+                        Volver al inicio de sesión
+                    </button>
+                </div>
+            </div>
+            }
+
+            <!-- ── VISTA: CONFIRMACIÓN ─────────────────────────────────── -->
+            @else {
+            <div class="px-6 py-4 border-b border-slate-200/60 text-center bg-white/50">
+                <p class="text-base font-bold auth-card-text">Revisá tu correo</p>
+            </div>
+
+            <div class="p-6 flex flex-col items-center gap-4 text-center">
+                <ng-icon name="matMailOutline" class="text-blue-500" style="font-size: 48px;"></ng-icon>
+                <div class="space-y-1">
+                    <p class="text-sm font-semibold auth-card-text">Enlace enviado</p>
+                    <p class="text-xs auth-card-text-secondary leading-relaxed">
+                        Si <strong>{{ emailReset() }}</strong> corresponde a una cuenta médica activa,
+                        recibirás un enlace para restablecer tu contraseña en unos minutos.
+                    </p>
+                </div>
+                <p class="text-xs auth-card-text-secondary">Recuerda revisar la carpeta de spam.</p>
+
+                <button type="button" (click)="irALogin()"
+                    class="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                    Volver al inicio de sesión
+                </button>
+            </div>
+            }
+
         </div>
 
         <p class="text-center text-xs text-[var(--color-text-secondary)] mt-6">

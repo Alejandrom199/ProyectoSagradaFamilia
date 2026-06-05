@@ -13,6 +13,7 @@ import { PadreDetailResponse } from '../../../../shared/interfaces/padre.interfa
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 import { ConfirmModal } from "../../../../shared/components/confirm-modal/confirm-modal";
+import { finalize } from 'rxjs';
 
 
 @Component({
@@ -140,16 +141,19 @@ export class DetallePadre implements OnInit {
   }
 
   confirmarRestablecerPassword() {
-    this.padresService.restablecerPassword(parseInt(this.id)).subscribe({
-      next: () => {
-        this.mostrarModalReset.set(false);
-        this.resetExito.set(true);
-        this.resetError.set('');
-      },
-      error: (err) => {
-        this.mostrarModalReset.set(false);
-        this.resetError.set(err?.error?.message ?? 'No se pudo enviar el correo de restablecimiento.');
-      }
-    });
+    this.loadingBar.show();
+    this.padresService.restablecerPassword(parseInt(this.id))
+      .pipe(finalize(() => this.loadingBar.complete()))
+      .subscribe({
+        next: () => {
+          this.mostrarModalReset.set(false);
+          this.resetExito.set(true);
+          this.resetError.set('');
+        },
+        error: (err) => {
+          this.mostrarModalReset.set(false);
+          this.resetError.set(err?.error?.message ?? 'No se pudo enviar el correo de restablecimiento.');
+        }
+      });
   }
 }

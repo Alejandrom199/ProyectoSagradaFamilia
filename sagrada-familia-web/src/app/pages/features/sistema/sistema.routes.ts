@@ -21,5 +21,19 @@ export const sistemaRoutes: Routes = [
         loadComponent: () =>
             import('./listar-auditoria/listar-auditoria')
                 .then(m => m.ListarAuditoria),
+    },
+    {
+        path: 'plantillas',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+            import('./plantillas/listar-plantillas/listar-plantillas')
+                .then(m => m.ListarPlantillas),
+    },
+    {
+        path: 'plantillas/:id/editar',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+            import('./plantillas/editar-plantilla/editar-plantilla')
+                .then(m => m.EditarPlantilla),
     }
 ];

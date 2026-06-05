@@ -6,6 +6,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { provideIcons, provideNgIconsConfig } from '@ng-icons/core';
 import { APP_ICONS } from './core/icons/app-icons';
+import { provideMonacoEditor } from 'ngx-monaco-editor-v2';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,6 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideNgIconsConfig({ size: '1.25rem' }),
-    provideIcons(APP_ICONS)
+    provideIcons(APP_ICONS),
+    provideMonacoEditor({ baseUrl: 'assets/monaco/vs' })
   ]
 };

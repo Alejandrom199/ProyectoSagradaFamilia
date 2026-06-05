@@ -1,12 +1,12 @@
 <button [type]="type()" [disabled]="disabled()" (click)="onClick()" [style.width]="width()"
-  class="inline-flex items-center justify-center px-4 py-2 font-medium transition-colors rounded-md focus:outline-none"
+  class="press inline-flex items-center justify-center px-4 py-2 font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
   [ngClass]="{
-    'bg-blue-600 text-white hover:bg-blue-700': variant() === 'primary',
-    'bg-slate-200 text-slate-800 hover:bg-slate-300': variant() === 'secondary',
-    'bg-red-600 text-white hover:bg-red-700': variant() === 'danger',
-    'border border-slate-300 text-slate-700 bg-white hover:bg-slate-50': variant() === 'outline',
-    'bg-transparent text-slate-600 hover:text-slate-900': variant() === 'ghost',
-    'bg-[var(--color-surface-border)] opacity-50 cursor-not-allowed': disabled()
+    'ripple-primary bg-blue-600 text-white hover:bg-blue-700 transition-colors': variant() === 'primary',
+    'bg-slate-200 text-slate-800 hover:bg-slate-300 transition-colors': variant() === 'secondary',
+    'bg-red-600 text-white hover:bg-red-700 transition-colors': variant() === 'danger',
+    'border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-colors': variant() === 'outline',
+    'bg-transparent text-slate-600 hover:text-slate-900 transition-colors': variant() === 'ghost',
+    'opacity-50 cursor-not-allowed': disabled()
   }">
   <ng-content></ng-content>
 </button>

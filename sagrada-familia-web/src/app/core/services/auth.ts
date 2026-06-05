@@ -55,6 +55,20 @@ export class AuthService {
     );
   }
 
+  activarCuenta(token: string, nuevaClave: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(
+      `${environment.apiUrl}/auth/activar-cuenta`,
+      { token, nuevaClave }
+    );
+  }
+
+  solicitarReset(email: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(
+      `${environment.apiUrl}/auth/solicitar-reset`,
+      { email }
+    );
+  }
+
   logout(): void {
     this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
       next: () => this.limpiarSesion(),
@@ -65,7 +79,9 @@ export class AuthService {
   private establecerSesion(data: LoginResponse): void {
     const user: SessionUser = {
       id: data.id,
+      medicoId: data.medicoId,
       nombre: data.nombre,
+      apellido: data.apellido,
       rol: data.rol
     };
     this._currentUser.set(user);

@@ -6,7 +6,9 @@
 
     @if (sidebarExpandido()) {
     <div class="flex-1 min-w-0">
-        <p class="text-slate-800 text-sm truncate">{{ nombre() }} {{ apellido() }}</p>
+        <p class="text-slate-800 text-sm truncate"
+           [tooltip]="nombre() + ' ' + apellido()"
+           tooltipPosition="top">{{ nombre() }} {{ apellido() }}</p>
 
         @if (textoSexo()) {
         <p class="text-xs text-slate-500 truncate">{{ textoSexo() }}</p>

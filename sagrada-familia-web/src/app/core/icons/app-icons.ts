@@ -75,6 +75,7 @@ import {
   matAccountCircleOutline,
   // Contacto / autenticación
   matEmailOutline,
+  matMailOutline,
   matPhoneOutline,
   matVpnKeyOutline,
   matLockOutline,
@@ -112,7 +113,11 @@ import {
   matEcoOutline,
   // Datatable export
   matBorderAllOutline,
-  matPictureAsPdfOutline
+  matPictureAsPdfOutline,
+  // Medidas progreso
+  matHeightOutline,
+  matHistoryOutline,
+  matStraightenOutline
 } from '@ng-icons/material-icons/outline';
 
 // ── Exportación combinada para provideIcons global ────────────────────────────
@@ -184,6 +189,7 @@ export const APP_ICONS = {
   matAccountCircleOutline,
   // Contacto / autenticación
   matEmailOutline,
+  matMailOutline,
   matPhoneOutline,
   matVpnKeyOutline,
   matLockOutline,
@@ -221,7 +227,11 @@ export const APP_ICONS = {
   matEcoOutline,
   // Datatable export
   matBorderAllOutline,
-  matPictureAsPdfOutline
+  matPictureAsPdfOutline,
+  // Medidas progreso
+  matHeightOutline,
+  matHistoryOutline,
+  matStraightenOutline
 };
 
 /**
@@ -257,6 +267,8 @@ export const SIDEBAR_ICON_MAP: Record<string, string> = {
   'grid-view': 'matGridViewOutline',
   // Auditoría / alertas
   'warning-amber': 'matWarningAmberOutline',
+  // Comunicación
+  'email': 'matEmailOutline',
   // Utilidades
   'home': 'matHomeOutline',
   // ── Claves legadas del backend (nombres heroicons) — retrocompatibilidad ──

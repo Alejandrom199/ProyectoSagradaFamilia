@@ -31,6 +31,7 @@ export class Sidebar implements OnInit {
 
   cerrarMovil = output<void>();
   logout = output<void>();
+  expandir = output<void>();
 
   private readonly iconoMap = SIDEBAR_ICON_MAP;
 
@@ -47,9 +48,9 @@ export class Sidebar implements OnInit {
   }
 
   ngOnInit(): void {
-    const partes = this.auth.currentUser()!.nombre.split(' ');
-    this.nombre.set(partes[0] ?? '');
-    this.apellido.set(partes[1] ?? '');
+    const user = this.auth.currentUser()!;
+    this.nombre.set(user.nombre);
+    this.apellido.set(user.apellido ?? '');
   }
 
   toggleModulo(id: number): void {
@@ -58,6 +59,11 @@ export class Sidebar implements OnInit {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+  }
+
+  expandirConModulo(id: number): void {
+    this.modulosAbiertos.update(set => new Set(set).add(id));
+    this.expandir.emit();
   }
 
   moduloEstaAbierto(id: number): boolean {

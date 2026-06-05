@@ -7,6 +7,7 @@ import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { UsuariosService } from '../../../../core/services/usuarios';
+import { AuthService } from '../../../../core/services/auth';
 import { UsuarioResponse } from '../../../../shared/interfaces/usuario.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 
@@ -20,6 +21,7 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
 })
 export class ListarUsuarios implements OnInit {
   private usuariosService = inject(UsuariosService);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
@@ -71,7 +73,7 @@ export class ListarUsuarios implements OnInit {
       label: 'Desactivar',
       icon: 'matLockOutline',
       class: 'text-red-600 hover:bg-red-50',
-      visible: (row) => row.activo,
+      visible: (row) => row.activo && row.id !== this.authService.currentUser()?.id,
       onClick: (row) => this.toggleEstado(row, false)
     },
     {

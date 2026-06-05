@@ -85,17 +85,13 @@
         </div>
 
         } @else {
-        <div class="mb-2">
-            <div class="h-px mx-1 mb-2" style="background: var(--color-surface-border);"></div>
-            @for (opcion of modulo.opciones; track opcion.id) {
-            <a [routerLink]="opcion.ruta" routerLinkActive="sidebar-active"
-                [routerLinkActiveOptions]="{ exact: esExacta(opcion.ruta) }"
-                class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto mb-1 rounded-md text-sm transition-all duration-150"
-                [tooltip]="opcion.nombre" tooltipPosition="right" (click)="cerrarMovil.emit()">
-                <ng-icon [name]="resolverIcono(opcion.icono)" class="sidebar-link-icon shrink-0"
-                    style="font-size: 16px;"></ng-icon>
-            </a>
-            }
+        <div class="mb-1">
+            <button (click)="expandirConModulo(modulo.id)"
+                class="sidebar-link flex items-center justify-center w-10 h-10 mx-auto rounded-md text-sm transition-all duration-150"
+                [tooltip]="modulo.nombre" tooltipPosition="right">
+                <ng-icon [name]="resolverIcono(modulo.opciones[0]?.icono ?? '')"
+                    class="sidebar-link-icon shrink-0" style="font-size: 16px;"></ng-icon>
+            </button>
         </div>
         }
 
@@ -107,8 +103,10 @@
 
         @if (sidebarExpandido()) {
         <div class="flex items-center justify-between px-2 py-2 rounded-md bg-[var(--color-surface-alt)]">
-            <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
-                [sidebarExpandido]="true"></avatar>
+            <div class="min-w-0 flex-1 overflow-hidden pr-4">
+                <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
+                    [sidebarExpandido]="true"></avatar>
+            </div>
             <button
                 class="flex items-center justify-center w-8 h-8 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none flex-shrink-0"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="top">
@@ -117,16 +115,18 @@
         </div>
 
         } @else {
-        <div class="flex flex-col items-center gap-3">
-            <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
-                [sidebarExpandido]="false"
-                [tooltip]="(auth.currentUser()?.nombre ?? '') + ' - ' + (auth.currentUser()?.rol ?? '')"
-                tooltipPosition="right"></avatar>
-            <button
-                class="flex items-center justify-center w-10 h-10 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none cursor-pointer"
-                (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="right">
-                <ng-icon name="matLogoutOutline" class="text-[22px]"></ng-icon>
-            </button>
+        <div class="flex flex-col items-center gap-2">
+            <div class="w-full flex flex-col items-center gap-2 py-2 rounded-md bg-[var(--color-surface-alt)]">
+                <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
+                    [sidebarExpandido]="false"
+                    [tooltip]="(auth.currentUser()?.nombre ?? '') + ' ' + (auth.currentUser()?.apellido ?? '') + ' · ' + (auth.currentUser()?.rol ?? '')"
+                    tooltipPosition="right"></avatar>
+                <button
+                    class="flex items-center justify-center w-8 h-8 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none cursor-pointer"
+                    (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="right">
+                    <ng-icon name="matLogoutOutline" class="text-lg"></ng-icon>
+                </button>
+            </div>
         </div>
         }
     </div>

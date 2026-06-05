@@ -33,7 +33,7 @@
                 <select formControlName="tabla"
                     class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                     @for (t of tablas; track t) {
-                    <option [value]="t">{{ t }}</option>
+                    <option [value]="t">{{ tablaAmigable(t) }}</option>
                     }
                 </select>
             </div>
@@ -55,14 +55,29 @@
     </div>
     }
 
+    @if (tablaFiltroActivo()) {
+    <div class="flex items-center gap-3 mb-3 px-1">
+        <span class="text-xs text-slate-500">
+            Mostrando <strong class="text-slate-700">{{ registros().length }}</strong> registros de
+            <strong class="text-slate-700">{{ formFiltro.get('tabla')?.value }}</strong>
+        </span>
+        <button (click)="limpiarFiltroTabla()"
+            class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1">
+            <ng-icon name="matCloseOutline" class="text-sm"></ng-icon>
+            Limpiar filtro
+        </button>
+    </div>
+    }
+
     <div class="border border-slate-200 overflow-hidden">
         <datatable [title]="auth.esAdmin() ? 'Historial de cambios' : 'Mi actividad'"
             [data]="registros()" [columns]="columnasActivas" [actions]="acciones"
-            [serverSide]="auth.esAdmin()" [serverTotalItems]="totalRegistros()" (onServerQuery)="onServerQuery($event)"
+            [serverSide]="auth.esAdmin() && !tablaFiltroActivo()"
+            [serverTotalItems]="totalRegistros()" (onServerQuery)="onServerQuery($event)"
             [exportExcel]="true" exportFileName="auditoria" [showActualizar]="true"
             searchPlaceholder="Buscar en el historial..."
             emptyMessage="No hay registros de auditoría disponibles."
-            (onActualizar)="cargarInicial()">
+            (onActualizar)="limpiarFiltroTabla()">
         </datatable>
     </div>
 
@@ -76,7 +91,7 @@
                     <h3 class="text-lg font-bold text-slate-800">Detalle del cambio</h3>
                     <p class="text-xs text-slate-500 mt-0.5">
                         @if (auth.esAdmin()) {
-                        {{ d.tabla }} #{{ d.clavePrimaria }} · {{ d.accion }} · {{ d.usuarioEmail || 'Sistema' }}
+                        {{ d.tabla }} #{{ d.clavePrimaria }} · {{ d.accion }} · {{ d.usuarioNombreCompleto || d.usuarioEmail || 'Sistema' }}
                         } @else {
                         {{ tablaAmigable(d.tabla) }} · {{ d.accion }}
                         }
@@ -121,28 +136,46 @@
                                 <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase w-1/3">
                                     Campo</th>
                                 @if (d.accion === 'Actualización') {
-                                <th
-                                    class="text-left px-4 py-2.5 text-xs font-bold text-red-500 uppercase w-1/3">
+                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-400 uppercase w-1/3">
                                     Antes</th>
-                                <th
-                                    class="text-left px-4 py-2.5 text-xs font-bold text-green-600 uppercase w-1/3">
+                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-700 uppercase w-1/3">
                                     Después</th>
                                 } @else {
-                                <th
-                                    class="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase">
+                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase">
                                     Valor</th>
                                 }
                             </tr>
                         </thead>
                         <tbody>
                             @for (campo of camposModificados(); track campo.clave) {
-                            <tr class="border-b border-slate-100 last:border-0">
-                                <td class="px-4 py-2.5 font-medium text-slate-700">{{ campo.etiqueta }}</td>
+                            <tr class="border-b border-slate-100 last:border-0"
+                                [class.bg-blue-50]="campo.cambio">
+                                <td class="px-4 py-2.5">
+                                    <div class="flex items-center gap-2">
+                                        @if (campo.cambio) {
+                                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0"></span>
+                                        }
+                                        <span class="font-medium"
+                                            [class.text-slate-800]="campo.cambio"
+                                            [class.text-slate-500]="!campo.cambio">
+                                            {{ campo.etiqueta }}
+                                        </span>
+                                    </div>
+                                </td>
                                 @if (d.accion === 'Actualización') {
-                                <td class="px-4 py-2.5 text-red-700">{{ campo.antes }}</td>
-                                <td class="px-4 py-2.5 text-green-700 font-medium">{{ campo.despues }}</td>
+                                <td class="px-4 py-2.5"
+                                    [class.text-red-600]="campo.cambio"
+                                    [class.line-through]="campo.cambio"
+                                    [class.text-slate-400]="!campo.cambio">
+                                    {{ campo.antes }}
+                                </td>
+                                <td class="px-4 py-2.5 font-medium"
+                                    [class.text-green-700]="campo.cambio"
+                                    [class.text-slate-500]="!campo.cambio">
+                                    {{ campo.despues }}
+                                </td>
                                 } @else {
-                                <td class="px-4 py-2.5 text-slate-600">
+                                <td class="px-4 py-2.5 text-slate-700">
                                     {{ d.accion === 'Eliminación' ? campo.antes : campo.despues }}
                                 </td>
                                 }
