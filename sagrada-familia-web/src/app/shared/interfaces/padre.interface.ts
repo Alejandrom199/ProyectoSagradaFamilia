@@ -29,7 +29,6 @@ export interface PadreDetailResponse {
 
 export interface PadreCreate {
     email: string;
-    password: string;
     medicoId: number;
     nombre: string;
     apellido: string;

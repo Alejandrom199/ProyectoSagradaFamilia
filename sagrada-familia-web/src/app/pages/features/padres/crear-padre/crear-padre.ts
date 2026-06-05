@@ -8,7 +8,6 @@ import { finalize } from 'rxjs';
 import { PadresService } from '../../../../core/services/padres';
 import { AuthService } from '../../../../core/services/auth';
 import { PadreCreate } from '../../../../shared/interfaces/padre.interface';
-import { passwordValidator } from '../../../../shared/validators/password.validator';
 
 @Component({
   selector: 'crear-padre',
@@ -29,7 +28,6 @@ export class CrearPadre implements OnInit {
 
   guardando = signal(false);
   error = signal<string | null>(null);
-  verPassword = signal(false);
 
   migajas: BreadcrumbItem[] = [
     { label: 'Padres', ruta: '/padres' },
@@ -40,19 +38,18 @@ export class CrearPadre implements OnInit {
     this.formPadre = this.initForm();
     const user = this.authService.currentUser();
 
-    if (this.authService.esMedico() && user?.id) {
-      this.f['medicoId'].patchValue(user.id);
+    if (this.authService.esMedico() && user?.medicoId) {
+      this.f['medicoId'].patchValue(user.medicoId);
       this.f['medicoId'].disable();
     }
   }
 
   private initForm(): FormGroup {
     return this.fb.group({
-      medicoId: [this.authService.currentUser()?.id, Validators.required],
+      medicoId: [this.authService.currentUser()?.medicoId ?? null, Validators.required],
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       apellido: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, passwordValidator]],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
     });
   }

@@ -6,7 +6,7 @@ import { NgIcon } from '@ng-icons/core';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { AlimentosService } from '../../../../core/services/alimentos';
-import { AlimentoUpdate, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
+import { AlimentoCreate, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
 
 @Component({
   selector: 'crear-alimento',
@@ -23,12 +23,13 @@ export class CrearAlimento implements OnInit {
   categorias = signal<CategoriaResponse[]>([]);
   guardando = signal(false);
   error = signal('');
+  submitted = signal(false);
 
   form = {
-    categoriaId: 0,
+    categoriaId: null as number | null,
     nombre: '',
     descripcion: '',
-    edadMinimaIntro: 0,
+    edadMinimaMeses: null as number | null,
     edadMaxima: null as number | null,
     recomendacion: ''
   };
@@ -45,35 +46,37 @@ export class CrearAlimento implements OnInit {
   }
 
   guardar() {
-    //   if (!this.form.nombre || !this.form.categoriaId || !this.form.edadMinimaIntro) {
-    //     this.error.set('Completá nombre, categoría y edad mínima.');
-    //     return;
-    //   }
+    this.submitted.set(true);
+    this.error.set('');
 
-    //   this.guardando.set(true);
-    //   this.loadingBar.show();
+    if (!this.form.nombre.trim() || !this.form.categoriaId || this.form.edadMinimaMeses === null || this.form.edadMinimaMeses < 0) {
+      this.error.set('Completá los campos obligatorios marcados con *.');
+      return;
+    }
 
-    const request: AlimentoUpdate = {
+    this.guardando.set(true);
+    this.loadingBar.show();
+
+    const request: AlimentoCreate = {
       categoriaId: this.form.categoriaId,
-      nombre: this.form.nombre,
+      nombre: this.form.nombre.trim(),
       descripcion: this.form.descripcion || undefined,
-      edadMinimaMeses: this.form.edadMinimaIntro,
+      edadMinimaMeses: this.form.edadMinimaMeses,
       recomendacion: this.form.recomendacion || undefined,
-      activo: true
     };
 
-    //   this.alimentosService.crear(request).subscribe({
-    //     next: (r) => {
-    //       if (r.success) this.router.navigate(['/alimentos']);
-    //       this.guardando.set(false);
-    //       this.loadingBar.complete();
-    //     },
-    //     error: (err) => {
-    //       this.error.set(err.error?.message ?? 'Error al actualizar.');
-    //       this.guardando.set(false);
-    //       this.loadingBar.complete();
-    //     }
-    //   });
-    // }
+    this.alimentosService.crear(request).subscribe({
+      next: (r) => {
+        if (r.success) this.router.navigate(['/alimentos']);
+        else this.error.set(r.message);
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      },
+      error: (err) => {
+        this.error.set(err.error?.message ?? 'Error al crear el alimento.');
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      }
+    });
   }
 }

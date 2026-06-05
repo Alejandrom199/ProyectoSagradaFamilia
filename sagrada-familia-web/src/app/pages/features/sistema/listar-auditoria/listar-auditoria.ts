@@ -13,19 +13,19 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { JsonFormatPipe } from '../../../../shared/pipes/json-format.pipe';
 
 const TABLAS_AUDITABLES = [
-  'Padres', 'Medicos', 'Ninos', 'Medidas',
-  'Citas', 'Prescripciones', 'Usuarios', 'Alimentos'
+  'Padre', 'Medico', 'Nino', 'Medida',
+  'Cita', 'Prescripcion', 'Usuario', 'Alimento'
 ];
 
 const TABLA_LABELS: Record<string, string> = {
-  Ninos: 'Paciente',
-  Citas: 'Consulta',
-  Prescripciones: 'Receta médica',
-  Medidas: 'Medición',
-  Alimentos: 'Alimento',
-  Medicos: 'Médico',
-  Padres: 'Padre/Tutor',
-  Usuarios: 'Usuario',
+  Nino: 'Pacientes',
+  Cita: 'Citas',
+  Prescripcion: 'Recetas médicas',
+  Medida: 'Mediciones',
+  Alimento: 'Alimentos',
+  Medico: 'Médicos',
+  Padre: 'Padres / Tutores',
+  Usuario: 'Usuarios',
 };
 
 const ETIQUETAS_CAMPOS: Record<string, string> = {
@@ -69,6 +69,7 @@ interface CampoModificado {
   etiqueta: string;
   antes: string;
   despues: string;
+  cambio: boolean;
 }
 
 @Component({
@@ -88,6 +89,7 @@ export class ListarAuditoria implements OnInit {
   registros = signal<AuditoriaResponse[]>([]);
   totalRegistros = signal(0);
   registroDetalle = signal<AuditoriaResponse | null>(null);
+  tablaFiltroActivo = signal(false);
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
 
   tablas = TABLAS_AUDITABLES;
@@ -104,7 +106,12 @@ export class ListarAuditoria implements OnInit {
     },
     {
       key: 'usuarioEmail', label: 'Usuario', sortable: true, filterable: true,
-      render: (row) => `<span class="text-sm text-slate-700">${row.usuarioEmail || 'Sistema'}</span>`
+      render: (row) => {
+        const nombre = row.usuarioNombreCompleto
+          ? `<span class="text-sm font-medium text-slate-800">${row.usuarioNombreCompleto}</span><br><span class="text-xs text-slate-400">${row.usuarioEmail}</span>`
+          : `<span class="text-sm text-slate-700">${row.usuarioEmail || 'Sistema'}</span>`;
+        return nombre;
+      }
     },
     {
       key: 'clavePrimaria', label: 'Registro',
@@ -131,6 +138,12 @@ export class ListarAuditoria implements OnInit {
     {
       key: 'tabla', label: 'Módulo',
       render: (row) => `<span class="text-sm text-slate-700">${this.tablaAmigable(row.tabla)}</span>`
+    },
+    {
+      key: 'usuarioNombreCompleto', label: 'Realizado por',
+      render: (row) => row.usuarioNombreCompleto
+        ? `<span class="text-sm font-medium text-slate-800">${row.usuarioNombreCompleto}</span>`
+        : `<span class="text-xs text-slate-400">${row.usuarioEmail || 'Sistema'}</span>`
     }
   ];
 
@@ -149,32 +162,54 @@ export class ListarAuditoria implements OnInit {
     const fmtVal = (v: unknown): string => {
       if (v == null) return '—';
       if (typeof v === 'boolean') return v ? 'Sí' : 'No';
+      if (typeof v === 'string') {
+        if (!v.trim()) return '—';
+        if (/^\d{4}-\d{2}-\d{2}(T|\s|$)/.test(v)) return formatearFecha(v);
+        return v;
+      }
+      if (typeof v === 'object') return '—';
       return String(v);
     };
 
     if (!antes && despues) {
       return Object.entries(despues)
         .filter(([k]) => !CAMPOS_OCULTOS.has(k))
-        .map(([k, v]) => ({ clave: k, etiqueta: ETIQUETAS_CAMPOS[k] ?? k, antes: '—', despues: fmtVal(v) }));
+        .map(([k, v]) => ({
+          clave: k,
+          etiqueta: ETIQUETAS_CAMPOS[k] ?? k,
+          antes: '—',
+          despues: fmtVal(v),
+          cambio: false
+        }));
     }
 
     if (antes && !despues) {
       return Object.entries(antes)
         .filter(([k]) => !CAMPOS_OCULTOS.has(k))
-        .map(([k, v]) => ({ clave: k, etiqueta: ETIQUETAS_CAMPOS[k] ?? k, antes: fmtVal(v), despues: '—' }));
+        .map(([k, v]) => ({
+          clave: k,
+          etiqueta: ETIQUETAS_CAMPOS[k] ?? k,
+          antes: fmtVal(v),
+          despues: '—',
+          cambio: false
+        }));
     }
 
     if (antes && despues) {
       const claves = new Set([...Object.keys(antes), ...Object.keys(despues)]);
       return [...claves]
         .filter(k => !CAMPOS_OCULTOS.has(k))
-        .map(k => ({
-          clave: k,
-          etiqueta: ETIQUETAS_CAMPOS[k] ?? k,
-          antes: fmtVal(antes[k]),
-          despues: fmtVal(despues[k])
-        }))
-        .filter(c => c.antes !== c.despues);
+        .map(k => {
+          const vAntes = fmtVal(antes[k]);
+          const vDespues = fmtVal(despues[k]);
+          return {
+            clave: k,
+            etiqueta: ETIQUETAS_CAMPOS[k] ?? k,
+            antes: vAntes,
+            despues: vDespues,
+            cambio: vAntes !== vDespues
+          };
+        });
     }
 
     return [];
@@ -191,7 +226,7 @@ export class ListarAuditoria implements OnInit {
 
   constructor() {
     this.formFiltro = this.fb.group({
-      tabla: ['Padres', Validators.required],
+      tabla: ['Padre', Validators.required],
       pk: ['']
     });
   }
@@ -242,11 +277,20 @@ export class ListarAuditoria implements OnInit {
     this.loadingBar.show();
     this.sistemaService.obtenerAuditoriaPorTabla(tabla, pk || undefined).subscribe({
       next: (r) => {
-        if (r.success) this.registros.set(r.data);
+        if (r.success) {
+          this.registros.set(r.data);
+          this.totalRegistros.set(r.data.length);
+          this.tablaFiltroActivo.set(true);
+        }
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
     });
+  }
+
+  limpiarFiltroTabla(): void {
+    this.tablaFiltroActivo.set(false);
+    this.cargarInicial();
   }
 
   abrirDetalle(row: AuditoriaResponse): void {

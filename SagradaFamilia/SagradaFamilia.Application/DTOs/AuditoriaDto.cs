@@ -8,6 +8,7 @@
             public int UsuarioId { get; set; }
 
             public string UsuarioEmail { get; set; } = string.Empty;
+            public string? UsuarioNombreCompleto { get; set; }
 
             public DateTime Fecha { get; set; }
             public string Accion { get; set; } = string.Empty;

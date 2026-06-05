@@ -1,0 +1,190 @@
+using Microsoft.EntityFrameworkCore;
+using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Infrastructure.Persistence.Contexts;
+
+namespace SagradaFamilia.Infrastructure.Persistence.Seed
+{
+    public static class PlantillaCorreoSeeder
+    {
+        public static async Task SeedAsync(AppDbContext context)
+        {
+            if (await context.PlantillasCorreo.AnyAsync())
+                return;
+
+            var plantillas = new List<PlantillaCorreo>
+            {
+                new()
+                {
+                    Codigo = "CAMBIO_CLAVE",
+                    Nombre = "Restablecimiento de contraseña",
+                    Asunto = "Restablecimiento de contraseña — Sagrada Familia",
+                    Activo = true,
+                    Cuerpo = """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restablecer contraseña</title>
+</head>
+<body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:48px 0;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:8px;">
+          <tr>
+            <td style="padding:32px 40px 24px;border-bottom:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:13px;font-weight:700;color:#2563eb;letter-spacing:0.5px;">Sagrada Familia</p>
+              <p style="margin:2px 0 0;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Sistema de Salud Pediátrica</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px 40px;">
+              <h2 style="margin:0 0 12px;font-size:18px;font-weight:700;color:#0f172a;">Restablecer contraseña</h2>
+              <p style="margin:0 0 28px;font-size:14px;color:#475569;line-height:1.7;">
+                Hola <strong style="color:#0f172a;">{{NOMBRE}}</strong>, recibimos una solicitud para restablecer la contraseña de tu cuenta.
+              </p>
+              <a href="{{LINK}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 28px;border-radius:6px;">
+                Cambiar contraseña
+              </a>
+              <p style="margin:28px 0 6px;font-size:12px;color:#94a3b8;">Si el botón no funciona, copiá este enlace en tu navegador:</p>
+              <p style="margin:0 0 28px;font-size:11px;color:#2563eb;word-break:break-all;">{{LINK}}</p>
+              <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
+                Este enlace expira en <strong style="color:#475569;">24 horas</strong>. Si no solicitaste este cambio, podés ignorar este correo.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+"""
+                },
+                new()
+                {
+                    Codigo = "CUENTA_PADRE",
+                    Nombre = "Activación de cuenta — Padre",
+                    Asunto = "Bienvenido a Sagrada Familia — Activá tu cuenta",
+                    Activo = true,
+                    Cuerpo = """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activá tu cuenta</title>
+</head>
+<body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:48px 0;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:8px;">
+          <tr>
+            <td style="padding:32px 40px 24px;border-bottom:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:13px;font-weight:700;color:#2563eb;letter-spacing:0.5px;">Sagrada Familia</p>
+              <p style="margin:2px 0 0;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Sistema de Salud Pediátrica</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px 40px;">
+              <h2 style="margin:0 0 12px;font-size:18px;font-weight:700;color:#0f172a;">Bienvenido, {{NOMBRE}} {{APELLIDO}}</h2>
+              <p style="margin:0 0 28px;font-size:14px;color:#475569;line-height:1.7;">
+                Tu cuenta en el sistema Sagrada Familia ha sido creada. Para comenzar, establecé tu contraseña haciendo clic en el siguiente botón.
+              </p>
+              <a href="{{LINK}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 28px;border-radius:6px;">
+                Activar mi cuenta
+              </a>
+              <p style="margin:28px 0 6px;font-size:12px;color:#94a3b8;">Si el botón no funciona, copiá este enlace en tu navegador:</p>
+              <p style="margin:0 0 28px;font-size:11px;color:#2563eb;word-break:break-all;">{{LINK}}</p>
+              <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
+                Este enlace expira en <strong style="color:#475569;">48 horas</strong>. Si no esperabas este correo, podés ignorarlo.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+"""
+                },
+                new()
+                {
+                    Codigo = "CUENTA_MEDICO",
+                    Nombre = "Credenciales de acceso — Médico",
+                    Asunto = "Credenciales de acceso — Sagrada Familia",
+                    Activo = true,
+                    Cuerpo = """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Credenciales de acceso</title>
+</head>
+<body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:48px 0;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:8px;">
+          <tr>
+            <td style="padding:32px 40px 24px;border-bottom:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:13px;font-weight:700;color:#2563eb;letter-spacing:0.5px;">Sagrada Familia</p>
+              <p style="margin:2px 0 0;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Sistema de Salud Pediátrica</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px 40px;">
+              <h2 style="margin:0 0 12px;font-size:18px;font-weight:700;color:#0f172a;">Bienvenido, Dr. {{NOMBRE}} {{APELLIDO}}</h2>
+              <p style="margin:0 0 20px;font-size:14px;color:#475569;line-height:1.7;">
+                Tu cuenta médica en el sistema Sagrada Familia ha sido creada. A continuación encontrás tus credenciales de acceso.
+              </p>
+              <table cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:6px;padding:16px 20px;margin-bottom:28px;">
+                <tr>
+                  <td style="font-size:13px;color:#64748b;padding-bottom:6px;">Usuario (email)</td>
+                </tr>
+                <tr>
+                  <td style="font-size:14px;font-weight:600;color:#0f172a;">{{EMAIL}}</td>
+                </tr>
+              </table>
+              <p style="margin:0 0 16px;font-size:14px;color:#475569;line-height:1.7;">
+                Tu contraseña temporal fue generada por el administrador. Te recomendamos cambiarla en tu primer inicio de sesión.
+              </p>
+              <a href="{{LINK}}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 28px;border-radius:6px;">
+                Ir al sistema
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+"""
+                }
+            };
+
+            context.PlantillasCorreo.AddRange(plantillas);
+            await context.SaveChangesAsync();
+        }
+    }
+}

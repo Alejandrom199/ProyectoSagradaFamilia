@@ -2,6 +2,7 @@ export interface AuditoriaResponse {
     id: number;
     usuarioId: number;
     usuarioEmail: string;
+    usuarioNombreCompleto?: string;
     fecha: string;
     accion: string;
     tabla: string;

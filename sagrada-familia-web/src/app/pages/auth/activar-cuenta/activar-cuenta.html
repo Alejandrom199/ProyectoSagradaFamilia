@@ -1,0 +1,126 @@
+<div class="min-h-screen flex items-center justify-center px-4 login-background">
+    <div class="w-full max-w-md">
+
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="inline-flex w-12 h-12 rounded-md items-center justify-center border border-blue-200 bg-blue-50 mb-3">
+                <ng-icon name="matMailOutline" class="text-blue-600" style="font-size: 28px;"></ng-icon>
+            </div>
+            <h1 class="text-2xl font-bold text-[var(--color-text-primary)] mt-2">La Sagrada Familia</h1>
+            <p class="text-[var(--color-text-secondary)] text-sm mt-1">Activación de cuenta</p>
+        </div>
+
+        <div class="bg-white/65 backdrop-blur-md border border-white/40">
+            <div class="px-6 py-4 border-b border-slate-200/60 text-center bg-white/50">
+                <p class="text-base font-bold auth-card-text">Establecer contraseña</p>
+            </div>
+            <div class="p-6">
+
+                <!-- Estado: éxito -->
+                @if (exito()) {
+                <div class="flex flex-col items-center gap-3 py-6 text-center">
+                    <ng-icon name="matTaskAltOutline" class="text-green-500" style="font-size: 48px;"></ng-icon>
+                    <p class="auth-card-text font-medium">¡Cuenta activada correctamente!</p>
+                    <p class="text-sm auth-card-text-secondary">Ya podés iniciar sesión. Serás redirigido en unos segundos...</p>
+                </div>
+                }
+
+                <!-- Estado: token inválido en URL -->
+                @else if (error() && !token()) {
+                <div class="flex flex-col items-center gap-3 py-6 text-center">
+                    <ng-icon name="matCancelOutline" class="text-red-500" style="font-size: 48px;"></ng-icon>
+                    <p class="auth-card-text font-medium">Enlace no válido</p>
+                    <p class="text-sm auth-card-text-secondary">{{ error() }}</p>
+                </div>
+                }
+
+                <!-- Formulario -->
+                @else {
+                <p class="text-sm auth-card-text-secondary text-center mb-5">
+                    Elegí una contraseña segura para activar tu acceso al sistema.
+                </p>
+
+                @if (error()) {
+                <div class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-xs font-semibold mb-4">
+                    {{ error() }}
+                </div>
+                }
+
+                <form [formGroup]="form" (ngSubmit)="activar()" class="space-y-5">
+
+                    <!-- Nueva contraseña -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold auth-card-text uppercase ml-1">Nueva contraseña *</label>
+                        <div class="relative">
+                            <ng-icon name="matLockOutline"
+                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
+                            <input formControlName="nuevaClave"
+                                [type]="mostrarClave() ? 'text' : 'password'"
+                                placeholder="••••••••"
+                                class="w-full pl-10 pr-10 py-2.5 rounded-md border border-slate-300 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-[var(--color-text-primary)]"
+                                [class.border-red-400]="f['nuevaClave'].invalid && f['nuevaClave'].touched">
+                            <button type="button"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors"
+                                (click)="mostrarClave.update(v => !v)">
+                                <ng-icon [name]="mostrarClave() ? 'matVisibilityOffOutline' : 'matVisibilityOutline'"></ng-icon>
+                            </button>
+                        </div>
+                        @if (f['nuevaClave'].touched && pErr) {
+                        <div class="flex flex-col gap-0.5 ml-1">
+                            @if (pErr['minLength']) {
+                            <span class="text-[11px] text-red-500 font-medium">Mínimo 8 caracteres</span>
+                            }
+                            @if (pErr['uppercase']) {
+                            <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos una letra mayúscula</span>
+                            }
+                            @if (pErr['number']) {
+                            <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos un número</span>
+                            }
+                            @if (pErr['special']) {
+                            <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos un símbolo especial (!&#64;#$...)</span>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Confirmar contraseña -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold auth-card-text uppercase ml-1">Confirmar contraseña *</label>
+                        <div class="relative">
+                            <ng-icon name="matLockOutline"
+                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
+                            <input formControlName="confirmarClave"
+                                [type]="mostrarConfirmar() ? 'text' : 'password'"
+                                placeholder="••••••••"
+                                class="w-full pl-10 pr-10 py-2.5 rounded-md border border-slate-300 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-[var(--color-text-primary)]"
+                                [class.border-red-400]="f['confirmarClave'].touched && form.errors?.['noCoinciden']">
+                            <button type="button"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors"
+                                (click)="mostrarConfirmar.update(v => !v)">
+                                <ng-icon [name]="mostrarConfirmar() ? 'matVisibilityOffOutline' : 'matVisibilityOutline'"></ng-icon>
+                            </button>
+                        </div>
+                        @if (f['confirmarClave'].touched && form.errors?.['noCoinciden']) {
+                        <span class="text-[11px] text-red-500 font-medium ml-1">Las contraseñas no coinciden</span>
+                        }
+                    </div>
+
+                    <button type="submit" [disabled]="cargando()"
+                        class="w-full px-8 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+                        @if (cargando()) {
+                        <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        Activando cuenta...
+                        } @else {
+                        Activar cuenta
+                        }
+                    </button>
+                </form>
+                }
+            </div>
+        </div>
+
+        <p class="text-center text-xs text-[var(--color-text-secondary)] mt-6">
+            Consultorio Médico La Sagrada Familia — Milagro, Ecuador
+        </p>
+    </div>
+</div>

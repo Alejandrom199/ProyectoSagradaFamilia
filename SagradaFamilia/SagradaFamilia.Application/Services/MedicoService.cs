@@ -210,10 +210,13 @@ public class MedicoService : IMedicoService
         await _resetTokenRepository.CrearAsync(token);
 
         var link = $"{_appSettings.FrontendUrl}/nueva-clave?token={token.Token}";
-        var nombre = $"{medico.Nombre} {medico.Apellido}";
-        var cuerpo = _emailTemplateService.GenerarResetPassword(nombre, link);
+        var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync("CAMBIO_CLAVE", new Dictionary<string, string>
+        {
+            ["NOMBRE"] = $"{medico.Nombre} {medico.Apellido}",
+            ["LINK"]   = link
+        });
 
-        await _emailService.EnviarAsync(medico.Usuario.Email, "Restablecimiento de contraseña", cuerpo);
+        await _emailService.EnviarAsync(medico.Usuario.Email, asunto, cuerpo);
         _logger.LogInformation("Email de restablecimiento enviado a {Email} para médico ID: {Id}", medico.Usuario.Email, medicoId);
     }
 

@@ -83,7 +83,7 @@ export class ListarPadres implements OnInit {
   acciones: DatatableAction<PadreResponse>[] = [
     {
       type: 'ver',
-      label: 'Ver hijos',
+      label: 'Ver',
       onClick: (row) => this.router.navigate(['/padres', row.id, 'hijos'])
     },
     {

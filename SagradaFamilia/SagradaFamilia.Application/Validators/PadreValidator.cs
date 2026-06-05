@@ -10,7 +10,6 @@ namespace SagradaFamilia.Application.Validators
             RuleFor(x => x.Nombre).NotEmpty().MaximumLength(100);
             RuleFor(x => x.Apellido).NotEmpty().MaximumLength(100);
             RuleFor(x => x.Email).NotEmpty().EmailAddress();
-            RuleFor(x => x.Password).NotEmpty().MinimumLength(6);
 
             RuleFor(x => x.MedicoId).GreaterThan(0).WithMessage("Debe asignar un médico tratante.");
 

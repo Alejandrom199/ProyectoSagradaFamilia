@@ -1,4 +1,4 @@
-<div class="page-container">
+<div class="page-container animate-fade-in">
 
     <!-- Saludo -->
     <div class="mb-8">
@@ -9,12 +9,13 @@
         <p class="page-subtitle">Resumen del sistema de monitoreo pediátrico</p>
     </div>
 
-    <!-- Stats -->
+    <!-- Stats (médico) -->
     @if (auth.esMedico()) {
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        @for (stat of stats(); track stat.label) {
+        @for (stat of stats(); track stat.label; let i = $index) {
         <a [routerLink]="stat.ruta"
-            class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-slate-300 transition-colors group">
+            class="lift fade-up rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-slate-300 group"
+            [ngClass]="'stagger-' + (i + 1)">
             <div class="w-12 h-12 rounded-md flex items-center justify-center shrink-0"
                 [style.background-color]="stat.bgColor">
                 <ng-icon [name]="stat.icon" [style.color]="stat.color" class="text-xl"></ng-icon>
@@ -29,11 +30,11 @@
 
     <!-- Accesos rápidos -->
     <div class="mb-6">
-        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Accesos rápidos</h3>
+        <h3 class="section-label mb-4">Accesos rápidos</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
             <a routerLink="/pacientes/crear"
-                class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
+                class="lift fade-up stagger-1 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 group">
                 <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
                     <ng-icon name="matPeopleOutline" class="text-blue-500 text-lg"></ng-icon>
                 </div>
@@ -46,7 +47,7 @@
             </a>
 
             <a routerLink="/citas/crear"
-                class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-purple-300 transition-colors group">
+                class="lift fade-up stagger-2 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-purple-300 group">
                 <div class="w-10 h-10 rounded-md bg-purple-50 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
                     <ng-icon name="matCalendarMonthOutline" class="text-purple-500 text-lg"></ng-icon>
                 </div>
@@ -59,7 +60,7 @@
             </a>
 
             <a routerLink="/padres/crear"
-                class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-red-300 transition-colors group">
+                class="lift fade-up stagger-3 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-red-300 group">
                 <div class="w-10 h-10 rounded-md bg-red-50 flex items-center justify-center shrink-0 group-hover:bg-red-100 transition-colors">
                     <ng-icon name="matFavoriteBorderOutline" class="text-red-500 text-lg"></ng-icon>
                 </div>
@@ -72,7 +73,7 @@
             </a>
 
             <a routerLink="/predicciones"
-                class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-green-300 transition-colors group">
+                class="lift fade-up stagger-4 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-green-300 group">
                 <div class="w-10 h-10 rounded-md bg-green-50 flex items-center justify-center shrink-0 group-hover:bg-green-100 transition-colors">
                     <ng-icon name="matQueryStatsOutline" class="text-green-500 text-lg"></ng-icon>
                 </div>
@@ -85,7 +86,7 @@
             </a>
 
             <a routerLink="/alimentos"
-                class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-amber-300 transition-colors group">
+                class="lift fade-up stagger-5 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-amber-300 group">
                 <div class="w-10 h-10 rounded-md bg-amber-50 flex items-center justify-center shrink-0 group-hover:bg-amber-100 transition-colors">
                     <ng-icon name="matCakeOutline" class="text-amber-500 text-lg"></ng-icon>
                 </div>
@@ -98,7 +99,7 @@
             </a>
 
             <a routerLink="/citas"
-                class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-purple-300 transition-colors group">
+                class="lift fade-up stagger-6 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-purple-300 group">
                 <div class="w-10 h-10 rounded-md bg-purple-50 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
                     <ng-icon name="matScienceOutline" class="text-purple-500 text-lg"></ng-icon>
                 </div>
@@ -117,9 +118,10 @@
     <!-- Vista padre -->
     @if (auth.esPadre()) {
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
         <a routerLink="/mis-pequenos"
-            class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
-            <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+            class="lift fade-up stagger-1 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 group">
+            <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
                 <ng-icon name="matPeopleOutline" class="text-blue-500 text-lg"></ng-icon>
             </div>
             <div class="flex-1">
@@ -131,8 +133,8 @@
         </a>
 
         <a routerLink="/alimentos"
-            class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-amber-300 transition-colors group">
-            <div class="w-10 h-10 rounded-md bg-amber-50 flex items-center justify-center shrink-0">
+            class="lift fade-up stagger-2 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-amber-300 group">
+            <div class="w-10 h-10 rounded-md bg-amber-50 flex items-center justify-center shrink-0 group-hover:bg-amber-100 transition-colors">
                 <ng-icon name="matCakeOutline" class="text-amber-500 text-lg"></ng-icon>
             </div>
             <div class="flex-1">
@@ -142,6 +144,7 @@
             <ng-icon name="matArrowForwardOutline"
                 class="text-slate-300 group-hover:text-amber-400 transition-colors shrink-0"></ng-icon>
         </a>
+
     </div>
     }
 

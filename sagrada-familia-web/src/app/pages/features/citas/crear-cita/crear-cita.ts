@@ -72,12 +72,9 @@ export class CrearCita implements OnInit {
   }
 
   private initForm(): FormGroup {
-
-    const medicoId = this.authService.esMedico() ? this.authService.currentUser()?.id : null;
-
     return this.fb.group({
       ninoId: [null, Validators.required],
-      medicoId: [medicoId, Validators.required],
+      medicoId: [null, Validators.required],
       fecha: ['', Validators.required],
       hora: ['', Validators.required],
       motivo: ['']
@@ -101,9 +98,8 @@ export class CrearCita implements OnInit {
           this.medicos.set(r.data);
 
           if (this.authService.esMedico()) {
-            const user = this.authService.currentUser();
-            const propio = r.data.find(m => m.email === user?.nombre);
-            if (propio) this.formCita.patchValue({ medicoId: propio.id });
+            const medicoId = this.authService.currentUser()?.medicoId;
+            if (medicoId) this.formCita.patchValue({ medicoId });
           }
         }
       }
@@ -152,7 +148,7 @@ export class CrearCita implements OnInit {
 
     const data: CitaCreate = {
       ninoId: v.ninoId,
-      medicoId: this.esMedico() ? this.authService.currentUser()?.id : v.medicoId,
+      medicoId: v.medicoId,
       fechaHora,
       motivo: v.motivo || undefined
     };

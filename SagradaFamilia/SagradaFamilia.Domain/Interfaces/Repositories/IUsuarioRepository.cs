@@ -10,6 +10,7 @@ public interface IUsuarioRepository
     Task<IEnumerable<Usuario>> ObtenerPorRolIdAsync(int rolId);
     Task<Usuario?> ObtenerConRolesYPermisosAsync(int id);
     Task<bool> ExisteEmailAsync(string email);
+    Task<int> ContarAdministradoresActivosAsync();
     Task<Usuario> CrearAsync(Usuario usuario);
     Task<Usuario> ActualizarAsync(Usuario usuario);
     Task EliminarAsync(int id);

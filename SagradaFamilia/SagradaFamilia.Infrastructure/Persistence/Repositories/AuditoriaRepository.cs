@@ -13,7 +13,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<Auditoria>> ObtenerRecientesAsync(int top = 100) =>
             await _context.Auditorias
-                .Include(a => a.Usuario)
+                .Include(a => a.Usuario).ThenInclude(u => u.Medico)
                 .OrderByDescending(a => a.Fecha)
                 .Take(top)
                 .ToListAsync();
@@ -21,7 +21,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Auditoria>> ObtenerPorTablaAsync(string nombreTabla, string? clavePrimaria = null)
         {
             var query = _context.Auditorias
-                .Include(a => a.Usuario)
+                .Include(a => a.Usuario).ThenInclude(u => u.Medico)
                 .Where(a => a.Tabla == nombreTabla);
 
             if (!string.IsNullOrWhiteSpace(clavePrimaria))
@@ -32,7 +32,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<Auditoria>> ObtenerPorUsuarioAsync(int usuarioId) =>
             await _context.Auditorias
-                .Include(a => a.Usuario)
+                .Include(a => a.Usuario).ThenInclude(u => u.Medico)
                 .Where(a => a.UsuarioId == usuarioId)
                 .OrderByDescending(a => a.Fecha)
                 .ToListAsync();
@@ -41,7 +41,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             int page, int pageSize, string? search, string? sortBy, bool ascending)
         {
             var query = _context.Auditorias
-                .Include(a => a.Usuario)
+                .Include(a => a.Usuario).ThenInclude(u => u.Medico)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))

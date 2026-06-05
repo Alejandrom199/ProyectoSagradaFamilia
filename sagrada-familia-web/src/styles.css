@@ -41,8 +41,29 @@
     --sidebar-item-hover: #f4f4f5;
     --sidebar-item-active-bg: #eff6ff;
 
-    /* Tamaños */
+    /* Tamaños de layout */
     --header-height: 60px;
+
+    /* ── Tokens de radio ───────────────────────────────────────────────────────
+       Máximo permitido: --radius-base (6px).
+       --radius-full solo para avatares y badges circulares.
+       ──────────────────────────────────────────────────────────────────────── */
+    --radius-sm:   4px;
+    --radius-base: 6px;
+    --radius-full: 9999px;
+
+    /* ── Tokens de animación ───────────────────────────────────────────────────
+       dur-fast  → micro-feedback (press, pop)
+       dur-base  → hover estándar, transiciones de color
+       dur-slow  → entradas de paneles, modales
+       ease-out-expo → entradas de elementos (aceleración pronunciada al final)
+       ease-bounce   → feedback de acción afirmativa
+       ──────────────────────────────────────────────────────────────────────── */
+    --dur-fast:      120ms;
+    --dur-base:      200ms;
+    --dur-slow:      350ms;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-bounce:   cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Construir tus clases personalizadas usando Tailwind */
@@ -50,7 +71,7 @@
 
     /* Diseño de la tarjeta */
     .card {
-        @apply bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-2xl shadow-lg overflow-hidden;
+        @apply bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-md overflow-hidden;
     }
 
     .card-header {
@@ -71,7 +92,7 @@
     }
 
     .form-input {
-        @apply w-full px-4 py-2 border border-[var(--color-surface-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent bg-transparent transition-all;
+        @apply w-full px-4 py-2 border border-[var(--color-surface-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent bg-transparent transition-all;
     }
 
     .input-error {
@@ -80,7 +101,7 @@
 
     /* Botones */
     .btn {
-        @apply inline-flex justify-center items-center px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply inline-flex justify-center items-center px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
     }
 
     .btn-primary {
@@ -109,7 +130,7 @@
 
     /* Alertas */
     .alert {
-        @apply px-4 py-3 rounded-lg text-sm font-medium;
+        @apply px-4 py-3 rounded-md text-sm font-medium;
     }
 
     .alert-error {
@@ -124,9 +145,9 @@
         @apply bg-amber-50 text-amber-700 border border-amber-200;
     }
 
-    /* Badges */
+    /* Badges — rounded-md para badges rectangulares estándar */
     .badge {
-        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold;
     }
 
     .badge-primary {
@@ -154,6 +175,191 @@
     .page-container {
         @apply w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8;
     }
+}
+
+/* ═══════ Keyframes del sistema ═══════════════════════════════════════════════
+   animate-fade-in  → entrada suave de páginas, modales, dropdowns
+   animate-shake    → feedback de error en formularios
+   Definidos aquí para que estén disponibles en todo el sistema via @utility.
+   ─────────────────────────────────────────────────────────────────────────── */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+}
+
+@layer utilities {
+    .animate-fade-in {
+        animation: fade-in var(--dur-slow) var(--ease-out-expo) both;
+    }
+
+    .animate-shake {
+        animation: shake var(--dur-slow) ease-in-out both;
+    }
+}
+
+/* ═══════ Juice — Keyframes ═══════════════════════════════════════════════════
+   Microinteracciones y animaciones del sistema.
+   Nivel de uso por rol: Padre=alto · Médico=medio · Admin=bajo (solo .press)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Entrada desde abajo — listas, items que cargan */
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Entrada desde la derecha — paneles laterales, drawers */
+@keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Pop — badge o chip que aparece/cambia de estado */
+@keyframes pop {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.18); }
+    75%  { transform: scale(0.96); }
+    100% { transform: scale(1); }
+}
+
+/* Bounce-in — elemento que llega con energía (success states) */
+@keyframes bounce-in {
+    0%   { transform: scale(0.82); opacity: 0; }
+    55%  { transform: scale(1.06); opacity: 1; }
+    80%  { transform: scale(0.97); }
+    100% { transform: scale(1); }
+}
+
+/* Shimmer — skeleton loader */
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+/* Ripple — onda de click en botón primary */
+@keyframes ripple {
+    from { transform: scale(0); opacity: 0.45; }
+    to   { transform: scale(2.8); opacity: 0; }
+}
+
+/* ═══════ Juice — Utilities ═══════════════════════════════════════════════════ */
+@layer utilities {
+
+    /* ── .press ───────────────────────────────────────────────────────────────
+       Aplica a cualquier elemento clickeable. Se hunde 4% al `:active`.
+       Agregar siempre a <btn> y a botones de acción en tablas.
+       ──────────────────────────────────────────────────────────────────────── */
+    .press {
+        transition: transform var(--dur-fast) var(--ease-out-expo);
+    }
+    .press:active:not([disabled]):not(.disabled) {
+        transform: scale(0.96);
+    }
+
+    /* ── .lift ────────────────────────────────────────────────────────────────
+       Hover que eleva la tarjeta 2px. Usar en stat-cards y action-cards.
+       La sombra sutil refuerza la elevación sin ser decorativa.
+       ──────────────────────────────────────────────────────────────────────── */
+    .lift {
+        transition:
+            transform    var(--dur-base) var(--ease-out-expo),
+            border-color var(--dur-base) ease;
+    }
+    .lift:hover {
+        transform: translateY(-2px);
+    }
+
+    /* ── .pop ─────────────────────────────────────────────────────────────────
+       Badge o chip que "brinca" al aparecer o cambiar de valor.
+       En Angular: alternar la clase con un signal para re-disparar.
+         [class.pop]="badgePop()"  → toggle desde el componente.
+       ──────────────────────────────────────────────────────────────────────── */
+    .pop {
+        animation: pop var(--dur-base) var(--ease-bounce) both;
+    }
+
+    /* ── .bounce-in ───────────────────────────────────────────────────────────
+       Para elementos que confirman una acción exitosa (ícono de check, modal
+       de éxito, etc.)
+       ──────────────────────────────────────────────────────────────────────── */
+    .bounce-in {
+        animation: bounce-in var(--dur-slow) var(--ease-bounce) both;
+    }
+
+    /* ── .fade-up ─────────────────────────────────────────────────────────────
+       Entrada desde abajo. Usar en items de lista al cargar, secciones de
+       detalle. Combinar con .stagger-* para efecto cascada.
+       ──────────────────────────────────────────────────────────────────────── */
+    .fade-up {
+        animation: fade-up var(--dur-slow) var(--ease-out-expo) both;
+    }
+
+    /* ── .slide-in-right ──────────────────────────────────────────────────────
+       Entrada lateral. Para paneles de detalle y drawers.
+       ──────────────────────────────────────────────────────────────────────── */
+    .slide-in-right {
+        animation: slide-in-right var(--dur-slow) var(--ease-out-expo) both;
+    }
+
+    /* ── .shimmer ─────────────────────────────────────────────────────────────
+       Skeleton loader. Aplicar al contenedor del placeholder.
+       El color usa las variables de superficie para adaptarse al tema.
+       ──────────────────────────────────────────────────────────────────────── */
+    .shimmer {
+        background: linear-gradient(
+            90deg,
+            var(--color-surface-alt) 25%,
+            var(--color-surface-border) 50%,
+            var(--color-surface-alt) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite linear;
+    }
+
+    /* ── .ripple-primary ──────────────────────────────────────────────────────
+       Onda de click CSS-only en botones primary. Requiere position: relative
+       y overflow: hidden en el elemento (el <btn> ya los tiene en su HTML).
+       ──────────────────────────────────────────────────────────────────────── */
+    .ripple-primary {
+        position: relative;
+        overflow: hidden;
+    }
+    .ripple-primary::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 60%;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.35);
+        transform: scale(0);
+        transform-origin: center;
+        pointer-events: none;
+    }
+    .ripple-primary:active::after {
+        animation: ripple 420ms var(--ease-out-expo) forwards;
+    }
+
+    /* ── .stagger-[1-6] ──────────────────────────────────────────────────────
+       Delays para animar listas en cascada. Usar junto a .fade-up.
+         <li class="fade-up stagger-1">...</li>
+         <li class="fade-up stagger-2">...</li>
+       ──────────────────────────────────────────────────────────────────────── */
+    .stagger-1 { animation-delay:  60ms; }
+    .stagger-2 { animation-delay: 120ms; }
+    .stagger-3 { animation-delay: 180ms; }
+    .stagger-4 { animation-delay: 240ms; }
+    .stagger-5 { animation-delay: 300ms; }
+    .stagger-6 { animation-delay: 360ms; }
 }
 
 /* ═══════ Tooltip global styles ═══════ */

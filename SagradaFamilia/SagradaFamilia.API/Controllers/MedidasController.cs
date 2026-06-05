@@ -82,8 +82,9 @@ public class MedidasController : BaseController
 
     [HttpPost("importar")]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<MedidaDto.ImportResultado>>> Importar([FromForm] IFormFile archivo)
+    public async Task<ActionResult<ApiResponse<MedidaDto.ImportResultado>>> Importar([FromForm] ImportarArchivoRequest request)
     {
+        var archivo = request.Archivo;
         if (archivo is null || archivo.Length == 0)
             return BadRequest(ApiResponse<MedidaDto.ImportResultado>.Fail("No se recibió ningún archivo."));
 

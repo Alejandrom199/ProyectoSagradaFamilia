@@ -1,31 +1,29 @@
+using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
-using System.Reflection;
 
 namespace SagradaFamilia.Infrastructure.Email
 {
     public class EmailTemplateService : IEmailTemplateService
     {
-        private static readonly Assembly _assembly = typeof(EmailTemplateService).Assembly;
+        private readonly IPlantillaCorreoRepository _plantillaRepository;
 
-        public string GenerarResetPassword(string nombreUsuario, string linkReset)
+        public EmailTemplateService(IPlantillaCorreoRepository plantillaRepository)
         {
-            var html = LeerPlantilla("ResetPassword.html");
-            return html
-                .Replace("{{NOMBRE_USUARIO}}", nombreUsuario)
-                .Replace("{{LINK_RESET}}", linkReset);
+            _plantillaRepository = plantillaRepository;
         }
 
-        private static string LeerPlantilla(string nombreArchivo)
+        public async Task<(string Asunto, string Cuerpo)> GenerarAsync(
+            string codigo, IDictionary<string, string> variables)
         {
-            // El recurso embebido tiene el nombre: {Namespace}.Email.Templates.{archivo}
-            var nombreRecurso = _assembly
-                .GetManifestResourceNames()
-                .FirstOrDefault(n => n.EndsWith(nombreArchivo, StringComparison.OrdinalIgnoreCase))
-                ?? throw new FileNotFoundException($"Plantilla de email no encontrada: {nombreArchivo}");
+            var plantilla = await _plantillaRepository.ObtenerPorCodigoAsync(codigo)
+                ?? throw new InvalidOperationException(
+                    $"No existe una plantilla activa con código '{codigo}'. Verificá que el seed se haya ejecutado.");
 
-            using var stream = _assembly.GetManifestResourceStream(nombreRecurso)!;
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            var cuerpo = plantilla.Cuerpo;
+            foreach (var (clave, valor) in variables)
+                cuerpo = cuerpo.Replace($"{{{{{clave}}}}}", valor);
+
+            return (plantilla.Asunto, cuerpo);
         }
     }
 }

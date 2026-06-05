@@ -63,6 +63,22 @@ namespace SagradaFamilia.API.Controllers
             return HandleSuccess("Contraseña actualizada correctamente. Ya puedes iniciar sesión.");
         }
 
+        [HttpPost("activar-cuenta")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResponse>> ActivarCuenta([FromBody] ActivarCuentaDto.Request request)
+        {
+            await _authService.ActivarCuentaAsync(request);
+            return HandleSuccess("Cuenta activada correctamente. Ya puedes iniciar sesión.");
+        }
+
+        [HttpPost("solicitar-reset")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResponse>> SolicitarReset([FromBody] SolicitarResetDto.Request request)
+        {
+            await _authService.SolicitarResetAsync(request);
+            return HandleSuccess("Si el correo corresponde a una cuenta médica activa, recibirás un enlace en unos minutos.");
+        }
+
         private void SetTokenCookies(string accessToken, string refreshToken)
         {
             var cookieOptions = new CookieOptions

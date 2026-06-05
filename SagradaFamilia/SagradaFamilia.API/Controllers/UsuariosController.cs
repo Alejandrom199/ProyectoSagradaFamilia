@@ -48,7 +48,8 @@ public class UsuariosController : BaseController
     [HttpPatch("{id:int}/estado")]
     public async Task<ActionResult<ApiResponse>> ActualizarEstado(int id, [FromBody] bool activo)
     {
-        await _usuarioService.ActualizarEstadoAsync(id, activo);
+        var currentUserId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        await _usuarioService.ActualizarEstadoAsync(id, activo, currentUserId);
         return HandleSuccess("Estado del usuario actualizado.");
     }
 

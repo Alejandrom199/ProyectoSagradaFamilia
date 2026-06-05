@@ -6,6 +6,7 @@ import { NgIcon } from '@ng-icons/core';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { UsuariosService } from '../../../../core/services/usuarios';
+import { AuthService } from '../../../../core/services/auth';
 import { UsuarioDetailResponse } from '../../../../shared/interfaces/usuario.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 
@@ -21,7 +22,10 @@ export class DetalleUsuario implements OnInit {
   @Input() id!: string;
 
   private usuariosService = inject(UsuariosService);
+  private authService = inject(AuthService);
   private loadingBar = inject(LoadingBar);
+
+  readonly esPropioUsuario = () => this.usuario()?.id === this.authService.currentUser()?.id;
 
   usuario = signal<UsuarioDetailResponse | null>(null);
   procesando = signal(false);

@@ -1,10 +1,16 @@
 ﻿namespace SagradaFamilia.API.Controllers;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
+
+public class ImportarArchivoRequest
+{
+    public IFormFile? Archivo { get; set; }
+}
 
 [Authorize]
 [ApiController]
@@ -101,8 +107,10 @@ public class AlimentosController : BaseController
 
     [HttpPost("importar")]
     [Authorize(Roles = "Medico")]
-    public async Task<ActionResult<ApiResponse<AlimentoDto.ImportResultado>>> Importar([FromForm] IFormFile archivo)
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<ApiResponse<AlimentoDto.ImportResultado>>> Importar([FromForm] ImportarArchivoRequest request)
     {
+        var archivo = request.Archivo;
         if (archivo is null || archivo.Length == 0)
             return BadRequest(ApiResponse<AlimentoDto.ImportResultado>.Fail("No se recibió ningún archivo."));
 

@@ -14,16 +14,11 @@
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
-        <datatable title="Listado de alimentos"
-            [data]="alimentos()" [columns]="columnas" [actions]="acciones"
-            [serverSide]="true" [serverTotalItems]="totalAlimentos()"
-            (onServerQuery)="onServerQuery($event)"
-            exportFileName="catalogo-alimentos"
-            (onExportPdf)="descargarAlimentosPdf($event)"
-            (onExportExcel)="descargarExcel()"
-            [showPlantilla]="true" (onPlantilla)="descargarPlantilla()"
-            [showImportar]="true" (onImportar)="mostrarModalImport.set(true)"
-            (onActualizar)="cargarDatos()"
+        <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
+            [serverSide]="true" [serverTotalItems]="totalAlimentos()" (onServerQuery)="onServerQuery($event)"
+            exportFileName="catalogo-alimentos" (onExportPdf)="descargarAlimentosPdf($event)"
+            (onExportExcel)="descargarExcel()" [showPlantilla]="true" (onPlantilla)="descargarPlantilla()"
+            [showImportar]="true" (onImportar)="mostrarModalImport.set(true)" (onActualizar)="cargarDatos()"
             emptyMessage="No hay alimentos registrados en el sistema.">
         </datatable>
     </div>
@@ -36,12 +31,9 @@
     }
 
     @if (mostrarModalImport()) {
-    <import-modal
-        titulo="Importación masiva de alimentos"
-        subtitulo="Use la plantilla oficial para garantizar el formato correcto."
-        [importFn]="importarFn"
-        (cerrado)="mostrarModalImport.set(false)"
-        (importacionExitosa)="cargarDatos()">
+    <import-modal titulo="Importación masiva de alimentos"
+        subtitulo="Use la plantilla oficial para garantizar el formato correcto." [importFn]="importarFn"
+        (cerrado)="mostrarModalImport.set(false)" (importacionExitosa)="cargarDatos()">
     </import-modal>
     }
 </div>

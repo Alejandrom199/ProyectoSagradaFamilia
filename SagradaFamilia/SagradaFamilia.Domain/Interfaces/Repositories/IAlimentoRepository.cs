@@ -11,6 +11,7 @@ namespace SagradaFamilia.Application.Interfaces.Repositories
 
         Task<IEnumerable<Alimento>> ObtenerPorRangoEdadAsync(int edadMeses);
         Task<IEnumerable<Alimento>> ObtenerPorCategoriaAsync(int categoriaId);
+        Task<Alimento?> ObtenerPorNombreYCategoriaAsync(string nombre, int categoriaId);
 
         Task<Alimento> CrearAsync(Alimento alimento);
         Task<Alimento> ActualizarAsync(Alimento alimento);

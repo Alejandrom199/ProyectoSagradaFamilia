@@ -81,7 +81,7 @@ export class CrearPaciente implements OnInit {
       fechaNacimiento: this.form.fechaNacimiento,
       sexo: this.form.sexo as 'M' | 'F',
       padreId: this.form.padreId,
-      medicoId: this.auth.currentUser()?.id ?? 0
+      medicoId: this.auth.currentUser()?.medicoId ?? 0
     };
 
     this.ninosService.crear(request).subscribe({

@@ -13,6 +13,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/auth/nueva-clave/nueva-clave').then(m => m.NuevaClave)
     },
     {
+        path: 'activar-cuenta',
+        loadComponent: () => import('./pages/auth/activar-cuenta/activar-cuenta').then(m => m.ActivarCuenta)
+    },
+    {
         path: '',
         canActivate: [authGuard],
         loadComponent: () => import('./shared/components/admin-layout/admin-layout').then(m => m.AdminLayout),

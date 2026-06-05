@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
+import { Tooltip } from '../../directives/tooltip/tooltip';
 
 @Component({
   selector: 'avatar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Tooltip],
   templateUrl: './avatar.html',
   styleUrl: './avatar.css',
 })

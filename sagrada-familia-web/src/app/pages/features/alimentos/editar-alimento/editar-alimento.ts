@@ -27,12 +27,13 @@ export class EditarAlimento implements OnInit {
   categorias = signal<CategoriaResponse[]>([]);
   guardando = signal(false);
   error = signal('');
+  submitted = signal(false);
 
   form = {
-    categoriaId: 0,
+    categoriaId: null as number | null,
     nombre: '',
     descripcion: '',
-    edadMinimaMeses: 0,
+    edadMinimaMeses: null as number | null,
     recomendacion: ''
   };
 
@@ -70,35 +71,38 @@ export class EditarAlimento implements OnInit {
   }
 
   guardar() {
-    if (!this.form.nombre || !this.form.categoriaId || this.form.edadMinimaMeses === null || this.form.edadMinimaMeses === undefined) {
-      this.error.set('Completá nombre, categoría y edad mínima.');
+    this.submitted.set(true);
+    this.error.set('');
+
+    if (!this.form.nombre.trim() || !this.form.categoriaId || this.form.edadMinimaMeses === null || this.form.edadMinimaMeses < 0) {
+      this.error.set('Completá los campos obligatorios marcados con *.');
       return;
     }
 
-    //   this.guardando.set(true);
-    //   this.loadingBar.show();
+    this.guardando.set(true);
+    this.loadingBar.show();
 
     const request: AlimentoUpdate = {
       categoriaId: this.form.categoriaId,
-      nombre: this.form.nombre,
+      nombre: this.form.nombre.trim(),
       descripcion: this.form.descripcion || undefined,
       edadMinimaMeses: this.form.edadMinimaMeses,
       recomendacion: this.form.recomendacion || undefined,
       activo: this.alimento()?.activo ?? true
     };
 
-    //   this.alimentosService.actualizar(parseInt(this.id), request).subscribe({
-    //     next: (r) => {
-    //       if (r.success) this.router.navigate(['/alimentos']);
-    //       this.guardando.set(false);
-    //       this.loadingBar.complete();
-    //     },
-    //     error: (err) => {
-    //       this.error.set(err.error?.message ?? 'Error al actualizar.');
-    //       this.guardando.set(false);
-    //       this.loadingBar.complete();
-    //     }
-    //   });
-    // }
+    this.alimentosService.actualizar(parseInt(this.id), request).subscribe({
+      next: (r) => {
+        if (r.success) this.router.navigate(['/alimentos']);
+        else this.error.set(r.message);
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      },
+      error: (err) => {
+        this.error.set(err.error?.message ?? 'Error al actualizar.');
+        this.guardando.set(false);
+        this.loadingBar.complete();
+      }
+    });
   }
 }
