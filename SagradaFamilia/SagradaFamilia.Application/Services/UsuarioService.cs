@@ -106,15 +106,24 @@ public class UsuarioService : IUsuarioService
         return _mapper.Map<UsuarioDto.DetailResponse>(usuarioCompleto!);
     }
 
-    public async Task ActualizarEstadoAsync(int id, bool activo)
+    public async Task ActualizarEstadoAsync(int id, bool activo, int currentUserId)
     {
         _logger.LogInformation("Intentando cambiar el estado del usuario ID: {Id} a Activo={Activo}", id, activo);
 
         var usuario = await _usuarioRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Usuario", id);
 
-        usuario.Activo = activo;
+        if (!activo && id == currentUserId)
+            throw new BusinessException("No puedes desactivar tu propia cuenta.");
 
+        if (!activo && usuario.Rol.Nombre == "Administrador")
+        {
+            var adminsActivos = await _usuarioRepository.ContarAdministradoresActivosAsync();
+            if (adminsActivos <= 1)
+                throw new BusinessException("No puedes desactivar al único administrador activo del sistema.");
+        }
+
+        usuario.Activo = activo;
         await _usuarioRepository.ActualizarAsync(usuario);
 
         _logger.LogInformation("Estado del usuario {Email} cambiado con éxito a: {Estado}",

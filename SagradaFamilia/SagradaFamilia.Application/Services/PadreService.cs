@@ -101,26 +101,43 @@ public class PadreService : IPadreService
         {
             var usuario = new Usuario
             {
-                Email = request.Email,
-                PasswordHash = BCrypt.HashPassword(request.Password),
-                RolId = (int)RolEnum.Padre,
-                Activo = true
+                Email    = request.Email,
+                PasswordHash = BCrypt.HashPassword(Guid.NewGuid().ToString()),
+                RolId    = (int)RolEnum.Padre,
+                Activo   = false
             };
             await _usuarioRepository.CrearAsync(usuario);
-            _logger.LogDebug("Cuenta de usuario creada para {Email} con ID: {UId}", request.Email, usuario.Id);
+            _logger.LogDebug("Cuenta de usuario creada (inactiva) para {Email} con ID: {UId}", request.Email, usuario.Id);
 
             var padre = new Padre
             {
                 UsuarioId = usuario.Id,
-                MedicoId = request.MedicoId,
-                Nombre = request.Nombre,
-                Apellido = request.Apellido,
-                Telefono = request.Telefono
+                MedicoId  = request.MedicoId,
+                Nombre    = request.Nombre,
+                Apellido  = request.Apellido,
+                Telefono  = request.Telefono
             };
             var creado = await _padreRepository.CrearAsync(padre);
 
+            var token = new PasswordResetToken
+            {
+                UsuarioId       = usuario.Id,
+                Token           = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64)),
+                FechaExpiracion = DateTime.UtcNow.AddHours(48)
+            };
+            await _resetTokenRepository.CrearAsync(token);
+
             await _unitOfWork.CommitAsync();
-            _logger.LogInformation("Padre '{Nombre}' registrado exitosamente con ID: {Id}", creado.Nombre, creado.Id);
+            _logger.LogInformation("Padre '{Nombre}' registrado (pendiente activación) con ID: {Id}", creado.Nombre, creado.Id);
+
+            var link = $"{_appSettings.FrontendUrl}/activar-cuenta?token={token.Token}";
+            var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync("CUENTA_PADRE", new Dictionary<string, string>
+            {
+                ["NOMBRE"]   = request.Nombre,
+                ["APELLIDO"] = request.Apellido,
+                ["LINK"]     = link
+            });
+            await _emailService.EnviarAsync(request.Email, asunto, cuerpo);
 
             var padreCompleto = await _padreRepository.ObtenerPorIdAsync(creado.Id);
             return _mapper.Map<PadreDto.DetailResponse>(padreCompleto!);
@@ -218,10 +235,13 @@ public class PadreService : IPadreService
         await _resetTokenRepository.CrearAsync(token);
 
         var link = $"{_appSettings.FrontendUrl}/nueva-clave?token={token.Token}";
-        var nombre = $"{padre.Nombre} {padre.Apellido}";
-        var cuerpo = _emailTemplateService.GenerarResetPassword(nombre, link);
+        var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync("CAMBIO_CLAVE", new Dictionary<string, string>
+        {
+            ["NOMBRE"] = $"{padre.Nombre} {padre.Apellido}",
+            ["LINK"]   = link
+        });
 
-        await _emailService.EnviarAsync(padre.Usuario.Email, "Restablecimiento de contraseña", cuerpo);
+        await _emailService.EnviarAsync(padre.Usuario.Email, asunto, cuerpo);
         _logger.LogInformation("Email de restablecimiento enviado a {Email} para padre ID: {Id}", padre.Usuario.Email, padreId);
     }
 

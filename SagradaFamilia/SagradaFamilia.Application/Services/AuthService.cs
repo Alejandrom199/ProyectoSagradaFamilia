@@ -2,9 +2,12 @@ namespace SagradaFamilia.Application.Services;
 
 using BCrypt.Net;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SagradaFamilia.Application.DTOs.Auth;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Settings;
 using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 
@@ -13,23 +16,32 @@ public class AuthService : IAuthService
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IPasswordResetTokenRepository _resetTokenRepository;
+    private readonly IEmailService _emailService;
+    private readonly IEmailTemplateService _emailTemplateService;
     private readonly ILogSistemaService _logSistema;
     private readonly ITokenService _tokenService;
+    private readonly AppSettings _appSettings;
     private readonly ILogger<AuthService> _logger;
 
     public AuthService(
         IUsuarioRepository usuarioRepository,
         IRefreshTokenRepository refreshTokenRepository,
         IPasswordResetTokenRepository resetTokenRepository,
+        IEmailService emailService,
+        IEmailTemplateService emailTemplateService,
         ILogSistemaService logSistema,
         ITokenService tokenService,
+        IOptions<AppSettings> appSettings,
         ILogger<AuthService> logger)
     {
         _usuarioRepository = usuarioRepository;
         _refreshTokenRepository = refreshTokenRepository;
         _resetTokenRepository = resetTokenRepository;
+        _emailService = emailService;
+        _emailTemplateService = emailTemplateService;
         _logSistema = logSistema;
         _tokenService = tokenService;
+        _appSettings = appSettings.Value;
         _logger = logger;
     }
 
@@ -39,7 +51,6 @@ public class AuthService : IAuthService
 
         if (usuario == null || !BCrypt.Verify(request.Password, usuario.PasswordHash))
         {
-            // Login fallido → Warning, capturado automáticamente por DatabaseLogger
             _logger.LogWarning("Login fallido para el email: {Email}", request.Email);
             throw new UnauthorizedException("Credenciales incorrectas.");
         }
@@ -60,8 +71,6 @@ public class AuthService : IAuthService
             FechaExpiracion = DateTime.UtcNow.AddDays(7)
         });
 
-        // Registrar login exitoso de Médico y Administrador (con UsuarioId)
-        // Los logins de Padre no se registran — no son relevantes para monitoreo
         if (usuario.Rol.Nombre is "Medico" or "Administrador")
         {
             await _logSistema.RegistrarEventoAsync(
@@ -76,8 +85,9 @@ public class AuthService : IAuthService
             AccessToken = accessToken,
             RefreshToken = refreshToken,
             Id = usuario.Id,
-            Nombre = usuario.Padre != null ? $"{usuario.Padre.Nombre} {usuario.Padre.Apellido}" :
-                     usuario.Medico != null ? $"{usuario.Medico.Nombre} {usuario.Medico.Apellido}" : "Administrador",
+            MedicoId = usuario.Medico?.Id,
+            Nombre = usuario.Padre?.Nombre ?? usuario.Medico?.Nombre ?? "Administrador",
+            Apellido = usuario.Padre?.Apellido ?? usuario.Medico?.Apellido ?? string.Empty,
             Rol = usuario.Rol.Nombre,
             Expiracion = DateTime.UtcNow.AddMinutes(60)
         };
@@ -110,7 +120,10 @@ public class AuthService : IAuthService
         {
             AccessToken = nuevoAccessToken,
             RefreshToken = nuevoRefreshToken,
-            Nombre = usuario.Padre?.Nombre ?? usuario.Medico?.Nombre ?? "Admin",
+            Id = usuario.Id,
+            MedicoId = usuario.Medico?.Id,
+            Nombre = usuario.Padre?.Nombre ?? usuario.Medico?.Nombre ?? "Administrador",
+            Apellido = usuario.Padre?.Apellido ?? usuario.Medico?.Apellido ?? string.Empty,
             Rol = usuario.Rol.Nombre,
             Expiracion = DateTime.UtcNow.AddMinutes(60)
         };
@@ -132,6 +145,63 @@ public class AuthService : IAuthService
             nivel: "Information",
             mensaje: $"Contraseña restablecida exitosamente — Usuario: {usuario.Email}",
             endpoint: "/api/auth/nueva-clave",
+            usuarioId: usuario.Id);
+    }
+
+    public async Task ActivarCuentaAsync(ActivarCuentaDto.Request request)
+    {
+        var resetToken = await _resetTokenRepository.ObtenerTokenActivoAsync(request.Token)
+            ?? throw new BusinessException("El enlace de activación no es válido o ya expiró.");
+
+        var usuario = await _usuarioRepository.ObtenerPorIdAsync(resetToken.UsuarioId)
+            ?? throw new NotFoundException("Usuario", resetToken.UsuarioId);
+
+        usuario.PasswordHash = BCrypt.HashPassword(request.NuevaClave);
+        usuario.Activo = true;
+        await _usuarioRepository.ActualizarAsync(usuario);
+        await _resetTokenRepository.MarcarUsadoAsync(resetToken);
+
+        await _logSistema.RegistrarEventoAsync(
+            nivel: "Information",
+            mensaje: $"Cuenta activada exitosamente — Usuario: {usuario.Email}",
+            endpoint: "/api/auth/activar-cuenta",
+            usuarioId: usuario.Id);
+    }
+
+    public async Task SolicitarResetAsync(SolicitarResetDto.Request request)
+    {
+        // Siempre respondemos con éxito para no revelar si el email existe
+        var usuario = await _usuarioRepository.ObtenerPorEmailAsync(request.Email);
+
+        if (usuario is null || usuario.RolId != (int)RolEnum.Medico || !usuario.Activo)
+        {
+            _logger.LogWarning("Solicitud de reset ignorada para: {Email}", request.Email);
+            return;
+        }
+
+        var medico = usuario.Medico
+            ?? throw new NotFoundException("Perfil médico del usuario", usuario.Id);
+
+        var token = new PasswordResetToken
+        {
+            UsuarioId       = usuario.Id,
+            Token           = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64)),
+            FechaExpiracion = DateTime.UtcNow.AddHours(24)
+        };
+        await _resetTokenRepository.CrearAsync(token);
+
+        var link = $"{_appSettings.FrontendUrl}/nueva-clave?token={token.Token}";
+        var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync("CAMBIO_CLAVE", new Dictionary<string, string>
+        {
+            ["NOMBRE"] = $"{medico.Nombre} {medico.Apellido}",
+            ["LINK"]   = link
+        });
+        await _emailService.EnviarAsync(usuario.Email, asunto, cuerpo);
+
+        await _logSistema.RegistrarEventoAsync(
+            nivel: "Information",
+            mensaje: $"Solicitud de restablecimiento de contraseña enviada a: {usuario.Email}",
+            endpoint: "/api/auth/solicitar-reset",
             usuarioId: usuario.Id);
     }
 }

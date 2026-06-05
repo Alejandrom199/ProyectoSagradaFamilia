@@ -84,6 +84,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             await _context.Usuarios
                 .AnyAsync(u => u.Email == email && !u.Eliminado);
 
+        public async Task<int> ContarAdministradoresActivosAsync() =>
+            await _context.Usuarios
+                .Where(u => u.Rol.Nombre == "Administrador" && u.Activo && !u.Eliminado)
+                .CountAsync();
+
         public async Task<Usuario> CrearAsync(Usuario usuario)
         {
             _context.Usuarios.Add(usuario);

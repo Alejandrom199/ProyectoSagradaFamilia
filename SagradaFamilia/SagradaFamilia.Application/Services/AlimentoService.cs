@@ -74,6 +74,23 @@ public class AlimentoService : IAlimentoService
     {
         _logger.LogInformation("Iniciando creación de nuevo alimento: {Nombre}", request.Nombre);
 
+        var existente = await _alimentoRepository.ObtenerPorNombreYCategoriaAsync(
+            request.Nombre.Trim(), request.CategoriaId);
+
+        if (existente is not null)
+        {
+            _logger.LogInformation("Alimento '{Nombre}' ya existe (ID: {Id}), actualizando.", existente.Nombre, existente.Id);
+
+            existente.EdadMinimaMeses = request.EdadMinimaMeses;
+            existente.Descripcion = request.Descripcion;
+            existente.Recomendacion = request.Recomendacion;
+            existente.Activo = true;
+
+            var actualizado = await _alimentoRepository.ActualizarAsync(existente);
+            var alimentoActualizado = await _alimentoRepository.ObtenerPorIdAsync(actualizado.Id);
+            return _mapper.Map<AlimentoDto.Response>(alimentoActualizado!);
+        }
+
         var alimento = _mapper.Map<Alimento>(request);
         alimento.Activo = true;
 

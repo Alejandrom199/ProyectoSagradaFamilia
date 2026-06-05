@@ -119,6 +119,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<ILogSistemaRepository, LogSistemaRepository>();
             services.AddScoped<IParametroRepository, ParametroRepository>();
             services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+            services.AddScoped<IPlantillaCorreoRepository, PlantillaCorreoRepository>();
 
             return services;
         }
@@ -141,6 +142,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IAuditoriaService, AuditoriaService>();
             services.AddScoped<ILogSistemaService, LogSistemaService>();
             services.AddScoped<IParametroService, ParametroService>();
+            services.AddScoped<IPlantillaCorreoService, PlantillaCorreoService>();
 
             return services;
         }

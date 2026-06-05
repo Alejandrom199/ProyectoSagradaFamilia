@@ -74,6 +74,14 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .OrderBy(a => a.Nombre)
                 .ToListAsync();
 
+        public async Task<Alimento?> ObtenerPorNombreYCategoriaAsync(string nombre, int categoriaId) =>
+            await _context.Alimentos
+                .Include(a => a.Categoria)
+                .FirstOrDefaultAsync(a =>
+                    a.Nombre.ToLower() == nombre.ToLower() &&
+                    a.CategoriaId == categoriaId &&
+                    !a.Eliminado);
+
         public async Task<Alimento> CrearAsync(Alimento alimento)
         {
             _context.Alimentos.Add(alimento);

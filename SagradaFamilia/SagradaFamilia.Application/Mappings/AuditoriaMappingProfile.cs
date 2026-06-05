@@ -12,7 +12,12 @@ namespace SagradaFamilia.Application.Mappings
 
             CreateMap<Auditoria, AuditoriaDto.Response>()
                 .ForMember(dest => dest.UsuarioEmail,
-                    opt => opt.MapFrom(src => src.Usuario != null ? src.Usuario.Email : string.Empty));
+                    opt => opt.MapFrom(src => src.Usuario != null ? src.Usuario.Email : string.Empty))
+                .ForMember(dest => dest.UsuarioNombreCompleto,
+                    opt => opt.MapFrom(src =>
+                        src.Usuario != null && src.Usuario.Medico != null
+                            ? $"{src.Usuario.Medico.Nombre} {src.Usuario.Medico.Apellido}"
+                            : (string?)null));
         }
     }
 }

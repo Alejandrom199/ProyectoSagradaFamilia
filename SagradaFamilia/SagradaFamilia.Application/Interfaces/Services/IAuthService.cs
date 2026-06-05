@@ -7,4 +7,6 @@ public interface IAuthService
     Task<LoginDto.Response> LoginAsync(LoginDto.Request request);
     Task<LoginDto.Response> RefreshTokenAsync(RefreshTokenDto.Request request);
     Task NuevaClaveAsync(NuevaClaveDto.Request request);
+    Task ActivarCuentaAsync(ActivarCuentaDto.Request request);
+    Task SolicitarResetAsync(SolicitarResetDto.Request request);
 }

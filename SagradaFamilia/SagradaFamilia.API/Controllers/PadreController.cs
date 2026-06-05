@@ -119,8 +119,10 @@ namespace SagradaFamilia.API.Controllers
 
         [HttpPost("importar")]
         [Authorize(Roles = "Administrador, Medico")]
-        public async Task<ActionResult<ApiResponse<PadreDto.ImportResultado>>> Importar([FromForm] IFormFile archivo)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<ApiResponse<PadreDto.ImportResultado>>> Importar([FromForm] ImportarArchivoRequest request)
         {
+            var archivo = request.Archivo;
             if (archivo is null || archivo.Length == 0)
                 return BadRequest(ApiResponse<PadreDto.ImportResultado>.Fail("No se recibió ningún archivo."));
 

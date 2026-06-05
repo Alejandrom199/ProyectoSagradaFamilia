@@ -77,8 +77,10 @@ public class MedicoController : BaseController
 
     [HttpPost("importar")]
     [Authorize(Roles = "Administrador")]
-    public async Task<ActionResult<ApiResponse<MedicoDto.ImportResultado>>> Importar([FromForm] IFormFile archivo)
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<ApiResponse<MedicoDto.ImportResultado>>> Importar([FromForm] ImportarArchivoRequest request)
     {
+        var archivo = request.Archivo;
         if (archivo is null || archivo.Length == 0)
             return BadRequest(ApiResponse<MedicoDto.ImportResultado>.Fail("No se recibió ningún archivo."));
 
