@@ -18,6 +18,13 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
             _httpContextAccessor = httpContextAccessor;
         }
 
+        // Constructor para clases derivadas (PostgresAppDbContext, etc.)
+        protected AppDbContext(DbContextOptions options, IHttpContextAccessor? httpContextAccessor = null)
+            : base(options)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         // ── Seguridad y menú ─────────────────────────────────────
         public DbSet<Usuario> Usuarios => Set<Usuario>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();

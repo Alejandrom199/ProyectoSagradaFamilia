@@ -23,7 +23,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .HasDefaultValue(false);
 
             builder.Property(r => r.FechaCreacion)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
         }
     }
 }

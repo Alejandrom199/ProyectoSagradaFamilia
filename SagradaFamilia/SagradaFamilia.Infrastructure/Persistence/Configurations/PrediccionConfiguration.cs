@@ -13,7 +13,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.FechaCalculo)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
             builder.Property(p => p.FechaObjetivo)
                 .IsRequired();

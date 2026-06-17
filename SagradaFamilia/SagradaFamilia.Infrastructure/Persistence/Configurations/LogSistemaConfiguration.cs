@@ -30,7 +30,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .HasMaxLength(500);
 
             builder.Property(l => l.FechaHora)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
             // Íindices para búsquedas rápidas en el dashboard de administrador
             builder.HasIndex(l => l.FechaHora);

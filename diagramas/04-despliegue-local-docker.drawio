@@ -1,0 +1,184 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Despliegue Local - Docker Compose" id="deploy-local">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TÍTULO -->
+        <mxCell id="title" value="Diagrama de Despliegue Local — SagradaFamilia (Docker Compose)"
+          style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="100" y="20" width="1200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== BROWSER (externo) ===== -->
+        <mxCell id="browser" value="&lt;b&gt;Navegador&lt;/b&gt;&#xa;(Cliente)"
+          style="shape=mxgraph.cisco.computers_and_peripherals.pc;sketch=0;html=1;pointerEvents=1;dashed=0;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="25" y="340" width="90" height="75" as="geometry" />
+        </mxCell>
+
+        <!-- ===== HOST MACHINE ===== -->
+        <mxCell id="host" value="&lt;&lt;host&gt;&gt;&#xa;Máquina Host"
+          style="swimlane;startSize=40;fillColor=#f8fafc;strokeColor=#334155;fontStyle=1;fontSize=13;whiteSpace=wrap;html=1;strokeWidth=2;"
+          vertex="1" parent="1">
+          <mxGeometry x="150" y="80" width="1170" height="870" as="geometry" />
+        </mxCell>
+
+        <!-- ===== DOCKER NETWORK: sagrada_net ===== -->
+        <mxCell id="net" value="&lt;&lt;Docker Network: bridge&gt;&gt;&#xa;sagrada_net"
+          style="swimlane;startSize=40;fillColor=#f1f5f9;strokeColor=#475569;fontStyle=1;fontSize=12;whiteSpace=wrap;html=1;dashed=1;strokeWidth=2;"
+          vertex="1" parent="host">
+          <mxGeometry x="15" y="50" width="1140" height="680" as="geometry" />
+        </mxCell>
+
+        <!-- ===== CONTENEDOR: web ===== -->
+        <mxCell id="web" value="&lt;&lt;container&gt;&gt; web"
+          style="swimlane;startSize=35;fillColor=#e3f2fd;strokeColor=#1e88e5;fontStyle=1;fontSize=11;whiteSpace=wrap;html=1;"
+          vertex="1" parent="net">
+          <mxGeometry x="15" y="50" width="1110" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="web_nginx" value="&lt;b&gt;nginx&lt;/b&gt;&#xa;Servidor HTTP&#xa;Sirve SPA en /&#xa;Proxy /api/ → api:5000&#xa;&lt;b&gt;Puerto expuesto: :80&lt;/b&gt;"
+          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#1e88e5;fontSize=9;"
+          vertex="1" parent="web">
+          <mxGeometry x="15" y="42" width="270" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="web_angular" value="&lt;b&gt;Angular 22 SPA&lt;/b&gt; (build production)&#xa;Standalone Components · Lazy Loading&#xa;Guards (5) · Auth Interceptor (JWT)&#xa;17 Services · 12 Feature Modules"
+          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#1e88e5;fontSize=9;"
+          vertex="1" parent="web">
+          <mxGeometry x="305" y="42" width="790" height="78" as="geometry" />
+        </mxCell>
+
+        <!-- ===== CONTENEDOR: api ===== -->
+        <mxCell id="api" value="&lt;&lt;container&gt;&gt; api"
+          style="swimlane;startSize=35;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;whiteSpace=wrap;html=1;"
+          vertex="1" parent="net">
+          <mxGeometry x="15" y="205" width="1110" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="api_box" value="&lt;b&gt;SagradaFamilia.API (.NET 8)&lt;/b&gt;&#xa;Puerto interno: :5000 (no expuesto al host)&#xa;&#xa;Al iniciar: aplica migraciones EF Core + ejecuta Seeders&#xa;Depende de: db (healthy) y predict (healthy)"
+          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#82b366;fontSize=9;"
+          vertex="1" parent="api">
+          <mxGeometry x="15" y="42" width="430" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="api_env" value="&lt;b&gt;Variables de entorno (.env)&lt;/b&gt;&#xa;ConnectionStrings → db:1433&#xa;ProphetApi__BaseUrl → predict:8000&#xa;JwtSettings (SecretKey · Issuer · Audience)&#xa;SmtpSettings (Host · Port · Credentials)"
+          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#82b366;fontSize=9;"
+          vertex="1" parent="api">
+          <mxGeometry x="465" y="42" width="630" height="88" as="geometry" />
+        </mxCell>
+
+        <!-- ===== CONTENEDOR: db ===== -->
+        <mxCell id="db" value="&lt;&lt;container&gt;&gt; db"
+          style="swimlane;startSize=35;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;whiteSpace=wrap;html=1;"
+          vertex="1" parent="net">
+          <mxGeometry x="15" y="370" width="530" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="db_content" value="&lt;b&gt;SQL Server 2022&lt;/b&gt; (Developer Edition)&#xa;imagen: mcr.microsoft.com/mssql/server:2022-latest&#xa;&#xa;Puerto expuesto al host: &lt;b&gt;1433:1433&lt;/b&gt; (SSMS / Azure Data Studio)&#xa;Puerto interno red Docker: :1433&#xa;&#xa;Healthcheck: sqlcmd -Q &quot;SELECT 1&quot;&#xa;interval: 15s · retries: 10 · start_period: 30s"
+          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#d6b656;fontSize=9;align=left;spacingLeft=8;"
+          vertex="1" parent="db">
+          <mxGeometry x="15" y="42" width="500" height="113" as="geometry" />
+        </mxCell>
+
+        <!-- ===== CONTENEDOR: predict ===== -->
+        <mxCell id="predict" value="&lt;&lt;container&gt;&gt; predict"
+          style="swimlane;startSize=35;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;whiteSpace=wrap;html=1;"
+          vertex="1" parent="net">
+          <mxGeometry x="565" y="370" width="560" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="pred_content" value="&lt;b&gt;sagrada-predict-api (Python FastAPI + Prophet)&lt;/b&gt;&#xa;Puerto interno red Docker: &lt;b&gt;:8000&lt;/b&gt; (no expuesto al host)&#xa;&#xa;Healthcheck: GET /health (urllib.request)&#xa;interval: 10s · retries: 5 · start_period: 20s&#xa;&#xa;ENV: NET_BACKEND_URL=http://api:5000&#xa;PROPHET_MIN_MEDIDAS=3 · PROPHET_INTERVAL_WIDTH=0.80"
+          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#9673a6;fontSize=9;align=left;spacingLeft=8;"
+          vertex="1" parent="predict">
+          <mxGeometry x="15" y="42" width="530" height="113" as="geometry" />
+        </mxCell>
+
+        <!-- ===== NOTA: STARTUP ORDER ===== -->
+        <mxCell id="startup" value="Orden de inicio (depends_on + healthcheck):&#xa;1. db (healthcheck OK) → 2. predict (healthcheck OK) → 3. api (migraciones + seed) → 4. web"
+          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#388e3c;fontSize=10;fontStyle=1;"
+          vertex="1" parent="net">
+          <mxGeometry x="15" y="555" width="1110" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== VOLUMEN ===== -->
+        <mxCell id="volume" value="sqlserver_data&#xa;(Docker Volume)&#xa;→ /var/opt/mssql"
+          style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f5f5f5;strokeColor=#666;fontColor=#333;fontSize=10;fontStyle=1;"
+          vertex="1" parent="host">
+          <mxGeometry x="120" y="760" width="145" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- ===== SMTP EXTERNO ===== -->
+        <mxCell id="smtp" value="&lt;b&gt;smtp.gmail.com&lt;/b&gt;&#xa;Puerto: :587 (TLS)&#xa;Servidor de correo"
+          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999;fontSize=10;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="1385" y="370" width="155" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FLECHAS ===== -->
+
+        <!-- Browser → web (:80) -->
+        <mxCell id="arr_browser_web" value="HTTP :80"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#1e88e5;fontSize=10;strokeWidth=2;"
+          edge="1" source="browser" target="web" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- web → api (nginx proxy) -->
+        <mxCell id="arr_web_api" value="nginx proxy&#xa;/api/ → api:5000"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#1e88e5;fontSize=9;strokeWidth=2;"
+          edge="1" source="web" target="api" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- api → db (EF Core) -->
+        <mxCell id="arr_api_db" value="EF Core 8&#xa;:1433"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#d6b656;fontSize=9;strokeWidth=2;"
+          edge="1" source="api" target="db" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- api → predict (HTTP) -->
+        <mxCell id="arr_api_predict" value="HTTP POST&#xa;:8000"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#9673a6;fontSize=9;strokeWidth=2;"
+          edge="1" source="api" target="predict" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- api → SMTP (externo) -->
+        <mxCell id="arr_api_smtp" value="SMTP TLS :587"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#999;fontSize=9;dashed=1;"
+          edge="1" source="api" target="smtp" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- volume → db -->
+        <mxCell id="arr_vol_db" value="persiste datos"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#666;fontSize=9;dashed=1;"
+          edge="1" source="volume" target="db" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LEYENDA ===== -->
+        <mxCell id="legend_box" value="Leyenda"
+          style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#aaa;fontStyle=1;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="150" y="990" width="920" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leg1" value="→  Comunicación entre servicios (red interna sagrada_net)"
+          style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=9;"
+          vertex="1" parent="legend_box">
+          <mxGeometry x="10" y="25" width="310" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg2" value="- -→  Comunicación externa (fuera del stack Docker)"
+          style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=9;"
+          vertex="1" parent="legend_box">
+          <mxGeometry x="330" y="25" width="290" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg3" value="Solo los puertos :80 y :1433 son accesibles desde el host"
+          style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=9;fontStyle=2;"
+          vertex="1" parent="legend_box">
+          <mxGeometry x="630" y="25" width="280" height="20" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

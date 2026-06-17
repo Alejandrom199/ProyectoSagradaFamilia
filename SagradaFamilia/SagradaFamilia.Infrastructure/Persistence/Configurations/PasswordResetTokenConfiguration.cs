@@ -26,7 +26,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .IsRequired(false);
 
             builder.Property(t => t.FechaCreacion)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
             builder.HasIndex(t => t.Token)
                 .IsUnique();

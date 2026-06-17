@@ -28,14 +28,13 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .HasMaxLength(50);
 
             builder.Property(a => a.Fecha)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
-            // Valores en formato JSON (nvarchar(max))
             builder.Property(a => a.ValoresAntiguos)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(a => a.ValoresNuevos)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             // Relación con el Usuario que realizó el cambio
             builder.HasOne(a => a.Usuario)

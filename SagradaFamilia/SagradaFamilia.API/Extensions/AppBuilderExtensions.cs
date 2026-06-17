@@ -34,6 +34,7 @@ namespace SagradaFamilia.API.Extensions
 
             try
             {
+                logger.LogInformation("Proveedor de BD: {Provider}", context.Database.ProviderName);
                 logger.LogInformation("Aplicando migraciones pendientes...");
                 await context.Database.MigrateAsync();
 
@@ -42,7 +43,11 @@ namespace SagradaFamilia.API.Extensions
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Ocurrió un error al aplicar las migraciones o los seeds.");
+                logger.LogError(ex, "Error al aplicar migraciones o seeds.");
+
+                // En desarrollo lanzamos para que el error sea visible inmediatamente
+                if (app.Environment.IsDevelopment())
+                    throw;
             }
         }
     }

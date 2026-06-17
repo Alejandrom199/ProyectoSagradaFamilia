@@ -28,14 +28,14 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.Property(p => p.Cuerpo)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(p => p.Activo)
                 .HasDefaultValue(true);
 
             builder.HasIndex(p => p.Codigo)
                 .IsUnique()
-                .HasFilter("[Eliminado] = 0");
+                .HasFilter("\"Eliminado\" = false");
         }
     }
 }

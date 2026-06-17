@@ -38,7 +38,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             // Índice para evitar que un médico tenga dos citas al mismo tiempo
             builder.HasIndex(c => new { c.MedicoId, c.FechaHora })
                 .IsUnique()
-                .HasFilter("[Estado] != 5 AND [Eliminado] = 0");
+                .HasFilter("\"Estado\" != 5 AND \"Eliminado\" = false");
         }
     }
 }

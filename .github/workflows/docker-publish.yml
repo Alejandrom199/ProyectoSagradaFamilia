@@ -2,7 +2,7 @@ name: Publish Docker Images
 
 # Se dispara al hacer merge de dev → main (Pull Request mergeado).
 # Construye y publica las 3 imágenes custom en Docker Hub en paralelo.
-# La imagen db (SQL Server) es oficial de Microsoft; no se construye ni publica.
+# La imagen db (postgres:16) es oficial de Docker Hub; no se construye ni publica.
 on:
   push:
     branches:
