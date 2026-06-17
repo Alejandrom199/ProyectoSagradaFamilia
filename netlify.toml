@@ -1,0 +1,10 @@
+[build]
+  base    = "sagrada-familia-web"
+  command = "npm run build -- --configuration production"
+  publish = "dist/sagrada-familia-web/browser"
+
+# Redirige todas las rutas al index.html para que Angular Router funcione
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

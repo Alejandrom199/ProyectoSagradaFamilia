@@ -100,9 +100,8 @@ ENV \
     ASPNETCORE_FORWARDEDHEADERS_ENABLED=true \
     \
     # ── Base de datos — INYECTAR en despliegue ────────────────────────────────
-    # Formato SQL Server en Docker: Server=db,1433;Database=...;User Id=sa;Password=...
-    # Nunca dejar vacío en producción; el contenedor fallará al intentar migrar.
-    ConnectionStrings__DefaultConnection="" \
+    # Inyectar desde Render/docker-compose. Nunca hardcodear aquí.
+    ConnectionStrings__PostgresConnection="" \
     \
     # ── JWT — INYECTAR en despliegue ──────────────────────────────────────────
     # SecretKey debe tener mínimo 256 bits (32 caracteres) para HS256.
@@ -118,8 +117,8 @@ ENV \
     # Docker resuelve este nombre vía su DNS interno.
     ProphetApi__BaseUrl="http://predict:8000" \
     \
-    # ── CORS — URL del frontend ───────────────────────────────────────────────
-    AppSettings__FrontendUrl="http://web" \
+    # ── CORS — URL del frontend (Netlify en prod) — INYECTAR en despliegue ────
+    AppSettings__FrontendUrl="" \
     \
     # ── SMTP — INYECTAR en despliegue ─────────────────────────────────────────
     SmtpSettings__Host="smtp.gmail.com" \
