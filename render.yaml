@@ -2,6 +2,7 @@ services:
 
   # ══════════════════════════════════════════════════════════════════════════════
   # api — Backend .NET 8
+  # Predictor: Railway (sagrada-predict-api/)
   # ══════════════════════════════════════════════════════════════════════════════
   - type: web
     name: sagrada-familia-api
@@ -11,7 +12,7 @@ services:
     envVars:
       # ── Supabase ──────────────────────────────────────────────────────────────
       - key: ConnectionStrings__PostgresConnection
-        sync: false   # ingresar en Render dashboard
+        sync: false
 
       # ── JWT ───────────────────────────────────────────────────────────────────
       - key: JwtSettings__SecretKey
@@ -25,13 +26,13 @@ services:
       - key: JwtSettings__RefreshTokenExpirationDays
         value: "7"
 
-      # ── Predictor (Hugging Face Spaces) ──────────────────────────────────────
+      # ── Predictor (Railway) — ingresar URL después de desplegar el predictor ──
       - key: ProphetApi__BaseUrl
-        value: https://alejandrom199-sagrada-familia-predict.hf.space
+        sync: false
 
       # ── CORS — URL del frontend en Netlify ────────────────────────────────────
       - key: AppSettings__FrontendUrl
-        sync: false   # ingresar la URL de Netlify una vez desplegado el front
+        sync: false
 
       # ── SMTP ──────────────────────────────────────────────────────────────────
       - key: SmtpSettings__Host
@@ -48,5 +49,3 @@ services:
         sync: false
       - key: SmtpSettings__Password
         sync: false
-
-
