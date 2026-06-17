@@ -8,9 +8,6 @@ services:
     runtime: docker
     dockerfilePath: ./SagradaFamilia/Dockerfile
     dockerContext: ./SagradaFamilia
-    buildArgs:
-      - key: BUILD_CONFIGURATION
-        value: Release
     envVars:
       # ── Supabase ──────────────────────────────────────────────────────────────
       - key: ConnectionStrings__PostgresConnection
@@ -63,9 +60,6 @@ services:
     runtime: docker
     dockerfilePath: ./sagrada-predict-api/Dockerfile
     dockerContext: ./sagrada-predict-api
-    buildArgs:
-      - key: APP_ENV
-        value: production
     envVars:
       - key: NET_BACKEND_URL
         value: https://sagrada-familia-api.onrender.com
