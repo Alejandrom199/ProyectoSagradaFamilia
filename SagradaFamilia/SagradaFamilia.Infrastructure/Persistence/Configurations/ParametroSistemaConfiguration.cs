@@ -34,7 +34,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(p => new { p.Grupo, p.Codigo })
                 .IsUnique()
-                .HasFilter("[Eliminado] = 0");
+                .HasFilter("\"Eliminado\" = false");
         }
     }
 }

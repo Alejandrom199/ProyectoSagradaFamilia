@@ -26,11 +26,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(m => m.FechaRegistro)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
             builder.HasIndex(m => new { m.NinoId, m.FechaMedicion })
                 .IsUnique()
-                .HasFilter("[Eliminado] = 0");
+                .HasFilter("\"Eliminado\" = false");
 
             // Relaciones
             builder.HasOne(m => m.Nino)

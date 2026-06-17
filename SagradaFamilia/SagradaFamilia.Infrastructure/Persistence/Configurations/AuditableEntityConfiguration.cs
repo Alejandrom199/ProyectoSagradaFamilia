@@ -10,7 +10,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
             builder.Property(e => e.FechaCreacion)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
             builder.Property(e => e.FechaActualizacion)
                 .IsRequired(false);

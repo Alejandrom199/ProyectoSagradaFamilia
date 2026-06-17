@@ -30,12 +30,15 @@ namespace SagradaFamilia.API.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection"),
-                    sql => sql.MigrationsAssembly("SagradaFamilia.Infrastructure")
-                )
-            );
+            services.AddDbContext<PostgresAppDbContext>(options =>
+                options.UseNpgsql(
+                    configuration.GetConnectionString("PostgresConnection"),
+                    npgsql => npgsql
+                        .MigrationsAssembly("SagradaFamilia.Infrastructure")
+                        .MigrationsHistoryTable("__EFMigrationsHistory", "public")));
+
+            services.AddScoped<AppDbContext>(sp => sp.GetRequiredService<PostgresAppDbContext>());
+
             return services;
         }
 

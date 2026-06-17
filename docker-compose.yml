@@ -18,37 +18,28 @@ name: sagrada-familia
 services:
 
   # ════════════════════════════════════════════════════════════════════════════
-  # db — SQL Server 2022
+  # db — PostgreSQL 16
   # Primer servicio en estar listo. Los demás bloquean hasta su healthcheck.
   # ════════════════════════════════════════════════════════════════════════════
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: postgres:16
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
-      # Developer: licencia gratuita y completa, válida para desarrollo y tesis.
-      # En producción comercial: Express (gratis, 10 GB) o Standard/Enterprise (pago).
-      MSSQL_PID: Developer
+      POSTGRES_DB: SagradaFamiliaDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      # Expuesto solo para conectar SSMS o Azure Data Studio desde el host.
+      # Expuesto solo para conectar pgAdmin o DBeaver desde el host.
       # En un servidor sin acceso local, comentar o eliminar esta línea.
-      - "1433:1433"
+      - "5432:5432"
     volumes:
       # Volumen nombrado: los datos persisten aunque el contenedor sea destruido.
-      - sqlserver_data:/var/opt/mssql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      # sqlcmd está incluido en la imagen oficial de SQL Server.
-      # '$$' en docker-compose escapa el signo $ para el shell del contenedor,
-      # que lo expande leyendo $MSSQL_SA_PASSWORD de su propio entorno.
-      # -b: salida con código de error si el query falla.
-      # -o /dev/null: suprime la salida del query en los logs del contenedor.
-      # -No: deshabilita TLS (seguro dentro de la red privada de Docker).
-      test: ["CMD-SHELL",
-             "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q \"SELECT 1\" -b -o /dev/null -No"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 30s   # SQL Server tarda en inicializar; margen generoso
+      test: ["CMD-SHELL", "pg_isready -U postgres -d SagradaFamiliaDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - sagrada_net
     restart: unless-stopped
@@ -99,12 +90,9 @@ services:
     environment:
       # ── Base de datos ──────────────────────────────────────────────────────
       # 'db' = nombre del servicio, resuelto por el DNS interno de Docker.
-      # SQL Server usa coma para separar host y puerto: Server=host,1433
-      # Autenticación por usuario/contraseña (no Windows Auth en Linux).
-      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=SagradaFamiliaDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__PostgresConnection: "Host=db;Port=5432;Database=SagradaFamiliaDb;Username=postgres;Password=${POSTGRES_PASSWORD};"
 
       # ── JWT ────────────────────────────────────────────────────────────────
-      # ${JWT_SECRET_KEY} se interpola desde .env; nunca aparece hardcodeado aquí.
       JwtSettings__SecretKey: ${JWT_SECRET_KEY}
       JwtSettings__Issuer: SagradaFamiliaAPI
       JwtSettings__Audience: SagradaFamiliaClient
@@ -112,9 +100,7 @@ services:
       JwtSettings__RefreshTokenExpirationDays: "7"
 
       # ── Servicios internos ─────────────────────────────────────────────────
-      # 'predict' y 'web' son nombres de servicio resueltos por Docker DNS.
       ProphetApi__BaseUrl: http://predict:8000
-      # El frontend se sirve desde el mismo origen que nginx (puerto 80 del host).
       AppSettings__FrontendUrl: http://localhost
 
       # ── SMTP ───────────────────────────────────────────────────────────────
@@ -122,14 +108,13 @@ services:
       SmtpSettings__Port: "587"
       SmtpSettings__EnableSsl: "true"
       SmtpSettings__FromName: Sagrada Familia
-      # Credenciales inyectadas desde .env; no hardcodeadas en este archivo.
       SmtpSettings__FromEmail: ${SMTP_FROM_EMAIL}
       SmtpSettings__Username: ${SMTP_USERNAME}
       SmtpSettings__Password: ${SMTP_PASSWORD}
 
     depends_on:
       db:
-        condition: service_healthy   # SQL Server debe aceptar conexiones antes de migrar
+        condition: service_healthy   # PostgreSQL debe aceptar conexiones antes de migrar
       predict:
         condition: service_healthy   # Prophet debe estar listo antes de que la API arranque
 
@@ -146,7 +131,6 @@ services:
   # web — Angular + nginx
   # Único servicio con puerto público (80).
   # nginx sirve el SPA y hace proxy de /api/ → api:5000 en la red interna.
-  # Las peticiones HTTP del navegador nunca llegan directamente a api:5000.
   # ════════════════════════════════════════════════════════════════════════════
   web:
     build:
@@ -168,7 +152,7 @@ services:
 # Volúmenes nombrados
 # ══════════════════════════════════════════════════════════════════════════════
 volumes:
-  sqlserver_data:
+  postgres_data:
     # Docker gestiona el ciclo de vida de este volumen.
     # Persiste entre 'docker compose down' y 'docker compose up'.
     # 'docker compose down -v' lo elimina junto con todos los datos de la BD.
@@ -181,4 +165,4 @@ networks:
   sagrada_net:
     driver: bridge
     # Red bridge aislada: los servicios se descubren entre sí por nombre.
-    # Solo web (80) y opcionalmente db (1433) son accesibles desde el host.
+    # Solo web (80) y opcionalmente db (5432) son accesibles desde el host.
