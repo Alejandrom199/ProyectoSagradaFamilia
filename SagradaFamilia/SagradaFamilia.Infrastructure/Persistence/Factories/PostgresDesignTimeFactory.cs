@@ -10,9 +10,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Factories
     {
         public PostgresAppDbContext CreateDbContext(string[] args)
         {
+            // Lee la conexión de la variable de entorno para no exponer credenciales en el repo.
+            // Setear antes de correr "dotnet ef migrations ...":
+            //   $env:POSTGRES_CONNECTION="Host=localhost;Port=5432;Database=...;Username=postgres;Password=..."
+            var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION")
+                ?? "Host=localhost;Port=5432;Database=SagradaFamiliaDb;Username=postgres;Password=postgres";
+
             var options = new DbContextOptionsBuilder<PostgresAppDbContext>()
                 .UseNpgsql(
-                    "Host=localhost;Port=5432;Database=SagradaFamiliaDb;Username=postgres;Password=sagrada-password",
+                    connectionString,
                     npgsql => npgsql
                         .MigrationsAssembly("SagradaFamilia.Infrastructure")
                         .MigrationsHistoryTable("__EFMigrationsHistory", "public"))

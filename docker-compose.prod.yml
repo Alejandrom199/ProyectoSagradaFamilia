@@ -3,41 +3,15 @@ name: sagrada-familia
 # ══════════════════════════════════════════════════════════════════════════════
 # docker-compose.prod.yml — Despliegue desde Docker Hub
 #
-# A diferencia de docker-compose.yml (que compila desde código fuente),
-# este archivo descarga imágenes ya publicadas en Docker Hub.
+# Base de datos: Supabase (PostgreSQL hosteado — no se levanta contenedor local).
 #
 # Uso:
 #   docker compose -f docker-compose.prod.yml up -d
 #
 # Requiere el archivo .env con las mismas variables que .env.example.
-# Reemplazar DOCKERHUB_USER con tu usuario real de Docker Hub,
-# o exportar la variable antes de levantar:
-#   export DOCKERHUB_USER=tu-usuario
-#   docker compose -f docker-compose.prod.yml up -d
 # ══════════════════════════════════════════════════════════════════════════════
 
 services:
-
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: SagradaFamiliaDb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d SagradaFamiliaDb"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    networks:
-      - sagrada_net
-    restart: unless-stopped
-
 
   predict:
     image: ${DOCKERHUB_USER}/sagrada-familia-predict:latest
@@ -60,7 +34,8 @@ services:
   api:
     image: ${DOCKERHUB_USER}/sagrada-familia-api:latest
     environment:
-      ConnectionStrings__PostgresConnection: "Host=db;Port=5432;Database=SagradaFamiliaDb;Username=postgres;Password=${POSTGRES_PASSWORD};"
+      # ── Supabase ───────────────────────────────────────────────────────────
+      ConnectionStrings__PostgresConnection: "Host=db.xwajbkydcsvmygvvszza.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=${POSTGRES_PASSWORD};SSL Mode=Require;Trust Server Certificate=true;"
       JwtSettings__SecretKey: ${JWT_SECRET_KEY}
       JwtSettings__Issuer: SagradaFamiliaAPI
       JwtSettings__Audience: SagradaFamiliaClient
@@ -76,8 +51,6 @@ services:
       SmtpSettings__Username: ${SMTP_USERNAME}
       SmtpSettings__Password: ${SMTP_PASSWORD}
     depends_on:
-      db:
-        condition: service_healthy
       predict:
         condition: service_healthy
     networks:
@@ -94,10 +67,6 @@ services:
     networks:
       - sagrada_net
     restart: unless-stopped
-
-
-volumes:
-  postgres_data:
 
 
 networks:

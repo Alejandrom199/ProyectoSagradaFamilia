@@ -1,0 +1,75 @@
+services:
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # api — Backend .NET 8
+  # ══════════════════════════════════════════════════════════════════════════════
+  - type: web
+    name: sagrada-familia-api
+    runtime: docker
+    dockerfilePath: ./SagradaFamilia/Dockerfile
+    dockerContext: ./SagradaFamilia
+    buildArgs:
+      - key: BUILD_CONFIGURATION
+        value: Release
+    envVars:
+      # ── Supabase ──────────────────────────────────────────────────────────────
+      - key: ConnectionStrings__PostgresConnection
+        sync: false   # ingresar en Render dashboard
+
+      # ── JWT ───────────────────────────────────────────────────────────────────
+      - key: JwtSettings__SecretKey
+        sync: false
+      - key: JwtSettings__Issuer
+        value: SagradaFamiliaAPI
+      - key: JwtSettings__Audience
+        value: SagradaFamiliaClient
+      - key: JwtSettings__ExpirationMinutes
+        value: "60"
+      - key: JwtSettings__RefreshTokenExpirationDays
+        value: "7"
+
+      # ── Predictor ─────────────────────────────────────────────────────────────
+      - key: ProphetApi__BaseUrl
+        value: https://sagrada-familia-predict.onrender.com
+
+      # ── CORS — URL del frontend en Netlify ────────────────────────────────────
+      - key: AppSettings__FrontendUrl
+        sync: false   # ingresar la URL de Netlify una vez desplegado el front
+
+      # ── SMTP ──────────────────────────────────────────────────────────────────
+      - key: SmtpSettings__Host
+        value: smtp.gmail.com
+      - key: SmtpSettings__Port
+        value: "587"
+      - key: SmtpSettings__EnableSsl
+        value: "true"
+      - key: SmtpSettings__FromName
+        value: Sagrada Familia
+      - key: SmtpSettings__FromEmail
+        sync: false
+      - key: SmtpSettings__Username
+        sync: false
+      - key: SmtpSettings__Password
+        sync: false
+
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # predict — Microservicio Python + Prophet
+  # Build pesado (~10 min): CmdStan se compila en el stage builder.
+  # El caché de Render lo amortiza en builds posteriores.
+  # ══════════════════════════════════════════════════════════════════════════════
+  - type: web
+    name: sagrada-familia-predict
+    runtime: docker
+    dockerfilePath: ./sagrada-predict-api/Dockerfile
+    dockerContext: ./sagrada-predict-api
+    buildArgs:
+      - key: APP_ENV
+        value: production
+    envVars:
+      - key: NET_BACKEND_URL
+        value: https://sagrada-familia-api.onrender.com
+      - key: PROPHET_MIN_MEDIDAS
+        value: "3"
+      - key: PROPHET_INTERVAL_WIDTH
+        value: "0.80"
