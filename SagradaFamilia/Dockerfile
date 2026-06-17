@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Solo HTTP dentro de la red Docker. TLS termina en el reverse proxy (nginx).
 # No se expone el puerto 443 para evitar gestión de certificados en contenedor.
-EXPOSE 5000
+EXPOSE 8080
 
 
 # =============================================================================
@@ -92,11 +92,9 @@ ENV \
     # ── Runtime de ASP.NET ────────────────────────────────────────────────────
     # Production: desactiva Swagger, activa logging de errores estructurado, etc.
     ASPNETCORE_ENVIRONMENT=Production \
-    # Solo HTTP. Si se configura HTTPS aquí, dotnet buscará un certificado que
-    # no existe en el contenedor. TLS lo gestiona nginx aguas arriba.
-    ASPNETCORE_URLS=http://+:5000 \
-    # Lee los headers X-Forwarded-Proto / X-Forwarded-For enviados por nginx.
-    # Necesario para que IsHttps y RemoteIpAddress sean correctos en la app.
+    # Railway inyecta HTTP_PORTS con el puerto que le asigna al contenedor (8080).
+    # No sobreescribimos ASPNETCORE_URLS para que .NET use ese puerto automáticamente.
+    # Lee los headers X-Forwarded-Proto / X-Forwarded-For enviados por el proxy.
     ASPNETCORE_FORWARDEDHEADERS_ENABLED=true \
     \
     # ── Base de datos — INYECTAR en despliegue ────────────────────────────────
