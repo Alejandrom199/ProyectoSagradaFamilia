@@ -33,9 +33,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseCustomMiddlewares();
 app.UseCors("AllowAngular");
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGet("/health", () => Results.Ok());
 
 app.Run();
