@@ -206,7 +206,7 @@ namespace SagradaFamilia.API.Extensions
                 options.AddPolicy("AllowAngular", policy =>
                 {
                     var origins = new List<string> { "http://localhost:4200" };
-                    if (!string.IsNullOrWhiteSpace(frontendUrl))
+                    if (!string.IsNullOrWhiteSpace(frontendUrl) && !origins.Contains(frontendUrl))
                         origins.Add(frontendUrl);
 
                     policy.WithOrigins([.. origins])
