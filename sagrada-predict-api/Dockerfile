@@ -109,4 +109,4 @@ EXPOSE 8000
 #   Prophet/Stan usa estado global de C++; fork después de importar Prophet
 #   puede corromper ese estado. Un worker por contenedor es la práctica segura.
 #   Para escalar, se lanzan más réplicas del contenedor (horizontal scaling).
-ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+ENTRYPOINT ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
