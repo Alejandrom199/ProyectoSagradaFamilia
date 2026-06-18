@@ -34,6 +34,7 @@ CLAUDE.md
 **/env/
 **/venv/
 **/.env
+.env.railway
 
 # Los archivos de environment de Angular no contienen secretos (solo apiUrl).
 # Se incluyen en git para que el build de Docker funcione desde un clon limpio.
