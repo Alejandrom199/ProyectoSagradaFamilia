@@ -25,7 +25,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(a => a.Id == id && !a.Eliminado);
 
         public async Task<(IEnumerable<Alimento> Items, int TotalItems)> ObtenerPaginadoAsync(
-            int page, int pageSize, string? search, string? sortBy, bool ascending)
+            int page, int pageSize, string? search, string? sortBy, bool ascending,
+            IEnumerable<string>? categorias = null, bool? activo = null,
+            IEnumerable<int>? edades = null)
         {
             var query = _context.Alimentos
                 .Include(a => a.Categoria)
@@ -34,11 +36,30 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var term = search.ToLower();
+                var terminoBusqueda    = search.ToLower();
+                var buscarActivos      = "activo".StartsWith(terminoBusqueda);
+                var buscarInactivos    = "inactivo".StartsWith(terminoBusqueda);
+
                 query = query.Where(a =>
-                    a.Nombre.ToLower().Contains(term) ||
-                    a.Categoria.Nombre.ToLower().Contains(term));
+                    a.Nombre.ToLower().Contains(terminoBusqueda)                                          ||
+                    a.Categoria.Nombre.ToLower().Contains(terminoBusqueda)                                ||
+                    a.EdadMinimaMeses.ToString().Contains(terminoBusqueda)                                ||
+                    (a.Descripcion   != null && a.Descripcion.ToLower().Contains(terminoBusqueda))        ||
+                    (a.Recomendacion != null && a.Recomendacion.ToLower().Contains(terminoBusqueda))      ||
+                    (buscarActivos   && a.Activo)                                                         ||
+                    (buscarInactivos && !a.Activo));
             }
+
+            var categoriasAFiltrar = categorias?.ToList();
+            if (categoriasAFiltrar is { Count: > 0 })
+                query = query.Where(a => categoriasAFiltrar.Contains(a.Categoria.Nombre));
+
+            if (activo.HasValue)
+                query = query.Where(a => a.Activo == activo.Value);
+
+            var edadesAFiltrar = edades?.ToList();
+            if (edadesAFiltrar is { Count: > 0 })
+                query = query.Where(a => edadesAFiltrar.Contains(a.EdadMinimaMeses));
 
             query = sortBy?.ToLower() switch
             {

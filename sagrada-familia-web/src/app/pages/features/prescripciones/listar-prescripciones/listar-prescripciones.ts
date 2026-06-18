@@ -33,7 +33,7 @@ export class ListarPrescripciones implements OnInit {
   nino = signal<NinoDetailResponse | null>(null);
   prescripciones = signal<PrescripcionResponse[]>([]);
   totalPrescripciones = signal(0);
-  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
 
   columnas: DatatableColumn<PrescripcionResponse>[] = [
     {

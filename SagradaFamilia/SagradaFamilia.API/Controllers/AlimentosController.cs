@@ -35,9 +35,13 @@ public class AlimentosController : BaseController
         [FromQuery] int pageSize = 10,
         [FromQuery] string? search = null,
         [FromQuery] string? sortBy = null,
-        [FromQuery] bool asc = true)
+        [FromQuery] bool asc = true,
+        [FromQuery] List<string>? categorias = null,
+        [FromQuery] bool? activo = null,
+        [FromQuery] List<int>? edades = null)
     {
-        var response = await _alimentoService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc);
+        var response = await _alimentoService.ObtenerPaginadoAsync(
+            page, pageSize, search, sortBy, asc, categorias, activo, edades);
         return Ok(response);
     }
 

@@ -1,3 +1,14 @@
+export enum EstadoAlimento {
+  Activo   = 'Activo',
+  Inactivo = 'Inactivo',
+}
+
+export const AlimentoFiltroColumnas = {
+  categoria:   'categoriaNombre',
+  estado:      'activo',
+  edadMinima:  'edadMinimaMeses',
+} as const;
+
 export interface AlimentoResponse {
     id: number;
     categoriaId: number;

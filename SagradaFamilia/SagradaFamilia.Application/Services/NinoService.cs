@@ -99,7 +99,7 @@ public class NinoService : INinoService
 
         var nino = _mapper.Map<Nino>(request);
 
-        var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(request.MedicoId)
+        var medico = await _medicoRepository.ObtenerPorIdAsync(request.MedicoId)
             ?? throw new NotFoundException("Médico", request.MedicoId);
 
         nino.MedicoId = medico.Id;

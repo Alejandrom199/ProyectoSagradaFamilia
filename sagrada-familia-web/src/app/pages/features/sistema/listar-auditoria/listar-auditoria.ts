@@ -90,7 +90,7 @@ export class ListarAuditoria implements OnInit {
   totalRegistros = signal(0);
   registroDetalle = signal<AuditoriaResponse | null>(null);
   tablaFiltroActivo = signal(false);
-  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
 
   tablas = TABLAS_AUDITABLES;
 

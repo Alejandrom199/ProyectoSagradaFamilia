@@ -29,7 +29,7 @@ export class ListarMedidas implements OnInit {
   medidas = signal<MedidaResponse[]>([]);
   totalMedidas = signal(0);
   nino = signal<NinoDetailResponse | null>(null);
-  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
   migajas = signal<BreadcrumbItem[]>([]);
 
   modalAbierto = signal(false);

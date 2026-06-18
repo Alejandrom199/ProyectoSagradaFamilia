@@ -10,7 +10,7 @@ import { ConfirmModal } from '../../../../shared/components/confirm-modal/confir
 import { ImportModal } from '../../../../shared/components/import-modal/import-modal';
 import { Button } from '../../../../shared/components/button/button';
 import { AlimentosService } from '../../../../core/services/alimentos';
-import { AlimentoResponse } from '../../../../shared/interfaces/alimento.interface';
+import { AlimentoResponse, EstadoAlimento, AlimentoFiltroColumnas } from '../../../../shared/interfaces/alimento.interface';
 
 @Component({
   selector: 'listar-alimentos',
@@ -28,9 +28,10 @@ export class ListarAlimentos implements OnInit {
   totalAlimentos     = signal(0);
   alimentoAEliminar  = signal<AlimentoResponse | null>(null);
   mostrarModalImport = signal(false);
+  filterOptions      = signal<Record<string, string[]>>({});
 
   private queryActual: ServerQuery = {
-    page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc'
+    page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc', columnFilters: {}
   };
 
   readonly importarFn = (file: File) => this.alimentosService.importar(file);
@@ -38,7 +39,7 @@ export class ListarAlimentos implements OnInit {
   columnas: DatatableColumn<AlimentoResponse>[] = [
     { key: 'nombre',          label: 'Alimento',            sortable: true, filterable: true, render: (row) => `<p class="font-medium">${row.nombre}</p>` },
     { key: 'categoriaNombre', label: 'Categoría',           sortable: true, filterable: true, render: (row) => `<span class="badge badge-primary">${row.categoriaNombre}</span>` },
-    { key: 'edadMinimaMeses', label: 'Edad mínima (meses)', sortable: true, render: (row) => `${row.edadMinimaMeses} meses` },
+    { key: 'edadMinimaMeses', label: 'Edad mínima (meses)', sortable: true, filterable: true, render: (row) => `${row.edadMinimaMeses} meses` },
     { key: 'descripcion',     label: 'Descripción',         render: (row) => row.descripcion ? `<span class="text-xs text-slate-500 max-w-xs truncate block">${row.descripcion}</span>` : '<span class="text-slate-300">—</span>', exportValue: (row) => row.descripcion ?? '' },
     { key: 'recomendacion',   label: 'Recomendación',       render: (row) => row.recomendacion ? `<p class="text-xs text-[var(--color-text-secondary)] max-w-xs truncate">${row.recomendacion}</p>` : '—', exportValue: (row) => row.recomendacion ?? '' },
     { key: 'activo',          label: 'Estado',              sortable: true, filterable: true, render: (row) => row.activo ? `<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-green-50 text-green-700">Activo</span>` : `<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-500">Inactivo</span>`, exportValue: (row) => row.activo ? 'Activo' : 'Inactivo' }
@@ -51,16 +52,32 @@ export class ListarAlimentos implements OnInit {
 
   migajas: BreadcrumbItem[] = [{ label: 'Alimentos' }];
 
-  ngOnInit() { this.cargarDatos(); }
+  ngOnInit() {
+    this.cargarDatos();
+    this.cargarFilterOptions();
+  }
+
+  cargarFilterOptions() {
+    this.alimentosService.obtenerCategorias().subscribe({
+      next: (respuesta) => {
+        if (respuesta.success) {
+          this.filterOptions.set({
+            [AlimentoFiltroColumnas.categoria]: respuesta.data.map(categoria => categoria.nombre),
+            [AlimentoFiltroColumnas.estado]:    Object.values(EstadoAlimento),
+          });
+        }
+      }
+    });
+  }
 
   cargarDatos() {
-    const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
+    const { page, pageSize, search, sortBy, sortDir, columnFilters } = this.queryActual;
     this.loadingBar.show();
-    this.alimentosService.obtenerPaginado(page, pageSize, search, sortBy, sortDir === 'asc').subscribe({
-      next: (r) => {
-        if (r.success) {
-          this.alimentos.set(r.data);
-          this.totalAlimentos.set(r.totalItems);
+    this.alimentosService.obtenerPaginado(page, pageSize, search, sortBy, sortDir === 'asc', columnFilters).subscribe({
+      next: (respuesta) => {
+        if (respuesta.success) {
+          this.alimentos.set(respuesta.data);
+          this.totalAlimentos.set(respuesta.totalItems);
         }
         this.loadingBar.complete();
       },

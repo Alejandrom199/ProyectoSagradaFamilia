@@ -14,6 +14,7 @@ export interface ServerQuery {
   search: string;
   sortBy: string;
   sortDir: 'asc' | 'desc';
+  columnFilters: Record<string, string[]>;
 }
 
 export interface DatatableColumn<T> {
@@ -70,6 +71,7 @@ export class Datatable<T extends object> implements OnChanges {
   @Input() serverSide = false;
   @Input() serverTotalItems = 0;
   @Input() tooltipThreshold = 55;
+  @Input() filterOptions: Record<string, string[]> = {};
 
   @Output() onActualizar = new EventEmitter<void>();
   @Output() onConfiguracion = new EventEmitter<void>();
@@ -231,7 +233,19 @@ export class Datatable<T extends object> implements OnChanges {
       search: this.busquedaGlobal,
       sortBy: this.sortKey,
       sortDir: this.sortDir,
+      columnFilters: this.buildColumnFilters(),
     });
+  }
+
+  private buildColumnFilters(): Record<string, string[]> {
+    const filtrosActivos: Record<string, string[]> = {};
+
+    Object.entries(this.filtrosSeleccion).forEach(([columna, valoresSeleccionados]) => {
+      const tieneValores = valoresSeleccionados.size > 0;
+      if (tieneValores) filtrosActivos[columna] = [...valoresSeleccionados];
+    });
+
+    return filtrosActivos;
   }
 
   onSearchChange(value: string) {
@@ -320,9 +334,11 @@ export class Datatable<T extends object> implements OnChanges {
   }
 
   obtenerValoresUnicos(key: string | number | symbol): string[] {
-    const path = String(key);
-    const valores = this.data.map(row => String(this.getCellValue(row, path) ?? ''));
-    return [...new Set(valores)].filter(v => v.trim() !== '');
+    const columna = String(key);
+    const opcionesServidor = this.filterOptions[columna];
+    if (this.serverSide && opcionesServidor?.length) return opcionesServidor;
+    const valores = this.data.map(row => String(this.getCellValue(row, columna) ?? ''));
+    return [...new Set(valores)].filter(valor => valor.trim() !== '');
   }
 
   onFilterChange() {
@@ -531,7 +547,13 @@ export class Datatable<T extends object> implements OnChanges {
     if (set.size === this.obtenerValoresUnicos(k).length) {
       delete this.filtrosSeleccion[k];
     }
-    this.onFilterChange();
+
+    if (this.serverSide) {
+      this.paginaActualSignal.set(1);
+      this.emitServerQuery();
+    } else {
+      this.onFilterChange();
+    }
   }
 
   todosLosValoresMarcados(key: string | number | symbol): boolean {
@@ -546,7 +568,13 @@ export class Datatable<T extends object> implements OnChanges {
     } else {
       delete this.filtrosSeleccion[k];
     }
-    this.onFilterChange();
+
+    if (this.serverSide) {
+      this.paginaActualSignal.set(1);
+      this.emitServerQuery();
+    } else {
+      this.onFilterChange();
+    }
   }
 
   valoresUnicosFiltrados(key: string | number | symbol): string[] {

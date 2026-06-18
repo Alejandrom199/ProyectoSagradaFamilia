@@ -37,7 +37,7 @@ export class ListarPadres implements OnInit {
   padreAEliminar = signal<PadreResponse | null>(null);
   mostrarModalImport = signal(false);
 
-  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc', columnFilters: {} };
 
   readonly importarFn = (file: File) => this.padresService.importar(file);
 

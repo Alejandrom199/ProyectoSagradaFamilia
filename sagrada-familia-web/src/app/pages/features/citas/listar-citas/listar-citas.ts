@@ -34,7 +34,7 @@ export class ListarCitas implements OnInit {
   nino = signal<NinoDetailResponse | null>(null);
   citas = signal<CitaResponse[]>([]);
   totalCitas = signal(0);
-  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
 
   formatearFecha = formatearFecha;
 

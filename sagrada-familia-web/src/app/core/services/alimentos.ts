@@ -9,7 +9,9 @@ import {
   AlimentoCreate,
   AlimentoUpdate,
   CategoriaCreate,
-  ImportResultado
+  ImportResultado,
+  EstadoAlimento,
+  AlimentoFiltroColumnas,
 } from '../../shared/interfaces/alimento.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -27,14 +29,29 @@ export class AlimentosService {
     pageSize: number,
     search: string,
     sortBy: string,
-    asc: boolean
+    ascending: boolean,
+    columnFilters: Record<string, string[]> = {}
   ): Observable<PagedResponse<AlimentoResponse>> {
     let params = new HttpParams()
       .set('page', page)
       .set('pageSize', pageSize)
-      .set('asc', asc);
+      .set('asc', ascending);
     if (search) params = params.set('search', search);
     if (sortBy) params = params.set('sortBy', sortBy);
+
+    const categoriasSeleccionadas = columnFilters[AlimentoFiltroColumnas.categoria] ?? [];
+    categoriasSeleccionadas.forEach(categoria => params = params.append('categorias', categoria));
+
+    const estadosSeleccionados = columnFilters[AlimentoFiltroColumnas.estado] ?? [];
+    const soloUnEstadoSeleccionado = estadosSeleccionados.length === 1;
+    if (soloUnEstadoSeleccionado) {
+      const estaActivo = estadosSeleccionados[0] === EstadoAlimento.Activo;
+      params = params.set('activo', String(estaActivo));
+    }
+
+    const edadesSeleccionadas = columnFilters[AlimentoFiltroColumnas.edadMinima] ?? [];
+    edadesSeleccionadas.forEach(edad => params = params.append('edades', edad));
+
     return this.http.get<PagedResponse<AlimentoResponse>>(
       `${this.url}/paginado`, { params, withCredentials: true }
     );
