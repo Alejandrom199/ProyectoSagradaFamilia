@@ -31,8 +31,8 @@ await app.ApplyMigrationsAndSeedsAsync();
 if (app.Environment.IsDevelopment())
     app.UseSwaggerDocs();
 
-app.UseCustomMiddlewares();
 app.UseCors("AllowAngular");
+app.UseCustomMiddlewares();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
