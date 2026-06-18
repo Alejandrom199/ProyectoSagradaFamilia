@@ -88,6 +88,10 @@ services:
         # ARG de build: activa optimizaciones de Release. No queda en la imagen.
         BUILD_CONFIGURATION: Release
     environment:
+      # ── Entorno ────────────────────────────────────────────────────────────
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+
       # ── Base de datos ──────────────────────────────────────────────────────
       # 'db' = nombre del servicio, resuelto por el DNS interno de Docker.
       ConnectionStrings__PostgresConnection: "Host=db;Port=5432;Database=SagradaFamiliaDb;Username=postgres;Password=${POSTGRES_PASSWORD};"

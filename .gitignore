@@ -1,6 +1,7 @@
-# Claude Code
+# Claude Code / herramientas de desarrollo
 .claude/
 CLAUDE.md
+.playwright-mcp/
 
 #Ides
 .vs/

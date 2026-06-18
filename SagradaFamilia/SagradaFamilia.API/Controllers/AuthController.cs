@@ -13,8 +13,13 @@ namespace SagradaFamilia.API.Controllers
     public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
+        private readonly IWebHostEnvironment _env;
 
-        public AuthController(IAuthService authService) => _authService = authService;
+        public AuthController(IAuthService authService, IWebHostEnvironment env)
+        {
+            _authService = authService;
+            _env = env;
+        }
 
         [HttpGet("health")]
         [AllowAnonymous]
@@ -81,23 +86,26 @@ namespace SagradaFamilia.API.Controllers
 
         private void SetTokenCookies(string accessToken, string refreshToken)
         {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddDays(7)
-            };
+            // Producción (HTTPS cross-origin): SameSite=None + Secure obligatorio.
+            // Desarrollo (HTTP local): SameSite=Strict, Secure=false.
+            bool isProduction = _env.IsProduction();
+            var sameSite = isProduction ? SameSiteMode.None : SameSiteMode.Strict;
 
             Response.Cookies.Append("access_token", accessToken, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(60)
+                Secure   = isProduction,
+                SameSite = sameSite,
+                Expires  = DateTimeOffset.UtcNow.AddMinutes(60)
             });
 
-            Response.Cookies.Append("refresh_token", refreshToken, cookieOptions);
+            Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure   = isProduction,
+                SameSite = sameSite,
+                Expires  = DateTimeOffset.UtcNow.AddDays(7)
+            });
         }
     }
 
