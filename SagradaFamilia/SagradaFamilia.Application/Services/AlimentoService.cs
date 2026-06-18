@@ -37,9 +37,12 @@ public class AlimentoService : IAlimentoService
     }
 
     public async Task<PagedResponse<AlimentoDto.Response>> ObtenerPaginadoAsync(
-        int page, int pageSize, string? search, string? sortBy, bool ascending)
+        int page, int pageSize, string? search, string? sortBy, bool ascending,
+        IEnumerable<string>? categorias = null, bool? activo = null,
+        IEnumerable<int>? edades = null)
     {
-        var (items, total) = await _alimentoRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending);
+        var (items, total) = await _alimentoRepository.ObtenerPaginadoAsync(
+            page, pageSize, search, sortBy, ascending, categorias, activo, edades);
         var dtos = _mapper.Map<IEnumerable<AlimentoDto.Response>>(items);
         return PagedResponse<AlimentoDto.Response>.Ok(dtos, total, page, pageSize);
     }

@@ -27,7 +27,7 @@ export class ListarUsuarios implements OnInit {
 
   usuarios = signal<UsuarioResponse[]>([]);
   totalUsuarios = signal(0);
-  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc', columnFilters: {} };
 
   columnas: DatatableColumn<UsuarioResponse>[] = [
     {

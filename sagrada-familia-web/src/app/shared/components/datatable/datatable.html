@@ -192,7 +192,7 @@
                                 }
                             </div>
 
-                            @if (col.filterable && !serverSide) {
+                            @if (col.filterable && (!serverSide || filterOptions[col.key]?.length || obtenerValoresUnicos(col.key).length > 0)) {
                             <button #btnFiltro
                                 class="p-1 rounded-md transition-all hover:bg-slate-100 text-slate-400 focus:outline-none ml-4 flex-shrink-0"
                                 [class.!text-blue-600]="filtros[col.key] || menuActivo() === 'filtro-' + col.key"

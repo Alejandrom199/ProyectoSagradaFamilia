@@ -24,7 +24,7 @@ export class ListarLogs implements OnInit {
   logs = signal<LogSistemaResponse[]>([]);
   totalLogs = signal(0);
   nivelActivo = signal<NivelFiltro>('Todo');
-  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc' };
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
 
   readonly niveles: NivelFiltro[] = ['Todo', 'Information', 'Warning', 'Error'];
 

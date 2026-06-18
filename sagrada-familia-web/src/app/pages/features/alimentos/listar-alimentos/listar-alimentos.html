@@ -16,6 +16,7 @@
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
             [serverSide]="true" [serverTotalItems]="totalAlimentos()" (onServerQuery)="onServerQuery($event)"
+            [filterOptions]="filterOptions()"
             exportFileName="catalogo-alimentos" (onExportPdf)="descargarAlimentosPdf($event)"
             (onExportExcel)="descargarExcel()" [showPlantilla]="true" (onPlantilla)="descargarPlantilla()"
             [showImportar]="true" (onImportar)="mostrarModalImport.set(true)" (onActualizar)="cargarDatos()"

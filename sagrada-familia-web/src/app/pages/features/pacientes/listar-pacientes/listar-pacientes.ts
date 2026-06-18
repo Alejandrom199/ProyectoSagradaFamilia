@@ -48,7 +48,7 @@ export class ListarPacientes implements OnInit {
   totalNinos = signal(0);
   ninoAEliminar = signal<NinoResponse | null>(null);
   mostrarModalImport = signal(false);
-  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc' };
+  private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc', columnFilters: {} };
 
   readonly importarFn = (file: File) => this.ninosService.importar(file);
 

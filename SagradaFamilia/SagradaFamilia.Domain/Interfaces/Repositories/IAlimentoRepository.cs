@@ -7,7 +7,9 @@ namespace SagradaFamilia.Application.Interfaces.Repositories
         Task<IEnumerable<Alimento>> ObtenerTodosAsync();
         Task<Alimento?> ObtenerPorIdAsync(int id);
         Task<(IEnumerable<Alimento> Items, int TotalItems)> ObtenerPaginadoAsync(
-            int page, int pageSize, string? search, string? sortBy, bool ascending);
+            int page, int pageSize, string? search, string? sortBy, bool ascending,
+            IEnumerable<string>? categorias = null, bool? activo = null,
+            IEnumerable<int>? edades = null);
 
         Task<IEnumerable<Alimento>> ObtenerPorRangoEdadAsync(int edadMeses);
         Task<IEnumerable<Alimento>> ObtenerPorCategoriaAsync(int categoriaId);
