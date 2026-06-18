@@ -198,13 +198,18 @@ namespace SagradaFamilia.API.Extensions
             return services;
         }
 
-        public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
+        public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
         {
+            var frontendUrl = configuration["AppSettings:FrontendUrl"] ?? string.Empty;
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular", policy =>
                 {
-                    policy.WithOrigins("http://localhost:4200")
+                    var origins = new List<string> { "http://localhost:4200" };
+                    if (!string.IsNullOrWhiteSpace(frontendUrl))
+                        origins.Add(frontendUrl);
+
+                    policy.WithOrigins([.. origins])
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
