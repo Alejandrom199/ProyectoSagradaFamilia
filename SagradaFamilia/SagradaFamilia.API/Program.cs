@@ -16,7 +16,7 @@ builder.Services
     .AddAutoMapperProfiles()
     .AddValidators()
     .AddHttpContext()
-    .AddCorsPolicy()
+    .AddCorsPolicy(builder.Configuration)
     .AddSwagger()
     .AddControllers();
 
