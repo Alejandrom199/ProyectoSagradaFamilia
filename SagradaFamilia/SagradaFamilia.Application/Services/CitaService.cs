@@ -82,10 +82,10 @@ public class CitaService : ICitaService
     public async Task<CitaDto.Response> CrearAsync(CitaDto.Create request, int usuarioId)
     {
         _logger.LogInformation("Intentando agendar nueva cita para el Niño ID: {NinoId} con el Médico UsuarioId: {UsuarioId}",
-            request.NinoId, request.MedicoId);
+            request.NinoId, usuarioId);
 
-        var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(request.MedicoId)
-            ?? throw new NotFoundException("Médico", request.MedicoId);
+        var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(usuarioId)
+            ?? throw new NotFoundException("Médico", usuarioId);
 
         await ValidarHorarioAtencionAsync(request.FechaHora);
 
