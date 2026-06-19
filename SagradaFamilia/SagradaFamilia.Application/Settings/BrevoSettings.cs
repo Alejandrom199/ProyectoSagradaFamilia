@@ -1,9 +1,9 @@
 namespace SagradaFamilia.Application.Settings
 {
-    public class ResendSettings
+    public class BrevoSettings
     {
         public string ApiKey { get; set; } = string.Empty;
-        public string FromEmail { get; set; } = "onboarding@resend.dev";
+        public string FromEmail { get; set; } = string.Empty;
         public string FromName { get; set; } = "Sagrada Familia";
     }
 }
