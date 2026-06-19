@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using QuestPDF.Infrastructure;
-using Resend;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
@@ -94,10 +93,13 @@ namespace SagradaFamilia.API.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.Configure<ResendSettings>(configuration.GetSection("ResendSettings"));
+            services.Configure<BrevoSettings>(configuration.GetSection("BrevoSettings"));
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
-            services.AddResend(options =>
-                options.ApiToken = configuration["ResendSettings:ApiKey"] ?? string.Empty);
+            services.AddHttpClient("Brevo", client =>
+            {
+                client.BaseAddress = new Uri("https://api.brevo.com/v3/");
+                client.DefaultRequestHeaders.Add("api-key", configuration["BrevoSettings:ApiKey"]);
+            });
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             return services;
