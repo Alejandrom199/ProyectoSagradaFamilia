@@ -33,7 +33,8 @@ namespace SagradaFamilia.Infrastructure.Email
 
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
-            await cliente.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, cts.Token);
+            var socketOptions = _settings.Port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
+            await cliente.ConnectAsync(_settings.Host, _settings.Port, socketOptions, cts.Token);
             await cliente.AuthenticateAsync(_settings.Username, _settings.Password, cts.Token);
 
             _logger.LogInformation("Enviando email a {Destinatario} — Asunto: {Asunto}", destinatario, asunto);
