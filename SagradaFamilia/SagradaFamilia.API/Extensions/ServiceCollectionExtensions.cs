@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using QuestPDF.Infrastructure;
+using Resend;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
@@ -93,8 +94,10 @@ namespace SagradaFamilia.API.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+            services.Configure<ResendSettings>(configuration.GetSection("ResendSettings"));
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
+            services.AddResend(options =>
+                options.ApiToken = configuration["ResendSettings:ApiKey"] ?? string.Empty);
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             return services;
