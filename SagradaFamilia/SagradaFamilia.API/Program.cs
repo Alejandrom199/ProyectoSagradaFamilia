@@ -1,6 +1,8 @@
 using SagradaFamilia.API.Extensions;
 using SagradaFamilia.Infrastructure;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Servicios ───────────────────────────────────────────────────────────
