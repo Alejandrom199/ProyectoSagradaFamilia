@@ -8,9 +8,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
     {
         public static async Task SeedAsync(AppDbContext context)
         {
-            if (await context.PlantillasCorreo.AnyAsync())
-                return;
-
             var plantillas = new List<PlantillaCorreo>
             {
                 new()
@@ -183,7 +180,16 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 }
             };
 
-            context.PlantillasCorreo.AddRange(plantillas);
+            var codigos = plantillas.Select(p => p.Codigo).ToHashSet();
+            var existentes = await context.PlantillasCorreo
+                .Where(p => codigos.Contains(p.Codigo))
+                .Select(p => p.Codigo)
+                .ToListAsync();
+
+            var nuevas = plantillas.Where(p => !existentes.Contains(p.Codigo)).ToList();
+            if (nuevas.Count == 0) return;
+
+            context.PlantillasCorreo.AddRange(nuevas);
             await context.SaveChangesAsync();
         }
     }
