@@ -6,7 +6,7 @@
         <p class="page-subtitle">Mensajes automáticos que el sistema envía a usuarios y médicos</p>
     </div>
 
-    <datatable [columns]="columnas" [actions]="acciones" [data]="plantillas()"
+    <datatable [columns]="columnas" [actions]="acciones()" [data]="plantillas()"
         emptyMessage="No hay plantillas registradas." (onActualizar)="cargar()" [showExportar]="false">
     </datatable>
 </div>

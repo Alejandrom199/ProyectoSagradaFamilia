@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
@@ -10,23 +10,30 @@ import { UsuariosService } from '../../../../core/services/usuarios';
 import { AuthService } from '../../../../core/services/auth';
 import { UsuarioResponse } from '../../../../shared/interfaces/usuario.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { MenuService } from '../../../../core/services/menu';
+import { Accion } from '../../../../shared/enums/accion.enum';
+import { RutaApp } from '../../../../shared/enums/ruta-app.enum';
 
 @Component({
   selector: 'app-listar-usuarios',
   standalone: true,
   imports: [NgIcon, RouterLink, Datatable, Button, Breadcrumb],
-
   templateUrl: './listar-usuarios.html',
   styleUrl: './listar-usuarios.css',
 })
 export class ListarUsuarios implements OnInit {
-  private usuariosService = inject(UsuariosService);
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private loadingBar = inject(LoadingBar);
+  private readonly usuariosService = inject(UsuariosService);
+  private readonly authService     = inject(AuthService);
+  private readonly router          = inject(Router);
+  private readonly loadingBar      = inject(LoadingBar);
 
-  usuarios = signal<UsuarioResponse[]>([]);
+  readonly menu   = inject(MenuService);
+  protected readonly Accion  = Accion;
+  protected readonly RutaApp = RutaApp;
+
+  usuarios    = signal<UsuarioResponse[]>([]);
   totalUsuarios = signal(0);
+
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc', columnFilters: {} };
 
   columnas: DatatableColumn<UsuarioResponse>[] = [
@@ -48,7 +55,7 @@ export class ListarUsuarios implements OnInit {
       key: 'esMedico', label: 'Perfil',
       render: (row) => {
         if (row.esMedico) return '<span class="text-xs text-blue-700 font-semibold">Médico vinculado</span>';
-        if (row.esPadre) return '<span class="text-xs text-pink-700 font-semibold">Padre vinculado</span>';
+        if (row.esPadre)  return '<span class="text-xs text-pink-700 font-semibold">Padre vinculado</span>';
         return '<span class="text-xs text-gray-400">Administrativo</span>';
       }
     },
@@ -64,11 +71,10 @@ export class ListarUsuarios implements OnInit {
     }
   ];
 
-  acciones: DatatableAction<UsuarioResponse>[] = [
-    {
-      type: 'ver',
-      onClick: (row) => this.router.navigate(['/usuarios', row.id])
-    },
+  // Las acciones de activar/desactivar son operacionales (basadas en estado de fila), no CRUD.
+  // El 'ver' siempre está disponible para quien tiene acceso a /usuarios.
+  readonly acciones = computed<DatatableAction<UsuarioResponse>[]>(() => [
+    { type: 'ver', onClick: (row) => this.router.navigate(['/usuarios', row.id]) },
     {
       label: 'Desactivar',
       icon: 'matLockOutline',
@@ -83,11 +89,9 @@ export class ListarUsuarios implements OnInit {
       visible: (row) => !row.activo,
       onClick: (row) => this.toggleEstado(row, true)
     }
-  ];
+  ]);
 
-  migajas: BreadcrumbItem[] = [
-    { label: 'Usuarios' },
-  ];
+  migajas: BreadcrumbItem[] = [{ label: 'Usuarios' }];
 
   ngOnInit(): void {
     this.cargarUsuarios();
@@ -114,12 +118,8 @@ export class ListarUsuarios implements OnInit {
   toggleEstado(usuario: UsuarioResponse, activo: boolean): void {
     this.loadingBar.show();
     this.usuariosService.actualizarEstado(usuario.id, activo).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.usuarios.update(actuales =>
-            actuales.map(u => u.id === usuario.id ? { ...u, activo } : u)
-          );
-        }
+      next: (r) => {
+        if (r.success) this.usuarios.update(lista => lista.map(u => u.id === usuario.id ? { ...u, activo } : u));
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
@@ -129,9 +129,9 @@ export class ListarUsuarios implements OnInit {
   private colorRol(rol: string): string {
     const mapa: Record<string, string> = {
       'Administrador': 'bg-purple-100 text-purple-700',
-      'Medico': 'bg-blue-100 text-blue-700',
-      'Padre': 'bg-pink-100 text-pink-700'
+      'Medico':        'bg-blue-100 text-blue-700',
+      'Padre':         'bg-pink-100 text-pink-700',
     };
-    return mapa[rol] || 'bg-gray-100 text-gray-700';
+    return mapa[rol] ?? 'bg-gray-100 text-gray-700';
   }
 }

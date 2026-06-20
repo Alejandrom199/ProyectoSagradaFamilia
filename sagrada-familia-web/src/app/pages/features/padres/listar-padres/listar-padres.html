@@ -5,14 +5,16 @@
             <h2 class="page-title">Gestión de Padres de Familia</h2>
             <p class="page-subtitle">Gestión del directorio de padres y responsables legales</p>
         </div>
+        @if (menu.puedeHacer(RutaApp.Padres, Accion.Crear)) {
         <btn variant="primary" routerLink="/padres/crear" class="text-white cursor-pointer">
             <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Agregar
         </btn>
+        }
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
-        <datatable title="Listado de Padres de Familia" [data]="padres()" [columns]="columnas" [actions]="acciones"
+        <datatable title="Listado de Padres de Familia" [data]="padres()" [columns]="columnas" [actions]="acciones()"
             [serverSide]="true" [serverTotalItems]="totalPadres()" (onServerQuery)="onServerQuery($event)"
             (onExportPdf)="descargarPadresPdf($event)" (onExportExcel)="descargarExcel()" exportFileName="padres"
             searchPlaceholder="Buscar por nombre..." emptyMessage="No hay padres registrados en el sistema."

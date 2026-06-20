@@ -1,11 +1,15 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { BreadcrumbItem, Breadcrumb } from '../../../../../shared/components/breadcrumb/breadcrumb';
 import { Datatable, DatatableColumn, DatatableAction } from '../../../../../shared/components/datatable/datatable';
 import { LoadingBar } from '../../../../../core/services/loading-bar';
 import { PlantillasService } from '../../../../../core/services/plantillas';
 import { PlantillaResponse } from '../../../../../shared/interfaces/plantilla.interface';
 import { formatearFecha } from '../../../../../shared/utils/date.utils';
+import { MenuService } from '../../../../../core/services/menu';
+import { Accion } from '../../../../../shared/enums/accion.enum';
+import { RutaApp } from '../../../../../shared/enums/ruta-app.enum';
 
 @Component({
   selector: 'app-listar-plantillas',
@@ -13,9 +17,13 @@ import { formatearFecha } from '../../../../../shared/utils/date.utils';
   templateUrl: './listar-plantillas.html',
 })
 export class ListarPlantillas implements OnInit {
-  private plantillasService = inject(PlantillasService);
-  private loadingBar = inject(LoadingBar);
-  private router = inject(Router);
+  private readonly plantillasService = inject(PlantillasService);
+  private readonly loadingBar        = inject(LoadingBar);
+  private readonly router            = inject(Router);
+
+  readonly menu   = inject(MenuService);
+  protected readonly Accion  = Accion;
+  protected readonly RutaApp = RutaApp;
 
   plantillas = signal<PlantillaResponse[]>([]);
 
@@ -46,12 +54,13 @@ export class ListarPlantillas implements OnInit {
     }
   ];
 
-  acciones: DatatableAction<PlantillaResponse>[] = [
-    {
-      type: 'editar',
-      onClick: (row) => this.router.navigate(['/sistema/plantillas', row.id, 'editar'])
+  readonly acciones = computed<DatatableAction<PlantillaResponse>[]>(() => {
+    const lista: DatatableAction<PlantillaResponse>[] = [];
+    if (this.menu.puedeHacer(RutaApp.Plantillas, Accion.Editar)) {
+      lista.push({ type: 'editar', onClick: (row) => this.router.navigate(['/sistema/plantillas', row.id, 'editar']) });
     }
-  ];
+    return lista;
+  });
 
   ngOnInit(): void {
     this.cargar();
@@ -60,19 +69,17 @@ export class ListarPlantillas implements OnInit {
   cargar(): void {
     this.loadingBar.show();
     this.plantillasService.obtenerTodos().subscribe({
-      next: (r) => {
-        if (r.success) this.plantillas.set(r.data);
-        this.loadingBar.complete();
-      },
+      next: (r) => { if (r.success) this.plantillas.set(r.data); this.loadingBar.complete(); },
       error: () => this.loadingBar.complete()
     });
   }
 
   private etiquetaCodigo(codigo: string): string {
     const mapa: Record<string, string> = {
-      'CAMBIO_CLAVE': 'bg-blue-50 text-blue-700',
-      'CUENTA_PADRE': 'bg-emerald-50 text-emerald-700',
+      'CAMBIO_CLAVE':  'bg-blue-50 text-blue-700',
+      'CUENTA_PADRE':  'bg-emerald-50 text-emerald-700',
       'CUENTA_MEDICO': 'bg-violet-50 text-violet-700',
+      'CUENTA_ADMIN':  'bg-purple-50 text-purple-700',
     };
     return mapa[codigo] ?? 'bg-slate-100 text-slate-600';
   }

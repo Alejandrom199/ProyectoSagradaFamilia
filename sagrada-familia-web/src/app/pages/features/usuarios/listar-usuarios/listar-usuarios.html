@@ -5,14 +5,16 @@
             <h2 class="page-title">Gestión de Usuarios</h2>
             <p class="page-subtitle">Cuentas administrativas, médicos y padres del sistema</p>
         </div>
+        @if (menu.puedeHacer(RutaApp.Usuarios, Accion.Crear)) {
         <btn variant="primary" routerLink="/usuarios/crear" width="170px" class="text-white cursor-pointer">
             <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Nuevo usuario
         </btn>
+        }
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
-        <datatable title="Cuentas del sistema" [data]="usuarios()" [columns]="columnas" [actions]="acciones"
+        <datatable title="Cuentas del sistema" [data]="usuarios()" [columns]="columnas" [actions]="acciones()"
             [exportExcel]="true" exportFileName="usuarios" [showActualizar]="true" [showExportar]="true"
             [showColumnas]="true" searchPlaceholder="Buscar por email o rol..."
             emptyMessage="No hay usuarios registrados." (onActualizar)="cargarUsuarios()"

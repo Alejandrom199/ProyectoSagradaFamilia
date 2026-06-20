@@ -5,6 +5,8 @@ import { environment } from '../../../environments/environment';
 import { MenuResponse } from '../../shared/interfaces/menu.interface';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
 import { AuthService } from './auth';
+import { Accion } from '../../shared/enums/accion.enum';
+import { RutaApp } from '../../shared/enums/ruta-app.enum';
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
@@ -12,6 +14,20 @@ export class MenuService {
 
   private readonly _menuItems = signal<MenuResponse[]>([]);
   readonly menuItems = this._menuItems.asReadonly();
+
+  private readonly _permisosMap = computed(() => {
+    const mapa = new Map<string, Set<string>>();
+    for (const modulo of this._menuItems()) {
+      for (const opcion of modulo.opciones) {
+        mapa.set(opcion.ruta, new Set(opcion.acciones));
+      }
+    }
+    return mapa;
+  });
+
+  puedeHacer(ruta: RutaApp, accion: Accion): boolean {
+    return this._permisosMap().get(ruta)?.has(accion) ?? false;
+  }
 
   constructor(private http: HttpClient, private auth: AuthService) { }
 
