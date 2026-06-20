@@ -14,7 +14,7 @@ import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadc
 import { NinosService } from '../../../../core/services/ninos';
 import { AuthService } from '../../../../core/services/auth';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
-import { PrediccionResponse, PuntoPrediccion } from '../../../../shared/interfaces/prediccion.interface';
+import { CurvasOmsResponse, PrediccionResponse, PuntoPrediccion } from '../../../../shared/interfaces/prediccion.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 
 @Component({
@@ -42,6 +42,7 @@ export class ListarPredicciones implements OnInit {
   ninos             = signal<NinoResponse[]>([]);
   ninoSeleccionado  = signal<NinoResponse | null>(null);
   prediccion        = signal<PrediccionResponse | null>(null);
+  curvasOms         = signal<CurvasOmsResponse | null>(null);
   cargando          = signal(false);
   estadoMotor       = signal<'comprobando' | 'online' | 'offline'>('comprobando');
   versionMotor      = signal<string>('');
@@ -160,8 +161,10 @@ export class ListarPredicciones implements OnInit {
 
     this.ninoSeleccionado.set(nino);
     this.cargando.set(true);
+    this.curvasOms.set(null);
     this.loadingBar.show();
 
+    // Cargamos predicciones y curvas OMS en paralelo
     this.prediccionesService.obtenerPorNino(ninoId).subscribe({
       next: (r) => {
         if (r.success) this.prediccion.set(r.data);
@@ -169,6 +172,11 @@ export class ListarPredicciones implements OnInit {
         this.loadingBar.complete();
       },
       error: () => { this.cargando.set(false); this.loadingBar.complete(); }
+    });
+
+    this.prediccionesService.obtenerCurvasOms(ninoId).subscribe({
+      next: (r) => { if (r.success) this.curvasOms.set(r.data); },
+      error: () => {} // silencioso: el gráfico funciona sin las curvas OMS
     });
   }
 }

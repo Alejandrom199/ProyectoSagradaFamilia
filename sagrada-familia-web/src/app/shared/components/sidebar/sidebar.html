@@ -8,10 +8,8 @@
         style="height: var(--header-height); border-bottom: 1px solid var(--color-surface-border);"
         [class.justify-start]="sidebarExpandido()" [class.justify-center]="!sidebarExpandido()">
 
-        <div class="w-8 h-8 rounded-md flex items-center justify-center shrink-0 bg-blue-50/60"
-            style="border: 1px solid rgba(59,130,246,0.15);">
-            <ng-icon name="heroHeart" class="text-blue-600 transition-transform hover:scale-105"
-                style="font-size: 16px;"></ng-icon>
+        <div class="w-8 h-8 flex items-center justify-center shrink-0">
+            <img src="sagrada.png" alt="Logo" class="w-8 h-8 object-contain">
         </div>
 
         @if (sidebarExpandido()) {

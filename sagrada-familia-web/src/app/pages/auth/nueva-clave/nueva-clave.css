@@ -1,27 +1,19 @@
 .login-background {
-    background-image: url('../../../../assets/sagrada-familia-1.png');
-    background-size: cover;
-    background-position: center;
+    background-color: #f0f4ff;
+    background-image:
+        radial-gradient(ellipse 65% 65% at -5% -5%,   rgba(37, 99, 235, 0.28) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 55% at 105% 108%,  rgba(99, 102, 241, 0.24) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 45% at 108% -2%,  rgba(147, 197, 253, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at -2%  108%, rgba(165, 180, 252, 0.16) 0%, transparent 55%);
     background-repeat: no-repeat;
-    background-color: rgba(190, 121, 57, 0.3);
-    background-blend-mode: overlay;
-}
-
-.login-background h1 {
-    color: white !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.login-background p {
-    color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .card {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px 0 rgba(37, 99, 235, 0.08);
     border-radius: 1rem;
 }
 

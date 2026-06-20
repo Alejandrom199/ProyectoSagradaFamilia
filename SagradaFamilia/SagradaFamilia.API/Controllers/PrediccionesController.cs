@@ -21,6 +21,13 @@ public class PrediccionesController : BaseController
         return HandleResponse(response);
     }
 
+    [HttpGet("nino/{ninoId:int}/curvas-oms")]
+    public async Task<ActionResult<ApiResponse<PrediccionDto.CurvasOms>>> ObtenerCurvasOms(int ninoId)
+    {
+        var response = await _prediccionService.ObtenerCurvasOmsAsync(ninoId);
+        return HandleResponse(response);
+    }
+
     [HttpGet("health")]
     public async Task<ActionResult<ApiResponse<PrediccionDto.Health>>> ObtenerEstadoServicioPrediccion()
     {

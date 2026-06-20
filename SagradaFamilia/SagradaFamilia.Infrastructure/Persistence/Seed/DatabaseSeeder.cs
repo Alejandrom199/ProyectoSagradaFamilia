@@ -25,6 +25,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             await OmsSeeder.SeedAsync(context);
             logger.LogInformation("OmsSeeder completado");
 
+            await OmsCompletaPatch.PatchAsync(context);
+            logger.LogInformation("OmsCompletaPatch completado");
+
             await AlimentoSeeder.SeedAsync(context);
             logger.LogInformation("AlimentoSeeder completado");
 

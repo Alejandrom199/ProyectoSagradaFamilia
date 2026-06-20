@@ -409,6 +409,8 @@ export class Datatable<T extends object> implements OnChanges {
   }
 
   get datosFiltrados() {
+    if (this.hayFiltroVacio) return [];
+
     let resultado = [...this.data];
 
     if (this.busquedaGlobal.trim()) {
@@ -450,15 +452,18 @@ export class Datatable<T extends object> implements OnChanges {
   }
 
   get totalPaginas() {
+    if (this.hayFiltroVacio) return 1;
     if (this.serverSide) return Math.ceil(this.serverTotalItems / this.pageSize) || 1;
     return Math.ceil(this.datosFiltrados.length / this.pageSize) || 1;
   }
   get inicio() { return (this.paginaActual() - 1) * this.pageSize; }
   get fin() {
+    if (this.hayFiltroVacio) return 0;
     if (this.serverSide) return Math.min(this.inicio + this.pageSize, this.serverTotalItems);
     return Math.min(this.inicio + this.pageSize, this.datosFiltrados.length);
   }
   get datosPaginados() {
+    if (this.hayFiltroVacio) return [];
     if (this.serverSide) return this.data;
     return this.datosFiltrados.slice(this.inicio, this.fin);
   }
@@ -550,7 +555,7 @@ export class Datatable<T extends object> implements OnChanges {
 
     if (this.serverSide) {
       this.paginaActualSignal.set(1);
-      this.emitServerQuery();
+      if (!this.hayFiltroVacio) this.emitServerQuery();
     } else {
       this.onFilterChange();
     }
@@ -571,7 +576,7 @@ export class Datatable<T extends object> implements OnChanges {
 
     if (this.serverSide) {
       this.paginaActualSignal.set(1);
-      this.emitServerQuery();
+      if (!this.hayFiltroVacio) this.emitServerQuery();
     } else {
       this.onFilterChange();
     }
@@ -591,6 +596,17 @@ export class Datatable<T extends object> implements OnChanges {
     this.menuActivo.set(null);
   }
 
+  limpiarFiltrosColumna() {
+    this.filtrosSeleccion = {};
+    this.busquedaFiltro = {};
+    this.menuActivo.set(null);
+  }
+
+  limpiarBusqueda() {
+    this.busquedaGlobal = '';
+    this.onSearchChange('');
+  }
+
   limpiarFiltros() {
     this.filtrosSeleccion = {};
     this.busquedaFiltro = {};
@@ -601,5 +617,10 @@ export class Datatable<T extends object> implements OnChanges {
 
   get tieneFiltrosActivos(): boolean {
     return Object.keys(this.filtrosSeleccion).length > 0 || this.busquedaGlobal.trim() !== '';
+  }
+
+  // Cuando cualquier filtro de columna tiene el set vacío → tabla sin datos
+  get hayFiltroVacio(): boolean {
+    return Object.values(this.filtrosSeleccion).some(set => set.size === 0);
   }
 }

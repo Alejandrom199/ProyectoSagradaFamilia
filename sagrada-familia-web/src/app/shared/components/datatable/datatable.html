@@ -11,16 +11,24 @@
             <input type="text"
                 class="w-full pl-10 pr-10 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 font-medium"
                 placeholder="BUSCAR..." [(ngModel)]="busquedaGlobal" (ngModelChange)="onSearchChange($event)">
+            @if (busquedaGlobal.trim()) {
+            <button
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-red-500 hover:text-red-700 transition-colors focus:outline-none"
+                (click)="limpiarBusqueda()" tooltip="Limpiar búsqueda" tooltipPosition="top">
+                <ng-icon name="heroFunnel" class="text-lg"></ng-icon>
+            </button>
+            } @else {
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <ng-icon name="heroFunnel" class="text-blue-600 text-lg"></ng-icon>
             </div>
+            }
         </div>
 
         <div class="flex items-center gap-2">
             @if (showActualizar){
             <button
                 class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
-                tooltip="Actualizar" tooltipPosition="top" (click)="onActualizar.emit()">
+                tooltip="Actualizar" tooltipPosition="top" (click)="limpiarFiltrosColumna(); onActualizar.emit()">
                 <ng-icon name="heroArrowPath" class="text-xl"></ng-icon>
             </button>
             }
@@ -355,7 +363,7 @@
         </table>
     </div>
 
-    @if (serverSide ? serverTotalItems > 0 : datosFiltrados.length > 0) {
+    @if (!hayFiltroVacio && (serverSide ? serverTotalItems > 0 : datosFiltrados.length > 0)) {
     <div
         class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-slate-500 border-t border-slate-200">
 
