@@ -1,10 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Infrastructure.Persistence.Contexts;
 
 namespace SagradaFamilia.Infrastructure.Persistence.Seed
 {
+    /// <summary>
+    /// Siembra las tablas de referencia OMS (WHO Child Growth Standards 2006)
+    /// con datos de Peso y Talla para niños y niñas de 0 a 60 meses.
+    /// Percentiles: P3, P15, P50, P85, P97.
+    /// </summary>
     public static class OmsSeeder
     {
         public static async Task SeedAsync(AppDbContext context)
@@ -23,52 +28,278 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             await context.SaveChangesAsync();
         }
 
-        private static void AgregarPesoM(List<OmsReferencia> datos)
+        // ── Peso Niños (M) ────────────────────────────────────────────────────────
+        private static void AgregarPesoM(List<OmsReferencia> d)
         {
-            var tipo = TipoReferencia.Peso;
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 0, Tipo = tipo, Percentil3 = 2.4m, Percentil15 = 2.9m, Percentil50 = 3.3m, Percentil85 = 3.9m, Percentil97 = 4.4m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 2, Tipo = tipo, Percentil3 = 4.3m, Percentil15 = 4.9m, Percentil50 = 5.6m, Percentil85 = 6.3m, Percentil97 = 7.1m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 4, Tipo = tipo, Percentil3 = 5.6m, Percentil15 = 6.2m, Percentil50 = 7.0m, Percentil85 = 7.8m, Percentil97 = 8.7m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 6, Tipo = tipo, Percentil3 = 6.4m, Percentil15 = 7.1m, Percentil50 = 7.9m, Percentil85 = 8.8m, Percentil97 = 9.8m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 8, Tipo = tipo, Percentil3 = 7.0m, Percentil15 = 7.7m, Percentil50 = 8.6m, Percentil85 = 9.6m, Percentil97 = 10.7m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 10, Tipo = tipo, Percentil3 = 7.5m, Percentil15 = 8.2m, Percentil50 = 9.2m, Percentil85 = 10.2m, Percentil97 = 11.4m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 12, Tipo = tipo, Percentil3 = 7.8m, Percentil15 = 8.6m, Percentil50 = 9.6m, Percentil85 = 10.8m, Percentil97 = 12.0m });
+            var t = TipoReferencia.Peso;
+            d.Add(R('M', 0,  t, 2.4m,  2.9m,  3.3m,  3.9m,  4.4m));
+            d.Add(R('M', 1,  t, 3.4m,  3.9m,  4.5m,  5.1m,  5.8m));
+            d.Add(R('M', 2,  t, 4.3m,  4.9m,  5.6m,  6.3m,  7.1m));
+            d.Add(R('M', 3,  t, 5.0m,  5.7m,  6.4m,  7.2m,  8.0m));
+            d.Add(R('M', 4,  t, 5.6m,  6.2m,  7.0m,  7.8m,  8.7m));
+            d.Add(R('M', 5,  t, 6.0m,  6.7m,  7.5m,  8.4m,  9.3m));
+            d.Add(R('M', 6,  t, 6.4m,  7.1m,  7.9m,  8.8m,  9.8m));
+            d.Add(R('M', 7,  t, 6.7m,  7.4m,  8.3m,  9.2m, 10.3m));
+            d.Add(R('M', 8,  t, 7.0m,  7.7m,  8.6m,  9.6m, 10.7m));
+            d.Add(R('M', 9,  t, 7.2m,  8.0m,  8.9m,  9.9m, 11.0m));
+            d.Add(R('M', 10, t, 7.5m,  8.2m,  9.2m, 10.2m, 11.4m));
+            d.Add(R('M', 11, t, 7.7m,  8.4m,  9.4m, 10.5m, 11.7m));
+            d.Add(R('M', 12, t, 7.8m,  8.6m,  9.6m, 10.8m, 12.0m));
+            d.Add(R('M', 13, t, 8.0m,  8.8m,  9.9m, 11.0m, 12.3m));
+            d.Add(R('M', 14, t, 8.2m,  9.0m, 10.1m, 11.3m, 12.6m));
+            d.Add(R('M', 15, t, 8.4m,  9.2m, 10.3m, 11.5m, 12.8m));
+            d.Add(R('M', 16, t, 8.5m,  9.4m, 10.5m, 11.7m, 13.1m));
+            d.Add(R('M', 17, t, 8.7m,  9.6m, 10.7m, 12.0m, 13.4m));
+            d.Add(R('M', 18, t, 8.9m,  9.8m, 10.9m, 12.2m, 13.7m));
+            d.Add(R('M', 19, t, 9.0m,  9.9m, 11.1m, 12.4m, 13.9m));
+            d.Add(R('M', 20, t, 9.2m, 10.1m, 11.3m, 12.6m, 14.2m));
+            d.Add(R('M', 21, t, 9.3m, 10.2m, 11.5m, 12.9m, 14.5m));
+            d.Add(R('M', 22, t, 9.5m, 10.4m, 11.8m, 13.2m, 14.7m));
+            d.Add(R('M', 23, t, 9.7m, 10.6m, 12.0m, 13.4m, 15.0m));
+            d.Add(R('M', 24, t, 9.8m, 10.8m, 12.2m, 13.6m, 15.3m));
+            d.Add(R('M', 25, t,10.0m, 11.0m, 12.4m, 13.9m, 15.6m));
+            d.Add(R('M', 26, t,10.1m, 11.1m, 12.5m, 14.1m, 15.8m));
+            d.Add(R('M', 27, t,10.2m, 11.3m, 12.7m, 14.3m, 16.1m));
+            d.Add(R('M', 28, t,10.4m, 11.4m, 12.9m, 14.5m, 16.3m));
+            d.Add(R('M', 29, t,10.5m, 11.6m, 13.1m, 14.8m, 16.6m));
+            d.Add(R('M', 30, t,10.7m, 11.8m, 13.3m, 15.0m, 16.9m));
+            d.Add(R('M', 31, t,10.8m, 11.9m, 13.5m, 15.2m, 17.1m));
+            d.Add(R('M', 32, t,10.9m, 12.1m, 13.7m, 15.4m, 17.4m));
+            d.Add(R('M', 33, t,11.1m, 12.3m, 13.8m, 15.6m, 17.6m));
+            d.Add(R('M', 34, t,11.2m, 12.4m, 14.0m, 15.8m, 17.8m));
+            d.Add(R('M', 35, t,11.3m, 12.5m, 14.2m, 16.0m, 18.1m));
+            d.Add(R('M', 36, t,11.4m, 12.7m, 14.3m, 16.2m, 18.3m));
+            d.Add(R('M', 37, t,11.6m, 12.8m, 14.5m, 16.4m, 18.6m));
+            d.Add(R('M', 38, t,11.7m, 12.9m, 14.7m, 16.6m, 18.8m));
+            d.Add(R('M', 39, t,11.8m, 13.1m, 14.8m, 16.8m, 19.0m));
+            d.Add(R('M', 40, t,11.9m, 13.2m, 15.0m, 17.0m, 19.3m));
+            d.Add(R('M', 41, t,12.1m, 13.4m, 15.2m, 17.2m, 19.5m));
+            d.Add(R('M', 42, t,12.2m, 13.5m, 15.3m, 17.4m, 19.7m));
+            d.Add(R('M', 43, t,12.3m, 13.7m, 15.5m, 17.6m, 20.0m));
+            d.Add(R('M', 44, t,12.4m, 13.8m, 15.7m, 17.8m, 20.2m));
+            d.Add(R('M', 45, t,12.6m, 13.9m, 15.8m, 18.0m, 20.5m));
+            d.Add(R('M', 46, t,12.7m, 14.1m, 16.0m, 18.2m, 20.7m));
+            d.Add(R('M', 47, t,12.8m, 14.2m, 16.2m, 18.4m, 21.0m));
+            d.Add(R('M', 48, t,12.9m, 14.3m, 16.3m, 18.6m, 21.2m));
+            d.Add(R('M', 49, t,13.0m, 14.5m, 16.5m, 18.8m, 21.5m));
+            d.Add(R('M', 50, t,13.2m, 14.6m, 16.7m, 19.0m, 21.7m));
+            d.Add(R('M', 51, t,13.3m, 14.8m, 16.8m, 19.2m, 22.0m));
+            d.Add(R('M', 52, t,13.4m, 14.9m, 17.0m, 19.4m, 22.2m));
+            d.Add(R('M', 53, t,13.5m, 15.0m, 17.2m, 19.6m, 22.5m));
+            d.Add(R('M', 54, t,13.7m, 15.2m, 17.3m, 19.8m, 22.7m));
+            d.Add(R('M', 55, t,13.8m, 15.3m, 17.5m, 20.0m, 23.0m));
+            d.Add(R('M', 56, t,13.9m, 15.5m, 17.7m, 20.2m, 23.2m));
+            d.Add(R('M', 57, t,14.0m, 15.6m, 17.8m, 20.4m, 23.5m));
+            d.Add(R('M', 58, t,14.2m, 15.7m, 18.0m, 20.6m, 23.7m));
+            d.Add(R('M', 59, t,14.3m, 15.9m, 18.2m, 20.8m, 24.0m));
+            d.Add(R('M', 60, t,14.4m, 16.0m, 18.3m, 21.0m, 24.2m));
         }
 
-        private static void AgregarPesoF(List<OmsReferencia> datos)
+        // ── Peso Niñas (F) ────────────────────────────────────────────────────────
+        private static void AgregarPesoF(List<OmsReferencia> d)
         {
-            var tipo = TipoReferencia.Peso;
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 0, Tipo = tipo, Percentil3 = 2.3m, Percentil15 = 2.8m, Percentil50 = 3.2m, Percentil85 = 3.7m, Percentil97 = 4.2m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 2, Tipo = tipo, Percentil3 = 3.9m, Percentil15 = 4.5m, Percentil50 = 5.1m, Percentil85 = 5.8m, Percentil97 = 6.6m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 4, Tipo = tipo, Percentil3 = 5.0m, Percentil15 = 5.7m, Percentil50 = 6.4m, Percentil85 = 7.3m, Percentil97 = 8.2m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 6, Tipo = tipo, Percentil3 = 5.8m, Percentil15 = 6.6m, Percentil50 = 7.3m, Percentil85 = 8.2m, Percentil97 = 9.3m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 8, Tipo = tipo, Percentil3 = 6.3m, Percentil15 = 7.0m, Percentil50 = 7.9m, Percentil85 = 8.9m, Percentil97 = 10.2m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 10, Tipo = tipo, Percentil3 = 6.8m, Percentil15 = 7.5m, Percentil50 = 8.5m, Percentil85 = 9.6m, Percentil97 = 10.9m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 12, Tipo = tipo, Percentil3 = 7.1m, Percentil15 = 7.9m, Percentil50 = 8.9m, Percentil85 = 10.1m, Percentil97 = 11.5m });
+            var t = TipoReferencia.Peso;
+            d.Add(R('F', 0,  t, 2.3m,  2.8m,  3.2m,  3.7m,  4.2m));
+            d.Add(R('F', 1,  t, 3.2m,  3.6m,  4.2m,  4.8m,  5.5m));
+            d.Add(R('F', 2,  t, 3.9m,  4.5m,  5.1m,  5.8m,  6.6m));
+            d.Add(R('F', 3,  t, 4.5m,  5.2m,  5.8m,  6.6m,  7.5m));
+            d.Add(R('F', 4,  t, 5.0m,  5.7m,  6.4m,  7.3m,  8.2m));
+            d.Add(R('F', 5,  t, 5.4m,  6.1m,  6.9m,  7.8m,  8.8m));
+            d.Add(R('F', 6,  t, 5.8m,  6.6m,  7.3m,  8.2m,  9.3m));
+            d.Add(R('F', 7,  t, 6.1m,  6.8m,  7.6m,  8.6m,  9.7m));
+            d.Add(R('F', 8,  t, 6.3m,  7.0m,  7.9m,  8.9m, 10.2m));
+            d.Add(R('F', 9,  t, 6.6m,  7.3m,  8.2m,  9.3m, 10.5m));
+            d.Add(R('F', 10, t, 6.8m,  7.5m,  8.5m,  9.6m, 10.9m));
+            d.Add(R('F', 11, t, 6.9m,  7.7m,  8.7m,  9.9m, 11.2m));
+            d.Add(R('F', 12, t, 7.1m,  7.9m,  8.9m, 10.1m, 11.5m));
+            d.Add(R('F', 13, t, 7.2m,  8.1m,  9.2m, 10.4m, 11.8m));
+            d.Add(R('F', 14, t, 7.4m,  8.3m,  9.4m, 10.6m, 12.1m));
+            d.Add(R('F', 15, t, 7.6m,  8.5m,  9.6m, 10.9m, 12.4m));
+            d.Add(R('F', 16, t, 7.7m,  8.7m,  9.8m, 11.1m, 12.7m));
+            d.Add(R('F', 17, t, 7.9m,  8.9m, 10.0m, 11.4m, 13.0m));
+            d.Add(R('F', 18, t, 8.1m,  9.1m, 10.2m, 11.6m, 13.2m));
+            d.Add(R('F', 19, t, 8.2m,  9.2m, 10.4m, 11.8m, 13.5m));
+            d.Add(R('F', 20, t, 8.4m,  9.4m, 10.6m, 12.1m, 13.8m));
+            d.Add(R('F', 21, t, 8.5m,  9.6m, 10.9m, 12.3m, 14.1m));
+            d.Add(R('F', 22, t, 8.7m,  9.8m, 11.1m, 12.5m, 14.3m));
+            d.Add(R('F', 23, t, 8.9m, 10.0m, 11.3m, 12.8m, 14.6m));
+            d.Add(R('F', 24, t, 9.0m, 10.2m, 11.5m, 13.0m, 14.9m));
+            d.Add(R('F', 25, t, 9.2m, 10.3m, 11.7m, 13.3m, 15.2m));
+            d.Add(R('F', 26, t, 9.3m, 10.5m, 11.9m, 13.5m, 15.4m));
+            d.Add(R('F', 27, t, 9.5m, 10.7m, 12.1m, 13.7m, 15.7m));
+            d.Add(R('F', 28, t, 9.6m, 10.8m, 12.3m, 14.0m, 16.0m));
+            d.Add(R('F', 29, t, 9.8m, 11.0m, 12.5m, 14.2m, 16.3m));
+            d.Add(R('F', 30, t, 9.9m, 11.2m, 12.7m, 14.5m, 16.6m));
+            d.Add(R('F', 31, t,10.0m, 11.3m, 12.9m, 14.7m, 16.8m));
+            d.Add(R('F', 32, t,10.2m, 11.5m, 13.1m, 14.9m, 17.1m));
+            d.Add(R('F', 33, t,10.3m, 11.7m, 13.3m, 15.2m, 17.4m));
+            d.Add(R('F', 34, t,10.5m, 11.8m, 13.5m, 15.4m, 17.6m));
+            d.Add(R('F', 35, t,10.6m, 12.0m, 13.7m, 15.6m, 17.9m));
+            d.Add(R('F', 36, t,10.8m, 12.1m, 13.9m, 15.8m, 18.1m));
+            d.Add(R('F', 37, t,10.9m, 12.3m, 14.0m, 16.0m, 18.4m));
+            d.Add(R('F', 38, t,11.0m, 12.4m, 14.2m, 16.2m, 18.6m));
+            d.Add(R('F', 39, t,11.2m, 12.6m, 14.4m, 16.4m, 18.9m));
+            d.Add(R('F', 40, t,11.3m, 12.8m, 14.6m, 16.6m, 19.2m));
+            d.Add(R('F', 41, t,11.5m, 12.9m, 14.8m, 16.9m, 19.4m));
+            d.Add(R('F', 42, t,11.6m, 13.1m, 15.0m, 17.1m, 19.7m));
+            d.Add(R('F', 43, t,11.8m, 13.2m, 15.2m, 17.3m, 19.9m));
+            d.Add(R('F', 44, t,11.9m, 13.4m, 15.3m, 17.5m, 20.2m));
+            d.Add(R('F', 45, t,12.1m, 13.6m, 15.5m, 17.7m, 20.5m));
+            d.Add(R('F', 46, t,12.2m, 13.7m, 15.7m, 18.0m, 20.7m));
+            d.Add(R('F', 47, t,12.4m, 13.9m, 15.9m, 18.2m, 21.0m));
+            d.Add(R('F', 48, t,12.5m, 14.0m, 16.1m, 18.4m, 21.3m));
+            d.Add(R('F', 49, t,12.6m, 14.2m, 16.3m, 18.6m, 21.5m));
+            d.Add(R('F', 50, t,12.8m, 14.4m, 16.5m, 18.9m, 21.8m));
+            d.Add(R('F', 51, t,12.9m, 14.5m, 16.7m, 19.1m, 22.1m));
+            d.Add(R('F', 52, t,13.1m, 14.7m, 16.9m, 19.3m, 22.4m));
+            d.Add(R('F', 53, t,13.2m, 14.8m, 17.1m, 19.6m, 22.7m));
+            d.Add(R('F', 54, t,13.4m, 15.0m, 17.3m, 19.8m, 22.9m));
+            d.Add(R('F', 55, t,13.5m, 15.2m, 17.5m, 20.0m, 23.2m));
+            d.Add(R('F', 56, t,13.7m, 15.3m, 17.7m, 20.3m, 23.5m));
+            d.Add(R('F', 57, t,13.8m, 15.5m, 17.9m, 20.5m, 23.8m));
+            d.Add(R('F', 58, t,14.0m, 15.7m, 18.1m, 20.8m, 24.1m));
+            d.Add(R('F', 59, t,14.1m, 15.8m, 18.3m, 21.0m, 24.4m));
+            d.Add(R('F', 60, t,14.3m, 16.0m, 18.5m, 21.3m, 24.7m));
         }
 
-        private static void AgregarTallaM(List<OmsReferencia> datos)
+        // ── Talla Niños (M) ───────────────────────────────────────────────────────
+        private static void AgregarTallaM(List<OmsReferencia> d)
         {
-            var tipo = TipoReferencia.Talla;
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 0, Tipo = tipo, Percentil3 = 46.1m, Percentil15 = 48.0m, Percentil50 = 49.9m, Percentil85 = 51.8m, Percentil97 = 53.7m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 2, Tipo = tipo, Percentil3 = 54.4m, Percentil15 = 56.4m, Percentil50 = 58.4m, Percentil85 = 60.4m, Percentil97 = 62.4m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 4, Tipo = tipo, Percentil3 = 60.0m, Percentil15 = 61.9m, Percentil50 = 63.9m, Percentil85 = 65.9m, Percentil97 = 67.8m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 6, Tipo = tipo, Percentil3 = 63.3m, Percentil15 = 65.5m, Percentil50 = 67.6m, Percentil85 = 69.8m, Percentil97 = 71.9m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 8, Tipo = tipo, Percentil3 = 66.2m, Percentil15 = 68.4m, Percentil50 = 70.6m, Percentil85 = 72.8m, Percentil97 = 75.0m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 10, Tipo = tipo, Percentil3 = 68.7m, Percentil15 = 71.0m, Percentil50 = 73.3m, Percentil85 = 75.6m, Percentil97 = 77.9m });
-            datos.Add(new OmsReferencia { Sexo = 'M', EdadMeses = 12, Tipo = tipo, Percentil3 = 71.0m, Percentil15 = 73.4m, Percentil50 = 75.7m, Percentil85 = 78.1m, Percentil97 = 80.5m });
+            var t = TipoReferencia.Talla;
+            d.Add(R('M', 0,  t, 46.1m, 48.0m,  49.9m,  51.8m,  53.7m));
+            d.Add(R('M', 1,  t, 50.8m, 52.8m,  54.7m,  56.7m,  58.6m));
+            d.Add(R('M', 2,  t, 54.4m, 56.4m,  58.4m,  60.4m,  62.4m));
+            d.Add(R('M', 3,  t, 57.3m, 59.4m,  61.4m,  63.5m,  65.5m));
+            d.Add(R('M', 4,  t, 60.0m, 61.9m,  63.9m,  65.9m,  67.8m));
+            d.Add(R('M', 5,  t, 61.7m, 63.8m,  65.9m,  68.0m,  70.1m));
+            d.Add(R('M', 6,  t, 63.3m, 65.5m,  67.6m,  69.8m,  71.9m));
+            d.Add(R('M', 7,  t, 64.8m, 67.0m,  69.2m,  71.4m,  73.5m));
+            d.Add(R('M', 8,  t, 66.2m, 68.4m,  70.6m,  72.8m,  75.0m));
+            d.Add(R('M', 9,  t, 67.5m, 69.7m,  72.0m,  74.2m,  76.5m));
+            d.Add(R('M', 10, t, 68.7m, 71.0m,  73.3m,  75.6m,  77.9m));
+            d.Add(R('M', 11, t, 69.9m, 72.2m,  74.5m,  76.9m,  79.2m));
+            d.Add(R('M', 12, t, 71.0m, 73.4m,  75.7m,  78.1m,  80.5m));
+            d.Add(R('M', 13, t, 72.1m, 74.5m,  76.9m,  79.3m,  81.8m));
+            d.Add(R('M', 14, t, 73.1m, 75.6m,  78.0m,  80.5m,  83.0m));
+            d.Add(R('M', 15, t, 74.1m, 76.6m,  79.1m,  81.7m,  84.2m));
+            d.Add(R('M', 16, t, 75.0m, 77.6m,  80.2m,  82.8m,  85.4m));
+            d.Add(R('M', 17, t, 76.0m, 78.6m,  81.2m,  83.9m,  86.5m));
+            d.Add(R('M', 18, t, 76.9m, 79.6m,  82.3m,  85.0m,  87.7m));
+            d.Add(R('M', 19, t, 77.7m, 80.5m,  83.2m,  86.0m,  88.8m));
+            d.Add(R('M', 20, t, 78.6m, 81.4m,  84.2m,  87.0m,  89.9m));
+            d.Add(R('M', 21, t, 79.4m, 82.3m,  85.1m,  88.0m,  90.9m));
+            d.Add(R('M', 22, t, 80.2m, 83.1m,  86.0m,  88.9m,  91.9m));
+            d.Add(R('M', 23, t, 81.0m, 84.0m,  86.9m,  89.9m,  92.9m));
+            d.Add(R('M', 24, t, 81.7m, 84.8m,  87.8m,  90.9m,  93.9m));
+            d.Add(R('M', 25, t, 82.5m, 85.6m,  88.7m,  91.9m,  95.0m));
+            d.Add(R('M', 26, t, 83.2m, 86.4m,  89.6m,  92.8m,  96.0m));
+            d.Add(R('M', 27, t, 83.9m, 87.2m,  90.4m,  93.7m,  97.0m));
+            d.Add(R('M', 28, t, 84.7m, 87.9m,  91.2m,  94.6m,  97.9m));
+            d.Add(R('M', 29, t, 85.3m, 88.7m,  92.1m,  95.4m,  98.8m));
+            d.Add(R('M', 30, t, 86.0m, 89.4m,  92.9m,  96.3m,  99.7m));
+            d.Add(R('M', 31, t, 86.7m, 90.1m,  93.6m,  97.1m, 100.6m));
+            d.Add(R('M', 32, t, 87.3m, 90.8m,  94.4m,  97.9m, 101.5m));
+            d.Add(R('M', 33, t, 87.9m, 91.5m,  95.1m,  98.7m, 102.3m));
+            d.Add(R('M', 34, t, 88.5m, 92.2m,  95.8m,  99.5m, 103.2m));
+            d.Add(R('M', 35, t, 89.1m, 92.8m,  96.5m, 100.2m, 104.0m));
+            d.Add(R('M', 36, t, 89.7m, 93.4m,  97.2m, 101.0m, 104.8m));
+            d.Add(R('M', 37, t, 90.3m, 94.1m,  97.9m, 101.7m, 105.6m));
+            d.Add(R('M', 38, t, 90.9m, 94.7m,  98.6m, 102.5m, 106.4m));
+            d.Add(R('M', 39, t, 91.5m, 95.4m,  99.3m, 103.2m, 107.2m));
+            d.Add(R('M', 40, t, 92.0m, 96.0m,  99.9m, 103.9m, 107.9m));
+            d.Add(R('M', 41, t, 92.6m, 96.6m, 100.6m, 104.6m, 108.7m));
+            d.Add(R('M', 42, t, 93.1m, 97.2m, 101.3m, 105.3m, 109.4m));
+            d.Add(R('M', 43, t, 93.6m, 97.7m, 101.9m, 106.0m, 110.2m));
+            d.Add(R('M', 44, t, 94.2m, 98.3m, 102.6m, 106.7m, 110.9m));
+            d.Add(R('M', 45, t, 94.7m, 98.9m, 103.2m, 107.4m, 111.7m));
+            d.Add(R('M', 46, t, 95.2m, 99.5m, 103.8m, 108.0m, 112.4m));
+            d.Add(R('M', 47, t, 95.7m,100.1m, 104.5m, 108.7m, 113.1m));
+            d.Add(R('M', 48, t, 96.2m,100.6m, 105.1m, 109.4m, 113.8m));
+            d.Add(R('M', 49, t, 96.7m,101.2m, 105.7m, 110.1m, 114.5m));
+            d.Add(R('M', 50, t, 97.2m,101.8m, 106.4m, 110.7m, 115.2m));
+            d.Add(R('M', 51, t, 97.7m,102.4m, 107.0m, 111.4m, 115.9m));
+            d.Add(R('M', 52, t, 98.2m,102.9m, 107.6m, 112.1m, 116.6m));
+            d.Add(R('M', 53, t, 98.7m,103.5m, 108.2m, 112.7m, 117.3m));
+            d.Add(R('M', 54, t, 99.2m,104.1m, 108.9m, 113.4m, 118.0m));
+            d.Add(R('M', 55, t, 99.7m,104.6m, 109.5m, 114.1m, 118.7m));
+            d.Add(R('M', 56, t,100.1m,105.2m, 110.1m, 114.7m, 119.4m));
+            d.Add(R('M', 57, t,100.6m,105.7m, 110.7m, 115.3m, 120.1m));
+            d.Add(R('M', 58, t,101.1m,106.3m, 111.3m, 116.0m, 120.7m));
+            d.Add(R('M', 59, t,101.5m,106.8m, 111.9m, 116.6m, 121.4m));
+            d.Add(R('M', 60, t,102.0m,107.4m, 112.5m, 117.2m, 122.0m));
         }
 
-        private static void AgregarTallaF(List<OmsReferencia> datos)
+        // ── Talla Niñas (F) ───────────────────────────────────────────────────────
+        private static void AgregarTallaF(List<OmsReferencia> d)
         {
-            var tipo = TipoReferencia.Talla;
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 0, Tipo = tipo, Percentil3 = 45.4m, Percentil15 = 47.3m, Percentil50 = 49.1m, Percentil85 = 51.0m, Percentil97 = 52.9m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 2, Tipo = tipo, Percentil3 = 53.0m, Percentil15 = 55.0m, Percentil50 = 57.1m, Percentil85 = 59.1m, Percentil97 = 61.1m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 4, Tipo = tipo, Percentil3 = 58.0m, Percentil15 = 60.0m, Percentil50 = 62.1m, Percentil85 = 64.2m, Percentil97 = 66.2m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 6, Tipo = tipo, Percentil3 = 61.2m, Percentil15 = 63.5m, Percentil50 = 65.7m, Percentil85 = 68.0m, Percentil97 = 70.3m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 8, Tipo = tipo, Percentil3 = 64.0m, Percentil15 = 66.4m, Percentil50 = 68.7m, Percentil85 = 71.1m, Percentil97 = 73.5m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 10, Tipo = tipo, Percentil3 = 66.5m, Percentil15 = 69.0m, Percentil50 = 71.5m, Percentil85 = 73.9m, Percentil97 = 76.4m });
-            datos.Add(new OmsReferencia { Sexo = 'F', EdadMeses = 12, Tipo = tipo, Percentil3 = 68.9m, Percentil15 = 71.4m, Percentil50 = 74.0m, Percentil85 = 76.6m, Percentil97 = 79.2m });
+            var t = TipoReferencia.Talla;
+            d.Add(R('F', 0,  t, 45.4m, 47.3m,  49.1m,  51.0m,  52.9m));
+            d.Add(R('F', 1,  t, 49.8m, 51.7m,  53.7m,  55.6m,  57.6m));
+            d.Add(R('F', 2,  t, 53.0m, 55.0m,  57.1m,  59.1m,  61.1m));
+            d.Add(R('F', 3,  t, 55.6m, 57.7m,  59.8m,  61.9m,  64.0m));
+            d.Add(R('F', 4,  t, 58.0m, 60.0m,  62.1m,  64.2m,  66.2m));
+            d.Add(R('F', 5,  t, 59.9m, 62.0m,  64.0m,  66.2m,  68.2m));
+            d.Add(R('F', 6,  t, 61.2m, 63.5m,  65.7m,  68.0m,  70.3m));
+            d.Add(R('F', 7,  t, 62.7m, 64.9m,  67.3m,  69.6m,  71.9m));
+            d.Add(R('F', 8,  t, 64.0m, 66.4m,  68.7m,  71.1m,  73.5m));
+            d.Add(R('F', 9,  t, 65.3m, 67.7m,  70.1m,  72.5m,  75.0m));
+            d.Add(R('F', 10, t, 66.5m, 69.0m,  71.5m,  73.9m,  76.4m));
+            d.Add(R('F', 11, t, 67.7m, 70.3m,  72.8m,  75.3m,  77.8m));
+            d.Add(R('F', 12, t, 68.9m, 71.4m,  74.0m,  76.6m,  79.2m));
+            d.Add(R('F', 13, t, 70.0m, 72.6m,  75.2m,  77.8m,  80.5m));
+            d.Add(R('F', 14, t, 71.0m, 73.7m,  76.4m,  79.1m,  81.7m));
+            d.Add(R('F', 15, t, 72.0m, 74.8m,  77.5m,  80.3m,  83.0m));
+            d.Add(R('F', 16, t, 73.0m, 75.8m,  78.6m,  81.4m,  84.2m));
+            d.Add(R('F', 17, t, 74.0m, 76.8m,  79.7m,  82.5m,  85.4m));
+            d.Add(R('F', 18, t, 74.9m, 77.8m,  80.7m,  83.6m,  86.5m));
+            d.Add(R('F', 19, t, 75.8m, 78.8m,  81.7m,  84.7m,  87.7m));
+            d.Add(R('F', 20, t, 76.7m, 79.7m,  82.7m,  85.7m,  88.7m));
+            d.Add(R('F', 21, t, 77.5m, 80.6m,  83.7m,  86.7m,  89.8m));
+            d.Add(R('F', 22, t, 78.4m, 81.5m,  84.6m,  87.7m,  90.8m));
+            d.Add(R('F', 23, t, 79.2m, 82.3m,  85.5m,  88.7m,  91.9m));
+            d.Add(R('F', 24, t, 80.0m, 83.2m,  86.4m,  89.6m,  92.9m));
+            d.Add(R('F', 25, t, 80.8m, 84.1m,  87.4m,  90.6m,  93.9m));
+            d.Add(R('F', 26, t, 81.7m, 85.0m,  88.3m,  91.5m,  94.8m));
+            d.Add(R('F', 27, t, 82.5m, 85.8m,  89.1m,  92.5m,  95.8m));
+            d.Add(R('F', 28, t, 83.3m, 86.6m,  90.0m,  93.4m,  96.7m));
+            d.Add(R('F', 29, t, 84.0m, 87.5m,  90.9m,  94.3m,  97.7m));
+            d.Add(R('F', 30, t, 84.8m, 88.3m,  91.7m,  95.2m,  98.6m));
+            d.Add(R('F', 31, t, 85.6m, 89.1m,  92.5m,  96.0m,  99.5m));
+            d.Add(R('F', 32, t, 86.3m, 89.8m,  93.4m,  96.9m, 100.4m));
+            d.Add(R('F', 33, t, 87.0m, 90.6m,  94.2m,  97.8m, 101.3m));
+            d.Add(R('F', 34, t, 87.7m, 91.4m,  95.0m,  98.6m, 102.1m));
+            d.Add(R('F', 35, t, 88.4m, 92.2m,  95.8m,  99.5m, 103.0m));
+            d.Add(R('F', 36, t, 89.2m, 92.9m,  96.6m, 100.3m, 103.8m));
+            d.Add(R('F', 37, t, 89.9m, 93.7m,  97.4m, 101.1m, 104.7m));
+            d.Add(R('F', 38, t, 90.6m, 94.4m,  98.2m, 102.0m, 105.6m));
+            d.Add(R('F', 39, t, 91.2m, 95.1m,  98.9m, 102.8m, 106.4m));
+            d.Add(R('F', 40, t, 91.9m, 95.8m,  99.7m, 103.6m, 107.3m));
+            d.Add(R('F', 41, t, 92.6m, 96.5m, 100.5m, 104.4m, 108.1m));
+            d.Add(R('F', 42, t, 93.2m, 97.2m, 101.2m, 105.2m, 109.0m));
+            d.Add(R('F', 43, t, 93.9m, 97.9m, 102.0m, 106.0m, 109.8m));
+            d.Add(R('F', 44, t, 94.5m, 98.6m, 102.7m, 106.8m, 110.7m));
+            d.Add(R('F', 45, t, 95.2m, 99.3m, 103.5m, 107.6m, 111.5m));
+            d.Add(R('F', 46, t, 95.8m,100.0m, 104.2m, 108.4m, 112.3m));
+            d.Add(R('F', 47, t, 96.4m,100.7m, 104.9m, 109.1m, 113.1m));
+            d.Add(R('F', 48, t, 97.0m,101.4m, 105.7m, 109.9m, 114.0m));
+            d.Add(R('F', 49, t, 97.7m,102.1m, 106.4m, 110.7m, 114.8m));
+            d.Add(R('F', 50, t, 98.3m,102.7m, 107.1m, 111.5m, 115.7m));
+            d.Add(R('F', 51, t, 98.9m,103.4m, 107.8m, 112.2m, 116.5m));
+            d.Add(R('F', 52, t, 99.5m,104.0m, 108.5m, 113.0m, 117.3m));
+            d.Add(R('F', 53, t,100.1m,104.7m, 109.2m, 113.7m, 118.1m));
+            d.Add(R('F', 54, t,100.7m,105.3m, 109.9m, 114.5m, 118.9m));
+            d.Add(R('F', 55, t,101.2m,105.9m, 110.6m, 115.2m, 119.7m));
+            d.Add(R('F', 56, t,101.8m,106.5m, 111.3m, 115.9m, 120.5m));
+            d.Add(R('F', 57, t,102.4m,107.2m, 112.0m, 116.7m, 121.3m));
+            d.Add(R('F', 58, t,102.9m,107.8m, 112.6m, 117.4m, 122.1m));
+            d.Add(R('F', 59, t,103.5m,108.4m, 113.3m, 118.1m, 122.9m));
+            d.Add(R('F', 60, t,104.0m,109.0m, 114.0m, 118.8m, 123.7m));
         }
+
+        private static OmsReferencia R(char sexo, int edad, TipoReferencia tipo,
+            decimal p3, decimal p15, decimal p50, decimal p85, decimal p97) =>
+            new() { Sexo = sexo, EdadMeses = edad, Tipo = tipo,
+                    Percentil3 = p3, Percentil15 = p15, Percentil50 = p50,
+                    Percentil85 = p85, Percentil97 = p97 };
     }
 }

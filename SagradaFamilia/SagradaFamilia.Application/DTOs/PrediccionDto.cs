@@ -26,5 +26,26 @@
             public string Service { get; set; } = string.Empty;
             public string? Version { get; set; } = string.Empty;
         }
+
+        /// <summary>
+        /// Curvas de referencia OMS (P3, P15, P50, P85, P97) para graficar
+        /// las líneas de percentil en el chart de predicciones.
+        /// </summary>
+        public class CurvasOms
+        {
+            public char   Sexo    { get; set; }
+            public string Tipo    { get; set; } = string.Empty; // "Peso" | "Talla"
+            public List<PuntoOms> Curvas { get; set; } = new();
+        }
+
+        public class PuntoOms
+        {
+            public int     EdadMeses   { get; set; }
+            public decimal Percentil3  { get; set; }
+            public decimal Percentil15 { get; set; }
+            public decimal Percentil50 { get; set; }
+            public decimal Percentil85 { get; set; }
+            public decimal Percentil97 { get; set; }
+        }
     }
 }

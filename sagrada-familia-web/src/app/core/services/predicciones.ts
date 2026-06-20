@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
-import { PrediccionHealth, PrediccionResponse } from '../../shared/interfaces/prediccion.interface';
+import { CurvasOmsResponse, PrediccionHealth, PrediccionResponse } from '../../shared/interfaces/prediccion.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +15,12 @@ export class Predicciones {
   obtenerPorNino(ninoId: number) {
     return this.http.get<ApiResponse<PrediccionResponse>>(
       `${this.url}/nino/${ninoId}`, { withCredentials: true }
+    );
+  }
+
+  obtenerCurvasOms(ninoId: number) {
+    return this.http.get<ApiResponse<CurvasOmsResponse>>(
+      `${this.url}/nino/${ninoId}/curvas-oms`, { withCredentials: true }
     );
   }
 
