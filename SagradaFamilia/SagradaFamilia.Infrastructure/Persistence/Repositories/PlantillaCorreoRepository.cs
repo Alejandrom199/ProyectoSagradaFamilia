@@ -14,7 +14,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<PlantillaCorreo>> ObtenerTodosAsync() =>
             await _context.PlantillasCorreo
                 .Where(p => !p.Eliminado)
-                .OrderBy(p => p.Codigo)
+                .OrderBy(p => p.Nombre)
                 .ToListAsync();
 
         public async Task<PlantillaCorreo?> ObtenerPorIdAsync(int id) =>

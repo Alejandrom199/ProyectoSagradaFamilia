@@ -117,7 +117,13 @@ import {
   // Medidas progreso
   matHeightOutline,
   matHistoryOutline,
-  matStraightenOutline
+  matStraightenOutline,
+  // Dashboard admin
+  matHourglassBottomOutline,
+  matBoltOutline,
+  matInfoOutline,
+  // Crear usuario
+  matGroupOutline
 } from '@ng-icons/material-icons/outline';
 
 // ── Exportación combinada para provideIcons global ────────────────────────────
@@ -231,7 +237,13 @@ export const APP_ICONS = {
   // Medidas progreso
   matHeightOutline,
   matHistoryOutline,
-  matStraightenOutline
+  matStraightenOutline,
+  // Dashboard admin
+  matHourglassBottomOutline,
+  matBoltOutline,
+  matInfoOutline,
+  // Crear usuario
+  matGroupOutline
 };
 
 /**

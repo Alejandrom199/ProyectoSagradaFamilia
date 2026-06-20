@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
-import { AuditoriaResponse, LogSistemaResponse } from '../../shared/interfaces/sistema.interface';
+import { AuditoriaResponse, DashboardAdminResponse, LogSistemaResponse } from '../../shared/interfaces/sistema.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -59,6 +59,12 @@ export class SistemaService {
   obtenerErroresRecientes(): Observable<ApiResponse<LogSistemaResponse[]>> {
     return this.http.get<ApiResponse<LogSistemaResponse[]>>(
       `${this.url}/logs/errores`, { withCredentials: true }
+    );
+  }
+
+  obtenerDashboardAdmin(): Observable<ApiResponse<DashboardAdminResponse>> {
+    return this.http.get<ApiResponse<DashboardAdminResponse>>(
+      `${this.url}/dashboard`, { withCredentials: true }
     );
   }
 }

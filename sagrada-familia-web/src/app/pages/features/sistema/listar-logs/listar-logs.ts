@@ -63,8 +63,7 @@ export class ListarLogs implements OnInit {
   ];
 
   migajas: BreadcrumbItem[] = [
-    { label: 'Sistema' },
-    { label: 'Logs del sistema' },
+    { label: 'Eventos del sistema' },
   ];
 
   ngOnInit(): void {
