@@ -23,7 +23,6 @@ export interface MedicoDetailResponse {
 
 export interface MedicoCreate {
     email: string;
-    password?: string;
     nombre: string;
     apellido: string;
     especialidad?: string;

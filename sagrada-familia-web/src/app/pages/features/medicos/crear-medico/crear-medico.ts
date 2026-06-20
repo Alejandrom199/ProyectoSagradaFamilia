@@ -9,27 +9,24 @@ import { LoadingBar } from '../../../../core/services/loading-bar';
 import { MedicosService } from '../../../../core/services/medicos';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { MedicoCreate } from '../../../../shared/interfaces/medico.interface';
-import { passwordValidator } from '../../../../shared/validators/password.validator';
 
 @Component({
   selector: 'app-crear-medico',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
-
   templateUrl: './crear-medico.html',
   styleUrl: './crear-medico.css',
 })
 export class CrearMedico implements OnInit {
-  private fb = inject(FormBuilder);
+  private fb             = inject(FormBuilder);
   private medicosService = inject(MedicosService);
-  private router = inject(Router);
-  private loadingBar = inject(LoadingBar);
+  private router         = inject(Router);
+  private loadingBar     = inject(LoadingBar);
 
   formMedico!: FormGroup;
 
   guardando = signal(false);
-  error = signal<string | null>(null);
-  verPassword = signal(false);
+  error     = signal<string | null>(null);
 
   migajas: BreadcrumbItem[] = [
     { label: 'Médicos', ruta: '/medicos' },
@@ -42,12 +39,11 @@ export class CrearMedico implements OnInit {
 
   private initForm(): FormGroup {
     return this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      apellido: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, passwordValidator]],
-      especialidad: ['', [Validators.minLength(3)]],
-      telefono: ['', [Validators.pattern('^[0-9]{10}$')]]
+      nombre:       ['', [Validators.required, Validators.minLength(2)]],
+      apellido:     ['', [Validators.required, Validators.minLength(2)]],
+      email:        ['', [Validators.required, Validators.email]],
+      especialidad: [''],
+      telefono:     ['', [Validators.pattern('^[0-9]{10}$')]],
     });
   }
 
@@ -65,21 +61,23 @@ export class CrearMedico implements OnInit {
     this.error.set(null);
     this.loadingBar.show();
 
-    const data = this.formMedico.getRawValue() as MedicoCreate;
+    const v = this.formMedico.value;
+    const data: MedicoCreate = {
+      email:        v.email,
+      nombre:       v.nombre,
+      apellido:     v.apellido,
+      especialidad: v.especialidad || undefined,
+      telefono:     v.telefono     || undefined,
+    };
 
     this.medicosService.crear(data)
-      .pipe(
-        finalize(() => {
-          this.guardando.set(false);
-          this.loadingBar.complete();
-        })
-      )
+      .pipe(finalize(() => { this.guardando.set(false); this.loadingBar.complete(); }))
       .subscribe({
-        next: (res) => {
+        next:  (res) => {
           if (res.success) this.router.navigate(['/medicos']);
           else this.error.set(res.message);
         },
-        error: () => this.error.set('Ocurrió un error crítico en el servidor. Intente más tarde.')
+        error: () => this.error.set('Ocurrió un error crítico en el servidor. Intente más tarde.'),
       });
   }
 }

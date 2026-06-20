@@ -22,7 +22,6 @@ export interface UsuarioDetailResponse {
 
 export interface UsuarioCreate {
     email: string;
-    password?: string;
     rolId: number;
 }
 
