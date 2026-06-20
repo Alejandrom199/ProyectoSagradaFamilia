@@ -1,6 +1,6 @@
 export interface PlantillaResponse {
-    id: number;
-    codigo: string;
+    id:     number;
+    codigo: string | null; // null para plantillas creadas por el administrador
     nombre: string;
     asunto: string;
     cuerpo: string;
@@ -10,7 +10,6 @@ export interface PlantillaResponse {
 }
 
 export interface PlantillaCreate {
-    codigo: string;
     nombre: string;
     asunto: string;
     cuerpo: string;

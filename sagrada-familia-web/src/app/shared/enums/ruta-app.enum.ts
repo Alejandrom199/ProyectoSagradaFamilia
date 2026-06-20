@@ -1,4 +1,5 @@
 export enum RutaApp {
+  Dashboard      = '/dashboard',
   Padres         = '/padres',
   Medicos        = '/medicos',
   Pacientes      = '/pacientes',
@@ -8,5 +9,6 @@ export enum RutaApp {
   Prescripciones = '/prescripciones',
   Parametros     = '/parametros',
   Plantillas     = '/sistema/plantillas',
+  EventosCorreo  = '/sistema/eventos-correo',
   Roles          = '/roles',
 }

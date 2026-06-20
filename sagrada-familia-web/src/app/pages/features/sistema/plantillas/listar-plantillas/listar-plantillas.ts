@@ -1,8 +1,11 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
 
 import { BreadcrumbItem, Breadcrumb } from '../../../../../shared/components/breadcrumb/breadcrumb';
 import { Datatable, DatatableColumn, DatatableAction } from '../../../../../shared/components/datatable/datatable';
+import { Button } from '../../../../../shared/components/button/button';
+import { ConfirmModal } from '../../../../../shared/components/confirm-modal/confirm-modal';
 import { LoadingBar } from '../../../../../core/services/loading-bar';
 import { PlantillasService } from '../../../../../core/services/plantillas';
 import { PlantillaResponse } from '../../../../../shared/interfaces/plantilla.interface';
@@ -13,7 +16,7 @@ import { RutaApp } from '../../../../../shared/enums/ruta-app.enum';
 
 @Component({
   selector: 'app-listar-plantillas',
-  imports: [Breadcrumb, Datatable],
+  imports: [RouterLink, NgIcon, Breadcrumb, Datatable, Button, ConfirmModal],
   templateUrl: './listar-plantillas.html',
 })
 export class ListarPlantillas implements OnInit {
@@ -25,7 +28,9 @@ export class ListarPlantillas implements OnInit {
   protected readonly Accion  = Accion;
   protected readonly RutaApp = RutaApp;
 
-  plantillas = signal<PlantillaResponse[]>([]);
+  plantillas          = signal<PlantillaResponse[]>([]);
+  plantillaAEliminar  = signal<PlantillaResponse | null>(null);
+  errorEliminar       = signal('');
 
   migajas: BreadcrumbItem[] = [
     { label: 'Sistema' },
@@ -34,13 +39,16 @@ export class ListarPlantillas implements OnInit {
 
   columnas: DatatableColumn<PlantillaResponse>[] = [
     {
+      key: 'nombre', label: 'Nombre', sortable: true,
+    },
+    {
       key: 'codigo', label: 'Código',
       render: (row) => {
+        if (!row.codigo) return '<span class="text-slate-400 text-xs">—</span>';
         const cls = this.etiquetaCodigo(row.codigo);
         return `<span class="px-2 py-0.5 rounded text-xs font-mono font-semibold ${cls}">${row.codigo}</span>`;
       }
     },
-    { key: 'nombre', label: 'Nombre', sortable: true },
     { key: 'asunto', label: 'Asunto', sortable: true },
     {
       key: 'activo', label: 'Estado', sortable: true,
@@ -55,10 +63,10 @@ export class ListarPlantillas implements OnInit {
   ];
 
   readonly acciones = computed<DatatableAction<PlantillaResponse>[]>(() => {
+    const puede = (a: Accion) => this.menu.puedeHacer(RutaApp.Plantillas, a);
     const lista: DatatableAction<PlantillaResponse>[] = [];
-    if (this.menu.puedeHacer(RutaApp.Plantillas, Accion.Editar)) {
-      lista.push({ type: 'editar', onClick: (row) => this.router.navigate(['/sistema/plantillas', row.id, 'editar']) });
-    }
+    if (puede(Accion.Editar))   lista.push({ type: 'editar',   onClick: (row) => this.router.navigate(['/sistema/plantillas', row.id, 'editar']) });
+    if (puede(Accion.Eliminar)) lista.push({ type: 'eliminar', onClick: (row) => this.plantillaAEliminar.set(row) });
     return lista;
   });
 
@@ -71,6 +79,30 @@ export class ListarPlantillas implements OnInit {
     this.plantillasService.obtenerTodos().subscribe({
       next: (r) => { if (r.success) this.plantillas.set(r.data); this.loadingBar.complete(); },
       error: () => this.loadingBar.complete()
+    });
+  }
+
+  confirmarEliminar(): void {
+    const plantilla = this.plantillaAEliminar();
+    if (!plantilla) return;
+    this.errorEliminar.set('');
+    this.loadingBar.show();
+    this.plantillasService.eliminar(plantilla.id).subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.plantillas.update(lista => lista.filter(p => p.id !== plantilla.id));
+          this.plantillaAEliminar.set(null);
+        } else {
+          this.errorEliminar.set(r.message);
+          this.plantillaAEliminar.set(null);
+        }
+        this.loadingBar.complete();
+      },
+      error: (err) => {
+        this.errorEliminar.set(err?.error?.message ?? 'No se pudo eliminar la plantilla.');
+        this.plantillaAEliminar.set(null);
+        this.loadingBar.complete();
+      }
     });
   }
 

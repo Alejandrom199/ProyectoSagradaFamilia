@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, inject, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
@@ -7,7 +7,7 @@ import { EditorComponent } from 'ngx-monaco-editor-v2';
 import { Breadcrumb, BreadcrumbItem } from '../../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../../core/services/loading-bar';
 import { PlantillasService } from '../../../../../core/services/plantillas';
-import { PlantillaResponse, PlantillaUpdate } from '../../../../../shared/interfaces/plantilla.interface';
+import { PlantillaCreate } from '../../../../../shared/interfaces/plantilla.interface';
 
 interface Variable {
   token:       string;
@@ -15,29 +15,22 @@ interface Variable {
 }
 
 @Component({
-  selector: 'app-editar-plantilla',
+  selector: 'app-crear-plantilla',
   standalone: true,
   imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, EditorComponent],
-  templateUrl: './editar-plantilla.html',
+  templateUrl: './crear-plantilla.html',
 })
-export class EditarPlantilla implements OnInit {
-  @Input() id!: string;
+export class CrearPlantilla {
+  private readonly plantillasService = inject(PlantillasService);
+  private readonly router            = inject(Router);
+  private readonly loadingBar        = inject(LoadingBar);
+  private readonly sanitizer         = inject(DomSanitizer);
 
-  private plantillasService = inject(PlantillasService);
-  private router = inject(Router);
-  private loadingBar = inject(LoadingBar);
-  private sanitizer = inject(DomSanitizer);
-
-  plantilla = signal<PlantillaResponse | null>(null);
-  guardando = signal(false);
-  error = signal('');
-  submitted = signal(false);
+  guardando  = signal(false);
+  error      = signal('');
+  submitted  = signal(false);
   vistaPrevia = signal(false);
   private editorInstance: any = null;
-
-  onEditorInit(editor: any): void {
-    this.editorInstance = editor;
-  }
 
   readonly editorOptions = {
     language: 'html',
@@ -52,18 +45,9 @@ export class EditarPlantilla implements OnInit {
     tabSize: 2,
   };
 
-  get htmlSeguro(): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(this.form.cuerpo);
-  }
+  form = { nombre: '', asunto: '', cuerpo: '' };
 
-  form = {
-    nombre: '',
-    asunto: '',
-    cuerpo: '',
-    activo: true,
-  };
-
-  // Todas las variables disponibles en el sistema (cada evento documenta cuáles provee)
+  // Todas las variables disponibles en el sistema
   readonly variables: Variable[] = [
     { token: '{{NOMBRE}}',   descripcion: 'Nombre del destinatario' },
     { token: '{{APELLIDO}}', descripcion: 'Apellido del destinatario' },
@@ -74,30 +58,15 @@ export class EditarPlantilla implements OnInit {
   migajas: BreadcrumbItem[] = [
     { label: 'Sistema' },
     { label: 'Plantillas de correo', ruta: '/sistema/plantillas' },
-    { label: 'Editar' },
+    { label: 'Nueva plantilla' },
   ];
 
-  ngOnInit(): void {
-    this.loadingBar.show();
-    this.plantillasService.obtenerPorId(parseInt(this.id)).subscribe({
-      next: (r) => {
-        if (r.success) {
-          this.plantilla.set(r.data);
-          this.form = {
-            nombre:  r.data.nombre,
-            asunto:  r.data.asunto,
-            cuerpo:  r.data.cuerpo,
-            activo:  r.data.activo,
-          };
-        }
-        this.loadingBar.complete();
-      },
-      error: () => this.loadingBar.complete()
-    });
+  get htmlSeguro(): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(this.form.cuerpo);
   }
 
-  variablesAplicables(): Variable[] {
-    return this.variables;
+  onEditorInit(editor: any): void {
+    this.editorInstance = editor;
   }
 
   insertar(token: string): void {
@@ -122,14 +91,13 @@ export class EditarPlantilla implements OnInit {
     this.guardando.set(true);
     this.loadingBar.show();
 
-    const request: PlantillaUpdate = {
-      nombre:  this.form.nombre.trim(),
-      asunto:  this.form.asunto.trim(),
-      cuerpo:  this.form.cuerpo,
-      activo:  this.form.activo,
+    const request: PlantillaCreate = {
+      nombre: this.form.nombre.trim(),
+      asunto: this.form.asunto.trim(),
+      cuerpo: this.form.cuerpo,
     };
 
-    this.plantillasService.actualizar(parseInt(this.id), request).subscribe({
+    this.plantillasService.crear(request).subscribe({
       next: (r) => {
         if (r.success) this.router.navigate(['/sistema/plantillas']);
         else this.error.set(r.message);
@@ -137,7 +105,7 @@ export class EditarPlantilla implements OnInit {
         this.loadingBar.complete();
       },
       error: (err) => {
-        this.error.set(err.error?.message ?? 'Error al guardar.');
+        this.error.set(err?.error?.message ?? 'Error al crear la plantilla.');
         this.guardando.set(false);
         this.loadingBar.complete();
       }

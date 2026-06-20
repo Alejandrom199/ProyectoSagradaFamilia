@@ -1,0 +1,111 @@
+<div class="page-container animate-fade-in">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+
+    <div class="mb-6">
+        <h2 class="page-title">Eventos de correo</h2>
+        <p class="page-subtitle">
+            Los eventos son los momentos del sistema que disparan un correo.
+            Asigná la plantilla que querés usar en cada uno.
+        </p>
+    </div>
+
+    @if (cargando()) {
+    <div class="flex items-center justify-center py-16 text-slate-400">
+        <span class="w-5 h-5 border-2 border-slate-300 border-t-blue-500 rounded-full animate-spin mr-3"></span>
+        Cargando eventos...
+    </div>
+    } @else {
+
+    <div class="space-y-4">
+        @for (estado of estados(); track trackById($index, estado)) {
+        <div class="bg-white border border-slate-200 rounded-md overflow-hidden">
+
+            <!-- Cabecera del evento -->
+            <div class="px-6 py-4 border-b border-slate-100 flex items-start gap-4">
+                <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
+                    <ng-icon name="matMailOutline" class="text-blue-500 text-base"></ng-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h3 class="text-sm font-bold text-slate-800">{{ estado.evento.nombre }}</h3>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-slate-100 text-slate-600">
+                            {{ estado.evento.codigo }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">{{ estado.evento.descripcion }}</p>
+
+                    <!-- Variables disponibles -->
+                    @if (estado.evento.variables.length > 0) {
+                    <div class="flex items-center gap-2 mt-2 flex-wrap">
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Variables:</span>
+                        @for (v of estado.evento.variables; track v) {
+                        <code class="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-[10px] font-mono">{{ '{{' + v + '}}' }}</code>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Asignación de plantilla -->
+            <div class="px-6 py-4 flex items-center gap-4 flex-wrap">
+                <div class="flex-1 min-w-48">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
+                        Plantilla asignada
+                    </label>
+                    <select [(ngModel)]="estado.plantillaSeleccionada"
+                        class="w-full px-3 py-2 rounded-md border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                        <option [ngValue]="null">— Sin plantilla asignada —</option>
+                        @for (p of plantillas(); track p.id) {
+                        <option [ngValue]="p.id">{{ p.nombre }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-3 pt-5">
+                    @if (cambioRealizado(estado)) {
+                    <button (click)="guardarAsignacion(estado)" [disabled]="estado.guardando"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md text-xs font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2">
+                        @if (estado.guardando) {
+                        <span class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        }
+                        Guardar
+                    </button>
+                    }
+                    @if (estado.exito) {
+                    <div class="flex items-center gap-1.5 text-emerald-600 text-xs font-semibold">
+                        <ng-icon name="matCheckCircleOutline" class="text-base"></ng-icon>
+                        Guardado
+                    </div>
+                    }
+                    @if (estado.error) {
+                    <p class="text-xs text-red-600 font-medium">{{ estado.error }}</p>
+                    }
+
+                    <!-- Estado de la plantilla actual -->
+                    @if (!cambioRealizado(estado)) {
+                        @if (estado.evento.plantillaCorreoId) {
+                        <span class="text-xs font-semibold"
+                            [class.text-emerald-600]="estado.evento.plantillaActiva"
+                            [class.text-amber-600]="!estado.evento.plantillaActiva">
+                            {{ estado.evento.plantillaActiva ? '● Activa' : '● Inactiva' }}
+                        </span>
+                        } @else {
+                        <span class="text-xs text-red-500 font-semibold">● Sin plantilla</span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-md flex items-start gap-3">
+        <ng-icon name="matInfoOutline" class="text-slate-400 text-base mt-0.5 shrink-0"></ng-icon>
+        <p class="text-xs text-slate-500 leading-relaxed">
+            Los eventos están definidos en el código del sistema y no pueden crearse ni eliminarse desde aquí.
+            Para agregar nuevas plantillas, andá a
+            <a routerLink="/sistema/plantillas" class="text-blue-600 underline underline-offset-2">Plantillas de correo</a>.
+        </p>
+    </div>
+    }
+</div>

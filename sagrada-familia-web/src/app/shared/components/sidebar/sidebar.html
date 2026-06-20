@@ -25,7 +25,7 @@
     <nav class="flex-1 overflow-y-auto overflow-x-hidden py-3 scrollbar-none" [class.px-2]="sidebarExpandido()"
         [class.px-1.5]="!sidebarExpandido()">
 
-        @if (auth.esMedico()) {
+        @if (auth.esMedico() || auth.esAdmin()) {
         <div class="mb-1">
             @if (sidebarExpandido()) {
             <a routerLink="/dashboard" routerLinkActive="sidebar-active" [routerLinkActiveOptions]="{ exact: true }"
@@ -44,8 +44,9 @@
         </div>
         }
 
-        <!-- Módulos -->
+        <!-- Módulos del menú (se omite "Principal" — Dashboard se muestra hardcodeado arriba) -->
         @for (modulo of menu(); track modulo.id) {
+        @if (modulo.nombre !== 'Principal') {
 
         @if (sidebarExpandido()) {
         <div class="mb-1">
@@ -95,6 +96,7 @@
         </div>
         }
 
+        } <!-- fin @if modulo.nombre !== 'Principal' -->
         }
     </nav>
 
