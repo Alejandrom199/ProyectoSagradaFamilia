@@ -32,6 +32,11 @@ export class NinosService {
     return this.http.get<ApiResponse<NinoResponse[]>>(`${this.url}/mis-ninos`, { withCredentials: true });
   }
 
+  // Admin — todos los ninos del sistema (GET /ninos/todos)
+  obtenerTodosAdmin(): Observable<ApiResponse<NinoResponse[]>> {
+    return this.http.get<ApiResponse<NinoResponse[]>>(`${this.url}/todos`, { withCredentials: true });
+  }
+
   // Médico/Admin — hijos de un padre específico
   obtenerPorPadre(padreId: number): Observable<ApiResponse<NinoResponse[]>> {
     return this.http.get<ApiResponse<NinoResponse[]>>(`${this.url}/padre/${padreId}`, { withCredentials: true });

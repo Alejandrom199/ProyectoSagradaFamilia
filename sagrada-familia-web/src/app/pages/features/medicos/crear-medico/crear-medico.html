@@ -25,10 +25,10 @@
                         </div>
 
                         <div class="flex gap-4">
-                            <div class="mt-1"><ng-icon name="matLockOutline" class="text-blue-500 text-lg"></ng-icon></div>
+                            <div class="mt-1"><ng-icon name="matMailOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Seguridad</h4>
-                                <p class="text-xs text-slate-500 mt-1">Define una contraseña temporal. El médico podrá cambiarla luego desde su perfil.</p>
+                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Activación por correo</h4>
+                                <p class="text-xs text-slate-500 mt-1">El médico recibirá un correo con un enlace para <strong>establecer su propia contraseña</strong> y activar su cuenta.</p>
                             </div>
                         </div>
 
@@ -36,7 +36,7 @@
                             <div class="mt-1"><ng-icon name="matWorkOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Siguiente paso</h4>
-                                <p class="text-xs text-slate-500 mt-1">Tras la creación, el médico podrá registrar <strong>padres y pacientes</strong> asignados a su consulta.</p>
+                                <p class="text-xs text-slate-500 mt-1">Tras la activación, el médico podrá registrar <strong>padres y pacientes</strong> asignados a su consulta.</p>
                             </div>
                         </div>
                     </div>
@@ -84,50 +84,6 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Contraseña Provisoria *</label>
-                            <div class="relative">
-                                <ng-icon name="matLockOutline"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
-                                <input formControlName="password" [type]="verPassword() ? 'text' : 'password'"
-                                    placeholder="••••••••"
-                                    class="w-full pl-10 pr-10 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
-                                    [class.border-red-500]="f['password'].invalid && f['password'].touched">
-                                <button type="button" (click)="verPassword.set(!verPassword())"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors">
-                                    <ng-icon [name]="verPassword() ? 'matVisibilityOffOutline' : 'matVisibilityOutline'"></ng-icon>
-                                </button>
-                            </div>
-                            @if (f['password'].touched && f['password'].errors) {
-                            <div class="flex flex-col gap-0.5 ml-1">
-                              @if (f['password'].errors['minLength']) {
-                                <span class="text-[11px] text-red-500 font-medium">Mínimo 8 caracteres</span>
-                              }
-                              @if (f['password'].errors['uppercase']) {
-                                <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos una letra mayúscula</span>
-                              }
-                              @if (f['password'].errors['number']) {
-                                <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos un número</span>
-                              }
-                              @if (f['password'].errors['special']) {
-                                <span class="text-[11px] text-red-500 font-medium">Debe incluir al menos un símbolo especial (!@#$...)</span>
-                              }
-                            </div>
-                            }
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Especialidad</label>
-                            <div class="relative">
-                                <ng-icon name="matWorkOutline"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
-                                <input formControlName="especialidad" type="text" placeholder="Ej. Pediatría general"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col gap-1.5">
                             <label class="text-xs font-bold text-slate-600 uppercase ml-1">Teléfono Móvil (10 dígitos)</label>
                             <div class="relative">
                                 <ng-icon name="matPhoneOutline"
@@ -140,6 +96,23 @@
                             <span class="text-[11px] text-red-500 font-medium ml-1">Formato: 10 dígitos</span>
                             }
                         </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Especialidad</label>
+                        <div class="relative">
+                            <ng-icon name="matWorkOutline"
+                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
+                            <input formControlName="especialidad" type="text" placeholder="Ej. Pediatría general"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-3 bg-blue-50 border border-blue-100 rounded-md">
+                        <ng-icon name="matMailOutline" class="text-blue-500 text-base mt-0.5 shrink-0"></ng-icon>
+                        <p class="text-xs text-blue-700 leading-relaxed">
+                            Se enviará un correo a <strong>{{ f['email'].value || 'la dirección indicada' }}</strong> con un enlace para que el médico establezca su contraseña y active su cuenta.
+                        </p>
                     </div>
 
                     @if (error()) {
@@ -161,7 +134,7 @@
                             Guardando...
                             } @else {
                             <ng-icon name="matSchoolOutline" class="text-lg"></ng-icon>
-                            Registrar
+                            Registrar y enviar correo
                             }
                         </button>
                     </div>

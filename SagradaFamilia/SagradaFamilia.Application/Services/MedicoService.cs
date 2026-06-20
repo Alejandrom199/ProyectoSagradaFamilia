@@ -100,45 +100,57 @@ public class MedicoService : IMedicoService
         _logger.LogInformation("Iniciando registro de nuevo médico: {Nombre} {Apellido} con Email: {Email}",
             request.Nombre, request.Apellido, request.Email);
 
-        // 1. Validación de duplicidad de correo electrónico
         if (await _usuarioRepository.ExisteEmailAsync(request.Email))
         {
             _logger.LogWarning("Fallo en registro: El email {Email} ya se encuentra en uso.", request.Email);
             throw new BusinessException("Ya existe un médico registrado con ese correo electrónico.");
         }
 
-        // 2. Transacción para asegurar la creación atómica de Usuario + Medico
         await _unitOfWork.BeginTransactionAsync();
 
         try
         {
-            // Crear cuenta de acceso al sistema
             var usuario = new Usuario
             {
-                Email = request.Email,
-                PasswordHash = BCrypt.HashPassword(request.Password),
-                RolId = (int)RolEnum.Medico, // 2 para Médico
-                Activo = true
+                Email        = request.Email,
+                PasswordHash = BCrypt.HashPassword(Guid.NewGuid().ToString()),
+                RolId        = (int)RolEnum.Medico,
+                Activo       = false
             };
             await _usuarioRepository.CrearAsync(usuario);
-            _logger.LogDebug("Cuenta de usuario creada con ID: {UId}", usuario.Id);
+            _logger.LogDebug("Cuenta de usuario creada (inactiva) para {Email} con ID: {UId}", request.Email, usuario.Id);
 
-            // Crear perfil profesional vinculado al usuario
             var medico = new Medico
             {
-                UsuarioId = usuario.Id,
-                Nombre = request.Nombre,
-                Apellido = request.Apellido,
+                UsuarioId    = usuario.Id,
+                Nombre       = request.Nombre,
+                Apellido     = request.Apellido,
                 Especialidad = request.Especialidad,
-                Telefono = request.Telefono
+                Telefono     = request.Telefono
             };
             var creado = await _medicoRepository.CrearAsync(medico);
 
+            var token = new PasswordResetToken
+            {
+                UsuarioId       = usuario.Id,
+                Token           = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64)),
+                FechaExpiracion = DateTime.UtcNow.AddHours(48)
+            };
+            await _resetTokenRepository.CrearAsync(token);
+
             await _unitOfWork.CommitAsync();
-            _logger.LogInformation("Médico '{Nombre} {Apellido}' registrado exitosamente con ID: {Id}",
+            _logger.LogInformation("Médico '{Nombre} {Apellido}' registrado (pendiente activación) con ID: {Id}",
                 creado.Nombre, creado.Apellido, creado.Id);
 
-            // Devolver detalle completo
+            var link = $"{_appSettings.FrontendUrl}/activar-cuenta?token={token.Token}";
+            var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync("CUENTA_MEDICO", new Dictionary<string, string>
+            {
+                ["NOMBRE"]   = request.Nombre,
+                ["APELLIDO"] = request.Apellido,
+                ["LINK"]     = link
+            });
+            await _emailService.EnviarAsync(request.Email, asunto, cuerpo);
+
             var medicoCompleto = await _medicoRepository.ObtenerPorIdAsync(creado.Id);
             return _mapper.Map<MedicoDto.DetailResponse>(medicoCompleto!);
         }

@@ -3,24 +3,42 @@
 using AutoMapper;
 using BCrypt.Net;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Settings;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Exceptions;
+using SagradaFamilia.Domain.Interfaces.Repositories;
 
 public class UsuarioService : IUsuarioService
 {
     private readonly IUsuarioRepository _usuarioRepository;
+    private readonly IPasswordResetTokenRepository _resetTokenRepository;
+    private readonly IEmailService _emailService;
+    private readonly IEmailTemplateService _emailTemplateService;
+    private readonly AppSettings _appSettings;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly ILogger<UsuarioService> _logger;
 
     public UsuarioService(
         IUsuarioRepository usuarioRepository,
+        IPasswordResetTokenRepository resetTokenRepository,
+        IEmailService emailService,
+        IEmailTemplateService emailTemplateService,
+        IOptions<AppSettings> appSettings,
+        IUnitOfWork unitOfWork,
         IMapper mapper,
         ILogger<UsuarioService> logger)
     {
         _usuarioRepository = usuarioRepository;
+        _resetTokenRepository = resetTokenRepository;
+        _emailService = emailService;
+        _emailTemplateService = emailTemplateService;
+        _appSettings = appSettings.Value;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
         _logger = logger;
     }
@@ -69,21 +87,47 @@ public class UsuarioService : IUsuarioService
             throw new BusinessException("El correo electrónico ya se encuentra registrado.");
         }
 
-        var usuario = new Usuario
+        await _unitOfWork.BeginTransactionAsync();
+
+        try
         {
-            Email = request.Email,
-            PasswordHash = BCrypt.HashPassword(request.Password),
-            RolId = request.RolId,
-            Activo = true 
-        };
+            var usuario = new Usuario
+            {
+                Email        = request.Email,
+                PasswordHash = BCrypt.HashPassword(Guid.NewGuid().ToString()),
+                RolId        = request.RolId,
+                Activo       = false
+            };
+            var creado = await _usuarioRepository.CrearAsync(usuario);
 
-        var creado = await _usuarioRepository.CrearAsync(usuario);
+            var token = new PasswordResetToken
+            {
+                UsuarioId       = creado.Id,
+                Token           = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64)),
+                FechaExpiracion = DateTime.UtcNow.AddHours(48)
+            };
+            await _resetTokenRepository.CrearAsync(token);
 
-        _logger.LogInformation("Usuario {Email} creado exitosamente con ID: {Id}", creado.Email, creado.Id);
+            await _unitOfWork.CommitAsync();
+            _logger.LogInformation("Usuario {Email} creado (pendiente activación) con ID: {Id}", creado.Email, creado.Id);
 
-        var usuarioCompleto = await _usuarioRepository.ObtenerPorIdAsync(creado.Id);
+            var link = $"{_appSettings.FrontendUrl}/activar-cuenta?token={token.Token}";
+            var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync("CUENTA_ADMIN", new Dictionary<string, string>
+            {
+                ["EMAIL"] = request.Email,
+                ["LINK"]  = link
+            });
+            await _emailService.EnviarAsync(request.Email, asunto, cuerpo);
 
-        return _mapper.Map<UsuarioDto.DetailResponse>(usuarioCompleto!);
+            var usuarioCompleto = await _usuarioRepository.ObtenerPorIdAsync(creado.Id);
+            return _mapper.Map<UsuarioDto.DetailResponse>(usuarioCompleto!);
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            _logger.LogError(ex, "Error crítico durante la creación del usuario. Se realizó Rollback.");
+            throw new BusinessException("No se pudo completar el registro del usuario.");
+        }
     }
 
     public async Task<UsuarioDto.DetailResponse> ActualizarAsync(int id, UsuarioDto.Update request)

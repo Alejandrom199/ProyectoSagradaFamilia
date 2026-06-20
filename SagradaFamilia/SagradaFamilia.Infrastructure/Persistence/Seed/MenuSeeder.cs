@@ -115,13 +115,19 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
 
             foreach (var oa in todasLasOpcionAcciones)
             {
-                rolPermisos.Add(new RolPermiso { RolId = idAdmin, OpcionAccionId = oa.Id, Permitido = true });
-
                 var modulo = oa.Opcion.Modulo.Nombre;
                 var opcion = oa.Opcion.Nombre;
                 var accion = oa.Accion.Nombre;
 
+                // Administrador: solo secciones de gestión y monitoreo (sin clínica)
+                bool adminTieneAcceso =
+                    modulo == "Administración" ||
+                    modulo == "Monitoreo";
 
+                if (adminTieneAcceso)
+                    rolPermisos.Add(new RolPermiso { RolId = idAdmin, OpcionAccionId = oa.Id, Permitido = true });
+
+                // Médico: secciones clínicas + padres de familia + monitoreo básico
                 bool medicoTieneAcceso =
                     (modulo == "Administración" && opcion == "Padres de Familia") ||
                     modulo == "Gestión de Pacientes" ||
