@@ -2,25 +2,13 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="page-title">Auditoría</h2>
+            <h2 class="page-title">Actividad del sistema</h2>
             <p class="page-subtitle">
                 @if (auth.esAdmin()) { Rastro de todos los cambios en el sistema }
                 @else { Tu historial de actividad en el sistema }
             </p>
         </div>
 
-        <div class="flex gap-2">
-            @if (auth.esAdmin()) {
-            <a routerLink="/sistema/logs"
-                class="px-4 py-2 rounded-md text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors">
-                Logs
-            </a>
-            }
-            <a routerLink="/sistema/auditoria"
-                class="px-4 py-2 rounded-md text-sm font-bold bg-blue-600 text-white">
-                Auditoría
-            </a>
-        </div>
     </div>
 
     @if (auth.esAdmin()) {

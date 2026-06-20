@@ -73,5 +73,21 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             _context.Auditorias.Add(auditoria);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> ObtenerConteoHoyAsync()
+        {
+            var hoy = DateTime.UtcNow.Date;
+            return await _context.Auditorias
+                .CountAsync(a => a.Fecha >= hoy && a.Fecha < hoy.AddDays(1));
+        }
+
+        public async Task<IEnumerable<DateTime>> ObtenerFechasUltimosDiasAsync(int dias)
+        {
+            var desde = DateTime.UtcNow.Date.AddDays(-(dias - 1));
+            return await _context.Auditorias
+                .Where(a => a.Fecha >= desde)
+                .Select(a => a.Fecha)
+                .ToListAsync();
+        }
     }
 }

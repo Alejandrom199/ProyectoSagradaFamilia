@@ -60,6 +60,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
         public DbSet<ParametroSistema> ParametrosSistema => Set<ParametroSistema>();
         public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
         public DbSet<PlantillaCorreo> PlantillasCorreo => Set<PlantillaCorreo>();
+        public DbSet<EventoCorreo> EventosCorreo => Set<EventoCorreo>();
 
         // ── Tipos excluidos de auditoría ─────────────────────────
         private static readonly HashSet<Type> _tiposNoAuditados = new()

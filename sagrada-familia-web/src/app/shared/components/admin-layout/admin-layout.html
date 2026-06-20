@@ -6,12 +6,6 @@
     <div class="fixed inset-0 bg-black/30 z-20 lg:hidden" (click)="cerrarMovil()"></div>
     }
 
-    @if (sidebarExpandido()) {
-    <div class="fixed top-0 bottom-0 right-0 z-20 hidden lg:block"
-         style="left: 280px"
-         (click)="toggleExpandido()"></div>
-    }
-
     <sidebar [sidebarExpandido]="sidebarExpandido()" [sidebarMovilAbierto]="sidebarMovilAbierto()" [menu]="menu()"
         (cerrarMovil)="cerrarMovil()" (logout)="logout()" (expandir)="toggleExpandido()">
     </sidebar>

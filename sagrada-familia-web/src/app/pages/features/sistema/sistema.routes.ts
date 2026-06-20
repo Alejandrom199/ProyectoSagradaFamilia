@@ -30,10 +30,24 @@ export const sistemaRoutes: Routes = [
                 .then(m => m.ListarPlantillas),
     },
     {
+        path: 'plantillas/crear',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+            import('./plantillas/crear-plantilla/crear-plantilla')
+                .then(m => m.CrearPlantilla),
+    },
+    {
         path: 'plantillas/:id/editar',
         canActivate: [adminGuard],
         loadComponent: () =>
             import('./plantillas/editar-plantilla/editar-plantilla')
                 .then(m => m.EditarPlantilla),
-    }
+    },
+    {
+        path: 'eventos-correo',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+            import('./eventos-correo/listar-eventos-correo')
+                .then(m => m.ListarEventosCorreo),
+    },
 ];

@@ -13,7 +13,7 @@ namespace SagradaFamilia.Application.Mappings
             CreateMap<PlantillaCorreoDto.Create, PlantillaCorreo>();
 
             CreateMap<PlantillaCorreoDto.Update, PlantillaCorreo>()
-                .ForMember(dest => dest.Codigo, opt => opt.Ignore());
+                .ForMember(dest => dest.Codigo, opt => opt.Ignore()); // Codigo nunca se actualiza
         }
     }
 }

@@ -5,14 +5,16 @@
             <h2 class="page-title">Gestión de Pacientes</h2>
             <p class="page-subtitle">Gestión clínica de niños registrados en el sistema</p>
         </div>
+        @if (menu.puedeHacer(RutaApp.Pacientes, Accion.Crear)) {
         <btn variant="primary" routerLink="/pacientes/crear" class="text-white cursor-pointer">
             <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Agregar
         </btn>
+        }
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
-        <datatable title="Listado de Pacientes" [data]="ninos()" [columns]="columnas" [actions]="acciones"
+        <datatable title="Listado de Pacientes" [data]="ninos()" [columns]="columnas" [actions]="acciones()"
             (onExportPdf)="descargarPacientesPdf($event)" (onExportExcel)="descargarExcel()"
             exportFileName="catalogo-pacientes" searchPlaceholder="Buscar"
             emptyMessage="No hay pacientes registrados en el sistema."

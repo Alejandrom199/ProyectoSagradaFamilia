@@ -220,8 +220,7 @@ export class ListarAuditoria implements OnInit {
   ];
 
   migajas: BreadcrumbItem[] = [
-    { label: 'Sistema' },
-    { label: 'Auditoría' },
+    { label: 'Actividad del sistema' },
   ];
 
   constructor() {

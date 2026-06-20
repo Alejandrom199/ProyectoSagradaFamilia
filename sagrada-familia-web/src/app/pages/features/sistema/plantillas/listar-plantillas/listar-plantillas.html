@@ -1,12 +1,36 @@
 <div class="page-container">
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
-    <div class="mb-6">
-        <h2 class="page-title">Plantillas de correo</h2>
-        <p class="page-subtitle">Mensajes automáticos que el sistema envía a usuarios y médicos</p>
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="page-title">Plantillas de correo</h2>
+            <p class="page-subtitle">Mensajes automáticos que el sistema envía a usuarios y médicos</p>
+        </div>
+        @if (menu.puedeHacer(RutaApp.Plantillas, Accion.Crear)) {
+        <btn variant="primary" routerLink="/sistema/plantillas/crear" class="text-white cursor-pointer">
+            <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
+            Nueva plantilla
+        </btn>
+        }
     </div>
 
-    <datatable [columns]="columnas" [actions]="acciones" [data]="plantillas()"
+    @if (errorEliminar()) {
+    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+        <ng-icon name="matErrorOutline" class="text-base shrink-0"></ng-icon>
+        {{ errorEliminar() }}
+    </div>
+    }
+
+    <datatable [columns]="columnas" [actions]="acciones()" [data]="plantillas()"
         emptyMessage="No hay plantillas registradas." (onActualizar)="cargar()" [showExportar]="false">
     </datatable>
+
+    @if (plantillaAEliminar()) {
+    <confirm-modal
+        title="¿Eliminar plantilla?"
+        [message]="'Se eliminará «' + plantillaAEliminar()!.nombre + '». Esta acción no se puede deshacer. Si la plantilla está asignada a un evento de correo, recibirás un error.'"
+        (confirm)="confirmarEliminar()"
+        (cancel)="plantillaAEliminar.set(null)">
+    </confirm-modal>
+    }
 </div>

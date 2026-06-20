@@ -4,9 +4,9 @@ namespace SagradaFamilia.Application.DTOs
     {
         public class Response
         {
-            public int Id { get; set; }
-            public string Codigo { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
+            public int     Id     { get; set; }
+            public string? Codigo { get; set; }
+            public string  Nombre { get; set; } = string.Empty;
             public string Asunto { get; set; } = string.Empty;
             public string Cuerpo { get; set; } = string.Empty;
             public bool Activo { get; set; }
@@ -16,10 +16,10 @@ namespace SagradaFamilia.Application.DTOs
 
         public class Create
         {
-            public string Codigo { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public string Asunto { get; set; } = string.Empty;
-            public string Cuerpo { get; set; } = string.Empty;
+            public string? Codigo { get; set; } // null para plantillas creadas por el admin
+            public string  Nombre { get; set; } = string.Empty;
+            public string  Asunto { get; set; } = string.Empty;
+            public string  Cuerpo { get; set; } = string.Empty;
         }
 
         public class Update

@@ -5,14 +5,16 @@
             <h2 class="page-title">Gestión de Médicos</h2>
             <p class="page-subtitle">Personal médico pediátrico del consultorio</p>
         </div>
+        @if (menu.puedeHacer(RutaApp.Medicos, Accion.Crear)) {
         <btn variant="primary" routerLink="/medicos/crear" class="text-white cursor-pointer">
             <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
             Agregar
         </btn>
+        }
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
-        <datatable title="Listado de Médicos" [data]="medicos()" [columns]="columnas" [actions]="acciones"
+        <datatable title="Listado de Médicos" [data]="medicos()" [columns]="columnas" [actions]="acciones()"
             [serverSide]="true" [serverTotalItems]="totalMedicos()" (onServerQuery)="onServerQuery($event)"
             (onExportExcel)="descargarExcel()" exportFileName="medicos"
             searchPlaceholder="Buscar por nombre, email o especialidad..."

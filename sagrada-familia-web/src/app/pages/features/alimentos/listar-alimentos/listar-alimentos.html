@@ -6,15 +6,17 @@
             <p class="page-subtitle">Catálogo de alimentos recomendados por edad</p>
         </div>
         <div class="flex items-center gap-2">
+            @if (menu.puedeHacer(RutaApp.Alimentos, Accion.Crear)) {
             <btn variant="primary" routerLink="/alimentos/crear" class="text-white cursor-pointer">
                 <ng-icon name="matAddOutline" class="mr-2"></ng-icon>
                 Agregar
             </btn>
+            }
         </div>
     </div>
 
     <div class="border border-slate-200 overflow-hidden">
-        <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones"
+        <datatable title="Listado de alimentos" [data]="alimentos()" [columns]="columnas" [actions]="acciones()"
             [serverSide]="true" [serverTotalItems]="totalAlimentos()" (onServerQuery)="onServerQuery($event)"
             [filterOptions]="filterOptions()"
             exportFileName="catalogo-alimentos" (onExportPdf)="descargarAlimentosPdf($event)"

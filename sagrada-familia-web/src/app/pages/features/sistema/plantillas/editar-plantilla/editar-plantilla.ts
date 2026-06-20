@@ -10,9 +10,8 @@ import { PlantillasService } from '../../../../../core/services/plantillas';
 import { PlantillaResponse, PlantillaUpdate } from '../../../../../shared/interfaces/plantilla.interface';
 
 interface Variable {
-  token: string;
+  token:       string;
   descripcion: string;
-  plantillas: string[];
 }
 
 @Component({
@@ -64,11 +63,12 @@ export class EditarPlantilla implements OnInit {
     activo: true,
   };
 
+  // Todas las variables disponibles en el sistema (cada evento documenta cuáles provee)
   readonly variables: Variable[] = [
-    { token: '{{NOMBRE}}',   descripcion: 'Nombre del destinatario',    plantillas: ['CAMBIO_CLAVE', 'CUENTA_PADRE', 'CUENTA_MEDICO'] },
-    { token: '{{APELLIDO}}', descripcion: 'Apellido del destinatario',   plantillas: ['CUENTA_PADRE', 'CUENTA_MEDICO'] },
-    { token: '{{LINK}}',     descripcion: 'Enlace de acción (botón)',    plantillas: ['CAMBIO_CLAVE', 'CUENTA_PADRE', 'CUENTA_MEDICO'] },
-    { token: '{{EMAIL}}',    descripcion: 'Correo del destinatario',     plantillas: ['CUENTA_MEDICO'] },
+    { token: '{{NOMBRE}}',   descripcion: 'Nombre del destinatario' },
+    { token: '{{APELLIDO}}', descripcion: 'Apellido del destinatario' },
+    { token: '{{EMAIL}}',    descripcion: 'Correo electrónico del destinatario' },
+    { token: '{{LINK}}',     descripcion: 'Enlace de acción principal (activación / reset)' },
   ];
 
   migajas: BreadcrumbItem[] = [
@@ -97,8 +97,7 @@ export class EditarPlantilla implements OnInit {
   }
 
   variablesAplicables(): Variable[] {
-    const codigo = this.plantilla()?.codigo ?? '';
-    return this.variables.filter(v => v.plantillas.includes(codigo));
+    return this.variables;
   }
 
   insertar(token: string): void {

@@ -7,19 +7,23 @@ using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Exceptions;
+using SagradaFamilia.Domain.Interfaces.Repositories;
 
 public class PlantillaCorreoService : IPlantillaCorreoService
 {
     private readonly IPlantillaCorreoRepository _repository;
+    private readonly IEventoCorreoRepository    _eventoRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<PlantillaCorreoService> _logger;
 
     public PlantillaCorreoService(
         IPlantillaCorreoRepository repository,
+        IEventoCorreoRepository eventoRepository,
         IMapper mapper,
         ILogger<PlantillaCorreoService> logger)
     {
-        _repository = repository;
+        _repository       = repository;
+        _eventoRepository = eventoRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -39,11 +43,15 @@ public class PlantillaCorreoService : IPlantillaCorreoService
 
     public async Task<PlantillaCorreoDto.Response> CrearAsync(PlantillaCorreoDto.Create request)
     {
-        _logger.LogInformation("Creando plantilla de correo con código: {Codigo}", request.Codigo);
+        _logger.LogInformation("Creando nueva plantilla de correo: {Nombre}", request.Nombre);
 
-        var existente = await _repository.ObtenerPorCodigoAsync(request.Codigo);
-        if (existente is not null)
-            throw new BusinessException($"Ya existe una plantilla con el código '{request.Codigo}'.");
+        // Solo valida unicidad de código cuando se especifica uno (plantillas del sistema)
+        if (!string.IsNullOrWhiteSpace(request.Codigo))
+        {
+            var existente = await _repository.ObtenerPorCodigoAsync(request.Codigo);
+            if (existente is not null)
+                throw new BusinessException($"Ya existe una plantilla con el código '{request.Codigo}'.");
+        }
 
         var plantilla = _mapper.Map<PlantillaCorreo>(request);
         var creada = await _repository.CrearAsync(plantilla);
@@ -68,6 +76,11 @@ public class PlantillaCorreoService : IPlantillaCorreoService
 
         var plantilla = await _repository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Plantilla de correo", id);
+
+        var enUso = await _eventoRepository.EstaEnUsoAsync(id);
+        if (enUso)
+            throw new BusinessException(
+                "No se puede eliminar esta plantilla porque está asignada a un evento de correo activo. Reasigná el evento a otra plantilla primero.");
 
         await _repository.EliminarAsync(plantilla.Id);
     }

@@ -23,7 +23,7 @@ export const routes: Routes = [
         children: [
             {
                 path: 'dashboard',
-                canActivate: [medicoGuard],
+                canActivate: [authGuard],
                 loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard)
             },
             {

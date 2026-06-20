@@ -1,29 +1,35 @@
-using SagradaFamilia.Application.Interfaces.Repositories;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Domain.Interfaces.Repositories;
 
 namespace SagradaFamilia.Infrastructure.Email
 {
     public class EmailTemplateService : IEmailTemplateService
     {
-        private readonly IPlantillaCorreoRepository _plantillaRepository;
+        private readonly IEventoCorreoRepository _eventoRepository;
 
-        public EmailTemplateService(IPlantillaCorreoRepository plantillaRepository)
-        {
-            _plantillaRepository = plantillaRepository;
-        }
+        public EmailTemplateService(IEventoCorreoRepository eventoRepository)
+            => _eventoRepository = eventoRepository;
 
         public async Task<(string Asunto, string Cuerpo)> GenerarAsync(
-            string codigo, IDictionary<string, string> variables)
+            string codigoEvento, IDictionary<string, string> variables)
         {
-            var plantilla = await _plantillaRepository.ObtenerPorCodigoAsync(codigo)
+            var evento = await _eventoRepository.ObtenerPorCodigoConPlantillaAsync(codigoEvento)
                 ?? throw new InvalidOperationException(
-                    $"No existe una plantilla activa con código '{codigo}'. Verificá que el seed se haya ejecutado.");
+                    $"No existe un evento de correo con código '{codigoEvento}'. Verificá que el seed se haya ejecutado.");
 
-            var cuerpo = plantilla.Cuerpo;
+            if (evento.PlantillaCorreoId is null || evento.Plantilla is null)
+                throw new InvalidOperationException(
+                    $"El evento '{evento.Nombre}' no tiene ninguna plantilla de correo asignada.");
+
+            if (!evento.Plantilla.Activo)
+                throw new InvalidOperationException(
+                    $"La plantilla asignada al evento '{evento.Nombre}' está marcada como inactiva.");
+
+            var cuerpo = evento.Plantilla.Cuerpo;
             foreach (var (clave, valor) in variables)
                 cuerpo = cuerpo.Replace($"{{{{{clave}}}}}", valor);
 
-            return (plantilla.Asunto, cuerpo);
+            return (evento.Plantilla.Asunto, cuerpo);
         }
     }
 }

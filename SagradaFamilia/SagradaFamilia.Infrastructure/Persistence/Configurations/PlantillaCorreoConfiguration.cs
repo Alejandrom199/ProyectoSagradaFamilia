@@ -14,9 +14,16 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.HasKey(p => p.Id);
 
+            // Codigo es nullable: las plantillas del sistema tienen código; las del admin no.
             builder.Property(p => p.Codigo)
-                .IsRequired()
+                .IsRequired(false)
                 .HasMaxLength(50);
+
+            // Índice único parcial: solo cuando hay código y la plantilla no fue eliminada.
+            // PostgreSQL permite múltiples NULLs aunque haya índice único.
+            builder.HasIndex(p => p.Codigo)
+                .IsUnique()
+                .HasFilter("\"Eliminado\" = false AND \"Codigo\" IS NOT NULL");
 
             builder.Property(p => p.Nombre)
                 .IsRequired()
@@ -32,10 +39,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
 
             builder.Property(p => p.Activo)
                 .HasDefaultValue(true);
-
-            builder.HasIndex(p => p.Codigo)
-                .IsUnique()
-                .HasFilter("\"Eliminado\" = false");
         }
     }
 }

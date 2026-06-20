@@ -34,8 +34,14 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             await PlantillaCorreoSeeder.SeedAsync(context);
             logger.LogInformation("PlantillaCorreoSeeder completado");
 
+            await EventoCorreoSeeder.SeedAsync(context);
+            logger.LogInformation("EventoCorreoSeeder completado");
+
             await PlantillasMenuPatch.PatchAsync(context);
             logger.LogInformation("PlantillasMenuPatch completado");
+
+            await EventosCorreoMenuPatch.PatchAsync(context);
+            logger.LogInformation("EventosCorreoMenuPatch completado");
 
             logger.LogInformation("Seeds completados exitosamente.");
         }

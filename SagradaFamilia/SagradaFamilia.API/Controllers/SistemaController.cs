@@ -10,13 +10,26 @@ using SagradaFamilia.Application.Interfaces.Services;
 [Route("api/[controller]")]
 public class SistemaController : BaseController
 {
-    private readonly IAuditoriaService _auditoriaService;
-    private readonly ILogSistemaService _logService;
+    private readonly IAuditoriaService    _auditoriaService;
+    private readonly ILogSistemaService   _logService;
+    private readonly IDashboardAdminService _dashboardService;
 
-    public SistemaController(IAuditoriaService auditoriaService, ILogSistemaService logService)
+    public SistemaController(
+        IAuditoriaService    auditoriaService,
+        ILogSistemaService   logService,
+        IDashboardAdminService dashboardService)
     {
-        _auditoriaService = auditoriaService;
-        _logService = logService;
+        _auditoriaService  = auditoriaService;
+        _logService        = logService;
+        _dashboardService  = dashboardService;
+    }
+
+    [HttpGet("dashboard")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse<SistemaDashboardDto>>> Dashboard()
+    {
+        var data = await _dashboardService.ObtenerAsync();
+        return HandleResponse(data);
     }
 
     [HttpGet("auditoria/paginado")]

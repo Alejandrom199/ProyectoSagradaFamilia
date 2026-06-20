@@ -72,15 +72,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -129,7 +129,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
                     b.Property<DateTime>("Fecha")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("IpAddress")
@@ -184,15 +184,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -234,18 +234,18 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(1);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaHora")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("MedicoId")
                         .HasColumnType("integer");
@@ -282,6 +282,48 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                     b.ToTable("Citas", (string)null);
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.EventoCorreo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<int?>("PlantillaCorreoId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Variables")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("[]");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Codigo")
+                        .IsUnique();
+
+                    b.HasIndex("PlantillaCorreoId");
+
+                    b.ToTable("EventosCorreo", (string)null);
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.LogSistema", b =>
                 {
                     b.Property<int>("Id")
@@ -300,7 +342,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
                     b.Property<DateTime>("FechaHora")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("Mensaje")
@@ -352,15 +394,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -407,22 +449,22 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateOnly>("FechaMedicion")
                         .HasColumnType("date");
 
                     b.Property<DateTime>("FechaRegistro")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<int>("MedicoId")
@@ -478,15 +520,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Icono")
                         .HasMaxLength(50)
@@ -535,15 +577,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateOnly>("FechaNacimiento")
                         .HasColumnType("date");
@@ -641,15 +683,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Icono")
                         .HasMaxLength(50)
@@ -731,15 +773,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("MedicoId")
                         .HasColumnType("integer");
@@ -805,15 +847,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Grupo")
                         .IsRequired()
@@ -855,14 +897,14 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime>("FechaExpiracion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaUso")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -906,7 +948,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasColumnType("character varying(200)");
 
                     b.Property<string>("Codigo")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -920,15 +961,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -948,7 +989,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
                     b.HasIndex("Codigo")
                         .IsUnique()
-                        .HasFilter("\"Eliminado\" = false");
+                        .HasFilter("\"Eliminado\" = false AND \"Codigo\" IS NOT NULL");
 
                     b.HasIndex("Eliminado");
 
@@ -965,7 +1006,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
                     b.Property<DateTime>("FechaCalculo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateOnly>("FechaObjetivo")
@@ -1025,15 +1066,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Indicaciones")
                         .HasMaxLength(2000)
@@ -1082,11 +1123,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime>("FechaExpiracion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Revocado")
                         .ValueGeneratedOnAdd()
@@ -1182,15 +1223,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasColumnType("character varying(150)");
 
                     b.Property<DateTime?>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaCreacion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("FechaEliminacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -1289,6 +1330,16 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                     b.Navigation("Medico");
 
                     b.Navigation("Nino");
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.EventoCorreo", b =>
+                {
+                    b.HasOne("SagradaFamilia.Domain.Entities.PlantillaCorreo", "Plantilla")
+                        .WithMany()
+                        .HasForeignKey("PlantillaCorreoId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Plantilla");
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medico", b =>
