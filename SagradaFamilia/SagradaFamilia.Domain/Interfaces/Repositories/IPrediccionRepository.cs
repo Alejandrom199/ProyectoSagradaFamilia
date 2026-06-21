@@ -9,5 +9,6 @@ namespace SagradaFamilia.Application.Interfaces.Repositories
         Task<Prediccion?> ObtenerPorNinoYFechaAsync(int ninoId, DateOnly fechaObjetivo, TipoReferencia tipo);
         Task GuardarPrediccionesAsync(IEnumerable<Prediccion> predicciones);
         Task ActualizarValorRealAsync(int ninoId, DateOnly fechaMedicion, decimal valorReal, TipoReferencia tipo);
+        Task<int> ContarNinosConPrediccionAsync();
     }
 }

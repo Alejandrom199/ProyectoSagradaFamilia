@@ -121,4 +121,7 @@ public class PrediccionService : IPrediccionService
     {
         return await _prophetClient.EstadoServicioPredecirAsync();
     }
+
+    public async Task<int> ContarNinosConPrediccionAsync() =>
+        await _prediccionRepository.ContarNinosConPrediccionAsync();
 }

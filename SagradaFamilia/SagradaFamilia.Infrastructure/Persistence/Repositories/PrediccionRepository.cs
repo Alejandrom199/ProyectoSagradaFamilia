@@ -52,6 +52,12 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<int> ContarNinosConPrediccionAsync() =>
+            await _context.Predicciones
+                .Select(p => p.NinoId)
+                .Distinct()
+                .CountAsync();
+
         public async Task ActualizarValorRealAsync(int ninoId, DateOnly fechaMedicion, decimal valorReal, TipoReferencia tipo)
         {
             var predicciones = await _context.Predicciones

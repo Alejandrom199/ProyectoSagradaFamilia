@@ -34,4 +34,11 @@ public class PrediccionesController : BaseController
         var response = await _prediccionService.ObtenerEstadoServicioPrediccionAsync();
         return HandleResponse(response);
     }
+
+    [HttpGet("count")]
+    public async Task<ActionResult<ApiResponse<int>>> ContarNinosConPrediccion()
+    {
+        var count = await _prediccionService.ContarNinosConPrediccionAsync();
+        return HandleResponse(count);
+    }
 }  
