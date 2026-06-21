@@ -12,7 +12,7 @@ import { NinosService } from '../../../../core/services/ninos';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
 // CORRECCIÓN: Importamos la interfaz de detalle correspondiente
 import { NinoDetailResponse, NinoResponse } from '../../../../shared/interfaces/nino.interface';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearFecha, formatearHora } from '../../../../shared/utils/date.utils';
 
 @Component({
   selector: 'listar-citas',
@@ -42,18 +42,15 @@ export class ListarCitas implements OnInit {
     {
       key: 'fechaHora', label: 'Fecha y hora', sortable: true,
       render: (row) => {
-        const inicio = new Date(row.fechaHora);
-        const horaInicio = inicio.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false });
-        const horaFin = row.fechaHoraFin
-          ? new Date(row.fechaHoraFin).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false })
-          : null;
+        const horaInicio = formatearHora(row.fechaHora);
+        const horaFin    = row.fechaHoraFin ? formatearHora(row.fechaHoraFin) : null;
         return `
           <div>
-            <p class="font-medium text-gray-800">${inicio.toLocaleDateString('es-EC')}</p>
+            <p class="font-medium text-gray-800">${formatearFecha(row.fechaHora)}</p>
             <p class="text-xs text-gray-500">${horaInicio}${horaFin ? ' – ' + horaFin : ''}</p>
           </div>`;
       },
-      exportValue: (row) => new Date(row.fechaHora).toLocaleString('es-EC')
+      exportValue: (row) => `${formatearFecha(row.fechaHora)} ${formatearHora(row.fechaHora)}`
     },
     {
       key: 'nombreMedico', label: 'Médico', sortable: true, filterable: true,

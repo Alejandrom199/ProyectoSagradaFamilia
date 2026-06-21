@@ -155,9 +155,9 @@ export class CrearCita implements OnInit {
     this.error.set(null);
     this.loadingBar.show();
 
-    // Convertir a UTC ISO para que Railway (servidor UTC) almacene y devuelva la hora correcta
-    const fechaHora    = new Date(`${v.fecha}T${v.hora}:00`).toISOString();
-    const fechaHoraFin = new Date(`${v.fecha}T${v.horaFin}:00`).toISOString();
+    // Hora local sin conversión UTC: el sistema opera en una sola zona (Ecuador)
+    const fechaHora    = `${v.fecha}T${v.hora}:00`;
+    const fechaHoraFin = `${v.fecha}T${v.horaFin}:00`;
 
     const data: CitaCreate = {
       ninoId:       v.ninoId,

@@ -61,8 +61,9 @@ export class SearchableSelect {
   /** Emite el valor de la opción seleccionada */
   @Output() valueChange = new EventEmitter<any>();
 
-  abierto  = signal(false);
-  busqueda = '';
+  abierto      = signal(false);
+  busqueda     = '';
+  dropdownPos  = { top: '0px', left: '0px', width: '0px' };
 
   getLabel(item: any): string {
     return this.labelFn ? this.labelFn(item) : String(item[this.labelKey] ?? '');
@@ -80,9 +81,15 @@ export class SearchableSelect {
     return this.options.filter(o => this.getLabel(o).toLowerCase().includes(q));
   }
 
-  toggle(): void {
-    this.abierto.update(v => !v);
-    if (!this.abierto()) this.busqueda = '';
+  toggle(btnEl: HTMLElement): void {
+    if (this.abierto()) { this.abierto.set(false); this.busqueda = ''; return; }
+    const rect = btnEl.getBoundingClientRect();
+    this.dropdownPos = {
+      top:   `${rect.bottom + 4}px`,
+      left:  `${rect.left}px`,
+      width: `${rect.width}px`
+    };
+    this.abierto.set(true);
   }
 
   seleccionar(opt: any): void {
@@ -100,9 +107,18 @@ export class SearchableSelect {
 
   @HostListener('document:click', ['$event'])
   onClickOutside(e: Event): void {
-    if (!this.el.nativeElement.contains(e.target)) {
+    // El dropdown está en fixed fuera del host → verificar por clase además de containment
+    const target = e.target as HTMLElement;
+    if (!this.el.nativeElement.contains(target) &&
+        !target.closest('.searchable-select-dropdown')) {
       this.abierto.set(false);
       this.busqueda = '';
     }
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    this.abierto.set(false);
+    this.busqueda = '';
   }
 }
