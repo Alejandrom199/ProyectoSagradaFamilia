@@ -116,6 +116,22 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<bool> ExisteTraslapeAsync(
+            int medicoId, DateTime inicio, DateTime fin, int? excluirCitaId = null)
+        {
+            return await _context.Citas
+                .Where(c => c.MedicoId == medicoId
+                         && !c.Eliminado
+                         && c.Estado != EstadoCita.Cancelada
+                         && c.Estado != EstadoCita.NoAsistio
+                         && (excluirCitaId == null || c.Id != excluirCitaId)
+                         && c.FechaHora < fin
+                         && (c.FechaHoraFin.HasValue
+                                ? c.FechaHoraFin.Value > inicio
+                                : c.FechaHora.AddMinutes(30) > inicio))
+                .AnyAsync();
+        }
+
         public async Task<IEnumerable<Cita>> ObtenerPorPadreIdAsync(int padreId) =>
             await _context.Citas
                 .Include(c => c.Nino)

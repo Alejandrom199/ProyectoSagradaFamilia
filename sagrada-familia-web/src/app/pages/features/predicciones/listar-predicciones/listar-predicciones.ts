@@ -5,6 +5,7 @@ import { NgIcon } from '@ng-icons/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 import { Predicciones as PrediccionesService } from '../../../../core/services/predicciones';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 import { Datatable, DatatableColumn } from '../../../../shared/components/datatable/datatable';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { StatusBadge } from '../../../../shared/components/status-badge/status-badge';
@@ -28,7 +29,8 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
     StatusBadge,
     SpinnerModal,
     PredictionChart,
-    Breadcrumb
+    Breadcrumb,
+    SearchableSelect
   ],
   templateUrl: './listar-predicciones.html',
   styleUrl: './listar-predicciones.css',
@@ -123,6 +125,8 @@ export class ListarPredicciones implements OnInit {
     }
   ];
 
+  readonly ninoLabel = (n: NinoResponse) => `${n.nombre} ${n.apellido}`;
+
   migajas: BreadcrumbItem[] = [{ label: 'Predicciones' }];
 
   ngOnInit() {
@@ -155,7 +159,8 @@ export class ListarPredicciones implements OnInit {
     });
   }
 
-  seleccionarNino(ninoId: number) {
+  seleccionarNino(ninoId: number | null) {
+    if (!ninoId) { this.prediccion.set(null); this.ninoSeleccionado.set(null); this.curvasOms.set(null); return; }
     const nino = this.ninos().find(n => n.id === ninoId);
     if (!nino) { this.prediccion.set(null); this.ninoSeleccionado.set(null); return; }
 

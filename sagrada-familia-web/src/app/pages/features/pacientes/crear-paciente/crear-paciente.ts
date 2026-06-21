@@ -10,11 +10,12 @@ import { PadresService } from '../../../../core/services/padres';
 import { AuthService } from '../../../../core/services/auth';
 import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
 import { NinoCreate } from '../../../../shared/interfaces/nino.interface';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 
 @Component({
   selector: 'app-crear-paciente',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, SearchableSelect],
 
   templateUrl: './crear-paciente.html',
   styleUrl: './crear-paciente.css',
@@ -27,6 +28,7 @@ export class CrearPaciente implements OnInit {
   readonly auth = inject(AuthService);
 
   padres = signal<PadreResponse[]>([]);
+  readonly padreLabelFn = (p: PadreResponse) => `${p.nombre} ${p.apellido}`;
   guardando = signal(false);
   error = signal('');
 

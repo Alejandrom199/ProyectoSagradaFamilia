@@ -7,10 +7,11 @@ import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { AlimentosService } from '../../../../core/services/alimentos';
 import { AlimentoCreate, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 
 @Component({
   selector: 'crear-alimento',
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, SearchableSelect],
 
   templateUrl: './crear-alimento.html',
   styleUrl: './crear-alimento.css',

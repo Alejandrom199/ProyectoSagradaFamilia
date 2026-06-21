@@ -4,6 +4,7 @@ import { NgIcon } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
 
 import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { EventosCorreoService } from '../../../../core/services/eventos-correo';
 import { PlantillasService } from '../../../../core/services/plantillas';
@@ -21,7 +22,7 @@ interface EstadoEvento {
 @Component({
   selector: 'app-listar-eventos-correo',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIcon, Breadcrumb],
+  imports: [CommonModule, FormsModule, NgIcon, Breadcrumb, SearchableSelect],
   templateUrl: './listar-eventos-correo.html',
 })
 export class ListarEventosCorreo implements OnInit {

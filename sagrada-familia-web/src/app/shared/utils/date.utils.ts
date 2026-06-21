@@ -13,6 +13,12 @@ export function formatearFecha(fecha: string): string {
     });
 }
 
+export function formatearHora(fecha: string): string {
+    return new Date(fecha).toLocaleTimeString('es-EC', {
+        hour: '2-digit', minute: '2-digit', hour12: false
+    });
+}
+
 export function formatearEdad(meses: number): string {
     if (meses < 12) return `${meses} meses`;
     const años = Math.floor(meses / 12);

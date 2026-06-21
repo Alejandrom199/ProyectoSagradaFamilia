@@ -13,7 +13,8 @@ namespace SagradaFamilia.Domain.Entities
         public int NinoId { get; set; }
         public int MedicoId { get; set; }
 
-        public DateTime FechaHora { get; set; }
+        public DateTime FechaHora    { get; set; }
+        public DateTime? FechaHoraFin { get; set; }  // null en registros anteriores → se asume 30 min
         public string? Motivo { get; set; }
 
         public EstadoCita Estado { get; set; } = EstadoCita.Pendiente;

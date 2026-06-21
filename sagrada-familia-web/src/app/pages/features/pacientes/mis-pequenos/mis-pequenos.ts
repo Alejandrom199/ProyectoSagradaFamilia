@@ -11,6 +11,7 @@ import { Tooltip } from "../../../../shared/directives/tooltip/tooltip";
 import { NinosService } from '../../../../core/services/ninos';
 import { AuthService } from '../../../../core/services/auth';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
+import { formatearEdad } from '../../../../shared/utils/date.utils';
 
 @Component({
   selector: 'mis-pequenos',
@@ -26,6 +27,7 @@ export class MisPequenos implements OnInit {
   readonly auth = inject(AuthService);
 
   ninos = signal<NinoResponse[]>([]);
+  readonly formatearEdad = formatearEdad;
 
   ngOnInit() {
     this.cargarDatos();

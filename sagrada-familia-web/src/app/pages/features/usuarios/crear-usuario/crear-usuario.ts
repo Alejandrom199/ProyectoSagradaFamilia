@@ -11,6 +11,7 @@ import { MedicosService } from '../../../../core/services/medicos';
 import { PadresService } from '../../../../core/services/padres';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 
 const ROLES = [
   { id: 1, nombre: 'Administrador', icono: 'matAdminPanelSettingsOutline', descripcion: 'Acceso total al sistema' },
@@ -21,7 +22,7 @@ const ROLES = [
 @Component({
   selector: 'app-crear-usuario',
   standalone: true,
-  imports: [RouterLink, FormsModule, CommonModule, Breadcrumb, NgIcon, ReactiveFormsModule],
+  imports: [RouterLink, FormsModule, CommonModule, Breadcrumb, NgIcon, ReactiveFormsModule, SearchableSelect],
   templateUrl: './crear-usuario.html',
   styleUrl: './crear-usuario.css',
 })
@@ -36,6 +37,7 @@ export class CrearUsuario implements OnInit {
   form!: FormGroup;
   roles = ROLES;
   medicos = signal<MedicoResponse[]>([]);
+  readonly medicoLabelFn = (m: MedicoResponse) => `${m.nombre} ${m.apellido}`;
 
   guardando       = signal(false);
   error           = signal<string | null>(null);

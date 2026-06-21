@@ -61,19 +61,16 @@
                         </div>
                         <div class="flex flex-col gap-1.5">
                             <label class="text-xs font-bold text-slate-600 uppercase ml-1">Categoría *</label>
-                            <select
-                                name="categoriaId"
-                                #categoriaId="ngModel"
-                                [(ngModel)]="form.categoriaId"
-                                required
-                                [class.border-red-400]="categoriaId.invalid && (categoriaId.touched || submitted())"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
-                                <option [ngValue]="null">Seleccionar categoría...</option>
-                                @for (cat of categorias(); track cat.id) {
-                                <option [ngValue]="cat.id">{{ cat.nombre }}</option>
-                                }
-                            </select>
-                            @if (categoriaId.invalid && (categoriaId.touched || submitted())) {
+                            <searchable-select
+                                [options]="categorias()"
+                                labelKey="nombre"
+                                valueKey="id"
+                                [value]="form.categoriaId"
+                                (valueChange)="form.categoriaId = $event"
+                                placeholder="Seleccionar categoría..."
+                                searchPlaceholder="Buscar categoría...">
+                            </searchable-select>
+                            @if (!form.categoriaId && submitted()) {
                             <p class="text-xs text-red-500 ml-1">Selecciona una categoría.</p>
                             }
                         </div>

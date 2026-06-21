@@ -73,9 +73,20 @@ public class MedidaService : IMedidaService
     public async Task<(IEnumerable<MedidaDto.Response> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
         int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending)
     {
+        var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId);
+
         var (items, total) = await _medidaRepository.ObtenerPaginadoPorNinoAsync(ninoId, page, pageSize, search, sortBy, ascending);
-        var dtos = _mapper.Map<IEnumerable<MedidaDto.Response>>(items);
-        return (dtos, total);
+
+        var lista = new List<MedidaDto.Response>();
+        foreach (var m in items)
+        {
+            var dto = _mapper.Map<MedidaDto.Response>(m);
+            if (nino != null)
+                await EnriquecerConDatosOms(dto, nino, m.FechaMedicion, m.Peso, m.Talla);
+            lista.Add(dto);
+        }
+
+        return (lista, total);
     }
 
     public async Task<MedidaDto.Response?> ObtenerUltimaMedidaAsync(int ninoId)

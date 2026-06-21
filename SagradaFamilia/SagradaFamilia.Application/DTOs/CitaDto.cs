@@ -12,7 +12,8 @@ namespace SagradaFamilia.Application.DTOs
             public string NombreNino { get; set; } = string.Empty;
             public int MedicoId { get; set; }
             public string NombreMedico { get; set; } = string.Empty;
-            public DateTime FechaHora { get; set; }
+            public DateTime  FechaHora    { get; set; }
+            public DateTime? FechaHoraFin { get; set; }
             public string? Motivo { get; set; }
             public string? NotasConsulta { get; set; }
             public string Estado { get; set; } = string.Empty;
@@ -23,17 +24,19 @@ namespace SagradaFamilia.Application.DTOs
 
         public class Create
         {
-            public int NinoId { get; set; }
-            public int MedicoId { get; set; }
-            public DateTime FechaHora { get; set; }
-            public string? Motivo { get; set; }
+            public int      NinoId       { get; set; }
+            public int      MedicoId     { get; set; }
+            public DateTime FechaHora    { get; set; }
+            public DateTime FechaHoraFin { get; set; }
+            public string?  Motivo       { get; set; }
         }
 
         public class Update
         {
-            public int MedicoId { get; set; }
-            public DateTime FechaHora { get; set; }
-            public string? Motivo { get; set; }
+            public int      MedicoId     { get; set; }
+            public DateTime FechaHora    { get; set; }
+            public DateTime FechaHoraFin { get; set; }
+            public string?  Motivo       { get; set; }
         }
     }
 }
