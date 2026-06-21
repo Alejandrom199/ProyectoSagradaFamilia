@@ -28,4 +28,8 @@ export class Predicciones {
     return this.http.get<ApiResponse<PrediccionHealth>>(`${this.url}/health`, { withCredentials: true })
   }
 
+  obtenerConteo() {
+    return this.http.get<ApiResponse<number>>(`${this.url}/count`, { withCredentials: true });
+  }
+
 }

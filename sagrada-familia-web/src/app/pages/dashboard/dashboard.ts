@@ -10,6 +10,7 @@ import { NinosService } from '../../core/services/ninos';
 import { AlimentosService } from '../../core/services/alimentos';
 import { CitasService } from '../../core/services/citas';
 import { SistemaService } from '../../core/services/sistema';
+import { Predicciones } from '../../core/services/predicciones';
 import { DashboardAdminResponse, AuditoriaResponse, LogSistemaResponse } from '../../shared/interfaces/sistema.interface';
 import { formatearFecha } from '../../shared/utils/date.utils';
 
@@ -20,11 +21,12 @@ import { formatearFecha } from '../../shared/utils/date.utils';
   templateUrl: './dashboard.html',
 })
 export class Dashboard implements OnInit {
-  readonly auth          = inject(AuthService);
-  private ninosService   = inject(NinosService);
-  private alimentosService = inject(AlimentosService);
-  private citasService   = inject(CitasService);
-  private sistemaService = inject(SistemaService);
+  readonly auth             = inject(AuthService);
+  private ninosService      = inject(NinosService);
+  private alimentosService  = inject(AlimentosService);
+  private citasService      = inject(CitasService);
+  private sistemaService    = inject(SistemaService);
+  private prediccionService = inject(Predicciones);
 
   formatearFecha = formatearFecha;
 
@@ -90,6 +92,10 @@ export class Dashboard implements OnInit {
 
     this.alimentosService.obtenerTodos().subscribe(r => {
       if (r.success) this.actualizarStat(2, String(r.data.length));
+    });
+
+    this.prediccionService.obtenerConteo().subscribe(r => {
+      if (r.success) this.actualizarStat(3, String(r.data));
     });
   }
 
