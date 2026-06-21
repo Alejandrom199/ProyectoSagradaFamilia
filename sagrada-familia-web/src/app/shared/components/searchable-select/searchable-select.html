@@ -1,7 +1,7 @@
 <div class="relative">
 
     <!-- Trigger -->
-    <button #btnTrigger type="button" (click)="toggle(btnTrigger)"
+    <button type="button" (click)="toggle()"
         class="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-md border border-slate-200
                bg-slate-50/30 hover:bg-white focus:bg-white focus:ring-1 focus:ring-blue-500
                focus:border-blue-500 outline-none transition-all text-sm text-left">
@@ -24,14 +24,12 @@
         </div>
     </button>
 
-    <!-- Dropdown — fixed para no ser cortado por overflow:hidden de contenedores padre -->
+    <!-- Dropdown — z-[9999] para aparecer sobre cualquier elemento padre -->
     @if (abierto()) {
-    <div class="searchable-select-dropdown fixed z-[9999] bg-white border border-slate-200
+    <div class="absolute z-[9999] w-full mt-1 bg-white border border-slate-200
                 rounded-md shadow-lg overflow-hidden animate-fade-in"
-        [ngStyle]="{ top: dropdownPos.top, left: dropdownPos.left, width: dropdownPos.width }"
         (click)="$event.stopPropagation()">
 
-        <!-- Input de búsqueda -->
         <div class="p-2 border-b border-slate-100">
             <div class="relative">
                 <ng-icon name="heroMagnifyingGlass"
@@ -45,7 +43,6 @@
             </div>
         </div>
 
-        <!-- Lista de opciones -->
         <div class="max-h-52 overflow-y-auto">
             @for (opt of opcionesFiltradas; track opt[valueKey]) {
             <button type="button" (click)="seleccionar(opt)"
