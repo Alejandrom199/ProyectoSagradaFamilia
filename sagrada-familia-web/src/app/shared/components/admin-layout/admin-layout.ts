@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgIcon } from "@ng-icons/core";
@@ -31,6 +31,12 @@ export class AdminLayout implements OnInit {
 
   readonly sidebarExpandido = signal<boolean>(true);
   readonly sidebarMovilAbierto = signal<boolean>(false);
+  readonly esMovil = signal<boolean>(window.innerWidth < 1024);
+
+  @HostListener('window:resize')
+  onResize() {
+    this.esMovil.set(window.innerWidth < 1024);
+  }
 
   readonly menu = this.menuService.menuItems;
 
@@ -50,12 +56,8 @@ export class AdminLayout implements OnInit {
     this.sidebarMovilAbierto.set(false);
   }
 
-  isMovil(): boolean {
-    return window.innerWidth < 1024;
-  }
-
   getMarginLeft(): string {
-    if (this.isMovil()) return '0';
+    if (this.esMovil()) return '0';
     return this.sidebarExpandido() ? '280px' : '64px';
   }
 
