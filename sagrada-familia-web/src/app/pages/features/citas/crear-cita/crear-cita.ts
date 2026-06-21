@@ -15,11 +15,12 @@ import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 import { MedicosService } from '../../../../core/services/medicos';
 import { CitaCreate } from '../../../../shared/interfaces/cita.interface';
 import { ParametrosService } from '../../../../core/services/parametros';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 
 @Component({
   selector: 'app-crear-cita',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule, SearchableSelect],
 
   templateUrl: './crear-cita.html',
   styleUrl: './crear-cita.css',
@@ -37,7 +38,10 @@ export class CrearCita implements OnInit {
 
   formCita!: FormGroup;
   pacientes = signal<NinoResponse[]>([]);
-  medicos = signal<MedicoResponse[]>([]);
+  medicos   = signal<MedicoResponse[]>([]);
+
+  readonly pacienteLabelFn = (n: NinoResponse)  => `${n.nombre} ${n.apellido}`;
+  readonly medicoLabelFn   = (m: MedicoResponse) => `Dr(a). ${m.nombre} ${m.apellido}`;
 
   guardando = signal(false);
   error = signal<string | null>(null);
@@ -73,11 +77,12 @@ export class CrearCita implements OnInit {
 
   private initForm(): FormGroup {
     return this.fb.group({
-      ninoId: [null, Validators.required],
+      ninoId:   [null, Validators.required],
       medicoId: [null, Validators.required],
-      fecha: ['', Validators.required],
-      hora: ['', Validators.required],
-      motivo: ['']
+      fecha:    ['', Validators.required],
+      hora:     ['', Validators.required],
+      horaFin:  ['', Validators.required],
+      motivo:   ['']
     }, { validators: this.fechaHoraFuturaValidator });
   }
 
@@ -140,16 +145,25 @@ export class CrearCita implements OnInit {
         return;
     }
 
+    // Validaciones frontend ANTES de activar el spinner
+    if (v.horaFin <= v.hora) {
+      this.error.set('La hora de terminación debe ser posterior a la hora de inicio.');
+      return;
+    }
+
     this.guardando.set(true);
     this.error.set(null);
     this.loadingBar.show();
 
-    const fechaHora = `${v.fecha}T${v.hora}:00`;
+    // Convertir a UTC ISO para que Railway (servidor UTC) almacene y devuelva la hora correcta
+    const fechaHora    = new Date(`${v.fecha}T${v.hora}:00`).toISOString();
+    const fechaHoraFin = new Date(`${v.fecha}T${v.horaFin}:00`).toISOString();
 
     const data: CitaCreate = {
-      ninoId: v.ninoId,
-      medicoId: v.medicoId,
+      ninoId:       v.ninoId,
+      medicoId:     v.medicoId,
       fechaHora,
+      fechaHoraFin,
       motivo: v.motivo || undefined
     };
 

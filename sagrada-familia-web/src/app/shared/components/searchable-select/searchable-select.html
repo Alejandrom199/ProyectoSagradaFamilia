@@ -1,0 +1,66 @@
+<div class="relative">
+
+    <!-- Trigger -->
+    <button type="button" (click)="toggle()"
+        class="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-md border border-slate-200
+               bg-slate-50/30 hover:bg-white focus:bg-white focus:ring-1 focus:ring-blue-500
+               focus:border-blue-500 outline-none transition-all text-sm text-left">
+        <span class="truncate flex-1"
+            [class.text-slate-700]="etiquetaSeleccionada"
+            [class.text-slate-400]="!etiquetaSeleccionada">
+            {{ etiquetaSeleccionada || placeholder }}
+        </span>
+        <div class="flex items-center gap-1 shrink-0">
+            @if (etiquetaSeleccionada) {
+            <button type="button" (click)="limpiar($event)"
+                class="text-slate-300 hover:text-slate-500 transition-colors focus:outline-none">
+                <ng-icon name="matCloseOutline" class="text-sm"></ng-icon>
+            </button>
+            }
+            <ng-icon name="matExpandMoreOutline"
+                class="text-slate-400 transition-transform duration-150 text-base"
+                [class.rotate-180]="abierto()">
+            </ng-icon>
+        </div>
+    </button>
+
+    <!-- Dropdown -->
+    @if (abierto()) {
+    <div class="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg overflow-hidden animate-fade-in">
+
+        <!-- Input de búsqueda -->
+        <div class="p-2 border-b border-slate-100">
+            <div class="relative">
+                <ng-icon name="heroMagnifyingGlass"
+                    class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">
+                </ng-icon>
+                <input #searchInput type="text" [(ngModel)]="busqueda"
+                    [placeholder]="searchPlaceholder"
+                    class="w-full pl-8 pr-3 py-1.5 text-sm border border-slate-200 rounded-md bg-slate-50
+                           focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500
+                           focus:border-blue-500 transition-all"
+                    (click)="$event.stopPropagation()">
+            </div>
+        </div>
+
+        <!-- Lista de opciones -->
+        <div class="max-h-52 overflow-y-auto">
+            @for (opt of opcionesFiltradas; track opt[valueKey]) {
+            <button type="button" (click)="seleccionar(opt)"
+                class="w-full text-left px-4 py-2.5 text-sm transition-colors"
+                [class.bg-blue-50]="opt[valueKey] === value"
+                [class.text-blue-700]="opt[valueKey] === value"
+                [class.font-semibold]="opt[valueKey] === value"
+                [class.text-slate-700]="opt[valueKey] !== value"
+                [class.hover:bg-slate-50]="opt[valueKey] !== value">
+                {{ getLabel(opt) }}
+            </button>
+            } @empty {
+            <p class="text-xs text-slate-400 text-center py-5">Sin resultados para "{{ busqueda }}"</p>
+            }
+        </div>
+
+    </div>
+    }
+
+</div>

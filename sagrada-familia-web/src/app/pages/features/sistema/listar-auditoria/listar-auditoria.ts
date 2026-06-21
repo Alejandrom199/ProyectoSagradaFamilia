@@ -11,6 +11,7 @@ import { AuthService } from '../../../../core/services/auth';
 import { AuditoriaResponse } from '../../../../shared/interfaces/sistema.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { JsonFormatPipe } from '../../../../shared/pipes/json-format.pipe';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 
 const TABLAS_AUDITABLES = [
   'Padre', 'Medico', 'Nino', 'Medida',
@@ -75,7 +76,7 @@ interface CampoModificado {
 @Component({
   selector: 'app-listar-auditoria',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, Breadcrumb, ReactiveFormsModule, JsonFormatPipe],
+  imports: [NgIcon, RouterLink, Datatable, Breadcrumb, ReactiveFormsModule, JsonFormatPipe, SearchableSelect],
   templateUrl: './listar-auditoria.html',
   styleUrl: './listar-auditoria.css',
 })
@@ -93,6 +94,8 @@ export class ListarAuditoria implements OnInit {
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
 
   tablas = TABLAS_AUDITABLES;
+  // Opciones transformadas para SearchableSelect (strings → objetos con label legible)
+  readonly tablasOpciones = TABLAS_AUDITABLES.map(t => ({ value: t, label: TABLA_LABELS[t] ?? t }));
 
   // Columnas para administrador (técnicas)
   columnas: DatatableColumn<AuditoriaResponse>[] = [

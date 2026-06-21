@@ -7,11 +7,12 @@ import { AlimentosService } from '../../../../core/services/alimentos';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from "../../../../shared/components/breadcrumb/breadcrumb";
 import { AlimentoResponse, AlimentoUpdate, CategoriaResponse } from '../../../../shared/interfaces/alimento.interface';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 
 @Component({
   selector: 'editar-alimento',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, SearchableSelect],
 
   templateUrl: './editar-alimento.html',
   styleUrl: './editar-alimento.css',

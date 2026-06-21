@@ -14,5 +14,6 @@ namespace SagradaFamilia.Domain.Interfaces.Repositories
         Task<Cita> CrearAsync(Cita cita);
         Task<Cita> ActualizarAsync(Cita cita);
         Task EliminarAsync(int id);
+        Task<bool> ExisteTraslapeAsync(int medicoId, DateTime inicio, DateTime fin, int? excluirCitaId = null);
     }
 }

@@ -8,7 +8,10 @@
         <div>
             <h2 class="text-2xl font-bold text-slate-800">{{ cita()?.nombreNino }}</h2>
             <p class="page-subtitle">
-                {{ formatearFecha(cita()!.fechaHora) }} · Dr(a). {{ cita()?.nombreMedico }}
+                {{ formatearFecha(cita()!.fechaHora) }}
+                · {{ formatearHora(cita()!.fechaHora) }}
+                @if (cita()!.fechaHoraFin) { – {{ formatearHora(cita()!.fechaHoraFin!) }} }
+                · Dr(a). {{ cita()?.nombreMedico }}
             </p>
         </div>
         <span class="px-3 py-1.5 rounded-md text-xs font-bold border {{ badge(cita()!.estado).clase }}">
@@ -39,8 +42,18 @@
                         <p class="text-sm font-medium text-slate-700">Dr(a). {{ cita()?.nombreMedico }}</p>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha y hora</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha</p>
                         <p class="text-sm font-medium text-slate-700">{{ formatearFecha(cita()!.fechaHora) }}</p>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Horario</p>
+                        <p class="text-sm font-medium text-slate-700">
+                            {{ formatearHora(cita()!.fechaHora) }}
+                            @if (cita()!.fechaHoraFin) {
+                            <span class="text-slate-400"> – </span>
+                            {{ formatearHora(cita()!.fechaHoraFin!) }}
+                            }
+                        </p>
                     </div>
                     <div class="flex flex-col gap-1">
                         <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</p>

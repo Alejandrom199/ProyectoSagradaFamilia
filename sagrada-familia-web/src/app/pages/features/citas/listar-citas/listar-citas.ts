@@ -42,11 +42,15 @@ export class ListarCitas implements OnInit {
     {
       key: 'fechaHora', label: 'Fecha y hora', sortable: true,
       render: (row) => {
-        const fecha = new Date(row.fechaHora);
+        const inicio = new Date(row.fechaHora);
+        const horaInicio = inicio.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false });
+        const horaFin = row.fechaHoraFin
+          ? new Date(row.fechaHoraFin).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false })
+          : null;
         return `
           <div>
-            <p class="font-medium text-gray-800">${fecha.toLocaleDateString('es-EC')}</p>
-            <p class="text-xs text-gray-500">${fecha.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })}</p>
+            <p class="font-medium text-gray-800">${inicio.toLocaleDateString('es-EC')}</p>
+            <p class="text-xs text-gray-500">${horaInicio}${horaFin ? ' – ' + horaFin : ''}</p>
           </div>`;
       },
       exportValue: (row) => new Date(row.fechaHora).toLocaleString('es-EC')

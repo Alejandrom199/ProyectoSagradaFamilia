@@ -6,7 +6,8 @@ export interface CitaResponse {
     nombreNino: string;
     medicoId: number;
     nombreMedico: string;
-    fechaHora: string;
+    fechaHora:    string;
+    fechaHoraFin: string | null;
     motivo?: string;
     notasConsulta?: string;
     estado: EstadoCita;
@@ -16,16 +17,18 @@ export interface CitaResponse {
 }
 
 export interface CitaCreate {
-    ninoId: number;
-    medicoId: number;
-    fechaHora: string;
-    motivo?: string;
+    ninoId:       number;
+    medicoId:     number;
+    fechaHora:    string;
+    fechaHoraFin: string;
+    motivo?:      string;
 }
 
 export interface CitaUpdate {
-    medicoId: number;
-    fechaHora: string;
-    motivo?: string;
+    medicoId:     number;
+    fechaHora:    string;
+    fechaHoraFin: string;
+    motivo?:      string;
 }
 
 export enum EstadoCita {

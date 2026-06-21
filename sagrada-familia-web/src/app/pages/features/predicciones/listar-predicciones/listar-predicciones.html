@@ -29,14 +29,15 @@
                 <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
                     Paciente a consultar
                 </label>
-                <select
-                    class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-slate-700"
-                    (change)="seleccionarNino(+$any($event.target).value)">
-                    <option [value]="0">Seleccione un niño de su lista...</option>
-                    @for (nino of ninos(); track nino.id) {
-                    <option [value]="nino.id">{{ nino.nombre }} {{ nino.apellido }}</option>
-                    }
-                </select>
+                <searchable-select
+                    [options]="ninos()"
+                    valueKey="id"
+                    [labelFn]="ninoLabel"
+                    placeholder="Seleccione un niño de su lista..."
+                    searchPlaceholder="Buscar paciente..."
+                    [value]="ninoSeleccionado()?.id ?? null"
+                    (valueChange)="seleccionarNino($event)">
+                </searchable-select>
             </div>
         </div>
     </div>
@@ -83,16 +84,16 @@
     @if (resumenPredicciones().length > 0) {
     <div class="grid grid-cols-3 gap-4 mb-6">
         @for (item of resumenPredicciones(); track item.mes) {
-        <div class="border border-slate-200 p-4">
+        <div class="bg-white border border-slate-200 p-4">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
                 En {{ item.mes }} meses
             </p>
             <p class="text-3xl font-black text-slate-800 leading-none">
-                {{ item.punto.pesoPredicho.toFixed(1) }}
+                {{ item.punto.pesoPredicho.toFixed(2) }}
                 <span class="text-base font-normal text-slate-400">kg</span>
             </p>
             <p class="text-xs text-slate-400 mt-1.5">
-                Rango: {{ item.punto.pesoMinimo.toFixed(1) }} – {{ item.punto.pesoMaximo.toFixed(1) }} kg
+                Rango: {{ item.punto.pesoMinimo.toFixed(2) }} – {{ item.punto.pesoMaximo.toFixed(2) }} kg
             </p>
             <p class="text-[10px] text-slate-300 mt-0.5">{{ formatearFecha(item.punto.fechaObjetivo) }}</p>
         </div>

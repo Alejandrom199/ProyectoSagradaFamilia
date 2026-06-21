@@ -7,7 +7,7 @@ import { CitasService } from '../../../../core/services/citas';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearFecha, formatearHora } from '../../../../shared/utils/date.utils';
 
 @Component({
   selector: 'detalle-cita',
@@ -26,6 +26,7 @@ export class DetalleCita implements OnInit {
   cita = signal<CitaResponse | null>(null);
   cambiandoEstado = signal(false);
   formatearFecha = formatearFecha;
+  formatearHora  = formatearHora;
   EstadoCita = EstadoCita;
 
   puedeAccionar = computed(() => {

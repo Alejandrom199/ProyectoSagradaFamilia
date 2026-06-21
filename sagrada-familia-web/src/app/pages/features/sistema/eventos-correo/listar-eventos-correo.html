@@ -52,13 +52,15 @@
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
                         Plantilla asignada
                     </label>
-                    <select [(ngModel)]="estado.plantillaSeleccionada"
-                        class="w-full px-3 py-2 rounded-md border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
-                        <option [ngValue]="null">— Sin plantilla asignada —</option>
-                        @for (p of plantillas(); track p.id) {
-                        <option [ngValue]="p.id">{{ p.nombre }}</option>
-                        }
-                    </select>
+                    <searchable-select
+                        [options]="plantillas()"
+                        labelKey="nombre"
+                        valueKey="id"
+                        [value]="estado.plantillaSeleccionada"
+                        (valueChange)="estado.plantillaSeleccionada = $event"
+                        placeholder="— Sin plantilla asignada —"
+                        searchPlaceholder="Buscar plantilla...">
+                    </searchable-select>
                 </div>
 
                 <div class="flex items-center gap-3 pt-5">

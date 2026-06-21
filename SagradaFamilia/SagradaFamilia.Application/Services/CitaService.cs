@@ -89,6 +89,18 @@ public class CitaService : ICitaService
 
         await ValidarHorarioAtencionAsync(request.FechaHora);
 
+        if (request.FechaHoraFin <= request.FechaHora)
+            throw new BusinessException("La hora de terminación debe ser posterior a la hora de inicio.");
+
+        var haySolapamiento = await _citaRepository.ExisteTraslapeAsync(
+            medico.Id, request.FechaHora, request.FechaHoraFin);
+
+        if (haySolapamiento)
+            throw new BusinessException(
+                $"El médico ya tiene una cita programada que se solapa con el horario " +
+                $"{request.FechaHora:HH:mm}–{request.FechaHoraFin:HH:mm}. " +
+                $"Verifique la agenda antes de agendar.");
+
         var cita = _mapper.Map<Cita>(request);
         cita.MedicoId = medico.Id;
         cita.Estado = EstadoCita.Pendiente;
@@ -109,6 +121,17 @@ public class CitaService : ICitaService
 
         var cita = await _citaRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Cita", id);
+
+        if (request.FechaHoraFin <= request.FechaHora)
+            throw new BusinessException("La hora de terminación debe ser posterior a la hora de inicio.");
+
+        var haySolapamiento = await _citaRepository.ExisteTraslapeAsync(
+            cita.MedicoId, request.FechaHora, request.FechaHoraFin, excluirCitaId: id);
+
+        if (haySolapamiento)
+            throw new BusinessException(
+                $"El médico ya tiene una cita que se solapa con el horario " +
+                $"{request.FechaHora:HH:mm}–{request.FechaHoraFin:HH:mm}.");
 
         _mapper.Map(request, cita);
 
