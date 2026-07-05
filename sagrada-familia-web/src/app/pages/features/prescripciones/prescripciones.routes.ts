@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { medicoGuard } from "../../../core/guards/medico-guard";
+import { padreGuard } from "../../../core/guards/padre-guard";
 
 export const prescripcionesRoutes: Routes = [
     {
@@ -10,7 +11,14 @@ export const prescripcionesRoutes: Routes = [
                 .then(m => m.ListarPrescripciones),
     },
     {
-        path: 'cita/:citaId/crear',
+        path: 'hijo',
+        canActivate: [padreGuard],
+        loadComponent: () =>
+            import('./prescripciones-hijo/prescripciones-hijo')
+                .then(m => m.PrescripcionesHijo),
+    },
+    {
+        path: 'consulta/:consultaId/crear',
         canActivate: [medicoGuard],
         loadComponent: () =>
             import('./crear-prescripcion/crear-prescripcion')

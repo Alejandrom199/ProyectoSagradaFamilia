@@ -5,9 +5,11 @@ import { NgIcon } from '@ng-icons/core';
 
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { CitasService } from '../../../../core/services/citas';
+import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
 
 @Component({
@@ -21,6 +23,8 @@ export class HistorialCitas implements OnInit {
   private citasService = inject(CitasService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
+  private authService = inject(AuthService);
+  private reportesService = inject(Reportes);
 
   citas = signal<CitaResponse[]>([]);
 
@@ -35,7 +39,7 @@ export class HistorialCitas implements OnInit {
       label: 'Fecha y hora',
       sortable: true,
       filterable: true,
-      render: (row) => `<span class="font-medium text-gray-800">${formatearFecha(row.fechaHora)}</span>`,
+      render: (row) => renderFechaHora(row.fechaHora),
       exportValue: (row) => formatearFecha(row.fechaHora)
     },
     {
@@ -48,7 +52,7 @@ export class HistorialCitas implements OnInit {
     {
       key: 'motivo',
       label: 'Motivo',
-      filterable: true,
+      sortable: true,
       render: (row) => row.motivo || '<span class="text-gray-400 text-xs">Sin motivo</span>'
     },
     {
@@ -62,6 +66,8 @@ export class HistorialCitas implements OnInit {
     {
       key: 'tienePrescripcion',
       label: 'Prescripción',
+      sortable: true,
+      filterable: true,
       render: (row) => row.tienePrescripcion
         ? `<span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Emitida</span>`
         : `<span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">No</span>`,
@@ -90,6 +96,38 @@ export class HistorialCitas implements OnInit {
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
+    });
+  }
+
+  exportarPdf(): void {
+    this.loadingBar.show();
+    const u = this.authService.currentUser();
+    const params = { titulo: 'Historial de Citas', usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/citas-medico-pdf', params).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `historial-citas-${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarExcel(): void {
+    this.citasService.exportarExcelHistorial().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `historial-citas-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {}
     });
   }
 

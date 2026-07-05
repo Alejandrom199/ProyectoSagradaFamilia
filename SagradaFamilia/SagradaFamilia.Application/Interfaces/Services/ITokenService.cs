@@ -6,6 +6,7 @@ namespace SagradaFamilia.Application.Interfaces.Services
     {
         string GenerarAccessToken(Usuario usuario);
         string GenerarRefreshToken();
+        DateTime ObtenerFechaExpiracionRefreshToken();
     }
 
 }

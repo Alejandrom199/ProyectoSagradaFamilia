@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Domain.Entities;
 
@@ -8,12 +8,16 @@ namespace SagradaFamilia.Application.Mappings
     {
         public PrescripcionMappingProfile()
         {
+            CreateMap<PrescripcionDto.Create, Prescripcion>()
+                .ForMember(dest => dest.Medicamentos, opt => opt.MapFrom(src => src.Medicamentos));
 
-            CreateMap<PrescripcionDto.Create, Prescripcion>();
-            CreateMap<PrescripcionDto.Update, Prescripcion>();
-
+            CreateMap<PrescripcionDto.Update, Prescripcion>()
+                .ForMember(dest => dest.Medicamentos, opt => opt.MapFrom(src => src.Medicamentos));
 
             CreateMap<Prescripcion, PrescripcionDto.Response>()
+                .ForMember(dest => dest.CitaId,
+                    opt => opt.MapFrom(src => src.Consulta.CitaId))
+
                 .ForMember(dest => dest.NombreNino,
                     opt => opt.MapFrom(src => src.Nino != null ? $"{src.Nino.Nombre} {src.Nino.Apellido}" : string.Empty))
 
@@ -22,6 +26,8 @@ namespace SagradaFamilia.Application.Mappings
 
                 .ForMember(dest => dest.EspecialidadMedico,
                     opt => opt.MapFrom(src => src.Medico != null ? src.Medico.Especialidad : string.Empty));
+
+            CreateMap<Prescripcion, PrescripcionDto.PrescripcionResumen>();
         }
     }
 }

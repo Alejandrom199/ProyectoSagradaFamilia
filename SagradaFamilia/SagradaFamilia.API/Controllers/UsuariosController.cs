@@ -62,4 +62,42 @@ public class UsuariosController : BaseController
         var response = await _usuarioService.ObtenerPorIdAsync(usuarioId);
         return HandleResponse(response);
     }
+
+    [HttpGet("exportar")]
+    public async Task<IActionResult> ExportarExcel()
+    {
+        var bytes = await _usuarioService.ExportarExcelAsync();
+        string filename = $"usuarios-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
+    [HttpGet("plantilla")]
+    public async Task<IActionResult> DescargarPlantilla()
+    {
+        var bytes = await _usuarioService.GenerarPlantillaAsync();
+        string filename = $"plantilla-usuarios-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
+    [HttpPost("importar")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<ApiResponse<UsuarioDto.ImportResultado>>> Importar([FromForm] ImportarArchivoRequest request)
+    {
+        var archivo = request.Archivo;
+        if (archivo is null || archivo.Length == 0)
+            return BadRequest(ApiResponse<UsuarioDto.ImportResultado>.Fail("No se recibió ningún archivo."));
+
+        var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+        if (extension != ".xlsx")
+            return BadRequest(ApiResponse<UsuarioDto.ImportResultado>.Fail("Solo se aceptan archivos .xlsx"));
+
+        using var stream = archivo.OpenReadStream();
+        var resultado = await _usuarioService.ImportarAsync(stream);
+
+        string mensaje = resultado.Errores.Count == 0
+            ? $"{resultado.Importados} creados, {resultado.Actualizados} actualizados correctamente."
+            : $"{resultado.Importados} creados, {resultado.Actualizados} actualizados, {resultado.Errores.Count} con errores.";
+
+        return HandleResponse(resultado, mensaje);
+    }
 }

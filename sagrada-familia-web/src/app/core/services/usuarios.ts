@@ -9,6 +9,7 @@ import {
   UsuarioResponse,
   UsuarioUpdate
 } from '../../shared/interfaces/usuario.interface';
+import { ImportResult } from '../../shared/interfaces/import.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -46,6 +47,20 @@ export class UsuariosService {
 
   actualizarEstado(id: number, activo: boolean): Observable<ApiResponse<null>> {
     return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/estado`, activo, { withCredentials: true });
+  }
+
+  exportarExcel(): Observable<Blob> {
+    return this.http.get(`${this.url}/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
+  descargarPlantilla(): Observable<Blob> {
+    return this.http.get(`${this.url}/plantilla`, { responseType: 'blob', withCredentials: true });
+  }
+
+  importar(archivo: File): Observable<ApiResponse<ImportResult>> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    return this.http.post<ApiResponse<ImportResult>>(`${this.url}/importar`, formData, { withCredentials: true });
   }
 
   /*

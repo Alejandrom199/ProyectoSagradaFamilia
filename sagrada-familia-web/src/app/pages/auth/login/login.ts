@@ -34,7 +34,7 @@ export class Login {
   errorReset = signal('');
 
   constructor() {
-    if (this.auth.isAuthenticated()) this.router.navigate(['/dashboard']);
+    if (this.auth.isAuthenticated()) this.redirigirSegunRol();
   }
 
   onSubmit() {
@@ -49,12 +49,16 @@ export class Login {
     this.error.set('');
 
     this.auth.login({ email: email!, password: password! }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.redirigirSegunRol(),
       error: (err) => {
         this.error.set(err.error?.message ?? 'Ocurrió un error al iniciar sesión.');
         this.cargando.set(false);
       }
     });
+  }
+
+  private redirigirSegunRol() {
+    this.router.navigate([this.auth.esPadre() ? '/mis-pequenos' : '/dashboard']);
   }
 
   enviarReset() {

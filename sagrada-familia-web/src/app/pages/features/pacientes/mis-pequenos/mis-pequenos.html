@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <div class="w-full flex items-center justify-center gap-4 mt-auto">
+            <div class="w-full flex items-center justify-center gap-3 flex-wrap mt-auto">
                 <btn variant="primary" (clicked)="verSeguimiento(nino.id)"
                     class="w-14 h-12 flex items-center justify-center text-white"
                     tooltip="Ver Crecimiento" tooltipPosition="bottom">
@@ -42,6 +42,16 @@
                     class="w-14 h-12 flex items-center justify-center text-slate-600"
                     tooltip="Ver Alimentos" tooltipPosition="bottom">
                     <ng-icon name="matCakeOutline" class="text-xl"></ng-icon>
+                </btn>
+                <btn variant="outline" (clicked)="verCitas(nino.id)"
+                    class="w-14 h-12 flex items-center justify-center text-slate-600"
+                    tooltip="Ver Citas" tooltipPosition="bottom">
+                    <ng-icon name="matCalendarMonthOutline" class="text-xl"></ng-icon>
+                </btn>
+                <btn variant="outline" (clicked)="verPrescripciones(nino.id)"
+                    class="w-14 h-12 flex items-center justify-center text-slate-600"
+                    tooltip="Ver Recetas" tooltipPosition="bottom">
+                    <ng-icon name="matMedicalServicesOutline" class="text-xl"></ng-icon>
                 </btn>
             </div>
         </div>

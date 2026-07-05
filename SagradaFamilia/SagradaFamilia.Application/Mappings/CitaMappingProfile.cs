@@ -19,11 +19,11 @@ namespace SagradaFamilia.Application.Mappings
                 .ForMember(dest => dest.Estado,
                     opt => opt.MapFrom(src => src.Estado.ToString()))
                 .ForMember(dest => dest.TienePrescripcion,
-                    opt => opt.MapFrom(src => src.Prescripciones != null && src.Prescripciones.Any()))
+                    opt => opt.MapFrom(src => src.Consulta != null && src.Consulta.Prescripciones.Any()))
                 .ForMember(dest => dest.Prescripcion,
-                    opt => opt.MapFrom(src => src.Prescripciones.FirstOrDefault()));
-
-            CreateMap<Prescripcion, PrescripcionDto.PrescripcionResumen>();
+                    opt => opt.MapFrom(src => src.Consulta != null ? src.Consulta.Prescripciones.FirstOrDefault() : null))
+                .ForMember(dest => dest.Consulta,
+                    opt => opt.MapFrom(src => src.Consulta));
         }
     }
 }

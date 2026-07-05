@@ -4,6 +4,7 @@ using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Settings;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SagradaFamilia.Infrastructure.Email
 {
@@ -20,19 +21,23 @@ namespace SagradaFamilia.Infrastructure.Email
             _logger = logger;
         }
 
-        public async Task EnviarAsync(string destinatario, string asunto, string cuerpoHtml)
+        public async Task EnviarAsync(string destinatario, string asunto, string cuerpoHtml, (string Nombre, byte[] Contenido)? adjunto = null)
         {
             var payload = new
             {
                 sender = new { name = _settings.FromName, email = _settings.FromEmail },
                 to = new[] { new { email = destinatario } },
                 subject = asunto,
-                htmlContent = cuerpoHtml
+                htmlContent = cuerpoHtml,
+                attachment = adjunto is { } a
+                    ? new[] { new { content = Convert.ToBase64String(a.Contenido), name = a.Nombre } }
+                    : null
             };
 
             _logger.LogInformation("Enviando email a {Destinatario} vía Brevo — Asunto: {Asunto}", destinatario, asunto);
 
-            var response = await _httpClient.PostAsJsonAsync("smtp/email", payload);
+            var jsonOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+            var response = await _httpClient.PostAsJsonAsync("smtp/email", payload, jsonOptions);
 
             if (!response.IsSuccessStatusCode)
             {

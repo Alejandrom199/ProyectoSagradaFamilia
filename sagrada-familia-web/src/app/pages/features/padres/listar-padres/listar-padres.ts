@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
 import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 import { ImportModal } from '../../../../shared/components/import-modal/import-modal';
@@ -11,6 +11,7 @@ import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 import { Reportes } from '../../../../core/services/reportes';
+import { AuthService } from '../../../../core/services/auth';
 import { PadresService } from '../../../../core/services/padres';
 import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
 import { MenuService } from '../../../../core/services/menu';
@@ -25,18 +26,20 @@ import { RutaApp } from '../../../../shared/enums/ruta-app.enum';
   styleUrl: './listar-padres.css',
 })
 export class ListarPadres implements OnInit {
-  private readonly padresService   = inject(PadresService);
+  private readonly padresService = inject(PadresService);
   private readonly reportesService = inject(Reportes);
-  private readonly router          = inject(Router);
-  private readonly loadingBar      = inject(LoadingBar);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly loadingBar = inject(LoadingBar);
 
-  readonly menu    = inject(MenuService);
-  protected readonly Accion   = Accion;
-  protected readonly RutaApp  = RutaApp;
+  readonly menu = inject(MenuService);
+  protected readonly Accion = Accion;
+  protected readonly RutaApp = RutaApp;
 
-  padres             = signal<PadreResponse[]>([]);
-  totalPadres        = signal(0);
-  padreAEliminar     = signal<PadreResponse | null>(null);
+  padres = signal<PadreResponse[]>([]);
+  totalPadres = signal(0);
+  padreAEliminar = signal<PadreResponse | null>(null);
+  errorEliminar = signal<string | null>(null);
   mostrarModalImport = signal(false);
 
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc', columnFilters: {} };
@@ -45,7 +48,7 @@ export class ListarPadres implements OnInit {
 
   columnas: DatatableColumn<PadreResponse>[] = [
     {
-      key: 'nombre', label: 'Padre/Madre', sortable: true, filterable: true,
+      key: 'nombre', label: 'Padre/Madre', sortable: true, filterable: false,
       render: (row) => generarAvatarHtml(row.nombre, row.apellido),
       exportValue: (row) => row.nombre
     },
@@ -59,7 +62,7 @@ export class ListarPadres implements OnInit {
     },
     {
       key: 'fechaCreacion', label: 'Registro', sortable: true, filterable: true,
-      render: (row) => formatearFecha(row.fechaCreacion)
+      render: (row) => renderFechaHora(row.fechaCreacion)
     },
   ];
 
@@ -68,8 +71,8 @@ export class ListarPadres implements OnInit {
     const lista: DatatableAction<PadreResponse>[] = [
       { type: 'ver', label: 'Ver', onClick: (row) => this.router.navigate(['/padres', row.id, 'hijos']) },
     ];
-    if (puede(Accion.Editar))   lista.push({ type: 'editar',   onClick: (row) => this.router.navigate(['/padres', row.id, 'editar']) });
-    if (puede(Accion.Eliminar)) lista.push({ type: 'eliminar', onClick: (row) => this.padreAEliminar.set(row) });
+    if (puede(Accion.Editar)) lista.push({ type: 'editar', onClick: (row) => this.router.navigate(['/padres', row.id, 'editar']) });
+    if (puede(Accion.Eliminar)) lista.push({ type: 'eliminar', onClick: (row) => { this.errorEliminar.set(null); this.padreAEliminar.set(row); } });
     return lista;
   });
 
@@ -103,19 +106,26 @@ export class ListarPadres implements OnInit {
     const padre = this.padreAEliminar();
     if (!padre) return;
     this.loadingBar.show();
+    this.errorEliminar.set(null);
     this.padresService.eliminar(padre.id).subscribe({
       next: (r) => {
-        if (r.success) this.padres.update(lista => lista.filter(p => p.id !== padre.id));
-        this.padreAEliminar.set(null);
+        if (r.success) {
+          this.padres.update(lista => lista.filter(p => p.id !== padre.id));
+          this.padreAEliminar.set(null);
+        }
         this.loadingBar.complete();
       },
-      error: () => { this.padreAEliminar.set(null); this.loadingBar.complete(); }
+      error: (err) => {
+        this.errorEliminar.set(err.error?.message ?? 'No se pudo eliminar el representante.');
+        this.loadingBar.complete();
+      }
     });
   }
 
   descargarPadresPdf(filtros: any): void {
     this.loadingBar.show();
-    const params = { titulo: 'Listado de Padres', filtro: JSON.stringify(filtros) };
+    const u = this.authService.currentUser();
+    const params = { titulo: 'Listado de Padres', filtro: JSON.stringify(filtros), usuario: u ? `${u.nombre} ${u.apellido}` : '' };
     this.reportesService.descargarReportePdf('reportes/padres-pdf', params).subscribe({
       next: (blob) => { this.descargarBlob(blob, `padres_${hoy()}.pdf`); this.loadingBar.complete(); },
       error: () => this.loadingBar.complete()
@@ -139,7 +149,7 @@ export class ListarPadres implements OnInit {
   }
 
   private descargarBlob(blob: Blob, nombre: string): void {
-    const url  = window.URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = nombre;

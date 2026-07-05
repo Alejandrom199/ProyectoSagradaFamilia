@@ -102,7 +102,7 @@ export class ProgresoHijos implements OnInit {
 
   private estadoInfo(estado: string): EstadoInfo {
     const mapa: Record<string, EstadoInfo> = {
-      'Normal':         { titulo: '¡Todo va bien!',   descripcion: 'Tu hijo tiene un peso saludable para su edad y estatura.',                icono: 'matFavoriteOutline',      fondo: 'bg-green-50',  texto: 'text-green-700',  borde: 'border-green-100' },
+      'Normal':         { titulo: '¡Todo va bien!',   descripcion: 'Tu hijo tiene un peso saludable para su edad y estatura.',                icono: 'matFavoriteBorderOutline', fondo: 'bg-green-50',  texto: 'text-green-700',  borde: 'border-green-100' },
       'BajoPeso':       { titulo: 'Peso bajo',         descripcion: 'Te recomendamos comentarlo con el pediatra en la próxima visita.',        icono: 'matWarningAmberOutline', fondo: 'bg-yellow-50', texto: 'text-yellow-700', borde: 'border-yellow-100' },
       'BajoPesoSevero': { titulo: 'Peso muy bajo',     descripcion: 'Por favor consulta al médico lo antes posible.',                         icono: 'matErrorOutline',         fondo: 'bg-red-50',    texto: 'text-red-700',    borde: 'border-red-100' },
       'Sobrepeso':      { titulo: 'Peso elevado',      descripcion: 'El pediatra puede orientarte con recomendaciones en la próxima visita.',  icono: 'matWarningAmberOutline', fondo: 'bg-orange-50', texto: 'text-orange-700', borde: 'border-orange-100' },

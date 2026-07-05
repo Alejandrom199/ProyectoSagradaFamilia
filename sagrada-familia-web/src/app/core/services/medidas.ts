@@ -41,6 +41,10 @@ export class MedidasService {
     return this.http.get(`${this.url}/exportar`, { responseType: 'blob', withCredentials: true });
   }
 
+  exportarExcelPorNino(ninoId: number): Observable<Blob> {
+    return this.http.get(`${this.url}/nino/${ninoId}/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
   descargarPlantilla(): Observable<Blob> {
     return this.http.get(`${this.url}/plantilla`, { responseType: 'blob', withCredentials: true });
   }

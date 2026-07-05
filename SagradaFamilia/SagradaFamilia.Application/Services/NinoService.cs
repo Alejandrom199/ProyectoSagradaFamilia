@@ -8,6 +8,7 @@ using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 
@@ -17,6 +18,8 @@ public class NinoService : INinoService
     private readonly IPadreRepository _padreRepository;
     private readonly IMedicoRepository _medicoRepository;
     private readonly IUsuarioRepository _usuarioRepository;
+    private readonly ICitaRepository _citaRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly ILogger<NinoService> _logger;
 
@@ -25,6 +28,8 @@ public class NinoService : INinoService
         IPadreRepository padreRepository,
         IMedicoRepository medicoRepository,
         IUsuarioRepository usuarioRepository,
+        ICitaRepository citaRepository,
+        IUnitOfWork unitOfWork,
         IMapper mapper,
         ILogger<NinoService> logger)
     {
@@ -32,6 +37,8 @@ public class NinoService : INinoService
         _padreRepository = padreRepository;
         _medicoRepository = medicoRepository;
         _usuarioRepository = usuarioRepository;
+        _citaRepository = citaRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
         _logger = logger;
     }
@@ -130,6 +137,38 @@ public class NinoService : INinoService
         return _mapper.Map<NinoDto.DetailResponse>(ninoCompleto!);
     }
 
+    public async Task CambiarMedicoAsync(int ninoId, int nuevoMedicoId)
+    {
+        _logger.LogInformation("Solicitud de reasignación de médico para niño ID: {Id} -> Médico ID: {MedicoId}", ninoId, nuevoMedicoId);
+
+        var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId)
+            ?? throw new NotFoundException("Niño", ninoId);
+
+        var medico = await _medicoRepository.ObtenerPorIdAsync(nuevoMedicoId)
+            ?? throw new NotFoundException("Médico", nuevoMedicoId);
+
+        nino.MedicoId = medico.Id;
+        await _ninoRepository.ActualizarAsync(nino);
+
+        _logger.LogInformation("Niño ID: {Id} reasignado al médico ID: {MedicoId}.", ninoId, nuevoMedicoId);
+    }
+
+    public async Task CambiarPadreAsync(int ninoId, int nuevoPadreId)
+    {
+        _logger.LogInformation("Solicitud de reasignación de representante para niño ID: {Id} -> Padre ID: {PadreId}", ninoId, nuevoPadreId);
+
+        var nino = await _ninoRepository.ObtenerPorIdAsync(ninoId)
+            ?? throw new NotFoundException("Niño", ninoId);
+
+        var padre = await _padreRepository.ObtenerPorIdAsync(nuevoPadreId)
+            ?? throw new NotFoundException("Padre", nuevoPadreId);
+
+        nino.PadreId = padre.Id;
+        await _ninoRepository.ActualizarAsync(nino);
+
+        _logger.LogInformation("Niño ID: {Id} reasignado al padre ID: {PadreId}.", ninoId, nuevoPadreId);
+    }
+
     public async Task EliminarAsync(int id)
     {
         _logger.LogWarning("Se ha solicitado la eliminación lógica del niño ID: {Id}", id);
@@ -137,9 +176,30 @@ public class NinoService : INinoService
         var nino = await _ninoRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Niño", id);
 
-        await _ninoRepository.EliminarAsync(nino.Id);
+        await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            await _ninoRepository.EliminarAsync(nino.Id);
 
-        _logger.LogInformation("Niño ID: {Id} eliminado lógicamente del sistema.", id);
+            // Las citas pasadas (completadas, canceladas, no asistió) se preservan como historial clínico.
+            // Solo se cancelan las pendientes, para que dejen de aparecer en la agenda activa del médico.
+            var citas = await _citaRepository.ObtenerPorNinoIdAsync(nino.Id);
+            foreach (var cita in citas.Where(c => c.Estado == EstadoCita.Pendiente))
+            {
+                cita.Estado = EstadoCita.Cancelada;
+                cita.MotivoCancelacion = "Paciente dado de baja del sistema.";
+                await _citaRepository.ActualizarAsync(cita);
+            }
+
+            await _unitOfWork.CommitAsync();
+            _logger.LogInformation("Niño ID: {Id} eliminado lógicamente del sistema. Citas pendientes canceladas.", id);
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            _logger.LogError(ex, "Error al eliminar el niño ID: {Id}. Se realizó Rollback.", id);
+            throw new BusinessException("No se pudo eliminar el registro del niño.");
+        }
     }
 
     public async Task<IEnumerable<NinoDto.ListResponse>> ObtenerMisPorUsuarioIdAsync(int usuarioId)
@@ -165,7 +225,14 @@ public class NinoService : INinoService
     public async Task<byte[]> GenerarPlantillaAsync()
     {
         _logger.LogInformation("Generando plantilla Excel para importación masiva de pacientes.");
-        return new NinosPlantillaDocument().GenerarBytes();
+
+        var padres = await _padreRepository.ObtenerTodosAsync();
+        var representantes = padres
+            .OrderBy(p => p.Nombre).ThenBy(p => p.Apellido)
+            .Select(p => ($"{p.Nombre} {p.Apellido}", p.Usuario.Email))
+            .ToList();
+
+        return new NinosPlantillaDocument(representantes).GenerarBytes();
     }
 
     public async Task<byte[]> ExportarExcelAsync()
@@ -213,7 +280,7 @@ public class NinoService : INinoService
                 var row = ws.Row(rowNum);
                 string nombre       = row.Cell(1).GetString().Trim();
                 string apellido     = row.Cell(2).GetString().Trim();
-                string emailPadre   = row.Cell(3).GetString().Trim().ToLowerInvariant();
+                string emailPadre   = ExtraerEmailRepresentante(row.Cell(3).GetString());
                 string sexoStr      = row.Cell(4).GetString().Trim().ToUpperInvariant();
                 var celdaFecha      = row.Cell(5);
 
@@ -311,6 +378,16 @@ public class NinoService : INinoService
             resultado.Importados, resultado.Actualizados, resultado.Errores.Count, resultado.TotalProcesadas);
 
         return resultado;
+    }
+
+    // El combo de la plantilla escribe "Nombre Apellido - email"; se acepta también
+    // un email plano (plantillas viejas o texto pegado a mano fuera del desplegable).
+    private static string ExtraerEmailRepresentante(string valorCelda)
+    {
+        var valor = valorCelda.Trim();
+        int idx = valor.LastIndexOf(" - ", StringComparison.Ordinal);
+        var email = idx >= 0 ? valor[(idx + 3)..] : valor;
+        return email.Trim().ToLowerInvariant();
     }
 
     private static bool EsEmailValido(string email)

@@ -95,11 +95,27 @@ public class NinosController : BaseController
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(Roles = "Medico")]
+    [Authorize(Roles = "Medico,Administrador")]
     public async Task<ActionResult<ApiResponse<NinoDto.DetailResponse>>> Actualizar(int id, [FromBody] NinoDto.Update request)
     {
         var response = await _ninoService.ActualizarAsync(id, request);
         return HandleResponse(response, "Datos del niño actualizados.");
+    }
+
+    [HttpPatch("{id:int}/medico")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse>> CambiarMedico(int id, [FromBody] NinoDto.ChangeMedico request)
+    {
+        await _ninoService.CambiarMedicoAsync(id, request.MedicoId);
+        return HandleSuccess("Médico reasignado correctamente.");
+    }
+
+    [HttpPatch("{id:int}/padre")]
+    [Authorize(Roles = "Medico")]
+    public async Task<ActionResult<ApiResponse>> CambiarPadre(int id, [FromBody] NinoDto.ChangePadre request)
+    {
+        await _ninoService.CambiarPadreAsync(id, request.PadreId);
+        return HandleSuccess("Representante reasignado correctamente.");
     }
 
     [HttpDelete("{id:int}")]

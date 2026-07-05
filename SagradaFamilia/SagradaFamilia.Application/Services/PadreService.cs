@@ -18,6 +18,7 @@ using SagradaFamilia.Domain.Interfaces.Repositories;
 public class PadreService : IPadreService
 {
     private readonly IPadreRepository _padreRepository;
+    private readonly IMedicoRepository _medicoRepository;
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IPasswordResetTokenRepository _resetTokenRepository;
     private readonly IEmailService _emailService;
@@ -29,6 +30,7 @@ public class PadreService : IPadreService
 
     public PadreService(
         IPadreRepository padreRepository,
+        IMedicoRepository medicoRepository,
         IUsuarioRepository usuarioRepository,
         IPasswordResetTokenRepository resetTokenRepository,
         IEmailService emailService,
@@ -39,6 +41,7 @@ public class PadreService : IPadreService
         ILogger<PadreService> logger)
     {
         _padreRepository = padreRepository;
+        _medicoRepository = medicoRepository;
         _usuarioRepository = usuarioRepository;
         _resetTokenRepository = resetTokenRepository;
         _emailService = emailService;
@@ -159,11 +162,6 @@ public class PadreService : IPadreService
 
         _mapper.Map(request, padre);
 
-        if (request.MedicoId.HasValue)
-        {
-            padre.MedicoId = request.MedicoId.Value;
-        }
-
         var actualizado = await _padreRepository.ActualizarAsync(padre);
 
         _logger.LogInformation("Padre ID: {Id} actualizado correctamente.", id);
@@ -178,6 +176,13 @@ public class PadreService : IPadreService
 
         var padre = await _padreRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Padre", id);
+
+        if (padre.Ninos.Count > 0)
+        {
+            var nombres = string.Join(", ", padre.Ninos.Select(n => $"{n.Nombre} {n.Apellido}"));
+            throw new BusinessException(
+                $"No se puede eliminar: tiene {padre.Ninos.Count} niño(s) activo(s) asignado(s) ({nombres}). Reasigna o elimina primero a los niños.");
+        }
 
         await _unitOfWork.BeginTransactionAsync();
         try
@@ -215,6 +220,22 @@ public class PadreService : IPadreService
         await _usuarioRepository.ActualizarAsync(usuario);
 
         _logger.LogInformation("Email del padre ID: {Id} actualizado a {Email}.", padreId, emailNormalizado);
+    }
+
+    public async Task CambiarMedicoAsync(int padreId, int nuevoMedicoId)
+    {
+        _logger.LogInformation("Solicitud de reasignación de médico para padre ID: {Id} -> Médico ID: {MedicoId}", padreId, nuevoMedicoId);
+
+        var padre = await _padreRepository.ObtenerPorIdAsync(padreId)
+            ?? throw new NotFoundException("Padre", padreId);
+
+        var medico = await _medicoRepository.ObtenerPorIdAsync(nuevoMedicoId)
+            ?? throw new NotFoundException("Médico", nuevoMedicoId);
+
+        padre.MedicoId = medico.Id;
+        await _padreRepository.ActualizarAsync(padre);
+
+        _logger.LogInformation("Padre ID: {Id} reasignado al médico ID: {MedicoId}.", padreId, nuevoMedicoId);
     }
 
     public async Task RestablecerPasswordAsync(int padreId)
@@ -352,9 +373,9 @@ public class PadreService : IPadreService
                         var usuario = new Usuario
                         {
                             Email        = email,
-                            PasswordHash = BCrypt.HashPassword(Guid.NewGuid().ToString("N")[..8] + "Aa1!"),
+                            PasswordHash = BCrypt.HashPassword(Guid.NewGuid().ToString()),
                             RolId        = (int)RolEnum.Padre,
-                            Activo       = true
+                            Activo       = false
                         };
                         await _usuarioRepository.CrearAsync(usuario);
 
@@ -367,8 +388,19 @@ public class PadreService : IPadreService
                             Telefono  = string.IsNullOrEmpty(telefono) ? null : telefono
                         };
                         await _padreRepository.CrearAsync(padre);
+
+                        var token = new PasswordResetToken
+                        {
+                            UsuarioId       = usuario.Id,
+                            Token           = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64)),
+                            FechaExpiracion = DateTime.UtcNow.AddHours(48)
+                        };
+                        await _resetTokenRepository.CrearAsync(token);
+
                         await _unitOfWork.CommitAsync();
                         resultado.Importados++;
+
+                        await EnviarCorreoActivacionAsync("CUENTA_PADRE", email, nombre, apellido, token.Token, rowNum);
                     }
                     catch (Exception ex)
                     {
@@ -385,6 +417,25 @@ public class PadreService : IPadreService
             resultado.Importados, resultado.Actualizados, resultado.Errores.Count, resultado.TotalProcesadas);
 
         return resultado;
+    }
+
+    private async Task EnviarCorreoActivacionAsync(string codigoEvento, string email, string nombre, string apellido, string token, int fila)
+    {
+        try
+        {
+            var link = $"{_appSettings.FrontendUrl}/activar-cuenta?token={token}";
+            var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync(codigoEvento, new Dictionary<string, string>
+            {
+                ["NOMBRE"]   = nombre,
+                ["APELLIDO"] = apellido,
+                ["LINK"]     = link
+            });
+            await _emailService.EnviarAsync(email, asunto, cuerpo);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "No se pudo enviar el correo de activación a {Email} (fila {Fila} del import).", email, fila);
+        }
     }
 
     private static bool EsEmailValido(string email)

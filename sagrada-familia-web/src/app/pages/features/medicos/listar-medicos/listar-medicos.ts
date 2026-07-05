@@ -9,6 +9,8 @@ import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { MedicosService } from '../../../../core/services/medicos';
+import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 import { MenuService } from '../../../../core/services/menu';
@@ -23,9 +25,11 @@ import { RutaApp } from '../../../../shared/enums/ruta-app.enum';
   styleUrl: './listar-medicos.css',
 })
 export class ListarMedicos implements OnInit {
-  private readonly medicosService = inject(MedicosService);
-  private readonly router         = inject(Router);
-  private readonly loadingBar     = inject(LoadingBar);
+  private readonly medicosService  = inject(MedicosService);
+  private readonly router          = inject(Router);
+  private readonly loadingBar      = inject(LoadingBar);
+  private readonly authService     = inject(AuthService);
+  private readonly reportesService = inject(Reportes);
 
   readonly menu   = inject(MenuService);
   protected readonly Accion  = Accion;
@@ -34,6 +38,7 @@ export class ListarMedicos implements OnInit {
   medicos            = signal<MedicoResponse[]>([]);
   totalMedicos       = signal(0);
   medicoAEliminar    = signal<MedicoResponse | null>(null);
+  errorEliminar      = signal<string | null>(null);
   mostrarModalImport = signal(false);
 
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc', columnFilters: {} };
@@ -68,7 +73,7 @@ export class ListarMedicos implements OnInit {
       { type: 'ver', label: 'Ver detalle', onClick: (row) => this.router.navigate(['/medicos', row.id]) },
     ];
     if (puede(Accion.Editar))   lista.push({ type: 'editar',   onClick: (row) => this.router.navigate(['/medicos', row.id, 'editar']) });
-    if (puede(Accion.Eliminar)) lista.push({ type: 'eliminar', onClick: (row) => this.medicoAEliminar.set(row) });
+    if (puede(Accion.Eliminar)) lista.push({ type: 'eliminar', onClick: (row) => { this.errorEliminar.set(null); this.medicoAEliminar.set(row); } });
     return lista;
   });
 
@@ -102,13 +107,29 @@ export class ListarMedicos implements OnInit {
     const medico = this.medicoAEliminar();
     if (!medico) return;
     this.loadingBar.show();
+    this.errorEliminar.set(null);
     this.medicosService.eliminar(medico.id).subscribe({
       next: (r) => {
-        if (r.success) this.medicos.update(lista => lista.filter(m => m.id !== medico.id));
-        this.medicoAEliminar.set(null);
+        if (r.success) {
+          this.medicos.update(lista => lista.filter(m => m.id !== medico.id));
+          this.medicoAEliminar.set(null);
+        }
         this.loadingBar.complete();
       },
-      error: () => { this.medicoAEliminar.set(null); this.loadingBar.complete(); }
+      error: (err) => {
+        this.errorEliminar.set(err.error?.message ?? 'No se pudo eliminar el médico.');
+        this.loadingBar.complete();
+      }
+    });
+  }
+
+  exportarPdf(): void {
+    this.loadingBar.show();
+    const u = this.authService.currentUser();
+    const params = { titulo: 'Listado de Médicos', usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/medicos-pdf', params).subscribe({
+      next: (blob) => { this.descargarBlob(blob, `medicos-${hoy()}.pdf`); this.loadingBar.complete(); },
+      error: () => this.loadingBar.complete()
     });
   }
 

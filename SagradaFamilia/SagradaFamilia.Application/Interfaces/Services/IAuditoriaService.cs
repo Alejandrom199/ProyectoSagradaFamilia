@@ -9,5 +9,7 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<IEnumerable<AuditoriaDto.Response>> ObtenerPorTablaAsync(string nombreTabla, string? clavePrimaria = null);
         Task<IEnumerable<AuditoriaDto.Response>> ObtenerPorUsuarioAsync(int usuarioId);
         Task RegistrarAsync(AuditoriaDto.Create request);
+        Task<byte[]> ExportarExcelAsync();
+        Task<byte[]> ExportarExcelPorUsuarioAsync(int usuarioId);
     }
 }

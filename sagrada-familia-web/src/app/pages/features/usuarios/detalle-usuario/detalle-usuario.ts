@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { finalize } from 'rxjs';
 
-import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearEdad, formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -73,7 +73,7 @@ export class DetalleUsuario implements OnInit {
     },
     {
       key: 'fechaCreacion', label: 'Registro', sortable: true,
-      render: (row) => formatearFecha(row.fechaCreacion)
+      render: (row) => renderFechaHora(row.fechaCreacion)
     }
   ];
 
@@ -92,7 +92,7 @@ export class DetalleUsuario implements OnInit {
     },
     {
       key: 'fechaCreacion', label: 'Registro', sortable: true,
-      render: (row) => formatearFecha(row.fechaCreacion)
+      render: (row) => renderFechaHora(row.fechaCreacion)
     }
   ];
 

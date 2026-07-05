@@ -17,6 +17,6 @@ namespace SagradaFamilia.Domain.Entities
         public ICollection<Medida> Medidas { get; set; } = new List<Medida>();
         public ICollection<Cita> Citas { get; set; } = new List<Cita>();
         public ICollection<Prediccion> Predicciones { get; set; } = new List<Prediccion>();
-        public ICollection<Prescripcion> Prescripciones { get; set; } = new List<Prescripcion>(); // ← agregar
+        public ICollection<Prescripcion> Prescripciones { get; set; } = new List<Prescripcion>();
     }
 }

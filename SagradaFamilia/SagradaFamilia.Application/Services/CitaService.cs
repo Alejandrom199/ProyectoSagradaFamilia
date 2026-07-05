@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
@@ -14,6 +15,8 @@ public class CitaService : ICitaService
     private readonly ICitaRepository _citaRepository;
     private readonly IMedicoRepository _medicoRepository;
     private readonly IParametroRepository _parametroRepository;
+    private readonly IEmailService _emailService;
+    private readonly IEmailTemplateService _emailTemplateService;
     private readonly IMapper _mapper;
     private readonly ILogger<CitaService> _logger;
 
@@ -21,12 +24,16 @@ public class CitaService : ICitaService
         ICitaRepository citaRepository,
         IMedicoRepository medicoRepository,
         IParametroRepository parametroRepository,
+        IEmailService emailService,
+        IEmailTemplateService emailTemplateService,
         IMapper mapper,
         ILogger<CitaService> logger)
     {
         _citaRepository = citaRepository;
         _medicoRepository = medicoRepository;
         _parametroRepository = parametroRepository;
+        _emailService = emailService;
+        _emailTemplateService = emailTemplateService;
         _mapper = mapper;
         _logger = logger;
     }
@@ -54,6 +61,18 @@ public class CitaService : ICitaService
 
         var citas = await _citaRepository.ObtenerPorNinoIdAsync(ninoId);
         return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
+    }
+
+    public async Task<byte[]> ExportarExcelPorNinoAsync(int ninoId)
+    {
+        var citas = await ObtenerPorNinoIdAsync(ninoId);
+        return new CitasExportDocument(citas).GenerarBytes();
+    }
+
+    public async Task<byte[]> ExportarExcelPorMedicoAsync(int usuarioId)
+    {
+        var citas = await ObtenerHistorialPorMedicoAsync(usuarioId);
+        return new CitasExportDocument(citas).GenerarBytes();
     }
 
     public async Task<(IEnumerable<CitaDto.Response> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
@@ -112,15 +131,24 @@ public class CitaService : ICitaService
             creada.Id, creada.FechaHora);
 
         var citaCompleta = await _citaRepository.ObtenerPorIdAsync(creada.Id);
+
+        // Se espera (no fire-and-forget): el DbContext es scoped y se destruye al terminar el request,
+        // así que un envío en segundo plano fallaría al consultar la plantilla de correo.
+        await EnviarCorreoCitaAsync("CITA_AGENDADA", citaCompleta!);
+
         return _mapper.Map<CitaDto.Response>(citaCompleta!);
     }
 
     public async Task<CitaDto.Response> ActualizarAsync(int id, CitaDto.Update request, int usuarioId)
     {
-        _logger.LogInformation("Iniciando actualización/reprogramación de la cita ID: {Id}", id);
+        _logger.LogInformation("Iniciando reagendación de la cita ID: {Id}", id);
 
         var cita = await _citaRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Cita", id);
+
+        var estadosReagendables = new[] { EstadoCita.Pendiente, EstadoCita.Cancelada, EstadoCita.NoAsistio };
+        if (!estadosReagendables.Contains(cita.Estado))
+            throw new BusinessException("Solo se pueden reagendar citas pendientes, canceladas o con ausencia.");
 
         if (request.FechaHoraFin <= request.FechaHora)
             throw new BusinessException("La hora de terminación debe ser posterior a la hora de inicio.");
@@ -134,36 +162,47 @@ public class CitaService : ICitaService
                 $"{request.FechaHora:HH:mm}–{request.FechaHoraFin:HH:mm}.");
 
         _mapper.Map(request, cita);
-
-        var citaMap = _mapper.Map<Cita>(request);
         cita.UsuarioModificacionId = usuarioId;
 
-        var actualizada = await _citaRepository.ActualizarAsync(citaMap);
+        // Al reagendar una cita cancelada o con ausencia, vuelve a Pendiente
+        if (cita.Estado == EstadoCita.Cancelada || cita.Estado == EstadoCita.NoAsistio)
+            cita.Estado = EstadoCita.Pendiente;
 
-        _logger.LogInformation("Cita ID: {Id} actualizada correctamente. Nueva Fecha/Hora: {FechaHora}",
+        var actualizada = await _citaRepository.ActualizarAsync(cita);
+
+        _logger.LogInformation("Cita ID: {Id} reagendada correctamente. Nueva Fecha/Hora: {FechaHora}",
             id, actualizada.FechaHora);
 
         var citaCompleta = await _citaRepository.ObtenerPorIdAsync(actualizada.Id);
+
+        await EnviarCorreoCitaAsync("CITA_REAGENDADA", citaCompleta!);
+
         return _mapper.Map<CitaDto.Response>(citaCompleta!);
     }
 
-    public async Task ActualizarEstadoAsync(int id, EstadoCita nuevoEstado)
+    public async Task ActualizarEstadoAsync(int id, CitaDto.CambiarEstadoRequest request)
     {
-        _logger.LogInformation("Cambiando estado de la cita ID: {Id} a {Estado}", id, nuevoEstado);
+        _logger.LogInformation("Cambiando estado de la cita ID: {Id} a {Estado}", id, request.Estado);
 
         var cita = await _citaRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Cita", id);
 
-        if (nuevoEstado != EstadoCita.Cancelada && DateTime.Now < cita.FechaHora)
+        if (request.Estado != EstadoCita.Cancelada && DateTime.Now < cita.FechaHora)
             throw new BusinessException("No es posible gestionar esta cita antes de su fecha y hora programada.");
 
         var estadoAnterior = cita.Estado;
-        cita.Estado = nuevoEstado;
+        cita.Estado = request.Estado;
+
+        if ((request.Estado == EstadoCita.Cancelada || request.Estado == EstadoCita.NoAsistio)
+            && !string.IsNullOrWhiteSpace(request.MotivoCancelacion))
+        {
+            cita.MotivoCancelacion = request.MotivoCancelacion.Trim();
+        }
 
         await _citaRepository.ActualizarAsync(cita);
 
-        _logger.LogInformation("Estado de la cita ID: {Id} cambiado exitosamente de {Anterior} a {Nuevo}",
-            id, estadoAnterior, nuevoEstado);
+        _logger.LogInformation("Estado de la cita ID: {Id} cambiado de {Anterior} a {Nuevo}",
+            id, estadoAnterior, request.Estado);
     }
 
     public async Task EliminarAsync(int id)
@@ -191,6 +230,77 @@ public class CitaService : ICitaService
         _logger.LogInformation("Consultando agenda futura del médico ID: {MedicoId}", medicoId);
         var citas = await _citaRepository.ObtenerPendientesPorMedicoAsync(medicoId);
         return _mapper.Map<IEnumerable<CitaDto.Response>>(citas);
+    }
+
+    private async Task EnviarCorreoCitaAsync(string codigoEvento, Cita cita)
+    {
+        try
+        {
+            var emailPadre = cita.Nino?.Padre?.Usuario?.Email;
+            if (string.IsNullOrWhiteSpace(emailPadre)) return;
+
+            var variables = new Dictionary<string, string>
+            {
+                ["NOMBRE_PADRE"] = cita.Nino.Padre.Nombre,
+                ["NOMBRE_NINO"]  = $"{cita.Nino.Nombre} {cita.Nino.Apellido}",
+                ["FECHA"]        = cita.FechaHora.ToString("dd/MM/yyyy"),
+                ["HORA_INICIO"]  = cita.FechaHora.ToString("HH:mm"),
+                ["HORA_FIN"]     = cita.FechaHoraFin?.ToString("HH:mm") ?? "—",
+                ["MEDICO"]       = $"Dr(a). {cita.Medico.Nombre} {cita.Medico.Apellido}",
+                ["MOTIVO"]       = !string.IsNullOrWhiteSpace(cita.Motivo) ? cita.Motivo : "No especificado",
+            };
+
+            var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync(codigoEvento, variables);
+
+            var incluyeInvitacion = codigoEvento is "CITA_AGENDADA" or "CITA_REAGENDADA";
+            (string Nombre, byte[] Contenido)? adjunto = incluyeInvitacion ? GenerarInvitacionIcs(cita) : null;
+
+            await _emailService.EnviarAsync(emailPadre, asunto, cuerpo, adjunto);
+
+            _logger.LogInformation("Correo {Evento} enviado a {Email} para cita ID: {CitaId}", codigoEvento, emailPadre, cita.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "No se pudo enviar el correo {Evento} para cita ID: {CitaId}", codigoEvento, cita.Id);
+        }
+    }
+
+    // Ecuador (America/Guayaquil) es UTC-5 fijo, sin horario de verano.
+    private const int OffsetHorasEcuador = 5;
+
+    private static (string Nombre, byte[] Contenido) GenerarInvitacionIcs(Cita cita)
+    {
+        var inicioUtc = cita.FechaHora.AddHours(OffsetHorasEcuador);
+        var finUtc = (cita.FechaHoraFin ?? cita.FechaHora.AddMinutes(30)).AddHours(OffsetHorasEcuador);
+
+        static string FormatoUtc(DateTime dt) => dt.ToString("yyyyMMddTHHmmssZ");
+        static string Escapar(string texto) => texto
+            .Replace("\\", "\\\\").Replace(",", "\\,").Replace(";", "\\;")
+            .Replace("\r\n", "\\n").Replace("\n", "\\n");
+
+        var descripcion = $"Cita con Dr(a). {cita.Medico.Nombre} {cita.Medico.Apellido}"
+            + (!string.IsNullOrWhiteSpace(cita.Motivo) ? $" — {cita.Motivo}" : "");
+
+        var ics = new System.Text.StringBuilder()
+            .Append("BEGIN:VCALENDAR\r\n")
+            .Append("VERSION:2.0\r\n")
+            .Append("PRODID:-//Sagrada Familia//Citas//ES\r\n")
+            .Append("CALSCALE:GREGORIAN\r\n")
+            .Append("METHOD:PUBLISH\r\n")
+            .Append("BEGIN:VEVENT\r\n")
+            .Append($"UID:cita-{cita.Id}@sagradafamilia\r\n")
+            .Append($"DTSTAMP:{FormatoUtc(DateTime.UtcNow)}\r\n")
+            .Append($"DTSTART:{FormatoUtc(inicioUtc)}\r\n")
+            .Append($"DTEND:{FormatoUtc(finUtc)}\r\n")
+            .Append($"SUMMARY:{Escapar($"Cita médica de {cita.Nino.Nombre} {cita.Nino.Apellido}")}\r\n")
+            .Append($"DESCRIPTION:{Escapar(descripcion)}\r\n")
+            .Append("STATUS:CONFIRMED\r\n")
+            .Append("SEQUENCE:0\r\n")
+            .Append("END:VEVENT\r\n")
+            .Append("END:VCALENDAR\r\n")
+            .ToString();
+
+        return ("cita.ics", System.Text.Encoding.UTF8.GetBytes(ics));
     }
 
     private async Task ValidarHorarioAtencionAsync(DateTime fechaHora)

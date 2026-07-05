@@ -27,15 +27,16 @@
 
     @if (ninoAEliminar()) {
     <confirm-modal title="¿Eliminar paciente?"
-        [message]="'Esta acción eliminará a ' + ninoAEliminar()?.nombre + ' ' + ninoAEliminar()?.apellido + ' del sistema. Se perderá todo su historial médico.'"
-        (confirm)="confirmarEliminar()" (cancel)="ninoAEliminar.set(null)">
+        [message]="'Esta acción eliminará a ' + ninoAEliminar()?.nombre + ' ' + ninoAEliminar()?.apellido + ' del sistema. Su historial médico se conserva; sus citas pendientes se cancelarán.'"
+        [errorMessage]="errorEliminar()"
+        (confirm)="confirmarEliminar()" (cancel)="ninoAEliminar.set(null); errorEliminar.set(null)">
     </confirm-modal>
     }
 
     @if (mostrarModalImport()) {
     <import-modal
         titulo="Importación masiva de pacientes"
-        subtitulo="Use la plantilla oficial. El representante debe estar registrado con su email. Los pacientes se asignan al médico que realiza la importación."
+        subtitulo="Use la plantilla oficial. Seleccione el representante desde el listado desplegable de la columna correspondiente. Los pacientes se asignan al médico que realiza la importación."
         [importFn]="importarFn"
         (cerrado)="mostrarModalImport.set(false)"
         (importacionExitosa)="cargarNinos()">

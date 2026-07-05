@@ -12,10 +12,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
     {
         public static async Task SeedAsync(AppDbContext context)
         {
-            if (await context.EventosCorreo.AnyAsync())
-                return;
-
-            // Resolvemos las plantillas por código para vincularlas
             var plantillas = await context.PlantillasCorreo
                 .Where(p => !p.Eliminado)
                 .ToDictionaryAsync(p => p.Codigo ?? string.Empty, p => p.Id);
@@ -23,7 +19,12 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             int? IdPlantilla(string codigo) =>
                 plantillas.TryGetValue(codigo, out var id) ? id : null;
 
-            var eventos = new List<EventoCorreo>
+            var existentes = (await context.EventosCorreo
+                .Select(e => e.Codigo)
+                .ToListAsync())
+                .ToHashSet();
+
+            var candidatos = new List<EventoCorreo>
             {
                 new()
                 {
@@ -57,9 +58,28 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                     Variables         = """["NOMBRE","LINK"]""",
                     PlantillaCorreoId = IdPlantilla("CAMBIO_CLAVE")
                 },
+                new()
+                {
+                    Codigo            = "CITA_AGENDADA",
+                    Nombre            = "Cita agendada — Notificación al padre",
+                    Descripcion       = "Se dispara cuando se programa una nueva cita. El padre recibe un correo con los datos de la consulta.",
+                    Variables         = """["NOMBRE_PADRE","NOMBRE_NINO","FECHA","HORA_INICIO","HORA_FIN","MEDICO","MOTIVO"]""",
+                    PlantillaCorreoId = IdPlantilla("CITA_AGENDADA")
+                },
+                new()
+                {
+                    Codigo            = "CITA_REAGENDADA",
+                    Nombre            = "Cita reagendada — Notificación al padre",
+                    Descripcion       = "Se dispara cuando una cita es reprogramada. El padre recibe la nueva fecha y hora confirmada.",
+                    Variables         = """["NOMBRE_PADRE","NOMBRE_NINO","FECHA","HORA_INICIO","HORA_FIN","MEDICO"]""",
+                    PlantillaCorreoId = IdPlantilla("CITA_REAGENDADA")
+                },
             };
 
-            context.EventosCorreo.AddRange(eventos);
+            var nuevos = candidatos.Where(e => !existentes.Contains(e.Codigo)).ToList();
+            if (nuevos.Count == 0) return;
+
+            context.EventosCorreo.AddRange(nuevos);
             await context.SaveChangesAsync();
         }
     }

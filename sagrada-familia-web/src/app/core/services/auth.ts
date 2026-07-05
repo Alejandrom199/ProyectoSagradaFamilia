@@ -1,7 +1,7 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { tap, Observable } from 'rxjs';
+import { tap, finalize, shareReplay, Observable } from 'rxjs';
 import { SessionUser, LoginRequest, LoginResponse } from '../../shared/interfaces/auth.interface';
 import { ApiResponse } from '../../shared/interfaces/api.interface';
 import { environment } from '../../../environments/environment';
@@ -32,20 +32,29 @@ export class AuthService {
     );
   }
 
+  private refreshEnCurso$: Observable<ApiResponse<LoginResponse>> | null = null;
+
+  // Comparte una única llamada en curso: si varias peticiones reciben 401 al mismo tiempo,
+  // todas reutilizan el mismo refresh en vez de disparar uno cada una (el backend rota el token).
   refreshToken(): Observable<ApiResponse<LoginResponse>> {
-    return this.http.post<ApiResponse<LoginResponse>>(
-      `${environment.apiUrl}/auth/refresh-token`,
-      {},
-      { withCredentials: true }
-    ).pipe(
-      tap(response => {
-        if (!response.success || !response.data) {
-          this.limpiarSesion();
-          throw new Error(response.message || 'Error al refrescar el token');
-        }
-        this.establecerSesion(response.data);
-      })
-    );
+    if (!this.refreshEnCurso$) {
+      this.refreshEnCurso$ = this.http.post<ApiResponse<LoginResponse>>(
+        `${environment.apiUrl}/auth/refresh-token`,
+        {},
+        { withCredentials: true }
+      ).pipe(
+        tap(response => {
+          if (!response.success || !response.data) {
+            this.limpiarSesion();
+            throw new Error(response.message || 'Error al refrescar el token');
+          }
+          this.establecerSesion(response.data);
+        }),
+        finalize(() => this.refreshEnCurso$ = null),
+        shareReplay(1)
+      );
+    }
+    return this.refreshEnCurso$;
   }
 
   nuevaClave(token: string, nuevaClave: string): Observable<ApiResponse<null>> {

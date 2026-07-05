@@ -16,15 +16,20 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             await _context.Citas
                 .Include(c => c.Nino)
                     .ThenInclude(n => n.Padre)
+                        .ThenInclude(p => p.Usuario)
                 .Include(c => c.Medico)
-                .Include(c => c.Prescripciones)
+                .Include(c => c.Consulta)
+                    .ThenInclude(co => co!.Prescripciones)
+                        .ThenInclude(p => p.Medicamentos)
                 .FirstOrDefaultAsync(c => c.Id == id && !c.Eliminado);
 
         public async Task<IEnumerable<Cita>> ObtenerHistorialPorMedicoAsync(int usuarioId) =>
             await _context.Citas
                 .Include(c => c.Nino)
                 .Include(c => c.Medico)
-                .Include(c => c.Prescripciones)
+                .Include(c => c.Consulta)
+                    .ThenInclude(co => co!.Prescripciones)
+                        .ThenInclude(p => p.Medicamentos)
                 .Where(c => c.Medico.UsuarioId == usuarioId && !c.Eliminado)
                 .OrderByDescending(c => c.FechaHora)
                 .ToListAsync();

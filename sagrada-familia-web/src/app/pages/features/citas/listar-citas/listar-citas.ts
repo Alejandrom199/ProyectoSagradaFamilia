@@ -9,8 +9,10 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { CitasService } from '../../../../core/services/citas';
 import { NinosService } from '../../../../core/services/ninos';
+import { MedicosService } from '../../../../core/services/medicos';
+import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
-// CORRECCIÓN: Importamos la interfaz de detalle correspondiente
 import { NinoDetailResponse, NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { formatearFecha, formatearHora } from '../../../../shared/utils/date.utils';
 
@@ -27,13 +29,16 @@ export class ListarCitas implements OnInit {
 
   private citasService = inject(CitasService);
   private ninosService = inject(NinosService);
+  private medicosService = inject(MedicosService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
+  private authService = inject(AuthService);
+  private reportesService = inject(Reportes);
 
-  // SOLUCIÓN: Cambiado a NinoDetailResponse para que acepte los datos del GET por ID sin romper tipado
   nino = signal<NinoDetailResponse | null>(null);
   citas = signal<CitaResponse[]>([]);
   totalCitas = signal(0);
+  filterOptions = signal<Record<string, string[]>>({});
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
 
   formatearFecha = formatearFecha;
@@ -43,10 +48,10 @@ export class ListarCitas implements OnInit {
       key: 'fechaHora', label: 'Fecha y hora', sortable: true,
       render: (row) => {
         const horaInicio = formatearHora(row.fechaHora);
-        const horaFin    = row.fechaHoraFin ? formatearHora(row.fechaHoraFin) : null;
+        const horaFin = row.fechaHoraFin ? formatearHora(row.fechaHoraFin) : null;
         return `
           <div>
-            <p class="font-medium text-gray-800">${formatearFecha(row.fechaHora)}</p>
+            <p class="font-medium text-gray-800 text-sm">${formatearFecha(row.fechaHora)}</p>
             <p class="text-xs text-gray-500">${horaInicio}${horaFin ? ' – ' + horaFin : ''}</p>
           </div>`;
       },
@@ -57,7 +62,7 @@ export class ListarCitas implements OnInit {
       render: (row) => `<span class="text-gray-700">Dr(a). ${row.nombreMedico}</span>`
     },
     {
-      key: 'motivo', label: 'Motivo', filterable: true,
+      key: 'motivo', label: 'Motivo',
       render: (row) => row.motivo || '<span class="text-gray-400">Sin motivo</span>'
     },
     {
@@ -74,11 +79,11 @@ export class ListarCitas implements OnInit {
     },
     {
       type: 'ver',
-      label: 'Completar',
-      icon: 'matCheckCircleOutline',
-      class: 'text-green-600 hover:bg-green-50',
-      visible: (row) => row.estado === 'Pendiente',
-      onClick: (row) => this.cambiarEstado(row.id, EstadoCita.Completada)
+      label: 'Reagendar',
+      icon: 'matEditCalendarOutline',
+      class: 'text-amber-600 hover:bg-amber-50',
+      visible: (row) => row.estado === 'Pendiente' || row.estado === 'Cancelada' || row.estado === 'NoAsistio',
+      onClick: (row) => this.router.navigate(['/citas', row.id, 'editar'])
     },
     {
       type: 'eliminar',
@@ -86,7 +91,7 @@ export class ListarCitas implements OnInit {
       icon: 'matCancelOutline',
       class: 'text-red-600 hover:bg-red-50',
       visible: (row) => row.estado === 'Pendiente',
-      onClick: (row) => this.cambiarEstado(row.id, EstadoCita.Cancelada)
+      onClick: (row) => this.router.navigate(['/citas', row.id])
     }
   ];
 
@@ -113,6 +118,19 @@ export class ListarCitas implements OnInit {
     });
 
     this.cargarCitas();
+    this.cargarFilterOptions();
+  }
+
+  cargarFilterOptions(): void {
+    this.medicosService.obtenerTodos().subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.filterOptions.set({
+            nombreMedico: r.data.map(m => `${m.nombre} ${m.apellido}`),
+          });
+        }
+      }
+    });
   }
 
   cargarDatos(): void {
@@ -155,6 +173,38 @@ export class ListarCitas implements OnInit {
         else this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
+    });
+  }
+
+  exportarPdf(): void {
+    const n = this.nino();
+    const u = this.authService.currentUser();
+    const titulo = n ? `Citas — ${n.nombre} ${n.apellido}` : 'Historial de Citas';
+    const params = { ninoId: this.ninoId, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/citas-nino-pdf', params).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `citas-${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => { }
+    });
+  }
+
+  descargarExcel(): void {
+    this.citasService.exportarExcelPorNino(parseInt(this.ninoId)).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `citas-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => { }
     });
   }
 

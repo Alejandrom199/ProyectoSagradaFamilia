@@ -8,6 +8,8 @@ import { Datatable, DatatableAction, DatatableColumn, ServerQuery } from '../../
 import { Button } from '../../../../shared/components/button/button';
 import { NinosService } from '../../../../core/services/ninos';
 import { MedidasService } from '../../../../core/services/medidas';
+import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 import { MedidaResponse } from '../../../../shared/interfaces/medida.interface';
 import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
@@ -22,13 +24,19 @@ import { ConfirmModal } from '../../../../shared/components/confirm-modal/confir
 })
 export class ListarMedidas implements OnInit {
   id!: string;
-  private route = inject(ActivatedRoute);
-  private medidasService = inject(MedidasService);
-  private ninosService = inject(NinosService);
+  private route            = inject(ActivatedRoute);
+  private medidasService   = inject(MedidasService);
+  private ninosService     = inject(NinosService);
+  private authService      = inject(AuthService);
+  private reportesService  = inject(Reportes);
 
   medidas = signal<MedidaResponse[]>([]);
   totalMedidas = signal(0);
   nino = signal<NinoDetailResponse | null>(null);
+
+  readonly filterOptions: Record<string, string[]> = {
+    estadoNutricional: ['Normal', 'BajoPeso', 'BajoPesoSevero', 'Sobrepeso', 'Obesidad'],
+  };
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
   migajas = signal<BreadcrumbItem[]>([]);
 
@@ -181,6 +189,33 @@ export class ListarMedidas implements OnInit {
     });
   }
 
+  exportarPdf(): void {
+    const n = this.nino();
+    const u = this.authService.currentUser();
+    const titulo = n ? `Medidas — ${n.nombre} ${n.apellido}` : 'Historial de Medidas';
+    const params = { ninoId: this.id, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/medidas-pdf', params).subscribe({
+      next: (blob) => { this.descargarBlob(blob, `medidas-${hoy()}.pdf`); },
+      error: () => {}
+    });
+  }
+
+  descargarExcel(): void {
+    this.medidasService.exportarExcelPorNino(parseInt(this.id, 10)).subscribe({
+      next: (blob) => this.descargarBlob(blob, `medidas-${hoy()}.xlsx`),
+      error: () => {}
+    });
+  }
+
+  private descargarBlob(blob: Blob, nombre: string): void {
+    const url  = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nombre;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   confirmarEliminar() {
     const m = this.medidaAEliminar();
     if (!m) return;
@@ -190,3 +225,5 @@ export class ListarMedidas implements OnInit {
     });
   }
 }
+
+function hoy(): string { return new Date().toISOString().split('T')[0]; }

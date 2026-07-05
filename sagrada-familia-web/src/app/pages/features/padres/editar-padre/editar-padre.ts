@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
 
@@ -10,24 +10,30 @@ import { ApiResponse } from '../../../../shared/interfaces/api.interface';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { PadresService } from '../../../../core/services/padres';
+import { MedicosService } from '../../../../core/services/medicos';
+import { AuthService } from '../../../../core/services/auth';
+import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 
 @Component({
   selector: 'app-editar-padre',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, Breadcrumb, NgIcon],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, Breadcrumb, NgIcon],
   templateUrl: './editar-padre.html',
   styleUrl: './editar-padre.css',
 })
 export class EditarPadre implements OnInit {
   @Input() id!: string;
 
-  private fb            = inject(FormBuilder);
-  private padresService = inject(PadresService);
-  private router        = inject(Router);
-  private loadingBar    = inject(LoadingBar);
+  private fb             = inject(FormBuilder);
+  private padresService  = inject(PadresService);
+  private medicosService = inject(MedicosService);
+  readonly authService    = inject(AuthService);
+  private router         = inject(Router);
+  private loadingBar     = inject(LoadingBar);
 
   formPadre!: FormGroup;
   padre      = signal<PadreDetailResponse | null>(null);
+  medicos    = signal<MedicoResponse[]>([]);
   guardando  = signal(false);
   error      = signal<string | null>(null);
 
@@ -38,14 +44,28 @@ export class EditarPadre implements OnInit {
   errorEmail         = signal<string | null>(null);
   exitoEmail         = signal(false);
 
-  migajas: BreadcrumbItem[] = [
-    { label: 'Padres', ruta: '/padres' },
-    { label: 'Editar Perfil' },
-  ];
+  // ── Reasignar médico ─────────────────────────────────────────────
+  mostrarCambioMedico = signal(false);
+  nuevoMedicoId        = signal<number | null>(null);
+  guardandoMedico      = signal(false);
+  errorMedico          = signal<string | null>(null);
+  exitoMedico          = signal(false);
+
+  migajas: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
+    this.migajas = this.authService.esAdmin()
+      ? [{ label: 'Usuarios', ruta: '/usuarios' }, { label: 'Editar Perfil' }]
+      : [{ label: 'Padres', ruta: '/padres' }, { label: 'Editar Perfil' }];
+
     this.formPadre = this.initForm();
     this.cargarDatosPadre();
+
+    if (this.authService.esAdmin()) {
+      this.medicosService.obtenerTodos().subscribe({
+        next: (r) => { if (r.success) this.medicos.set(r.data); }
+      });
+    }
   }
 
   private initForm(): FormGroup {
@@ -68,6 +88,7 @@ export class EditarPadre implements OnInit {
             apellido: res.data.apellido,
             telefono: res.data.telefono ?? ''
           });
+          this.nuevoMedicoId.set(res.data.medicoId);
           this.padre.set(res.data);
         }
       },
@@ -88,8 +109,7 @@ export class EditarPadre implements OnInit {
     const request: PadreUpdate = {
       nombre:   this.formPadre.value.nombre,
       apellido: this.formPadre.value.apellido,
-      telefono: this.formPadre.value.telefono || '',
-      medicoId: this.padre()?.medicoId ?? 0
+      telefono: this.formPadre.value.telefono || ''
     };
 
     this.padresService.actualizar(parseInt(this.id), request).subscribe({
@@ -137,5 +157,38 @@ export class EditarPadre implements OnInit {
     this.mostrarCambioEmail.update(v => !v);
     this.errorEmail.set(null);
     this.nuevoEmail.set('');
+  }
+
+  cambiarMedico(): void {
+    const medicoId = this.nuevoMedicoId();
+    if (!medicoId) return;
+
+    this.guardandoMedico.set(true);
+    this.errorMedico.set(null);
+
+    this.padresService.cambiarMedico(parseInt(this.id), { medicoId }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          const medico = this.medicos().find(m => m.id === medicoId);
+          const p = this.padre();
+          if (p && medico) this.padre.set({ ...p, medicoId, medicoNombreCompleto: `${medico.nombre} ${medico.apellido}` });
+          this.mostrarCambioMedico.set(false);
+          this.exitoMedico.set(true);
+          setTimeout(() => this.exitoMedico.set(false), 4000);
+        } else {
+          this.errorMedico.set(res.message);
+        }
+      },
+      error: (err) => {
+        this.errorMedico.set(err.error?.message ?? 'Error al reasignar el médico.');
+      },
+      complete: () => this.guardandoMedico.set(false)
+    });
+  }
+
+  toggleCambioMedico(): void {
+    this.mostrarCambioMedico.update(v => !v);
+    this.errorMedico.set(null);
+    this.nuevoMedicoId.set(this.padre()?.medicoId ?? null);
   }
 }

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormArray, FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 
 import { finalize } from 'rxjs';
@@ -16,14 +16,15 @@ import { formatearFecha } from '../../../../shared/utils/date.utils';
 @Component({
   selector: 'app-crear-prescripcion',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
+  imports: [FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
 
   templateUrl: './crear-prescripcion.html',
 })
 export class CrearPrescripcion implements OnInit {
-  @Input() citaId!: string;
+  @Input() consultaId!: string;
 
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
   private prescripcionesService = inject(PrescripcionesService);
   private citasService = inject(CitasService);
   private router = inject(Router);
@@ -35,6 +36,8 @@ export class CrearPrescripcion implements OnInit {
   error = signal<string | null>(null);
   formatearFecha = formatearFecha;
 
+  private citaId: string | null = null;
+
   migajas: BreadcrumbItem[] = [
     { label: 'Citas', ruta: '/citas' },
     { label: 'Nueva receta' },
@@ -42,16 +45,45 @@ export class CrearPrescripcion implements OnInit {
 
   ngOnInit(): void {
     this.formPrescripcion = this.fb.group({
-      detalleMedicamentos: ['', [Validators.required, Validators.minLength(5)]],
-      diagnostico: [''],
+      medicamentos: this.fb.array([this.crearFilaMedicamento()]),
       indicaciones: ['']
     });
-    this.cargarCita();
+
+    this.citaId = this.route.snapshot.queryParamMap.get('citaId');
+    if (this.citaId) this.cargarCita();
   }
 
-  get f() { return this.formPrescripcion.controls; }
+  get medicamentos(): FormArray {
+    return this.formPrescripcion.get('medicamentos') as FormArray;
+  }
+
+  crearFilaMedicamento(): FormGroup {
+    return this.fb.group({
+      nombre: ['', [Validators.required, Validators.maxLength(200)]],
+      presentacion: [''],
+      dosis: ['', Validators.required],
+      frecuencia: ['', Validators.required],
+      viaAdministracion: ['', Validators.required],
+      duracion: [''],
+      cantidad: [''],
+      observaciones: [''],
+    });
+  }
+
+  agregarMedicamento(): void {
+    this.medicamentos.push(this.crearFilaMedicamento());
+  }
+
+  quitarMedicamento(i: number): void {
+    if (this.medicamentos.length > 1) this.medicamentos.removeAt(i);
+  }
+
+  cancelar(): void {
+    this.router.navigate(this.citaId ? ['/citas', this.citaId] : ['/prescripciones']);
+  }
 
   private cargarCita(): void {
+    if (!this.citaId) return;
     this.loadingBar.show();
     this.citasService.obtenerPorId(parseInt(this.citaId)).subscribe({
       next: (r) => {
@@ -80,9 +112,8 @@ export class CrearPrescripcion implements OnInit {
     this.loadingBar.show();
 
     const data: PrescripcionCreate = {
-      citaId: parseInt(this.citaId),
-      detalleMedicamentos: this.formPrescripcion.value.detalleMedicamentos,
-      diagnostico: this.formPrescripcion.value.diagnostico || undefined,
+      consultaId: parseInt(this.consultaId),
+      medicamentos: this.formPrescripcion.value.medicamentos,
       indicaciones: this.formPrescripcion.value.indicaciones || undefined,
     };
 
@@ -93,7 +124,7 @@ export class CrearPrescripcion implements OnInit {
       }))
       .subscribe({
         next: (res) => {
-          if (res.success) this.router.navigate(['/citas', this.citaId]);
+          if (res.success) this.router.navigate(this.citaId ? ['/citas', this.citaId] : ['/prescripciones']);
           else this.error.set(res.message);
         },
         error: () => this.error.set('Ocurrió un error al registrar la receta.')

@@ -14,9 +14,10 @@
 
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Recetas médicas" [data]="prescripciones()" [columns]="columnas"
-            [serverSide]="true" [serverTotalItems]="totalPrescripciones()" (onServerQuery)="onServerQuery($event)"
+            [serverSide]="true" [serverTotalItems]="totalPrescripciones()" [filterOptions]="filterOptions()" (onServerQuery)="onServerQuery($event)"
             [exportExcel]="true" exportFileName="prescripciones-paciente" [showActualizar]="true" [showExportar]="true"
             searchPlaceholder="Buscar por medicamento o médico..."
+            (onExportPdf)="exportarPdf()" (onExportExcel)="descargarExcel()"
             emptyMessage="Este paciente no tiene prescripciones registradas." (onActualizar)="cargarPrescripciones()">
         </datatable>
     </div>

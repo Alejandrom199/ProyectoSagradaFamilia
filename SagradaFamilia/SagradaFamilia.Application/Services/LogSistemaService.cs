@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 
@@ -27,6 +28,12 @@ public class LogSistemaService : ILogSistemaService
     {
         var logs = await _logSistemaRepository.ObtenerRecientesAsync(top);
         return _mapper.Map<IEnumerable<LogSistemaDto.Response>>(logs);
+    }
+
+    public async Task<byte[]> ExportarExcelAsync()
+    {
+        var logs = await ObtenerRecientesAsync(500);
+        return new LogsExportDocument(logs).GenerarBytes();
     }
 
     public async Task<(IEnumerable<LogSistemaDto.Response> Items, int TotalItems)> ObtenerPaginadoAsync(

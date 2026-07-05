@@ -28,7 +28,7 @@ public abstract class BaseExcelTemplate
             using var logoStream = Assembly.GetAssembly(typeof(BaseExcelTemplate))!
                 .GetManifestResourceStream("SagradaFamilia.Application.Assets.logo.png");
             if (logoStream != null)
-                ws.AddPicture(logoStream).MoveTo(ws.Cell("A1")).WithSize(100, 55);
+                ws.AddPicture(logoStream).MoveTo(ws.Cell("A1")).WithSize(65, 55);
         }
         catch { /* continuar sin logo si no está disponible */ }
 

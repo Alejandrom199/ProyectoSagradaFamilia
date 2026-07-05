@@ -123,6 +123,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IOmsRepository, OmsRepository>();
             services.AddScoped<IAlimentoRepository, AlimentoRepository>();
             services.AddScoped<ICitaRepository, CitaRepository>();
+            services.AddScoped<IConsultaRepository, ConsultaRepository>();
             services.AddScoped<IAuditoriaRepository, AuditoriaRepository>();
             services.AddScoped<ILogSistemaRepository, LogSistemaRepository>();
             services.AddScoped<IParametroRepository, ParametroRepository>();
@@ -147,6 +148,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IAlimentoService, AlimentoService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICitaService, CitaService>();
+            services.AddScoped<IConsultaService, ConsultaService>();
 
             services.AddScoped<IAuditoriaService, AuditoriaService>();
             services.AddScoped<ILogSistemaService, LogSistemaService>();

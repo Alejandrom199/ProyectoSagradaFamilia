@@ -12,7 +12,7 @@
         <datatable title="Prescripciones emitidas" [data]="prescripciones()" [columns]="columnas" [actions]="acciones"
             [exportExcel]="true" exportFileName="mis-prescripciones"
             searchPlaceholder="Buscar por paciente o diagnóstico..." emptyMessage="No has emitido prescripciones aún."
-            (onActualizar)="cargarPrescripciones()">
+            (onActualizar)="cargarPrescripciones()" (onExportPdf)="exportarPdf()" (onExportExcel)="descargarExcel()">
         </datatable>
     </div>
 </div>

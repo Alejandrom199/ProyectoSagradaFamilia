@@ -18,22 +18,16 @@
             class="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end">
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-bold text-slate-600 uppercase ml-1">Tabla *</label>
-                <searchable-select
-                    [options]="tablasOpciones"
-                    labelKey="label"
-                    valueKey="value"
-                    [value]="f['tabla'].value"
-                    (valueChange)="f['tabla'].setValue($event)"
-                    placeholder="Seleccionar tabla..."
-                    searchPlaceholder="Buscar módulo...">
+                <searchable-select [options]="tablasOpciones" labelKey="label" valueKey="value"
+                    [value]="f['tabla'].value" (valueChange)="f['tabla'].setValue($event)"
+                    placeholder="Seleccionar tabla..." searchPlaceholder="Buscar módulo...">
                 </searchable-select>
             </div>
 
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-bold text-slate-600 uppercase ml-1">Clave primaria <span
                         class="text-slate-400 normal-case font-normal">(opcional)</span></label>
-                <input formControlName="pk" type="text"
-                    placeholder="Ej. 42 — dejar vacío para ver toda la tabla"
+                <input formControlName="pk" type="text" placeholder="Ej. 42 — dejar vacío para ver toda la tabla"
                     class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
             </div>
 
@@ -61,20 +55,20 @@
     }
 
     <div class="border border-slate-200 overflow-hidden">
-        <datatable [title]="auth.esAdmin() ? 'Historial de cambios' : 'Mi actividad'"
-            [data]="registros()" [columns]="columnasActivas" [actions]="acciones"
-            [serverSide]="auth.esAdmin() && !tablaFiltroActivo()"
-            [serverTotalItems]="totalRegistros()" (onServerQuery)="onServerQuery($event)"
-            [exportExcel]="true" exportFileName="auditoria" [showActualizar]="true"
-            searchPlaceholder="Buscar en el historial..."
-            emptyMessage="No hay registros de auditoría disponibles."
-            (onActualizar)="limpiarFiltroTabla()">
+        <datatable [title]="auth.esAdmin() ? 'Historial de cambios' : 'Mi actividad'" [data]="registros()"
+            [columns]="columnasActivas" [actions]="acciones" [serverSide]="auth.esAdmin() && !tablaFiltroActivo()"
+            [serverTotalItems]="totalRegistros()" [filterOptions]="filterOptions"
+            (onServerQuery)="onServerQuery($event)" [exportExcel]="true" exportFileName="auditoria"
+            [showActualizar]="true" searchPlaceholder="Buscar en el historial..." (onExportPdf)="exportarPdf()"
+            (onExportExcel)="descargarExcel()"
+            emptyMessage="No hay registros de auditoría disponibles." (onActualizar)="limpiarFiltroTabla()">
         </datatable>
     </div>
 
     @if (registroDetalle(); as d) {
     <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-md w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200">
+        <div
+            class="bg-white rounded-md w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200">
 
             <!-- Cabecera del modal -->
             <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
@@ -82,7 +76,8 @@
                     <h3 class="text-lg font-bold text-slate-800">Detalle del cambio</h3>
                     <p class="text-xs text-slate-500 mt-0.5">
                         @if (auth.esAdmin()) {
-                        {{ d.tabla }} #{{ d.clavePrimaria }} · {{ d.accion }} · {{ d.usuarioNombreCompleto || d.usuarioEmail || 'Sistema' }}
+                        {{ d.tabla }} #{{ d.clavePrimaria }} · {{ d.accion }} · {{ d.usuarioNombreCompleto ||
+                        d.usuarioEmail || 'Sistema' }}
                         } @else {
                         {{ tablaAmigable(d.tabla) }} · {{ d.accion }}
                         }
@@ -139,29 +134,24 @@
                         </thead>
                         <tbody>
                             @for (campo of camposModificados(); track campo.clave) {
-                            <tr class="border-b border-slate-100 last:border-0"
-                                [class.bg-blue-50]="campo.cambio">
+                            <tr class="border-b border-slate-100 last:border-0" [class.bg-blue-50]="campo.cambio">
                                 <td class="px-4 py-2.5">
                                     <div class="flex items-center gap-2">
                                         @if (campo.cambio) {
                                         <span class="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0"></span>
                                         }
-                                        <span class="font-medium"
-                                            [class.text-slate-800]="campo.cambio"
+                                        <span class="font-medium" [class.text-slate-800]="campo.cambio"
                                             [class.text-slate-500]="!campo.cambio">
                                             {{ campo.etiqueta }}
                                         </span>
                                     </div>
                                 </td>
                                 @if (d.accion === 'Actualización') {
-                                <td class="px-4 py-2.5"
-                                    [class.text-red-600]="campo.cambio"
-                                    [class.line-through]="campo.cambio"
-                                    [class.text-slate-400]="!campo.cambio">
+                                <td class="px-4 py-2.5" [class.text-red-600]="campo.cambio"
+                                    [class.line-through]="campo.cambio" [class.text-slate-400]="!campo.cambio">
                                     {{ campo.antes }}
                                 </td>
-                                <td class="px-4 py-2.5 font-medium"
-                                    [class.text-green-700]="campo.cambio"
+                                <td class="px-4 py-2.5 font-medium" [class.text-green-700]="campo.cambio"
                                     [class.text-slate-500]="!campo.cambio">
                                     {{ campo.despues }}
                                 </td>

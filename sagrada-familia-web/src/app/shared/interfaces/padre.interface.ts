@@ -39,9 +39,12 @@ export interface PadreUpdate {
     nombre: string;
     apellido: string;
     telefono?: string;
-    medicoId: number;
 }
 
 export interface PadreCambiarEmail {
     email: string;
+}
+
+export interface PadreCambiarMedico {
+    medicoId: number;
 }

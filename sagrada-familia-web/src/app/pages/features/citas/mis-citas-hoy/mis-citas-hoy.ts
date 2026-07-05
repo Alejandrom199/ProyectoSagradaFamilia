@@ -137,7 +137,7 @@ export class MisCitasHoy implements OnInit {
     return this.mesActual().toLocaleDateString('es-EC', { month: 'long', year: 'numeric' });
   }
   formatearHora(fechaHora: string): string {
-    return new Date(fechaHora).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' });
+    return new Date(fechaHora).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false });
   }
   formatearFechaSel(): string {
     return this.fechaSeleccionada().toLocaleDateString('es-EC', {

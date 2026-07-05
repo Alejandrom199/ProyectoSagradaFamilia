@@ -8,5 +8,5 @@ export const medicoGuard: CanActivateFn = (route, state) => {
 
   if (auth.esMedico()) return true;
 
-  return router.createUrlTree(['/mis-pequenos']);
+  return router.createUrlTree([auth.esAdmin() ? '/dashboard' : '/mis-pequenos']);
 };

@@ -14,13 +14,23 @@ public class PrescripcionesController : BaseController
 {
     private readonly IPrescripcionService _prescripcionService;
     private readonly INinoService _ninoService;
+    private readonly IPadreService _padreService;
 
     public PrescripcionesController(
-        IPrescripcionService prescripcionService, 
-        INinoService ninoService)
+        IPrescripcionService prescripcionService,
+        INinoService ninoService,
+        IPadreService padreService)
     {
         _prescripcionService = prescripcionService;
         _ninoService = ninoService;
+        _padreService = padreService;
+    }
+
+    // El PadreId (tabla Padres) es distinto del UsuarioId (claim del JWT) — hay que resolverlo primero.
+    private async Task<int?> ObtenerPadreIdAsync()
+    {
+        var padre = await _padreService.ObtenerPorUsuarioIdAsync(UsuarioId);
+        return padre?.Id;
     }
 
     [HttpPost]
@@ -36,6 +46,16 @@ public class PrescripcionesController : BaseController
     public async Task<ActionResult<ApiResponse<PrescripcionDto.Response>>> ObtenerPorId(int id)
     {
         var response = await _prescripcionService.ObtenerPorIdAsync(id);
+
+        if (User.IsInRole("Padre"))
+        {
+            var padreId = await ObtenerPadreIdAsync();
+            if (padreId == null) return Forbid();
+
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(response.NinoId, padreId.Value);
+            if (!esSuHijo) return Forbid();
+        }
+
         return HandleResponse(response);
     }
 
@@ -45,6 +65,15 @@ public class PrescripcionesController : BaseController
     {
         var response = await _prescripcionService.ObtenerPorMedicoAsync(UsuarioId);
         return HandleResponse(response);
+    }
+
+    [HttpGet("mis-prescripciones/exportar")]
+    [Authorize(Roles = "Medico")]
+    public async Task<IActionResult> ExportarMisPrescripcionesExcel()
+    {
+        var bytes = await _prescripcionService.ExportarExcelPorMedicoAsync(UsuarioId);
+        string filename = $"mis-prescripciones-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
     }
 
     [HttpGet("nino/{ninoId:int}/paginado")]
@@ -59,7 +88,10 @@ public class PrescripcionesController : BaseController
     {
         if (User.IsInRole("Padre"))
         {
-            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, UsuarioId);
+            var padreId = await ObtenerPadreIdAsync();
+            if (padreId == null) return Forbid();
+
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, padreId.Value);
             if (!esSuHijo) return Forbid();
         }
 
@@ -73,11 +105,23 @@ public class PrescripcionesController : BaseController
     {
         if (User.IsInRole("Padre"))
         {
-            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, UsuarioId);
+            var padreId = await ObtenerPadreIdAsync();
+            if (padreId == null) return Forbid();
+
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, padreId.Value);
             if (!esSuHijo) return Forbid();
         }
 
         var response = await _prescripcionService.ObtenerHistorialPorNinoAsync(ninoId);
         return HandleResponse(response);
+    }
+
+    [HttpGet("nino/{ninoId:int}/exportar")]
+    [Authorize(Roles = "Medico,Administrador")]
+    public async Task<IActionResult> ExportarPorNinoExcel(int ninoId)
+    {
+        var bytes = await _prescripcionService.ExportarExcelPorNinoAsync(ninoId);
+        string filename = $"prescripciones-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
     }
 }

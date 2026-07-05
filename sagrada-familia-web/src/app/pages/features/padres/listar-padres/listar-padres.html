@@ -26,8 +26,9 @@
 
     @if (padreAEliminar()) {
     <confirm-modal title="¿Eliminar representante?"
-        [message]="'Esta acción eliminará a ' + padreAEliminar()?.nombre + ' ' + padreAEliminar()?.apellido + ' del sistema y desvinculará a los pacientes asociados a esta cuenta.'"
-        (confirm)="confirmarEliminar()" (cancel)="padreAEliminar.set(null)">
+        [message]="'Esta acción eliminará a ' + padreAEliminar()?.nombre + ' ' + padreAEliminar()?.apellido + ' del sistema.'"
+        [errorMessage]="errorEliminar()"
+        (confirm)="confirmarEliminar()" (cancel)="padreAEliminar.set(null); errorEliminar.set(null)">
     </confirm-modal>
     }
 

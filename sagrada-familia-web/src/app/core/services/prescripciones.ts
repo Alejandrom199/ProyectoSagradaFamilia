@@ -28,12 +28,20 @@ export class PrescripcionesService {
     return this.http.get<ApiResponse<PrescripcionResponse[]>>(`${this.url}/mis-prescripciones`, { withCredentials: true });
   }
 
+  exportarExcelPorNino(ninoId: number): Observable<Blob> {
+    return this.http.get(`${this.url}/nino/${ninoId}/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
+  exportarExcelMisPrescripciones(): Observable<Blob> {
+    return this.http.get(`${this.url}/mis-prescripciones/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
   // Detalle de una prescripción
   obtenerPorId(id: number): Observable<ApiResponse<PrescripcionResponse>> {
     return this.http.get<ApiResponse<PrescripcionResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
 
-  // Crear desde una cita (requiere citaId)
+  // Crear desde una consulta (requiere consultaId)
   crear(request: PrescripcionCreate): Observable<ApiResponse<PrescripcionResponse>> {
     return this.http.post<ApiResponse<PrescripcionResponse>>(this.url, request, { withCredentials: true });
   }

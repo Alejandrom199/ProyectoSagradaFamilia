@@ -301,35 +301,4 @@
     </div>
     }
 
-    <!-- ════════════════════ VISTA PADRE ════════════════════ -->
-    @if (auth.esPadre()) {
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-        <a routerLink="/mis-pequenos"
-            class="lift fade-up stagger-1 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 group">
-            <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                <ng-icon name="matPeopleOutline" class="text-blue-500 text-lg"></ng-icon>
-            </div>
-            <div class="flex-1">
-                <p class="text-sm font-bold text-slate-800">Mis pequeños</p>
-                <p class="text-xs text-slate-400 mt-0.5">Ver el progreso de tus hijos</p>
-            </div>
-            <ng-icon name="matArrowForwardOutline" class="text-slate-300 group-hover:text-blue-400 transition-colors shrink-0"></ng-icon>
-        </a>
-
-        <a routerLink="/alimentos"
-            class="lift fade-up stagger-2 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-amber-300 group">
-            <div class="w-10 h-10 rounded-md bg-amber-50 flex items-center justify-center shrink-0 group-hover:bg-amber-100 transition-colors">
-                <ng-icon name="matCakeOutline" class="text-amber-500 text-lg"></ng-icon>
-            </div>
-            <div class="flex-1">
-                <p class="text-sm font-bold text-slate-800">Guía de alimentos</p>
-                <p class="text-xs text-slate-400 mt-0.5">Orientación nutricional</p>
-            </div>
-            <ng-icon name="matArrowForwardOutline" class="text-slate-300 group-hover:text-amber-400 transition-colors shrink-0"></ng-icon>
-        </a>
-
-    </div>
-    }
-
 </div>

@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PadreCambiarEmail, PadreCreate, PadreDetailResponse, PadreResponse, PadreUpdate } from '../../shared/interfaces/padre.interface';
+import { PadreCambiarEmail, PadreCambiarMedico, PadreCreate, PadreDetailResponse, PadreResponse, PadreUpdate } from '../../shared/interfaces/padre.interface';
 import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
 import { ImportResult } from '../../shared/interfaces/import.interface';
 
@@ -43,6 +43,10 @@ export class PadresService {
 
   cambiarEmail(id: number, request: PadreCambiarEmail): Observable<ApiResponse<null>> {
     return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/email`, request, { withCredentials: true });
+  }
+
+  cambiarMedico(id: number, request: PadreCambiarMedico): Observable<ApiResponse<null>> {
+    return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/medico`, request, { withCredentials: true });
   }
 
   restablecerPassword(id: number): Observable<ApiResponse<null>> {

@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
@@ -13,7 +14,7 @@ public class PrescripcionService : IPrescripcionService
 {
     private readonly IPrescripcionRepository _prescripcionRepository;
     private readonly INinoRepository _ninoRepository;
-    private readonly ICitaRepository _citaRepository;
+    private readonly IConsultaRepository _consultaRepository;
     private readonly IMedicoRepository _medicoRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<PrescripcionService> _logger;
@@ -21,14 +22,14 @@ public class PrescripcionService : IPrescripcionService
     public PrescripcionService(
         IPrescripcionRepository prescripcionRepository,
         INinoRepository ninoRepository,
-        ICitaRepository citaRepository,
+        IConsultaRepository consultaRepository,
         IMedicoRepository medicoRepository,
         IMapper mapper,
         ILogger<PrescripcionService> logger)
     {
         _prescripcionRepository = prescripcionRepository;
         _ninoRepository = ninoRepository;
-        _citaRepository = citaRepository;
+        _consultaRepository = consultaRepository;
         _medicoRepository = medicoRepository;
         _mapper = mapper;
         _logger = logger;
@@ -64,6 +65,18 @@ public class PrescripcionService : IPrescripcionService
         return _mapper.Map<IEnumerable<PrescripcionDto.Response>>(prescripciones);
     }
 
+    public async Task<byte[]> ExportarExcelPorNinoAsync(int ninoId)
+    {
+        var prescripciones = await ObtenerHistorialPorNinoAsync(ninoId);
+        return new PrescripcionesExportDocument(prescripciones).GenerarBytes();
+    }
+
+    public async Task<byte[]> ExportarExcelPorMedicoAsync(int medicoId)
+    {
+        var prescripciones = await ObtenerPorMedicoAsync(medicoId);
+        return new PrescripcionesExportDocument(prescripciones).GenerarBytes();
+    }
+
     public async Task<(IEnumerable<PrescripcionDto.Response> Items, int TotalItems)> ObtenerPaginadoPorNinoAsync(
         int ninoId, int page, int pageSize, string? search, string? sortBy, bool ascending)
     {
@@ -84,27 +97,30 @@ public class PrescripcionService : IPrescripcionService
 
     public async Task<PrescripcionDto.Response> CrearAsync(PrescripcionDto.Create request, int usuarioId)
     {
-        _logger.LogInformation("Generando nueva prescripción para la cita ID: {CitaId}", request.CitaId);
+        _logger.LogInformation("Generando nueva prescripción para la consulta ID: {ConsultaId}", request.ConsultaId);
 
-        var cita = await _citaRepository.ObtenerPorIdAsync(request.CitaId)
-            ?? throw new NotFoundException("Cita", request.CitaId);
+        var consulta = await _consultaRepository.ObtenerPorIdAsync(request.ConsultaId)
+            ?? throw new NotFoundException("Consulta", request.ConsultaId);
 
-        if (cita.Estado != EstadoCita.EnCurso)
+        if (consulta.Estado != EstadoConsulta.EnCurso)
         {
-            _logger.LogWarning("Intento de prescribir en cita ID {Id} con estado {Estado}", cita.Id, cita.Estado);
-            throw new BusinessException("Solo se puede prescribir en una cita que esté en curso.");
+            _logger.LogWarning("Intento de prescribir en consulta ID {Id} con estado {Estado}", consulta.Id, consulta.Estado);
+            throw new BusinessException("Solo se puede prescribir en una consulta que esté en curso.");
         }
 
         var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(usuarioId)
             ?? throw new NotFoundException("Médico", usuarioId);
 
         var prescripcion = _mapper.Map<Prescripcion>(request);
-        prescripcion.NinoId = cita.NinoId;
-        prescripcion.MedicoId = medico.Id; 
+        prescripcion.NinoId = consulta.NinoId;
+        prescripcion.MedicoId = medico.Id;
+        prescripcion.UsuarioCreacionId = usuarioId;
+        foreach (var medicamento in prescripcion.Medicamentos)
+            medicamento.UsuarioCreacionId = usuarioId;
 
         var creada = await _prescripcionRepository.CrearAsync(prescripcion);
 
-        _logger.LogInformation("Prescripción ID: {Id} registrada para cita ID: {CitaId}", creada.Id, cita.Id);
+        _logger.LogInformation("Prescripción ID: {Id} registrada para consulta ID: {ConsultaId}", creada.Id, consulta.Id);
 
         var prescripcionCompleta = await _prescripcionRepository.ObtenerPorIdAsync(creada.Id);
         return _mapper.Map<PrescripcionDto.Response>(prescripcionCompleta!);

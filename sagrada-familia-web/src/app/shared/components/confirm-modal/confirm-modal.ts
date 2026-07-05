@@ -10,6 +10,7 @@ import { Button } from "../button/button";
 export class ConfirmModal {
   title = input<string>('¿Estás seguro?');
   message = input<string>('Esta acción no se puede deshacer.');
+  errorMessage = input<string | null>(null);
 
   confirm = output<void>();
   cancel = output<void>();

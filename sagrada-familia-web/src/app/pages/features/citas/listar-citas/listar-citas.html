@@ -14,10 +14,10 @@
 
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Historial de citas" [data]="citas()" [columns]="columnas" [actions]="acciones"
-            [serverSide]="true" [serverTotalItems]="totalCitas()" (onServerQuery)="onServerQuery($event)"
+            [serverSide]="true" [serverTotalItems]="totalCitas()" [filterOptions]="filterOptions()" (onServerQuery)="onServerQuery($event)"
             [exportExcel]="true" exportFileName="citas-paciente" [showActualizar]="true" [showExportar]="true"
-            searchPlaceholder="Buscar por motivo o médico..." emptyMessage="Este paciente no tiene citas registradas."
-            (onActualizar)="cargarCitas()">
+            (onExportPdf)="exportarPdf()" (onExportExcel)="descargarExcel()" searchPlaceholder="Buscar por motivo o médico..."
+            emptyMessage="Este paciente no tiene citas registradas." (onActualizar)="cargarCitas()">
         </datatable>
     </div>
 </div>

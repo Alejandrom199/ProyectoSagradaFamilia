@@ -227,6 +227,12 @@ public class MedidaService : IMedidaService
         return new MedidasExportDocument(dtos).GenerarBytes();
     }
 
+    public async Task<byte[]> ExportarExcelPorNinoAsync(int ninoId)
+    {
+        var medidas = await ObtenerPorNinoAsync(ninoId);
+        return new MedidasExportDocument(medidas).GenerarBytes();
+    }
+
     public async Task<MedidaDto.ImportResultado> ImportarAsync(Stream archivoStream, int medicoId)
     {
         _logger.LogInformation("Iniciando importación masiva de medidas desde Excel para médico ID: {MedicoId}", medicoId);

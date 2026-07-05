@@ -8,8 +8,9 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { SistemaService } from '../../../../core/services/sistema';
 import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 import { AuditoriaResponse } from '../../../../shared/interfaces/sistema.interface';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { JsonFormatPipe } from '../../../../shared/pipes/json-format.pipe';
 import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 
@@ -74,9 +75,9 @@ interface CampoModificado {
 }
 
 @Component({
-  selector: 'app-listar-auditoria',
+  selector: 'listar-auditoria',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, Breadcrumb, ReactiveFormsModule, JsonFormatPipe, SearchableSelect],
+  imports: [NgIcon, Datatable, Breadcrumb, ReactiveFormsModule, JsonFormatPipe, SearchableSelect],
   templateUrl: './listar-auditoria.html',
   styleUrl: './listar-auditoria.css',
 })
@@ -85,23 +86,26 @@ export class ListarAuditoria implements OnInit {
   private sistemaService = inject(SistemaService);
   private loadingBar = inject(LoadingBar);
   protected auth = inject(AuthService);
+  private reportesService = inject(Reportes);
 
   formFiltro: FormGroup;
   registros = signal<AuditoriaResponse[]>([]);
   totalRegistros = signal(0);
   registroDetalle = signal<AuditoriaResponse | null>(null);
   tablaFiltroActivo = signal(false);
+
+  readonly filterOptions: Record<string, string[]> = {
+    accion: ['Creación', 'Actualización', 'Eliminación'],
+  };
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
 
   tablas = TABLAS_AUDITABLES;
-  // Opciones transformadas para SearchableSelect (strings → objetos con label legible)
   readonly tablasOpciones = TABLAS_AUDITABLES.map(t => ({ value: t, label: TABLA_LABELS[t] ?? t }));
 
-  // Columnas para administrador (técnicas)
   columnas: DatatableColumn<AuditoriaResponse>[] = [
     {
-      key: 'fecha', label: 'Fecha', sortable: true,
-      render: (row) => `<span class="text-sm text-slate-700">${formatearFecha(row.fecha)}</span>`
+      key: 'fecha', label: 'Fecha', sortable: true, filterable: true,
+      render: (row) => renderFechaHora(row.fecha)
     },
     {
       key: 'accion', label: 'Acción', sortable: true, filterable: true,
@@ -131,19 +135,19 @@ export class ListarAuditoria implements OnInit {
   // Columnas para médico (sin tecnicismos)
   columnasMedico: DatatableColumn<AuditoriaResponse>[] = [
     {
-      key: 'fecha', label: 'Fecha', sortable: true,
-      render: (row) => `<span class="text-sm text-slate-700">${formatearFecha(row.fecha)}</span>`
+      key: 'fecha', label: 'Fecha', sortable: true, filterable: true,
+      render: (row) => renderFechaHora(row.fecha)
     },
     {
       key: 'accion', label: 'Acción', sortable: true, filterable: true,
       render: (row) => this.badgeAccion(row.accion)
     },
     {
-      key: 'tabla', label: 'Módulo',
+      key: 'tabla', label: 'Módulo', filterable: true,
       render: (row) => `<span class="text-sm text-slate-700">${this.tablaAmigable(row.tabla)}</span>`
     },
     {
-      key: 'usuarioNombreCompleto', label: 'Realizado por',
+      key: 'usuarioNombreCompleto', label: 'Realizado por', filterable: true,
       render: (row) => row.usuarioNombreCompleto
         ? `<span class="text-sm font-medium text-slate-800">${row.usuarioNombreCompleto}</span>`
         : `<span class="text-xs text-slate-400">${row.usuarioEmail || 'Sistema'}</span>`
@@ -297,6 +301,41 @@ export class ListarAuditoria implements OnInit {
 
   abrirDetalle(row: AuditoriaResponse): void {
     this.registroDetalle.set(row);
+  }
+
+  exportarPdf(): void {
+    this.loadingBar.show();
+    const u = this.auth.currentUser();
+    const params = { titulo: 'Actividad del Sistema', usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/auditoria-pdf', params).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `auditoria-${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarExcel(): void {
+    const obs$ = this.auth.esAdmin()
+      ? this.sistemaService.exportarAuditoriaExcel()
+      : this.sistemaService.exportarMiActividadExcel();
+    obs$.subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `auditoria-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {}
+    });
   }
 
   tablaAmigable(tabla: string): string {

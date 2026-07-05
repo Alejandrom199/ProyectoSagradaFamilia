@@ -45,7 +45,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
         public DbSet<Medida> Medidas => Set<Medida>();
         public DbSet<Prediccion> Predicciones => Set<Prediccion>();
         public DbSet<Cita> Citas => Set<Cita>();
+        public DbSet<Consulta> Consultas => Set<Consulta>();
         public DbSet<Prescripcion> Prescripciones => Set<Prescripcion>();
+        public DbSet<Medicamento> Medicamentos => Set<Medicamento>();
 
         // ── OMS ──────────────────────────────────────────────────
         public DbSet<OmsReferencia> OmsReferencias => Set<OmsReferencia>();
