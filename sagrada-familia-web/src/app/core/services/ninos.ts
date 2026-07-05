@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
-import { NinoCreate, NinoDetailResponse, NinoResponse, NinoUpdate } from '../../shared/interfaces/nino.interface';
+import { NinoCambiarMedico, NinoCambiarPadre, NinoCreate, NinoDetailResponse, NinoResponse, NinoUpdate } from '../../shared/interfaces/nino.interface';
 import { ImportResult } from '../../shared/interfaces/import.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -52,6 +52,14 @@ export class NinosService {
 
   actualizar(id: number, request: NinoUpdate): Observable<ApiResponse<NinoDetailResponse>> {
     return this.http.put<ApiResponse<NinoDetailResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
+  }
+
+  cambiarMedico(id: number, request: NinoCambiarMedico): Observable<ApiResponse<null>> {
+    return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/medico`, request, { withCredentials: true });
+  }
+
+  cambiarPadre(id: number, request: NinoCambiarPadre): Observable<ApiResponse<null>> {
+    return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/padre`, request, { withCredentials: true });
   }
 
   eliminar(id: number): Observable<ApiResponse<null>> {

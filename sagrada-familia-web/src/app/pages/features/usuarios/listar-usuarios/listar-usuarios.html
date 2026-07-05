@@ -16,9 +16,30 @@
     <div class="border border-slate-200 overflow-hidden">
         <datatable title="Cuentas del sistema" [data]="usuarios()" [columns]="columnas" [actions]="acciones()"
             [exportExcel]="true" exportFileName="usuarios" [showActualizar]="true" [showExportar]="true"
-            [showColumnas]="true" searchPlaceholder="Buscar por email o rol..."
-            emptyMessage="No hay usuarios registrados." (onActualizar)="cargarUsuarios()"
+            [showColumnas]="true" searchPlaceholder="Buscar por email o rol..." [filterOptions]="filterOptions"
+            (onExportPdf)="exportarPdf()" (onExportExcel)="descargarExcel()" emptyMessage="No hay usuarios registrados."
+            (onActualizar)="cargarUsuarios()"
+            [showPlantilla]="true" (onPlantilla)="descargarPlantilla()"
+            [showImportar]="true" (onImportar)="mostrarModalImport.set(true)"
             [serverSide]="true" [serverTotalItems]="totalUsuarios()" (onServerQuery)="onServerQuery($event)">
         </datatable>
     </div>
+
+    @if (mostrarModalImport()) {
+    <import-modal
+        titulo="Importación masiva de usuarios"
+        subtitulo="Use la plantilla oficial: cada fila indica su Rol (Medico o Padre) y se creará con el correo de activación correspondiente."
+        [importFn]="importarFn"
+        (cerrado)="mostrarModalImport.set(false)"
+        (importacionExitosa)="cargarUsuarios()">
+    </import-modal>
+    }
+
+    @if (usuarioAEliminar(); as u) {
+    <confirm-modal title="¿Eliminar usuario?"
+        [message]="'Esta acción eliminará a ' + u.email + ' (' + (u.esMedico ? 'médico' : 'representante') + ') del sistema.'"
+        [errorMessage]="errorEliminar()"
+        (confirm)="confirmarEliminar()" (cancel)="usuarioAEliminar.set(null); errorEliminar.set(null)">
+    </confirm-modal>
+    }
 </div>

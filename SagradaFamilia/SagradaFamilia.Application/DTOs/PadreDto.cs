@@ -51,13 +51,16 @@
             public string Nombre { get; set; } = string.Empty;
             public string Apellido { get; set; } = string.Empty;
             public string? Telefono { get; set; }
-
-            public int? MedicoId { get; set; }
         }
 
         public class ChangeEmail
         {
             public string Email { get; set; } = string.Empty;
+        }
+
+        public class ChangeMedico
+        {
+            public int MedicoId { get; set; }
         }
 
         public class ImportResultado

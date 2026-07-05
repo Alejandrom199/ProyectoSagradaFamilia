@@ -45,5 +45,12 @@ export interface NinoUpdate {
     apellido: string;
     fechaNacimiento: string;
     sexo: 'M' | 'F';
-    medicoId?: number;
+}
+
+export interface NinoCambiarMedico {
+    medicoId: number;
+}
+
+export interface NinoCambiarPadre {
+    padreId: number;
 }

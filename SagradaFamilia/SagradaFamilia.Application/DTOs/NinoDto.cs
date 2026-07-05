@@ -56,7 +56,16 @@
             public string Apellido { get; set; } = string.Empty;
             public DateOnly FechaNacimiento { get; set; }
             public char Sexo { get; set; }
-            public int? MedicoId { get; set; }
+        }
+
+        public class ChangeMedico
+        {
+            public int MedicoId { get; set; }
+        }
+
+        public class ChangePadre
+        {
+            public int PadreId { get; set; }
         }
 
         public class ImportResultado

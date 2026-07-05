@@ -1,10 +1,11 @@
 import { Routes } from "@angular/router";
 import { medicoGuard } from "../../../core/guards/medico-guard";
+import { roleGuard } from "../../../core/guards/role-guard";
 
 export const pacientesRoutes: Routes = [
     {
         path: '',
-        canActivate: [medicoGuard],
+        canActivate: [roleGuard],
         loadComponent: () => import('./listar-pacientes/listar-pacientes').then(m => m.ListarPacientes),
     },
     {
@@ -14,12 +15,12 @@ export const pacientesRoutes: Routes = [
     },
     {
         path: ':id/editar',
-        canActivate: [medicoGuard],
+        canActivate: [roleGuard],
         loadComponent: () => import('./editar-paciente/editar-paciente').then(m => m.EditarPaciente),
     },
     {
         path: ':id',
-        canActivate: [medicoGuard],
+        canActivate: [roleGuard],
         loadComponent: () => import('./detalle-paciente/detalle-paciente').then(m => m.DetallePaciente),
     },
 ];

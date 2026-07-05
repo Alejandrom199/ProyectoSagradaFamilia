@@ -18,6 +18,7 @@ namespace SagradaFamilia.Application.Interfaces.Services
 
         Task<byte[]> GenerarPlantillaAsync();
         Task<byte[]> ExportarExcelAsync();
+        Task<byte[]> ExportarExcelPorNinoAsync(int ninoId);
         Task<MedidaDto.ImportResultado> ImportarAsync(Stream archivoStream, int medicoId);
     }
 }

@@ -257,6 +257,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("MotivoCancelacion")
+                        .HasColumnType("text");
+
                     b.Property<int>("NinoId")
                         .HasColumnType("integer");
 
@@ -283,6 +286,83 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .HasFilter("\"Estado\" != 5 AND \"Eliminado\" = false");
 
                     b.ToTable("Citas", (string)null);
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Consulta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CitaId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Diagnostico")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("Eliminado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("Estado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("Evolucion")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Indicaciones")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("MedicoId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Motivo")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("NinoId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CitaId")
+                        .IsUnique();
+
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("MedicoId");
+
+                    b.HasIndex("NinoId");
+
+                    b.ToTable("Consultas", (string)null);
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.EventoCorreo", b =>
@@ -372,6 +452,87 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                     b.HasIndex("Nivel");
 
                     b.ToTable("LogsSistema", (string)null);
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medicamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Cantidad")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Dosis")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Duracion")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("Eliminado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Frecuencia")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("PrescripcionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Presentacion")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ViaAdministracion")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("PrescripcionId");
+
+                    b.ToTable("Medicamentos", (string)null);
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medico", b =>
@@ -1051,17 +1212,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CitaId")
+                    b.Property<int>("ConsultaId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("DetalleMedicamentos")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Diagnostico")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("Eliminado")
                         .ValueGeneratedOnAdd()
@@ -1089,9 +1241,6 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                     b.Property<int>("NinoId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("NinoId1")
-                        .HasColumnType("integer");
-
                     b.Property<int>("UsuarioCreacionId")
                         .HasColumnType("integer");
 
@@ -1103,15 +1252,13 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CitaId");
+                    b.HasIndex("ConsultaId");
 
                     b.HasIndex("Eliminado");
 
                     b.HasIndex("MedicoId");
 
                     b.HasIndex("NinoId");
-
-                    b.HasIndex("NinoId1");
 
                     b.ToTable("Prescripciones", (string)null);
                 });
@@ -1335,6 +1482,33 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                     b.Navigation("Nino");
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Consulta", b =>
+                {
+                    b.HasOne("SagradaFamilia.Domain.Entities.Cita", "Cita")
+                        .WithOne("Consulta")
+                        .HasForeignKey("SagradaFamilia.Domain.Entities.Consulta", "CitaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SagradaFamilia.Domain.Entities.Medico", "Medico")
+                        .WithMany()
+                        .HasForeignKey("MedicoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SagradaFamilia.Domain.Entities.Nino", "Nino")
+                        .WithMany()
+                        .HasForeignKey("NinoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cita");
+
+                    b.Navigation("Medico");
+
+                    b.Navigation("Nino");
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.EventoCorreo", b =>
                 {
                     b.HasOne("SagradaFamilia.Domain.Entities.PlantillaCorreo", "Plantilla")
@@ -1343,6 +1517,17 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Plantilla");
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medicamento", b =>
+                {
+                    b.HasOne("SagradaFamilia.Domain.Entities.Prescripcion", "Prescripcion")
+                        .WithMany("Medicamentos")
+                        .HasForeignKey("PrescripcionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prescripcion");
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Medico", b =>
@@ -1467,9 +1652,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Prescripcion", b =>
                 {
-                    b.HasOne("SagradaFamilia.Domain.Entities.Cita", "Cita")
+                    b.HasOne("SagradaFamilia.Domain.Entities.Consulta", "Consulta")
                         .WithMany("Prescripciones")
-                        .HasForeignKey("CitaId")
+                        .HasForeignKey("ConsultaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1480,16 +1665,12 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                         .IsRequired();
 
                     b.HasOne("SagradaFamilia.Domain.Entities.Nino", "Nino")
-                        .WithMany()
+                        .WithMany("Prescripciones")
                         .HasForeignKey("NinoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SagradaFamilia.Domain.Entities.Nino", null)
-                        .WithMany("Prescripciones")
-                        .HasForeignKey("NinoId1");
-
-                    b.Navigation("Cita");
+                    b.Navigation("Consulta");
 
                     b.Navigation("Medico");
 
@@ -1568,6 +1749,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Cita", b =>
                 {
+                    b.Navigation("Consulta");
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Consulta", b =>
+                {
                     b.Navigation("Prescripciones");
                 });
 
@@ -1611,6 +1797,11 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Padre", b =>
                 {
                     b.Navigation("Ninos");
+                });
+
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.Prescripcion", b =>
+                {
+                    b.Navigation("Medicamentos");
                 });
 
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.Rol", b =>

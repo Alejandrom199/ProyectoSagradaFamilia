@@ -7,7 +7,9 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 import { finalize } from 'rxjs';
 import { PadresService } from '../../../../core/services/padres';
 import { AuthService } from '../../../../core/services/auth';
+import { MedicosService } from '../../../../core/services/medicos';
 import { PadreCreate } from '../../../../shared/interfaces/padre.interface';
+import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 
 @Component({
   selector: 'crear-padre',
@@ -18,11 +20,12 @@ import { PadreCreate } from '../../../../shared/interfaces/padre.interface';
 export class CrearPadre implements OnInit {
   private fb = inject(FormBuilder);
   private padresService = inject(PadresService);
-  private authService = inject(AuthService);
+  private medicosService = inject(MedicosService);
+  readonly authService = inject(AuthService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
 
-  medicos = signal<any[]>([]);
+  medicos = signal<MedicoResponse[]>([]);
 
   formPadre!: FormGroup;
 
@@ -41,6 +44,10 @@ export class CrearPadre implements OnInit {
     if (this.authService.esMedico() && user?.medicoId) {
       this.f['medicoId'].patchValue(user.medicoId);
       this.f['medicoId'].disable();
+    } else if (this.authService.esAdmin()) {
+      this.medicosService.obtenerTodos().subscribe({
+        next: (r) => { if (r.success) this.medicos.set(r.data); }
+      });
     }
   }
 

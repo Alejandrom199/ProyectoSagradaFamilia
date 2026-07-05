@@ -12,6 +12,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
         private readonly string _marcaAguaPath;
         private readonly bool _isLandscape;
         private readonly Action<IContainer> _contentComposer;
+        private readonly string? _usuarioGenerador;
 
         // PALETA DE COLORES GLOBAL
         public static Color ColorNaval => Color.FromHex("#1B355A");
@@ -55,13 +56,15 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
             string logoPath,
             string marcaAguaPath,
             bool isLandscape,
-            Action<IContainer> contentComposer)
+            Action<IContainer> contentComposer,
+            string? usuarioGenerador = null)
         {
             _titulo = titulo;
             _logoPath = logoPath;
             _marcaAguaPath = marcaAguaPath;
             _isLandscape = isLandscape;
             _contentComposer = contentComposer;
+            _usuarioGenerador = usuarioGenerador;
         }
 
         public void Compose(IDocumentContainer container)
@@ -87,8 +90,14 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
                         column.Item().Text("La Sagrada Familia").FontSize(18).Bold().FontColor(ColorNaval);
                         column.Item().Text(_titulo).FontSize(12).SemiBold().FontColor(ColorVerdePastel);
                     });
-                    row.ConstantItem(100).AlignRight().AlignBottom().Text(DateTime.Now.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("es-EC")).ToLower())
-                        .FontSize(9).FontColor(Colors.Grey.Medium);
+                    row.ConstantItem(140).AlignRight().AlignBottom().Column(col =>
+                    {
+                        col.Item().AlignRight().Text(DateTime.Now.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("es-EC")).ToLower())
+                            .FontSize(9).FontColor(Colors.Grey.Medium);
+                        if (!string.IsNullOrWhiteSpace(_usuarioGenerador))
+                            col.Item().AlignRight().Text($"Generado por: {_usuarioGenerador}")
+                                .FontSize(8).FontColor(Colors.Grey.Medium);
+                    });
                 });
 
                 page.Content()

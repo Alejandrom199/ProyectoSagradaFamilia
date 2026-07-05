@@ -39,7 +39,7 @@
                             <div class="mt-1"><ng-icon name="matScienceOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
                                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Medicamentos</h4>
-                                <p class="text-xs text-slate-500 mt-1">Lista fármacos con dosis y frecuencia. Sé específico.</p>
+                                <p class="text-xs text-slate-500 mt-1">Agrega uno o más medicamentos con dosis, frecuencia, vía y duración.</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
@@ -56,21 +56,73 @@
             <div class="lg:w-2/3 p-8">
                 <form [formGroup]="formPrescripcion" (ngSubmit)="guardar()" class="space-y-6">
 
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Diagnóstico</label>
-                        <input formControlName="diagnostico" type="text" placeholder="Ej. Faringoamigdalitis aguda"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
-                    </div>
+                    <div formArrayName="medicamentos" class="space-y-4">
+                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Medicamentos *</label>
 
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Detalle de medicamentos *</label>
-                        <textarea formControlName="detalleMedicamentos" rows="5"
-                            placeholder="Ej.&#10;1. Paracetamol 120mg/5mL - 2.5mL cada 6 horas por 3 días&#10;2. Suero oral - ad libitum"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm font-mono"
-                            [class.border-red-500]="f['detalleMedicamentos'].invalid && f['detalleMedicamentos'].touched"></textarea>
-                        @if (f['detalleMedicamentos'].invalid && f['detalleMedicamentos'].touched) {
-                        <span class="text-[11px] text-red-500 font-medium ml-1">Mínimo 5 caracteres</span>
+                        @for (grupo of medicamentos.controls; track $index; let i = $index) {
+                        <div [formGroupName]="i" class="relative grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 border border-slate-200 rounded-md bg-slate-50/30">
+                            @if (medicamentos.length > 1) {
+                            <button type="button" (click)="quitarMedicamento(i)"
+                                class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                                <ng-icon name="matCancelOutline" class="text-sm"></ng-icon>
+                            </button>
+                            }
+
+                            <div class="flex flex-col gap-1 sm:col-span-2">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase">Nombre del medicamento *</label>
+                                <input formControlName="nombre" type="text" placeholder="Ej. Paracetamol"
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase">Presentación</label>
+                                <input formControlName="presentacion" type="text" placeholder="Ej. Jarabe 120mg/5mL"
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase">Dosis *</label>
+                                <input formControlName="dosis" type="text" placeholder="Ej. 2.5mL"
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase">Frecuencia *</label>
+                                <input formControlName="frecuencia" type="text" placeholder="Ej. Cada 6 horas"
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase">Vía de administración *</label>
+                                <input formControlName="viaAdministracion" type="text" placeholder="Ej. Oral"
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase">Duración</label>
+                                <input formControlName="duracion" type="text" placeholder="Ej. 3 días"
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase">Cantidad</label>
+                                <input formControlName="cantidad" type="text" placeholder="Ej. 1 frasco"
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            </div>
+
+                            <div class="flex flex-col gap-1 sm:col-span-2">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase">Observaciones</label>
+                                <textarea formControlName="observaciones" rows="2"
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm resize-none"></textarea>
+                            </div>
+                        </div>
                         }
+
+                        <button type="button" (click)="agregarMedicamento()"
+                            class="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+                            <ng-icon name="matScienceOutline" class="text-sm"></ng-icon>
+                            Agregar medicamento
+                        </button>
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -88,10 +140,10 @@
                     }
 
                     <div class="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
-                        <a [routerLink]="['/citas', citaId]"
+                        <button type="button" (click)="cancelar()"
                             class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
                             Cancelar
-                        </a>
+                        </button>
                         <button type="submit" [disabled]="guardando() || formPrescripcion.invalid"
                             class="px-8 py-2.5 bg-blue-600 text-white rounded-md text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2">
                             @if (guardando()) {

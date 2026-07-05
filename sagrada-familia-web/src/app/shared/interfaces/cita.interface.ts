@@ -1,4 +1,5 @@
 import { PrescripcionResumen } from "./prescripcion.interface";
+import { ConsultaResponse } from "./consulta.interface";
 
 export interface CitaResponse {
     id: number;
@@ -10,10 +11,17 @@ export interface CitaResponse {
     fechaHoraFin: string | null;
     motivo?: string;
     notasConsulta?: string;
+    motivoCancelacion?: string;
     estado: EstadoCita;
     fechaCreacion: string;
     tienePrescripcion: boolean;
     prescripcion?: PrescripcionResumen;
+    consulta?: ConsultaResponse;
+}
+
+export interface CambiarEstadoRequest {
+    estado: number;
+    motivoCancelacion?: string;
 }
 
 export interface CitaCreate {

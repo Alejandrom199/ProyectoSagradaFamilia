@@ -68,14 +68,90 @@
                         <p class="text-sm text-slate-700">{{ cita()?.motivo }}</p>
                     </div>
                     }
-                    @if (cita()?.notasConsulta) {
+                    @if (cita()?.motivoCancelacion) {
                     <div class="flex flex-col gap-1 col-span-2">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Notas de consulta</p>
-                        <p class="text-sm text-slate-700">{{ cita()?.notasConsulta }}</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Motivo de cancelación</p>
+                        <div class="flex items-start gap-2 p-3 bg-red-50 border border-red-100 rounded-md">
+                            <ng-icon name="matInfoOutline" class="text-red-400 text-base shrink-0 mt-0.5"></ng-icon>
+                            <p class="text-sm text-red-700">{{ cita()?.motivoCancelacion }}</p>
+                        </div>
                     </div>
                     }
                 </div>
             </div>
+
+            <!-- Datos clínicos de la consulta -->
+            @if (cita()?.consulta; as consulta) {
+            <div class="bg-white border border-slate-200">
+                <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-md bg-indigo-50 flex items-center justify-center shrink-0">
+                        <ng-icon name="matAssignmentOutline" class="text-indigo-500 text-base"></ng-icon>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Datos clínicos de la consulta</h3>
+                </div>
+
+                @if (cita()?.estado === 'EnCurso') {
+                <div class="px-6 py-5 space-y-4">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Motivo de la consulta</label>
+                        <textarea [ngModel]="consultaMotivo()" (ngModelChange)="consultaMotivo.set($event)" rows="2"
+                            class="w-full px-3 py-2.5 rounded-md border border-slate-200 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all"></textarea>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Diagnóstico</label>
+                        <textarea [ngModel]="consultaDiagnostico()" (ngModelChange)="consultaDiagnostico.set($event)" rows="2"
+                            class="w-full px-3 py-2.5 rounded-md border border-slate-200 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all"></textarea>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Indicaciones</label>
+                        <textarea [ngModel]="consultaIndicaciones()" (ngModelChange)="consultaIndicaciones.set($event)" rows="2"
+                            class="w-full px-3 py-2.5 rounded-md border border-slate-200 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all"></textarea>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Evolución</label>
+                        <textarea [ngModel]="consultaEvolucion()" (ngModelChange)="consultaEvolucion.set($event)" rows="2"
+                            class="w-full px-3 py-2.5 rounded-md border border-slate-200 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all"></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button (click)="guardarConsulta()" [disabled]="guardandoConsulta()"
+                            class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors disabled:opacity-50">
+                            @if (guardandoConsulta()) {
+                            <span class="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin mr-1"></span>
+                            }
+                            Guardar
+                        </button>
+                    </div>
+                </div>
+                } @else {
+                <div class="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @if (consulta.motivo) {
+                    <div class="flex flex-col gap-1">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Motivo</p>
+                        <p class="text-sm text-slate-700">{{ consulta.motivo }}</p>
+                    </div>
+                    }
+                    @if (consulta.diagnostico) {
+                    <div class="flex flex-col gap-1">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Diagnóstico</p>
+                        <p class="text-sm text-slate-700">{{ consulta.diagnostico }}</p>
+                    </div>
+                    }
+                    @if (consulta.indicaciones) {
+                    <div class="flex flex-col gap-1">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Indicaciones</p>
+                        <p class="text-sm text-slate-700">{{ consulta.indicaciones }}</p>
+                    </div>
+                    }
+                    @if (consulta.evolucion) {
+                    <div class="flex flex-col gap-1">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Evolución</p>
+                        <p class="text-sm text-slate-700">{{ consulta.evolucion }}</p>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            }
 
             <!-- Prescripción -->
             <div class="bg-white border border-slate-200">
@@ -97,16 +173,15 @@
 
                 <div class="px-6 py-6">
                     @if (cita()?.tienePrescripcion && cita()?.prescripcion; as p) {
-                    <!-- Prescripción emitida -->
                     <div class="flex flex-col gap-4">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="flex flex-col gap-1">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Diagnóstico</p>
-                                <p class="text-sm font-semibold text-slate-800">{{ p.diagnostico }}</p>
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="flex flex-col gap-1">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Medicamentos</p>
-                                <p class="text-sm text-slate-700">{{ p.detalleMedicamentos }}</p>
+                                <ul class="text-sm text-slate-700 list-disc list-inside space-y-0.5">
+                                    @for (m of p.medicamentos; track m.id) {
+                                    <li>{{ m.nombre }} — {{ m.dosis }}, {{ m.frecuencia }} ({{ m.viaAdministracion }})</li>
+                                    }
+                                </ul>
                             </div>
                             <div class="flex flex-col gap-1">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Indicaciones</p>
@@ -158,7 +233,7 @@
                     }
 
                     @if (cita()?.estado === 'Pendiente') {
-                    <button (click)="cambiarEstado(EstadoCita.EnCurso)"
+                    <button (click)="iniciarConsulta()"
                         [disabled]="cambiandoEstado() || !puedeAccionar()"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-blue-200 bg-blue-50 text-blue-700 text-sm font-bold hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <ng-icon name="matScheduleOutline" class="text-base shrink-0"></ng-icon>
@@ -167,7 +242,7 @@
                     }
 
                     @if (cita()?.estado === 'EnCurso') {
-                    <button (click)="cambiarEstado(EstadoCita.Completada)" [disabled]="cambiandoEstado()"
+                    <button (click)="completarConsulta()" [disabled]="cambiandoEstado()"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-green-200 bg-green-50 text-green-700 text-sm font-bold hover:bg-green-100 transition-colors disabled:opacity-50">
                         <ng-icon name="matTaskAltOutline" class="text-base shrink-0"></ng-icon>
                         Marcar completada
@@ -175,13 +250,13 @@
                     }
 
                     @if (cita()?.estado === 'Pendiente' || cita()?.estado === 'EnCurso') {
-                    <button (click)="cambiarEstado(EstadoCita.NoAsistio)"
+                    <button (click)="iniciarCambioEstado(EstadoCita.NoAsistio)"
                         [disabled]="cambiandoEstado() || !puedeAccionar()"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-slate-200 bg-slate-50 text-slate-600 text-sm font-bold hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <ng-icon name="matErrorOutline" class="text-base shrink-0"></ng-icon>
                         No asistió
                     </button>
-                    <button (click)="cambiarEstado(EstadoCita.Cancelada)"
+                    <button (click)="iniciarCambioEstado(EstadoCita.Cancelada)"
                         [disabled]="cambiandoEstado()"
                         class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-red-200 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <ng-icon name="matCancelOutline" class="text-base shrink-0"></ng-icon>
@@ -189,9 +264,17 @@
                     </button>
                     }
 
-                    @if (cita()?.estado === 'Completada' || cita()?.estado === 'NoAsistio' || cita()?.estado ===
-                    'Cancelada') {
-                    <p class="text-xs text-slate-400 text-center py-3">Esta consulta ya fue procesada.</p>
+                    <!-- Reagendar: disponible para Pendiente, Cancelada y NoAsistio -->
+                    @if (cita()?.estado === 'Pendiente' || cita()?.estado === 'Cancelada' || cita()?.estado === 'NoAsistio') {
+                    <a [routerLink]="['/citas', citaId, 'editar']"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-md border border-amber-200 bg-amber-50 text-amber-700 text-sm font-bold hover:bg-amber-100 transition-colors">
+                        <ng-icon name="matEditCalendarOutline" class="text-base shrink-0"></ng-icon>
+                        Reagendar cita
+                    </a>
+                    }
+
+                    @if (cita()?.estado === 'Completada') {
+                    <p class="text-xs text-slate-400 text-center py-3">Esta consulta ya fue completada.</p>
                     }
                 </div>
             </div>
@@ -221,3 +304,89 @@
     </div>
     }
 </div>
+
+<!-- Modal: Confirmar cancelación / no asistió con motivo -->
+@if (mostrarModalEstado()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+        <div class="px-6 py-5 border-b border-slate-200 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
+                [class]="estadoPendiente() === EstadoCita.Cancelada ? 'bg-red-50' : 'bg-slate-100'">
+                <ng-icon [name]="estadoPendiente() === EstadoCita.Cancelada ? 'matCancelOutline' : 'matErrorOutline'"
+                    class="text-base"
+                    [class]="estadoPendiente() === EstadoCita.Cancelada ? 'text-red-500' : 'text-slate-500'">
+                </ng-icon>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800">
+                {{ estadoPendiente() === EstadoCita.Cancelada ? 'Cancelar cita' : 'Registrar inasistencia' }}
+            </h3>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+            <p class="text-sm text-slate-600">
+                @if (estadoPendiente() === EstadoCita.Cancelada) {
+                    ¿Confirmás la cancelación de esta cita? Podés indicar el motivo para mantener un registro.
+                } @else {
+                    ¿Confirmás que el paciente no asistió a la cita? Podés indicar un motivo.
+                }
+            </p>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Motivo <span class="font-normal text-slate-400 normal-case">(opcional)</span>
+                </label>
+                <textarea
+                    [ngModel]="motivoCancelacion()"
+                    (ngModelChange)="motivoCancelacion.set($event)"
+                    rows="3"
+                    [placeholder]="estadoPendiente() === EstadoCita.Cancelada
+                        ? 'Ej. Solicitud del padre, emergencia familiar...'
+                        : 'Ej. El paciente estaba enfermo...'"
+                    class="w-full px-3 py-2.5 rounded-md border border-slate-200 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all">
+                </textarea>
+            </div>
+        </div>
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+            <button (click)="mostrarModalEstado.set(false)"
+                class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">
+                Volver
+            </button>
+            <button (click)="confirmarCambioEstado()" [disabled]="cambiandoEstado()"
+                class="px-5 py-2 text-sm font-bold text-white rounded-md transition-colors disabled:opacity-50"
+                [class]="estadoPendiente() === EstadoCita.Cancelada ? 'bg-red-600 hover:bg-red-700' : 'bg-slate-600 hover:bg-slate-700'">
+                @if (cambiandoEstado()) {
+                <span class="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-1"></span>
+                }
+                Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal: ¿Deseas reagendar? -->
+@if (mostrarModalReagendar()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden animate-fade-in">
+        <div class="px-6 py-5 border-b border-slate-200 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-md bg-amber-50 flex items-center justify-center shrink-0">
+                <ng-icon name="matEditCalendarOutline" class="text-amber-500 text-base"></ng-icon>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800">¿Deseas reagendar?</h3>
+        </div>
+        <div class="px-6 py-5">
+            <p class="text-sm text-slate-600 leading-relaxed">
+                La cita fue registrada. ¿Querés programar una nueva fecha para este paciente?
+            </p>
+        </div>
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+            <button (click)="mostrarModalReagendar.set(false)"
+                class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">
+                No, cerrar
+            </button>
+            <button (click)="irAReagendar()"
+                class="px-5 py-2 text-sm font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-md transition-colors">
+                Sí, reagendar
+            </button>
+        </div>
+    </div>
+</div>
+}

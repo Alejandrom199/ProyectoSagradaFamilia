@@ -68,7 +68,7 @@ public class AuthService : IAuthService
         {
             UsuarioId = usuario.Id,
             Token = refreshToken,
-            FechaExpiracion = DateTime.UtcNow.AddDays(7)
+            FechaExpiracion = _tokenService.ObtenerFechaExpiracionRefreshToken()
         });
 
         if (usuario.Rol.Nombre is "Medico" or "Administrador")
@@ -113,7 +113,7 @@ public class AuthService : IAuthService
         {
             UsuarioId = usuario.Id,
             Token = nuevoRefreshToken,
-            FechaExpiracion = DateTime.UtcNow.AddDays(7)
+            FechaExpiracion = _tokenService.ObtenerFechaExpiracionRefreshToken()
         });
 
         return new LoginDto.Response

@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
-using SagradaFamilia.Application.Services;
-using SagradaFamilia.Domain.Enums;
 using System.Security.Claims;
 
 [Authorize]
@@ -16,17 +14,38 @@ public class CitasController : BaseController
 {
     private readonly ICitaService _citaService;
     private readonly INinoService _ninoService;
+    private readonly IPadreService _padreService;
+    private readonly IConsultaService _consultaService;
 
-    public CitasController(ICitaService citaService, INinoService ninoService)
+    public CitasController(ICitaService citaService, INinoService ninoService, IPadreService padreService, IConsultaService consultaService)
     {
         _citaService = citaService;
         _ninoService = ninoService;
+        _padreService = padreService;
+        _consultaService = consultaService;
+    }
+
+    // El PadreId (tabla Padres) es distinto del UsuarioId (claim del JWT) — hay que resolverlo primero.
+    private async Task<int?> ObtenerPadreIdAsync()
+    {
+        var padre = await _padreService.ObtenerPorUsuarioIdAsync(UsuarioId);
+        return padre?.Id;
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ApiResponse<CitaDto.Response>>> ObtenerPorId(int id)
     {
         var response = await _citaService.ObtenerPorIdAsync(id);
+
+        if (User.IsInRole("Padre"))
+        {
+            var padreId = await ObtenerPadreIdAsync();
+            if (padreId == null) return Forbid();
+
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(response.NinoId, padreId.Value);
+            if (!esSuHijo) return Forbid();
+        }
+
         return HandleResponse(response);
     }
 
@@ -39,6 +58,15 @@ public class CitasController : BaseController
 
         var response = await _citaService.ObtenerHistorialPorMedicoAsync(usuarioId);
         return HandleResponse(response);
+    }
+
+    [HttpGet("historial/exportar")]
+    [Authorize(Roles = "Medico")]
+    public async Task<IActionResult> ExportarHistorialExcel()
+    {
+        var bytes = await _citaService.ExportarExcelPorMedicoAsync(UsuarioId);
+        string filename = $"historial-citas-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
     }
 
     [HttpGet("hoy")]
@@ -58,20 +86,34 @@ public class CitasController : BaseController
     {
         var usuarioIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(usuarioIdClaim, out var usuarioId))
-        {
             return Unauthorized();
-        }
 
         var response = await _citaService.CrearAsync(request, usuarioId);
         return HandleResponse(response, "Cita programada exitosamente.");
     }
 
+    [HttpPut("{id:int}")]
+    [Authorize(Roles = "Medico, Administrador")]
+    public async Task<ActionResult<ApiResponse<CitaDto.Response>>> Actualizar(int id, [FromBody] CitaDto.Update request)
+    {
+        var response = await _citaService.ActualizarAsync(id, request, UsuarioId);
+        return HandleResponse(response, "Cita reagendada exitosamente.");
+    }
+
     [HttpPatch("{id:int}/estado")]
     [Authorize(Roles = "Medico, Administrador")]
-    public async Task<ActionResult<ApiResponse>> CambiarEstado(int id, [FromBody] EstadoCita nuevoEstado)
+    public async Task<ActionResult<ApiResponse>> CambiarEstado(int id, [FromBody] CitaDto.CambiarEstadoRequest request)
     {
-        await _citaService.ActualizarEstadoAsync(id, nuevoEstado);
+        await _citaService.ActualizarEstadoAsync(id, request);
         return HandleSuccess("Estado de la cita actualizado.");
+    }
+
+    [HttpPatch("{id:int}/iniciar-consulta")]
+    [Authorize(Roles = "Medico")]
+    public async Task<ActionResult<ApiResponse<ConsultaDto.Response>>> IniciarConsulta(int id)
+    {
+        var response = await _consultaService.IniciarAsync(id, UsuarioId);
+        return HandleResponse(response, "Consulta iniciada.");
     }
 
     [HttpGet("proximas")]
@@ -89,7 +131,10 @@ public class CitasController : BaseController
     [Authorize(Roles = "Padre")]
     public async Task<ActionResult<ApiResponse<IEnumerable<CitaDto.Response>>>> CitasMisHijos()
     {
-        var response = await _citaService.ObtenerPorPadreIdAsync(UsuarioId);
+        var padreId = await ObtenerPadreIdAsync();
+        if (padreId == null) return Forbid();
+
+        var response = await _citaService.ObtenerPorPadreIdAsync(padreId.Value);
         return HandleResponse(response);
     }
 
@@ -105,7 +150,10 @@ public class CitasController : BaseController
     {
         if (User.IsInRole("Padre"))
         {
-            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, UsuarioId);
+            var padreId = await ObtenerPadreIdAsync();
+            if (padreId == null) return Forbid();
+
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, padreId.Value);
             if (!esSuHijo) return Forbid();
         }
 
@@ -120,11 +168,23 @@ public class CitasController : BaseController
         // Si es padre, validar que el niño le pertenece
         if (User.IsInRole("Padre"))
         {
-            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, UsuarioId);
+            var padreId = await ObtenerPadreIdAsync();
+            if (padreId == null) return Forbid();
+
+            var esSuHijo = await _ninoService.PerteneceAPadreAsync(ninoId, padreId.Value);
             if (!esSuHijo) return Forbid();
         }
 
         var response = await _citaService.ObtenerPorNinoIdAsync(ninoId);
         return HandleResponse(response);
+    }
+
+    [HttpGet("nino/{ninoId:int}/exportar")]
+    [Authorize(Roles = "Medico,Administrador")]
+    public async Task<IActionResult> ExportarPorNinoExcel(int ninoId)
+    {
+        var bytes = await _citaService.ExportarExcelPorNinoAsync(ninoId);
+        string filename = $"citas-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
     }
 }

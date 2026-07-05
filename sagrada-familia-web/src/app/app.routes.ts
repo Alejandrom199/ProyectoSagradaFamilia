@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { medicoGuard } from './core/guards/medico-guard';
 import { padreGuard } from './core/guards/padre-guard';
+import { noPadreGuard } from './core/guards/no-padre-guard';
 
 export const routes: Routes = [
     {
@@ -23,7 +24,7 @@ export const routes: Routes = [
         children: [
             {
                 path: 'dashboard',
-                canActivate: [authGuard],
+                canActivate: [authGuard, noPadreGuard],
                 loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard)
             },
             {

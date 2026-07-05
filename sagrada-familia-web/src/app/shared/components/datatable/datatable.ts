@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 
 import { Tooltip } from "../../directives/tooltip/tooltip";
+import { formatearFecha } from "../../utils/date.utils";
+import * as XLSX from 'xlsx';
 
 export type ActionType = 'ver' | 'editar' | 'eliminar' | 'medidas';
 export type Densidad = 'compacto' | 'normal' | 'espacioso';
@@ -280,6 +282,23 @@ export class Datatable<T extends object> implements OnChanges {
     }, row);
   }
 
+  // Los valores tipo fecha/datetime (ISO) se truncan al día para filtrar: evita que cada
+  // fila con hora/minuto/segundo distinto aparezca como un valor único en el desplegable.
+  private static readonly REGEX_FECHA_ISO = /^\d{4}-\d{2}-\d{2}(T|$)/;
+
+  private valorParaFiltro(row: T, key: string | number | symbol): string {
+    // Si la columna define exportValue, es la representación "humana" del dato
+    // (ej. true/false -> "Activo"/"Inactivo") — hay que filtrar sobre esa, no sobre el
+    // valor crudo, porque las opciones del desplegable (filterOptions) están en ese formato.
+    const col = this.columns.find(c => c.key === key);
+    if (col?.exportValue) return col.exportValue(row);
+
+    const raw = this.getCellValue(row, key);
+    if (raw == null) return '';
+    const str = String(raw);
+    return Datatable.REGEX_FECHA_ISO.test(str) ? formatearFecha(str) : str;
+  }
+
   cellTooltip(row: T, col: DatatableColumn<T>): string {
     const text = col.render
       ? this.limpiarHtml(col.render(row))
@@ -301,32 +320,25 @@ export class Datatable<T extends object> implements OnChanges {
 
     if (this.datosFiltrados.length === 0) return;
 
-    const headers = this.columns.map(c => c.label).join(';');
-    const rows = this.datosFiltrados.map(row => {
-      return this.columns.map(col => {
-        let valor = '';
-        if (col.exportValue) {
-          valor = col.exportValue(row);
-        } else if (col.render) {
-          valor = this.limpiarHtml(col.render(row));
-        } else {
-          valor = String(this.getCellValue(row, col.key) ?? '');
-        }
-        return `"${valor.replace(/"/g, '""').replace(/;/g, ',')}"`;
-      }).join(';');
-    });
+    const headers = this.columns.map(c => c.label);
+    const filas = this.datosFiltrados.map(row => this.columns.map(col => {
+      if (col.exportValue) return col.exportValue(row);
+      if (col.render) return this.limpiarHtml(col.render(row));
+      return String(this.getCellValue(row, col.key) ?? '');
+    }));
 
-    const csvContent = '\uFEFF' + [headers, ...rows].join('\r\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    // Excel real (.xlsx), no un CSV renombrado: se arma con SheetJS en el navegador.
+    const hoja = XLSX.utils.aoa_to_sheet([headers, ...filas]);
+    hoja['!cols'] = headers.map((_, i) => ({
+      wch: Math.min(60, Math.max(10, ...filas.map(f => String(f[i] ?? '').length), headers[i].length) + 2)
+    }));
 
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${this.exportFileName}_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Los nombres de hoja de Excel no aceptan \ / * ? : [ ] y están limitados a 31 caracteres.
+    const nombreHoja = (this.title || 'Datos').replace(/[\\/*?:[\]]/g, '').slice(0, 31) || 'Datos';
+
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, hoja, nombreHoja);
+    XLSX.writeFile(libro, `${this.exportFileName}_${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
   exportarPdf() {
@@ -337,7 +349,7 @@ export class Datatable<T extends object> implements OnChanges {
     const columna = String(key);
     const opcionesServidor = this.filterOptions[columna];
     if (this.serverSide && opcionesServidor?.length) return opcionesServidor;
-    const valores = this.data.map(row => String(this.getCellValue(row, columna) ?? ''));
+    const valores = this.data.map(row => this.valorParaFiltro(row, columna));
     return [...new Set(valores)].filter(valor => valor.trim() !== '');
   }
 
@@ -425,7 +437,7 @@ export class Datatable<T extends object> implements OnChanges {
 
     Object.entries(this.filtrosSeleccion).forEach(([key, set]) => {
       resultado = resultado.filter(row => {
-        const val = String(this.getCellValue(row, key) ?? '');
+        const val = this.valorParaFiltro(row, key);
         return set.has(val);
       });
     });
@@ -464,7 +476,10 @@ export class Datatable<T extends object> implements OnChanges {
   }
   get datosPaginados() {
     if (this.hayFiltroVacio) return [];
-    if (this.serverSide) return this.data;
+    // En modo servidor, this.data ya es solo la página actual (traída del backend):
+    // igual aplicamos el filtro de columna localmente sobre esa página, porque
+    // columnFilters no siempre llega/se usa en el backend de cada listado.
+    if (this.serverSide) return this.datosFiltrados;
     return this.datosFiltrados.slice(this.inicio, this.fin);
   }
 

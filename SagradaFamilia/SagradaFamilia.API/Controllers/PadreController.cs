@@ -64,19 +64,13 @@ namespace SagradaFamilia.API.Controllers
         [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse<PadreDto.DetailResponse>>> Update(int id, [FromBody] PadreDto.Update request)
         {
-            var medicoIdClaim = User.FindFirst("medicoId")?.Value;
-            if (!string.IsNullOrEmpty(medicoIdClaim))
-            {
-                request.MedicoId = int.Parse(medicoIdClaim);
-            }
-
             var result = await _padreService.ActualizarAsync(id, request);
 
             return Ok(ApiResponse<PadreDto.DetailResponse>.Ok(result, "Padre actualizado con éxito."));
         }
 
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse>> Delete(int id)
         {
             await _padreService.EliminarAsync(id);
@@ -89,6 +83,14 @@ namespace SagradaFamilia.API.Controllers
         {
             await _padreService.CambiarEmailAsync(id, request.Email);
             return HandleSuccess("Correo electrónico actualizado correctamente.");
+        }
+
+        [HttpPatch("{id:int}/medico")]
+        [Authorize(Roles = "Administrador")]
+        public async Task<ActionResult<ApiResponse>> CambiarMedico(int id, [FromBody] PadreDto.ChangeMedico request)
+        {
+            await _padreService.CambiarMedicoAsync(id, request.MedicoId);
+            return HandleSuccess("Médico reasignado correctamente.");
         }
 
         [HttpPost("{id:int}/reset-password")]

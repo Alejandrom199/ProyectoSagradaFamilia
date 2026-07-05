@@ -16,10 +16,12 @@ namespace SagradaFamilia.Application.DTOs
             public DateTime? FechaHoraFin { get; set; }
             public string? Motivo { get; set; }
             public string? NotasConsulta { get; set; }
+            public string? MotivoCancelacion { get; set; }
             public string Estado { get; set; } = string.Empty;
             public DateTime FechaCreacion { get; set; }
             public bool TienePrescripcion { get; set; }
             public PrescripcionResumen? Prescripcion { get; set; }
+            public ConsultaDto.Response? Consulta { get; set; }
         }
 
         public class Create
@@ -37,6 +39,12 @@ namespace SagradaFamilia.Application.DTOs
             public DateTime FechaHora    { get; set; }
             public DateTime FechaHoraFin { get; set; }
             public string?  Motivo       { get; set; }
+        }
+
+        public class CambiarEstadoRequest
+        {
+            public EstadoCita Estado { get; set; }
+            public string? MotivoCancelacion { get; set; }
         }
     }
 }

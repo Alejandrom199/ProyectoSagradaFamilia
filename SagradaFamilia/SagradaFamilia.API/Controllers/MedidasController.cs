@@ -36,6 +36,15 @@ public class MedidasController : BaseController
         return HandleResponse(response);
     }
 
+    [HttpGet("nino/{ninoId:int}/exportar")]
+    [Authorize(Roles = "Administrador,Medico")]
+    public async Task<IActionResult> ExportarPorNinoExcel(int ninoId)
+    {
+        var bytes = await _medidaService.ExportarExcelPorNinoAsync(ninoId);
+        string filename = $"medidas-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse<MedidaDto.Response>>> Crear([FromBody] MedidaDto.Create request)

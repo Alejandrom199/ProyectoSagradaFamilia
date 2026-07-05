@@ -14,11 +14,13 @@ namespace SagradaFamilia.API.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IWebHostEnvironment _env;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(IAuthService authService, IWebHostEnvironment env)
+        public AuthController(IAuthService authService, IWebHostEnvironment env, IConfiguration configuration)
         {
             _authService = authService;
             _env = env;
+            _configuration = configuration;
         }
 
         [HttpGet("health")]
@@ -41,9 +43,13 @@ namespace SagradaFamilia.API.Controllers
 
         [HttpPost("refresh-token")]
         [AllowAnonymous]
-        public async Task<ActionResult<ApiResponse<LoginDto.Response>>> RefreshToken([FromBody] RefreshTokenDto.Request request)
+        public async Task<ActionResult<ApiResponse<LoginDto.Response>>> RefreshToken()
         {
-            var response = await _authService.RefreshTokenAsync(request);
+            var refreshToken = Request.Cookies["refresh_token"];
+            if (string.IsNullOrEmpty(refreshToken))
+                return Unauthorized(ApiResponse<LoginDto.Response>.Fail("No hay una sesión activa para renovar."));
+
+            var response = await _authService.RefreshTokenAsync(new RefreshTokenDto.Request { RefreshToken = refreshToken });
 
             SetTokenCookies(response.AccessToken, response.RefreshToken);
 
@@ -99,12 +105,14 @@ namespace SagradaFamilia.API.Controllers
                 Expires  = DateTimeOffset.UtcNow.AddMinutes(60)
             });
 
+            var refreshTokenDias = int.Parse(_configuration["JwtSettings:RefreshTokenExpirationDays"] ?? "7");
+
             Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
             {
                 HttpOnly = true,
                 Secure   = isProduction,
                 SameSite = sameSite,
-                Expires  = DateTimeOffset.UtcNow.AddDays(7)
+                Expires  = DateTimeOffset.UtcNow.AddDays(refreshTokenDias)
             });
         }
     }

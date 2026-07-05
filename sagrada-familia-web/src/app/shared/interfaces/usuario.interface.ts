@@ -7,6 +7,8 @@ export interface UsuarioResponse {
     fechaCreacion: string;
     esMedico: boolean;
     esPadre: boolean;
+    medicoId?: number;
+    padreId?: number;
 }
 
 export interface UsuarioDetailResponse {

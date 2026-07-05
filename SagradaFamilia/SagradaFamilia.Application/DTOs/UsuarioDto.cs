@@ -11,8 +11,11 @@
             public bool Activo { get; set; }
             public DateTime FechaCreacion { get; set; }
             
-            public bool EsMedico { get; set; } 
+            public bool EsMedico { get; set; }
             public bool EsPadre { get; set; }
+
+            public int? MedicoId { get; set; }
+            public int? PadreId { get; set; }
         }
 
         public class DetailResponse
@@ -38,6 +41,20 @@
         {
             public int RolId { get; set; }
             public bool Activo { get; set; }
+        }
+
+        public class ImportResultado
+        {
+            public int TotalProcesadas { get; set; }
+            public int Importados { get; set; }
+            public int Actualizados { get; set; }
+            public List<ImportError> Errores { get; set; } = [];
+        }
+
+        public class ImportError
+        {
+            public int Fila { get; set; }
+            public string Mensaje { get; set; } = string.Empty;
         }
     }
 }

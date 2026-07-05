@@ -13,13 +13,15 @@ import { NinosService }        from '../../../../core/services/ninos';
 import { CitasService }        from '../../../../core/services/citas';
 import { PrescripcionesService } from '../../../../core/services/prescripciones';
 import { MedidasService }      from '../../../../core/services/medidas';
+import { AuthService }         from '../../../../core/services/auth';
+import { Reportes }            from '../../../../core/services/reportes';
 import { NinoDetailResponse }  from '../../../../shared/interfaces/nino.interface';
 import { CitaResponse }        from '../../../../shared/interfaces/cita.interface';
 import { PrescripcionResponse } from '../../../../shared/interfaces/prescripcion.interface';
 import { MedidaResponse }      from '../../../../shared/interfaces/medida.interface';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar }          from '../../../../core/services/loading-bar';
-import { formatearFecha, formatearEdad } from '../../../../shared/utils/date.utils';
+import { formatearFecha, formatearEdad, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 
 type ChartOpts = {
@@ -50,6 +52,8 @@ export class DetallePaciente implements OnInit {
   private citasService        = inject(CitasService);
   private prescripcionesService = inject(PrescripcionesService);
   private medidasService      = inject(MedidasService);
+  private authService         = inject(AuthService);
+  private reportesService     = inject(Reportes);
   private loadingBar          = inject(LoadingBar);
 
   nino           = signal<NinoDetailResponse | null>(null);
@@ -160,7 +164,7 @@ export class DetallePaciente implements OnInit {
   columnasCitas: DatatableColumn<CitaResponse>[] = [
     {
       key: 'fechaHora', label: 'Fecha', sortable: true,
-      render: (row) => `<span class="text-sm text-gray-700">${formatearFecha(row.fechaHora)}</span>`
+      render: (row) => renderFechaHora(row.fechaHora)
     },
     {
       key: 'motivo', label: 'Motivo',
@@ -187,11 +191,14 @@ export class DetallePaciente implements OnInit {
   columnasPrescripciones: DatatableColumn<PrescripcionResponse>[] = [
     {
       key: 'fechaCreacion', label: 'Fecha', sortable: true,
-      render: (row) => `<span class="text-sm text-gray-700">${formatearFecha(row.fechaCreacion)}</span>`
+      render: (row) => renderFechaHora(row.fechaCreacion)
     },
     {
-      key: 'detalleMedicamentos', label: 'Medicamentos',
-      render: (row) => `<p class="text-sm text-gray-800 max-w-xs truncate" title="${row.detalleMedicamentos}">${row.detalleMedicamentos}</p>`
+      key: 'medicamentos', label: 'Medicamentos',
+      render: (row) => {
+        const nombres = row.medicamentos.map(m => m.nombre).join(', ');
+        return `<p class="text-sm text-gray-800 max-w-xs truncate" title="${nombres}">${row.medicamentos.length} medicamento(s): ${nombres}</p>`;
+      }
     },
     {
       key: 'nombreMedico', label: 'Médico',
@@ -235,4 +242,26 @@ export class DetallePaciente implements OnInit {
       error: () => this.loadingBar.complete()
     });
   }
+
+  descargarHistoriaClinica(): void {
+    const n = this.nino();
+    const u = this.authService.currentUser();
+    const titulo = n ? `Historia Clínica — ${n.nombre} ${n.apellido}` : 'Historia Clínica';
+    const params = { ninoId: this.id, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/historia-clinica-pdf', params).subscribe({
+      next: (blob) => this.descargarBlob(blob, `historia-clinica-${hoy()}.pdf`),
+      error: () => {}
+    });
+  }
+
+  private descargarBlob(blob: Blob, nombre: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nombre;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
 }
+
+function hoy(): string { return new Date().toISOString().split('T')[0]; }

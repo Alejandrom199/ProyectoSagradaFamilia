@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 using SagradaFamilia.Infrastructure.Persistence.Contexts;
@@ -15,11 +15,15 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             await _context.Prescripciones
                 .Include(p => p.Nino)
                 .Include(p => p.Medico)
+                .Include(p => p.Consulta)
+                .Include(p => p.Medicamentos)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.Eliminado);
 
         public async Task<IEnumerable<Prescripcion>> ObtenerHistorialPorNinoAsync(int ninoId) =>
             await _context.Prescripciones
                 .Include(p => p.Medico)
+                .Include(p => p.Consulta)
+                .Include(p => p.Medicamentos)
                 .Where(p => p.NinoId == ninoId && !p.Eliminado)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
@@ -27,6 +31,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Prescripcion>> ObtenerPorMedicoAsync(int medicoId) =>
             await _context.Prescripciones
                 .Include(p => p.Nino)
+                .Include(p => p.Consulta)
+                .Include(p => p.Medicamentos)
                 .Where(p => p.MedicoId == medicoId && !p.Eliminado)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
@@ -36,6 +42,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
         {
             var query = _context.Prescripciones
                 .Include(p => p.Medico)
+                .Include(p => p.Consulta)
+                .Include(p => p.Medicamentos)
                 .Where(p => p.NinoId == ninoId && !p.Eliminado)
                 .AsQueryable();
 
@@ -43,7 +51,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             {
                 var term = search.ToLower();
                 query = query.Where(p =>
-                    p.DetalleMedicamentos.ToLower().Contains(term) ||
+                    p.Medicamentos.Any(m => m.Nombre.ToLower().Contains(term)) ||
                     (p.Indicaciones != null && p.Indicaciones.ToLower().Contains(term)) ||
                     p.Medico.Nombre.ToLower().Contains(term) ||
                     p.Medico.Apellido.ToLower().Contains(term));

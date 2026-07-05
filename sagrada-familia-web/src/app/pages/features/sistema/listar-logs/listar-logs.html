@@ -8,20 +8,12 @@
 
     </div>
 
-    <div class="flex gap-2 mb-4">
-        @for (nivel of niveles; track nivel) {
-        <button (click)="cambiarNivel(nivel)" [class]="claseTab(nivel)">
-            {{ nivel }}
-        </button>
-        }
-    </div>
-
     <div class="border border-slate-200 overflow-hidden">
-        <datatable title="Eventos del sistema" [data]="logs()" [columns]="columnas"
-            [serverSide]="true" [serverTotalItems]="totalLogs()" (onServerQuery)="onServerQuery($event)"
-            [exportExcel]="true" exportFileName="logs-sistema" [showActualizar]="true" [showExportar]="true" [showColumnas]="true"
-            searchPlaceholder="Buscar por mensaje o endpoint..."
-            emptyMessage="No hay eventos registrados para este nivel." (onActualizar)="cargarLogs()">
+        <datatable title="Eventos del sistema" [data]="logs()" [columns]="columnas" [serverSide]="true"
+            [serverTotalItems]="totalLogs()" (onServerQuery)="onServerQuery($event)" [exportExcel]="true"
+            exportFileName="logs-sistema" [showActualizar]="true" [showExportar]="true" [showColumnas]="true"
+            searchPlaceholder="Buscar por mensaje o endpoint..." (onExportPdf)="exportarPdf()"
+            emptyMessage="No hay eventos registrados." (onActualizar)="cargarLogs()" (onExportExcel)="descargarExcel()">
         </datatable>
     </div>
 </div>

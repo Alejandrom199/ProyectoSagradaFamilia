@@ -22,7 +22,12 @@ namespace SagradaFamilia.Application.Mappings
                 .ForMember(dest => dest.EsMedico,
                     opt => opt.MapFrom(src => src.Medico != null))
                 .ForMember(dest => dest.EsPadre,
-                    opt => opt.MapFrom(src => src.Padre != null));
+                    opt => opt.MapFrom(src => src.Padre != null))
+
+                .ForMember(dest => dest.MedicoId,
+                    opt => opt.MapFrom(src => src.Medico != null ? src.Medico.Id : (int?)null))
+                .ForMember(dest => dest.PadreId,
+                    opt => opt.MapFrom(src => src.Padre != null ? src.Padre.Id : (int?)null));
 
             CreateMap<Usuario, UsuarioDto.DetailResponse>()
                 .ForMember(dest => dest.RolNombre,

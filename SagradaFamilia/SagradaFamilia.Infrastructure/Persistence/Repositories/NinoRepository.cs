@@ -61,8 +61,10 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 query = query.Where(n =>
                     n.Nombre.ToLower().Contains(term) ||
                     n.Apellido.ToLower().Contains(term) ||
+                    (n.Nombre.ToLower() + " " + n.Apellido.ToLower()).Contains(term) ||
                     n.Padre.Nombre.ToLower().Contains(term) ||
-                    n.Padre.Apellido.ToLower().Contains(term));
+                    n.Padre.Apellido.ToLower().Contains(term) ||
+                    (n.Padre.Nombre.ToLower() + " " + n.Padre.Apellido.ToLower()).Contains(term));
             }
 
             query = sortBy?.ToLower() switch

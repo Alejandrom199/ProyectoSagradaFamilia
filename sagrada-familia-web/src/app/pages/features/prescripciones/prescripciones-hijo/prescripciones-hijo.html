@@ -1,0 +1,90 @@
+<div class="bg-white rounded-md animate-fade-in">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    <breadcrumb [items]="migajas" homeRoute="/mis-pequenos"></breadcrumb>
+
+    <div class="mb-8">
+        <h2 class="page-title">Recetas de {{ nino()?.nombre ?? 'tu hijo' }}</h2>
+        <p class="page-subtitle">Medicamentos e indicaciones recetadas por el pediatra.</p>
+    </div>
+
+    @if (cargando()) {
+    <div class="space-y-4">
+        <div class="h-24 bg-slate-100 rounded-md shimmer"></div>
+        <div class="h-24 bg-slate-100 rounded-md shimmer"></div>
+    </div>
+
+    } @else if (prescripciones().length === 0) {
+    <div class="flex flex-col items-center justify-center py-20 text-center border border-dashed border-slate-200 rounded-md">
+        <div class="bounce-in w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-4">
+            <ng-icon name="matMedicalServicesOutline" class="text-slate-400" size="22"></ng-icon>
+        </div>
+        <p class="text-sm font-medium text-slate-700">Aún no hay recetas registradas</p>
+        <p class="text-xs text-slate-400 mt-1 max-w-xs">
+            Cuando el pediatra recete algún medicamento para {{ nino()?.nombre ?? 'tu hijo' }}, aparecerá aquí.
+        </p>
+    </div>
+
+    } @else {
+
+    <div class="space-y-3">
+        @for (p of prescripciones(); track p.id; let i = $index) {
+        <div class="fade-up rounded-md border border-slate-200 overflow-hidden" [ngClass]="'stagger-' + ((i % 6) + 1)">
+
+            <button type="button" (click)="alternar(p.id)"
+                class="w-full flex items-center justify-between gap-4 px-4 py-4 text-left hover:bg-slate-50 transition-colors">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                        <ng-icon name="matMedicalServicesOutline" size="16"></ng-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-800">{{ formatearFecha(p.fechaCreacion) }}</p>
+                        <p class="text-sm text-slate-600 mt-0.5">
+                            Dr(a). {{ p.nombreMedico }}{{ p.especialidadMedico ? ' — ' + p.especialidadMedico : '' }}
+                        </p>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            {{ p.medicamentos.length }} medicamento{{ p.medicamentos.length !== 1 ? 's' : '' }}
+                        </p>
+                    </div>
+                </div>
+                <ng-icon name="heroChevronDown" size="16"
+                    class="text-slate-400 shrink-0 transition-transform"
+                    [class.rotate-180]="expandidaId() === p.id"></ng-icon>
+            </button>
+
+            @if (expandidaId() === p.id) {
+            <div class="px-4 pb-4 border-t border-slate-100 pt-3">
+
+                @if (p.indicaciones) {
+                <div class="mb-3 rounded-md bg-blue-50 border border-blue-100 p-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 mb-1">Indicaciones del médico</p>
+                    <p class="text-sm text-blue-800">{{ p.indicaciones }}</p>
+                </div>
+                }
+
+                <div class="space-y-2">
+                    @for (m of p.medicamentos; track $index) {
+                    <div class="rounded-md bg-slate-50 border border-slate-200 p-3">
+                        <p class="text-sm font-bold text-slate-800">{{ m.nombre }}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            {{ m.dosis }} · {{ m.frecuencia }}
+                            @if (m.duracion) { &nbsp;· {{ m.duracion }} }
+                        </p>
+                        @if (m.observaciones) {
+                        <p class="text-xs text-slate-400 mt-1">{{ m.observaciones }}</p>
+                        }
+                    </div>
+                    }
+                </div>
+
+            </div>
+            }
+
+        </div>
+        }
+    </div>
+
+    }
+
+</div>
+</div>

@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Application.Reporting.Excel.Documents;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Interfaces.Repositories;
 
@@ -27,6 +28,18 @@ public class AuditoriaService : IAuditoriaService
     {
         var logs = await _auditoriaRepository.ObtenerRecientesAsync(top);
         return _mapper.Map<IEnumerable<AuditoriaDto.Response>>(logs);
+    }
+
+    public async Task<byte[]> ExportarExcelAsync()
+    {
+        var registros = await ObtenerRecientesAsync(500);
+        return new AuditoriaExportDocument(registros).GenerarBytes();
+    }
+
+    public async Task<byte[]> ExportarExcelPorUsuarioAsync(int usuarioId)
+    {
+        var registros = await ObtenerPorUsuarioAsync(usuarioId);
+        return new AuditoriaExportDocument(registros).GenerarBytes();
     }
 
     public async Task<(IEnumerable<AuditoriaDto.Response> Items, int TotalItems)> ObtenerPaginadoAsync(

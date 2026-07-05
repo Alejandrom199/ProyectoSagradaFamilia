@@ -166,6 +166,75 @@
                     }
                 </div>
 
+                <!-- ── Sección: Reasignar médico (solo Admin) ───────────────────── -->
+                @if (authService.esAdmin()) {
+                <div class="border-t border-slate-200 pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-700">Médico asignado</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">{{ padre()?.medicoNombreCompleto }}</p>
+                        </div>
+                        <button type="button" (click)="toggleCambioMedico()"
+                            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors"
+                            [class.border-slate-200]="!mostrarCambioMedico()"
+                            [class.text-slate-600]="!mostrarCambioMedico()"
+                            [class.hover:bg-slate-50]="!mostrarCambioMedico()"
+                            [class.border-red-200]="mostrarCambioMedico()" [class.text-red-500]="mostrarCambioMedico()"
+                            [class.hover:bg-red-50]="mostrarCambioMedico()">
+                            @if (mostrarCambioMedico()) {
+                            <ng-icon name="matCloseOutline" size="13"></ng-icon>
+                            Cancelar
+                            } @else {
+                            <ng-icon name="matEditOutline" size="13"></ng-icon>
+                            Reasignar médico
+                            }
+                        </button>
+                    </div>
+
+                    @if (mostrarCambioMedico()) {
+                    <div class="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-3">
+                        <p class="text-xs text-slate-500">
+                            Selecciona el nuevo médico responsable de este representante.
+                        </p>
+                        <div class="flex gap-2">
+                            <select [ngModel]="nuevoMedicoId()" (ngModelChange)="nuevoMedicoId.set($event)"
+                                [ngModelOptions]="{standalone: true}"
+                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                @for (m of medicos(); track m.id) {
+                                <option [ngValue]="m.id">Dr(a). {{ m.nombre }} {{ m.apellido }}</option>
+                                }
+                            </select>
+                            <button type="button" (click)="cambiarMedico()"
+                                [disabled]="guardandoMedico() || !nuevoMedicoId()"
+                                class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap">
+                                @if (guardandoMedico()) {
+                                <span
+                                    class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                } @else {
+                                <ng-icon name="matCheckOutline" size="15"></ng-icon>
+                                }
+                                Confirmar
+                            </button>
+                        </div>
+                        @if (errorMedico()) {
+                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-100 rounded-md">
+                            <ng-icon name="matErrorOutline" size="14" class="text-red-500 shrink-0"></ng-icon>
+                            <p class="text-xs text-red-600">{{ errorMedico() }}</p>
+                        </div>
+                        }
+                    </div>
+                    }
+
+                    @if (exitoMedico()) {
+                    <div
+                        class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-md mt-3">
+                        <ng-icon name="matCheckCircleOutline" size="15" class="text-emerald-500 shrink-0"></ng-icon>
+                        <p class="text-xs text-emerald-700 font-medium">Médico reasignado correctamente.</p>
+                    </div>
+                    }
+                </div>
+                }
+
             </div>
         </div>
     </div>

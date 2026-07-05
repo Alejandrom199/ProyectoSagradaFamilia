@@ -9,7 +9,7 @@ import { ConfirmModal } from '../../../../../shared/components/confirm-modal/con
 import { LoadingBar } from '../../../../../core/services/loading-bar';
 import { PlantillasService } from '../../../../../core/services/plantillas';
 import { PlantillaResponse } from '../../../../../shared/interfaces/plantilla.interface';
-import { formatearFecha } from '../../../../../shared/utils/date.utils';
+import { formatearFecha, renderFechaHora } from '../../../../../shared/utils/date.utils';
 import { MenuService } from '../../../../../core/services/menu';
 import { Accion } from '../../../../../shared/enums/accion.enum';
 import { RutaApp } from '../../../../../shared/enums/ruta-app.enum';
@@ -58,7 +58,7 @@ export class ListarPlantillas implements OnInit {
     },
     {
       key: 'fechaActualizacion', label: 'Última edición', sortable: true,
-      render: (row) => `<span class="text-slate-400 text-xs">${formatearFecha(row.fechaActualizacion ?? row.fechaCreacion)}</span>`
+      render: (row) => renderFechaHora(row.fechaActualizacion ?? row.fechaCreacion)
     }
   ];
 

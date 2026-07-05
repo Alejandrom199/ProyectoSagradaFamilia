@@ -123,7 +123,9 @@ import {
   matBoltOutline,
   matInfoOutline,
   // Crear usuario
-  matGroupOutline
+  matGroupOutline,
+  // Reagendación de citas
+  matEditCalendarOutline
 } from '@ng-icons/material-icons/outline';
 
 // ── Exportación combinada para provideIcons global ────────────────────────────
@@ -243,7 +245,9 @@ export const APP_ICONS = {
   matBoltOutline,
   matInfoOutline,
   // Crear usuario
-  matGroupOutline
+  matGroupOutline,
+  // Reagendación de citas
+  matEditCalendarOutline
 };
 
 /**

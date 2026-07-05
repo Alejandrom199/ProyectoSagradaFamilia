@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
 
-import { formatearEdad, formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearEdad, formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
@@ -54,7 +54,7 @@ export class DetalleMedico implements OnInit {
     },
     {
       key: 'fechaCreacion', label: 'Registro', sortable: true,
-      render: (row) => formatearFecha(row.fechaCreacion)
+      render: (row) => renderFechaHora(row.fechaCreacion)
     }
   ];
 

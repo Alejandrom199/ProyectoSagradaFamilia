@@ -6,46 +6,39 @@ import { DatatableColumn, Datatable, ServerQuery } from '../../../../shared/comp
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { LogSistemaResponse } from '../../../../shared/interfaces/sistema.interface';
+import { renderFechaHora } from '../../../../shared/utils/date.utils';
 import { SistemaService } from '../../../../core/services/sistema';
-
-type NivelFiltro = 'Todo' | 'Information' | 'Warning' | 'Error';
+import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 
 @Component({
-  selector: 'app-listar-logs',
+  selector: 'listar-logs',
   standalone: true,
-  imports: [RouterLink, Datatable, Breadcrumb],
+  imports: [Datatable, Breadcrumb],
   templateUrl: './listar-logs.html',
   styleUrl: './listar-logs.css',
 })
 export class ListarLogs implements OnInit {
   private sistemaService = inject(SistemaService);
   private loadingBar = inject(LoadingBar);
+  private authService = inject(AuthService);
+  private reportesService = inject(Reportes);
 
   logs = signal<LogSistemaResponse[]>([]);
   totalLogs = signal(0);
-  nivelActivo = signal<NivelFiltro>('Todo');
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
-
-  readonly niveles: NivelFiltro[] = ['Todo', 'Information', 'Warning', 'Error'];
 
   columnas: DatatableColumn<LogSistemaResponse>[] = [
     {
-      key: 'fechaHora', label: 'Fecha', sortable: true,
-      render: (row) => {
-        const fecha = new Date(row.fechaHora);
-        return `
-          <div>
-            <p class="font-medium text-gray-800 text-sm">${fecha.toLocaleDateString('es-EC')}</p>
-            <p class="text-xs text-gray-500">${fecha.toLocaleTimeString('es-EC')}</p>
-          </div>`;
-      }
+      key: 'fechaHora', label: 'Fecha', sortable: true, filterable: true,
+      render: (row) => renderFechaHora(row.fechaHora)
     },
     {
-      key: 'nivel', label: 'Nivel', sortable: true,
+      key: 'nivel', label: 'Nivel', sortable: true, filterable: true,
       render: (row) => this.badgeNivel(row.nivel)
     },
     {
-      key: 'mensaje', label: 'Mensaje', filterable: true,
+      key: 'mensaje', label: 'Mensaje', sortable: true,
       render: (row) => `<p class="text-sm text-gray-800 max-w-md truncate" title="${row.mensaje.replace(/"/g, '&quot;')}">${row.mensaje}</p>`
     },
     {
@@ -55,7 +48,7 @@ export class ListarLogs implements OnInit {
         : '<span class="text-gray-400">—</span>'
     },
     {
-      key: 'usuarioId', label: 'Usuario',
+      key: 'usuarioId', label: 'Usuario', filterable: true,
       render: (row) => row.usuarioId
         ? `<span class="text-xs text-gray-600">ID ${row.usuarioId}</span>`
         : '<span class="text-gray-400">Sistema</span>'
@@ -70,19 +63,10 @@ export class ListarLogs implements OnInit {
     this.cargarLogs();
   }
 
-  claseTab(nivel: NivelFiltro): string {
-    const base = 'px-4 py-1.5 rounded-xl text-sm font-bold transition-all';
-    return this.nivelActivo() === nivel
-      ? `${base} bg-blue-600 text-white shadow-sm`
-      : `${base} text-gray-600 bg-white border border-gray-200 hover:bg-gray-50`;
-  }
-
   cargarLogs(): void {
     const { page, pageSize, search, sortBy, sortDir } = this.queryActual;
-    const nivel = this.nivelActivo();
-    const searchParam = nivel !== 'Todo' ? nivel : search;
     this.loadingBar.show();
-    this.sistemaService.obtenerLogsPaginado(page, pageSize, searchParam, sortBy, sortDir === 'asc').subscribe({
+    this.sistemaService.obtenerLogsPaginado(page, pageSize, search, sortBy, sortDir === 'asc').subscribe({
       next: (r) => {
         if (r.success) {
           this.logs.set(r.data);
@@ -99,10 +83,36 @@ export class ListarLogs implements OnInit {
     this.cargarLogs();
   }
 
-  cambiarNivel(nivel: NivelFiltro): void {
-    this.nivelActivo.set(nivel);
-    this.queryActual = { ...this.queryActual, page: 1, search: '' };
-    this.cargarLogs();
+  exportarPdf(): void {
+    this.loadingBar.show();
+    const u = this.authService.currentUser();
+    const params = { titulo: 'Eventos del Sistema', usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/logs-pdf', params).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `logs-${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarExcel(): void {
+    this.sistemaService.exportarLogsExcel().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `eventos-sistema-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {}
+    });
   }
 
   private badgeNivel(nivel: string): string {

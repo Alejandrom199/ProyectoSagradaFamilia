@@ -19,10 +19,11 @@ namespace SagradaFamilia.Domain.Entities
 
         public EstadoCita Estado { get; set; } = EstadoCita.Pendiente;
         public string? NotasConsulta { get; set; }
+        public string? MotivoCancelacion { get; set; }
 
         // Navegación
         public Nino Nino { get; set; } = null!;
         public Medico Medico { get; set; } = null!;
-        public ICollection<Prescripcion> Prescripciones { get; set; } = new List<Prescripcion>();
+        public Consulta? Consulta { get; set; }
     }
 }

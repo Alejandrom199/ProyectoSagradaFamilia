@@ -18,6 +18,7 @@ using SagradaFamilia.Domain.Interfaces.Repositories;
 public class MedicoService : IMedicoService
 {
     private readonly IMedicoRepository _medicoRepository;
+    private readonly IPadreRepository _padreRepository;
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IPasswordResetTokenRepository _resetTokenRepository;
     private readonly IEmailService _emailService;
@@ -29,6 +30,7 @@ public class MedicoService : IMedicoService
 
     public MedicoService(
         IMedicoRepository medicoRepository,
+        IPadreRepository padreRepository,
         IUsuarioRepository usuarioRepository,
         IPasswordResetTokenRepository resetTokenRepository,
         IEmailService emailService,
@@ -39,6 +41,7 @@ public class MedicoService : IMedicoService
         ILogger<MedicoService> logger)
     {
         _medicoRepository = medicoRepository;
+        _padreRepository = padreRepository;
         _usuarioRepository = usuarioRepository;
         _resetTokenRepository = resetTokenRepository;
         _emailService = emailService;
@@ -184,8 +187,20 @@ public class MedicoService : IMedicoService
     {
         _logger.LogWarning("Iniciando proceso de eliminación para el médico ID: {Id}", id);
 
-        var medico = await _medicoRepository.ObtenerPorIdAsync(id)
+        var medico = await _medicoRepository.ObtenerConPacientesAsync(id)
             ?? throw new NotFoundException("Médico", id);
+
+        var padresAsignados = await _padreRepository.ObtenerPorMedicoIdAsync(id);
+        var padresCount = padresAsignados.Count();
+
+        if (medico.Ninos.Count > 0 || padresCount > 0)
+        {
+            var partes = new List<string>();
+            if (medico.Ninos.Count > 0) partes.Add($"{medico.Ninos.Count} niño(s)");
+            if (padresCount > 0) partes.Add($"{padresCount} representante(s)");
+            throw new BusinessException(
+                $"No se puede eliminar: tiene {string.Join(" y ", partes)} activo(s) asignado(s). Reasígnalos a otro médico primero.");
+        }
 
         await _unitOfWork.BeginTransactionAsync();
         try
@@ -342,9 +357,9 @@ public class MedicoService : IMedicoService
                         var usuario = new Usuario
                         {
                             Email        = email,
-                            PasswordHash = BCrypt.HashPassword(Guid.NewGuid().ToString("N")[..8] + "Aa1!"),
+                            PasswordHash = BCrypt.HashPassword(Guid.NewGuid().ToString()),
                             RolId        = (int)RolEnum.Medico,
-                            Activo       = true
+                            Activo       = false
                         };
                         await _usuarioRepository.CrearAsync(usuario);
 
@@ -357,8 +372,19 @@ public class MedicoService : IMedicoService
                             Especialidad = string.IsNullOrEmpty(especialidad) ? null : especialidad
                         };
                         await _medicoRepository.CrearAsync(medico);
+
+                        var token = new PasswordResetToken
+                        {
+                            UsuarioId       = usuario.Id,
+                            Token           = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64)),
+                            FechaExpiracion = DateTime.UtcNow.AddHours(48)
+                        };
+                        await _resetTokenRepository.CrearAsync(token);
+
                         await _unitOfWork.CommitAsync();
                         resultado.Importados++;
+
+                        await EnviarCorreoActivacionAsync("CUENTA_MEDICO", email, nombre, apellido, token.Token, rowNum);
                     }
                     catch (Exception ex)
                     {
@@ -375,6 +401,25 @@ public class MedicoService : IMedicoService
             resultado.Importados, resultado.Actualizados, resultado.Errores.Count, resultado.TotalProcesadas);
 
         return resultado;
+    }
+
+    private async Task EnviarCorreoActivacionAsync(string codigoEvento, string email, string nombre, string apellido, string token, int fila)
+    {
+        try
+        {
+            var link = $"{_appSettings.FrontendUrl}/activar-cuenta?token={token}";
+            var (asunto, cuerpo) = await _emailTemplateService.GenerarAsync(codigoEvento, new Dictionary<string, string>
+            {
+                ["NOMBRE"]   = nombre,
+                ["APELLIDO"] = apellido,
+                ["LINK"]     = link
+            });
+            await _emailService.EnviarAsync(email, asunto, cuerpo);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "No se pudo enviar el correo de activación a {Email} (fila {Fila} del import).", email, fila);
+        }
     }
 
     private static bool EsEmailValido(string email)

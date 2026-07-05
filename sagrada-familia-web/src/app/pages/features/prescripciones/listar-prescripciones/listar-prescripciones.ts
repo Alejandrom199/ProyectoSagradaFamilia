@@ -8,9 +8,12 @@ import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { NinosService } from '../../../../core/services/ninos';
+import { MedicosService } from '../../../../core/services/medicos';
+import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 import { PrescripcionResponse } from '../../../../shared/interfaces/prescripcion.interface';
 import { NinoDetailResponse, NinoResponse } from '../../../../shared/interfaces/nino.interface';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { PrescripcionesService } from '../../../../core/services/prescripciones';
 
 @Component({
@@ -26,19 +29,22 @@ export class ListarPrescripciones implements OnInit {
 
   private prescripcionesService = inject(PrescripcionesService);
   private ninosService = inject(NinosService);
+  private medicosService = inject(MedicosService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
+  private authService = inject(AuthService);
+  private reportesService = inject(Reportes);
 
-  // SOLUCIÓN: Cambiado a NinoDetailResponse para alinearse con el servicio de consulta por ID
   nino = signal<NinoDetailResponse | null>(null);
   prescripciones = signal<PrescripcionResponse[]>([]);
   totalPrescripciones = signal(0);
+  filterOptions = signal<Record<string, string[]>>({});
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'desc', columnFilters: {} };
 
   columnas: DatatableColumn<PrescripcionResponse>[] = [
     {
       key: 'fechaCreacion', label: 'Fecha', sortable: true,
-      render: (row) => `<span class="font-medium text-gray-700">${formatearFecha(row.fechaCreacion)}</span>`,
+      render: (row) => renderFechaHora(row.fechaCreacion),
       exportValue: (row) => formatearFecha(row.fechaCreacion)
     },
     {
@@ -50,8 +56,12 @@ export class ListarPrescripciones implements OnInit {
         </div>`
     },
     {
-      key: 'detalleMedicamentos', label: 'Medicamentos', filterable: true,
-      render: (row) => `<p class="text-sm text-gray-800 max-w-md">${row.detalleMedicamentos}</p>`
+      key: 'medicamentos', label: 'Medicamentos',
+      render: (row) => {
+        const nombres = row.medicamentos.map(m => m.nombre).join(', ');
+        return `<p class="text-sm text-gray-800 max-w-md truncate" title="${nombres}">${row.medicamentos.length} medicamento(s): ${nombres}</p>`;
+      },
+      exportValue: (row) => row.medicamentos.map(m => `${m.nombre} (${m.dosis}, ${m.frecuencia})`).join('; ')
     },
     {
       key: 'indicaciones', label: 'Indicaciones',
@@ -84,6 +94,19 @@ export class ListarPrescripciones implements OnInit {
     });
 
     this.cargarPrescripciones();
+    this.cargarFilterOptions();
+  }
+
+  cargarFilterOptions(): void {
+    this.medicosService.obtenerTodos().subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.filterOptions.set({
+            nombreMedico: r.data.map(m => `${m.nombre} ${m.apellido}`),
+          });
+        }
+      }
+    });
   }
 
   cargarDatos(): void {
@@ -117,4 +140,33 @@ export class ListarPrescripciones implements OnInit {
     this.queryActual = query;
     this.cargarPrescripciones();
   }
+
+  exportarPdf(): void {
+    const n = this.nino();
+    const u = this.authService.currentUser();
+    const titulo = n ? `Prescripciones — ${n.nombre} ${n.apellido}` : 'Historial de Prescripciones';
+    const params = { ninoId: this.ninoId, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/prescripciones-pdf', params).subscribe({
+      next: (blob) => { this.descargarBlob(blob, `prescripciones-${hoy()}.pdf`); },
+      error: () => { }
+    });
+  }
+
+  descargarExcel(): void {
+    this.prescripcionesService.exportarExcelPorNino(parseInt(this.ninoId)).subscribe({
+      next: (blob) => this.descargarBlob(blob, `prescripciones-${hoy()}.xlsx`),
+      error: () => { }
+    });
+  }
+
+  private descargarBlob(blob: Blob, nombre: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nombre;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
 }
+
+function hoy(): string { return new Date().toISOString().split('T')[0]; }

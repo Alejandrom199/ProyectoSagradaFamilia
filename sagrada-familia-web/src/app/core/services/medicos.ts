@@ -56,8 +56,6 @@ export class MedicosService {
     return this.http.post<ApiResponse<ImportResult>>(`${this.url}/importar`, formData, { withCredentials: true });
   }
 
-  /*
-  // Descomentar cuando se agreguen los endpoints [HttpGet("{id:int}")] y [HttpPut("{id:int}")] en MedicoController.cs
   obtenerPorId(id: number): Observable<ApiResponse<MedicoDetailResponse>> {
     return this.http.get<ApiResponse<MedicoDetailResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
@@ -65,5 +63,4 @@ export class MedicosService {
   actualizar(id: number, request: MedicoUpdate): Observable<ApiResponse<MedicoDetailResponse>> {
     return this.http.put<ApiResponse<MedicoDetailResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
   }
-  */
 }

@@ -19,5 +19,9 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task ActualizarEstadoAsync(int id, bool activo, int currentUserId);
 
         Task EliminarAsync(int id);
+
+        Task<byte[]> GenerarPlantillaAsync();
+        Task<byte[]> ExportarExcelAsync();
+        Task<UsuarioDto.ImportResultado> ImportarAsync(Stream archivoStream);
     }
 }

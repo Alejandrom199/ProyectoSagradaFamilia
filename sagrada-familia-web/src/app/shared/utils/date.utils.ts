@@ -41,6 +41,16 @@ export function formatearHora(fecha: string): string {
     });
 }
 
+// Celda de datatable en dos líneas: fecha en negrita arriba, hora chica gris abajo.
+// Usar solo en columnas donde la hora tiene sentido (eventos, no fechas de nacimiento/medición).
+export function renderFechaHora(fecha: string): string {
+    return `
+        <div>
+            <p class="font-medium text-gray-800 text-sm">${formatearFecha(fecha)}</p>
+            <p class="text-xs text-gray-500">${formatearHora(fecha)}</p>
+        </div>`;
+}
+
 export function formatearEdad(meses: number): string {
     if (meses < 12) return `${meses} meses`;
     const años = Math.floor(meses / 12);

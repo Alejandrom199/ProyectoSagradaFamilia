@@ -67,6 +67,13 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
             return (items, total);
         }
 
+        public async Task<IEnumerable<Padre>> ObtenerPorMedicoIdAsync(int medicoId) =>
+            await _context.Padres
+                .Where(p => p.MedicoId == medicoId && !p.Eliminado)
+                .OrderBy(p => p.Apellido)
+                .ThenBy(p => p.Nombre)
+                .ToListAsync();
+
         public async Task<Padre> CrearAsync(Padre padre)
         {
             _context.Padres.Add(padre);

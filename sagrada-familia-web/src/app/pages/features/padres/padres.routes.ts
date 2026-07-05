@@ -1,8 +1,10 @@
 import { Routes } from "@angular/router";
 import { medicoGuard } from "../../../core/guards/medico-guard";
+import { roleGuard } from "../../../core/guards/role-guard";
 
 export const padresRoutes: Routes = [
     {
+        // El Administrador gestiona padres desde /usuarios, no desde este listado.
         path: '',
         canActivate: [medicoGuard],
         loadComponent: () =>
@@ -17,8 +19,10 @@ export const padresRoutes: Routes = [
                 .then(m => m.CrearPadre),
     },
     {
+        // roleGuard: el Administrador llega aquí solo desde /usuarios (reasignar médico);
+        // el Médico llega desde el listado de Padres (edición completa).
         path: ':id/editar',
-        canActivate: [medicoGuard],
+        canActivate: [roleGuard],
         loadComponent: () =>
             import('./editar-padre/editar-padre')
                 .then(m => m.EditarPadre),

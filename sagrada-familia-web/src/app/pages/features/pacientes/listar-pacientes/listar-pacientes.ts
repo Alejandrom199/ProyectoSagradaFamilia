@@ -16,6 +16,7 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 import { generarAvatarHtml } from '../../../../shared/utils/avatar.util';
 import { NinosService } from '../../../../core/services/ninos';
 import { Reportes } from '../../../../core/services/reportes';
+import { AuthService } from '../../../../core/services/auth';
 import { MenuService } from '../../../../core/services/menu';
 import { Accion } from '../../../../shared/enums/accion.enum';
 import { RutaApp } from '../../../../shared/enums/ruta-app.enum';
@@ -28,18 +29,20 @@ import { RutaApp } from '../../../../shared/enums/ruta-app.enum';
   styleUrl: './listar-pacientes.css',
 })
 export class ListarPacientes implements OnInit {
-  private readonly ninosService    = inject(NinosService);
+  private readonly ninosService = inject(NinosService);
   private readonly reportesService = inject(Reportes);
-  private readonly router          = inject(Router);
-  private readonly loadingBar      = inject(LoadingBar);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly loadingBar = inject(LoadingBar);
 
-  readonly menu   = inject(MenuService);
-  protected readonly Accion  = Accion;
+  readonly menu = inject(MenuService);
+  protected readonly Accion = Accion;
   protected readonly RutaApp = RutaApp;
 
-  ninos              = signal<NinoResponse[]>([]);
-  totalNinos         = signal(0);
-  ninoAEliminar      = signal<NinoResponse | null>(null);
+  ninos = signal<NinoResponse[]>([]);
+  totalNinos = signal(0);
+  ninoAEliminar = signal<NinoResponse | null>(null);
+  errorEliminar = signal<string | null>(null);
   mostrarModalImport = signal(false);
 
   private queryActual: ServerQuery = { page: 1, pageSize: 10, search: '', sortBy: '', sortDir: 'asc', columnFilters: {} };
@@ -48,12 +51,12 @@ export class ListarPacientes implements OnInit {
 
   columnas: DatatableColumn<NinoResponse>[] = [
     {
-      key: 'nombre', label: 'Paciente', sortable: true, filterable: true,
+      key: 'nombre', label: 'Paciente', sortable: true, filterable: false,
       render: (row) => generarAvatarHtml(row.nombre, row.apellido, row.sexo),
       exportValue: (row) => `${row.nombre} ${row.apellido}`
     },
     {
-      key: 'edadMeses', label: 'Edad Actual', sortable: true,
+      key: 'edadMeses', label: 'Edad Actual', sortable: true, filterable: true,
       render: (row) => `<span class="font-medium text-gray-700">${formatearEdad(row.edadMeses)}</span>`,
       exportValue: (row) => formatearEdad(row.edadMeses)
     },
@@ -62,7 +65,7 @@ export class ListarPacientes implements OnInit {
       exportValue: (row) => row.nombrePadre
     },
     {
-      key: 'fechaNacimiento', label: 'Nacimiento', sortable: true,
+      key: 'fechaNacimiento', label: 'Nacimiento', sortable: true, filterable: true,
       render: (row) => formatearFecha(row.fechaNacimiento),
       exportValue: (row) => formatearFecha(row.fechaNacimiento)
     }
@@ -71,11 +74,11 @@ export class ListarPacientes implements OnInit {
   readonly acciones = computed<DatatableAction<NinoResponse>[]>(() => {
     const puede = (a: Accion) => this.menu.puedeHacer(RutaApp.Pacientes, a);
     const lista: DatatableAction<NinoResponse>[] = [
-      { type: 'ver',     onClick: (row) => this.router.navigate(['/pacientes', row.id]) },
+      { type: 'ver', onClick: (row) => this.router.navigate(['/pacientes', row.id]) },
       { type: 'medidas', onClick: (row) => this.router.navigate(['/medidas', row.id]) },
     ];
-    if (puede(Accion.Editar))   lista.push({ type: 'editar',   onClick: (row) => this.router.navigate(['/pacientes', row.id, 'editar']) });
-    if (puede(Accion.Eliminar)) lista.push({ type: 'eliminar', onClick: (row) => this.ninoAEliminar.set(row) });
+    if (puede(Accion.Editar)) lista.push({ type: 'editar', onClick: (row) => this.router.navigate(['/pacientes', row.id, 'editar']) });
+    if (puede(Accion.Eliminar)) lista.push({ type: 'eliminar', onClick: (row) => { this.errorEliminar.set(null); this.ninoAEliminar.set(row); } });
     return lista;
   });
 
@@ -107,19 +110,23 @@ export class ListarPacientes implements OnInit {
     const nino = this.ninoAEliminar();
     if (!nino) return;
     this.loadingBar.show();
+    this.errorEliminar.set(null);
     this.ninosService.eliminar(nino.id).subscribe({
       next: (res: ApiResponse<null>) => {
-        if (res.success) this.cargarNinos();
-        this.ninoAEliminar.set(null);
+        if (res.success) { this.cargarNinos(); this.ninoAEliminar.set(null); }
       },
       complete: () => this.loadingBar.complete(),
-      error: () => { this.ninoAEliminar.set(null); this.loadingBar.complete(); }
+      error: (err) => {
+        this.errorEliminar.set(err.error?.message ?? 'No se pudo eliminar el paciente.');
+        this.loadingBar.complete();
+      }
     });
   }
 
   descargarPacientesPdf(filtros: any): void {
     this.loadingBar.show();
-    const params = { titulo: 'Listado de Pacientes', filtro: JSON.stringify(filtros) };
+    const u = this.authService.currentUser();
+    const params = { titulo: 'Listado de Pacientes', filtro: JSON.stringify(filtros), usuario: u ? `${u.nombre} ${u.apellido}` : '' };
     this.reportesService.descargarReportePdf('reportes/ninos-pdf', params).subscribe({
       next: (blob) => { this.descargarBlob(blob, `pacientes_${hoy()}.pdf`); this.loadingBar.complete(); },
       error: () => this.loadingBar.complete()
@@ -143,7 +150,7 @@ export class ListarPacientes implements OnInit {
   }
 
   private descargarBlob(blob: Blob, nombre: string): void {
-    const url  = window.URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = nombre;

@@ -1,0 +1,85 @@
+<div class="bg-white rounded-md animate-fade-in">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    <breadcrumb [items]="migajas" homeRoute="/mis-pequenos"></breadcrumb>
+
+    <div class="mb-8">
+        <h2 class="page-title">Citas de {{ nino()?.nombre ?? 'tu hijo' }}</h2>
+        <p class="page-subtitle">Aquí puedes ver las citas médicas programadas y anteriores.</p>
+    </div>
+
+    @if (cargando()) {
+    <div class="space-y-4">
+        <div class="h-24 bg-slate-100 rounded-md shimmer"></div>
+        <div class="h-20 bg-slate-100 rounded-md shimmer"></div>
+        <div class="h-20 bg-slate-100 rounded-md shimmer"></div>
+    </div>
+
+    } @else {
+
+    <!-- Banner próxima cita -->
+    @if (proximaCita(); as p) {
+    <div class="bounce-in rounded-md p-5 border border-blue-100 bg-blue-50 mb-6 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-md flex items-center justify-center shrink-0 bg-blue-100 text-blue-600">
+            <ng-icon name="matEventNoteOutline" size="24"></ng-icon>
+        </div>
+        <div>
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-0.5 text-blue-600">Tu próxima cita</p>
+            <h3 class="text-xl font-black leading-tight text-blue-800">
+                {{ formatearFecha(p.fechaHora) }} · {{ formatearHora(p.fechaHora) }}
+            </h3>
+            <p class="text-sm mt-0.5 text-blue-700">Con Dr(a). {{ p.nombreMedico }}{{ p.motivo ? ' — ' + p.motivo : '' }}</p>
+        </div>
+    </div>
+    }
+
+    @if (citas().length === 0) {
+    <div class="flex flex-col items-center justify-center py-20 text-center border border-dashed border-slate-200 rounded-md">
+        <div class="bounce-in w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-4">
+            <ng-icon name="matEventNoteOutline" class="text-slate-400" size="22"></ng-icon>
+        </div>
+        <p class="text-sm font-medium text-slate-700">Aún no hay citas registradas</p>
+        <p class="text-xs text-slate-400 mt-1 max-w-xs">
+            Cuando se agende una cita para {{ nino()?.nombre ?? 'tu hijo' }}, aparecerá aquí.
+        </p>
+    </div>
+
+    } @else {
+
+    <div class="rounded-md border border-slate-200 fade-up">
+        <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-2">
+            <ng-icon name="matCalendarMonthOutline" class="text-slate-400" size="15"></ng-icon>
+            <h3 class="text-sm font-bold text-slate-700">Todas las citas</h3>
+        </div>
+        <div class="divide-y divide-slate-100">
+            @for (c of citas(); track c.id; let i = $index) {
+            <div class="fade-up px-4 py-4 flex items-start justify-between gap-4" [ngClass]="'stagger-' + ((i % 6) + 1)">
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
+                         [ngClass]="[estadoInfo(c.estado).fondo, estadoInfo(c.estado).texto]">
+                        <ng-icon [name]="estadoInfo(c.estado).icono" size="16"></ng-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-800">
+                            {{ formatearFecha(c.fechaHora) }} · {{ formatearHora(c.fechaHora) }}
+                        </p>
+                        <p class="text-sm text-slate-600 mt-0.5">Dr(a). {{ c.nombreMedico }}</p>
+                        @if (c.motivo) {
+                        <p class="text-xs text-slate-400 mt-0.5">{{ c.motivo }}</p>
+                        }
+                    </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold shrink-0"
+                      [ngClass]="[estadoInfo(c.estado).fondo, estadoInfo(c.estado).texto]">
+                    {{ estadoInfo(c.estado).label }}
+                </span>
+            </div>
+            }
+        </div>
+    </div>
+
+    }
+    }
+
+</div>
+</div>

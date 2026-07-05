@@ -33,12 +33,28 @@ public class MedicoController : BaseController
         return Ok(result);
     }
 
+    [HttpGet("{id:int}")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse<MedicoDto.DetailResponse>>> ObtenerPorId(int id)
+    {
+        var result = await _medicoService.ObtenerPorIdAsync(id);
+        return HandleResponse(result);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<MedicoDto.DetailResponse>>> Create([FromBody] MedicoDto.Create request)
     {
         var result = await _medicoService.CrearAsync(request);
         return HandleResponse(result, "Médico registrado correctamente.");
+    }
+
+    [HttpPut("{id:int}")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<ApiResponse<MedicoDto.DetailResponse>>> Actualizar(int id, [FromBody] MedicoDto.Update request)
+    {
+        var result = await _medicoService.ActualizarAsync(id, request);
+        return HandleResponse(result, "Médico actualizado correctamente.");
     }
 
     [HttpDelete("{id:int}")]

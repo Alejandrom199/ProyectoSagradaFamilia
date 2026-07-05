@@ -40,6 +40,18 @@ export class SistemaService {
     );
   }
 
+  exportarAuditoriaExcel(): Observable<Blob> {
+    return this.http.get(`${this.url}/auditoria/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
+  exportarMiActividadExcel(): Observable<Blob> {
+    return this.http.get(`${this.url}/auditoria/mia/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
+  exportarLogsExcel(): Observable<Blob> {
+    return this.http.get(`${this.url}/logs/exportar`, { responseType: 'blob', withCredentials: true });
+  }
+
   obtenerAuditoriaPorTabla(nombreTabla: string, pk?: string): Observable<ApiResponse<AuditoriaResponse[]>> {
     let params = new HttpParams();
     if (pk?.trim()) params = params.set('pk', pk.trim());

@@ -5,9 +5,11 @@ import { NgIcon } from '@ng-icons/core';
 
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
-import { formatearFecha } from '../../../../shared/utils/date.utils';
+import { formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { PrescripcionesService } from '../../../../core/services/prescripciones';
+import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 import { PrescripcionResponse } from '../../../../shared/interfaces/prescripcion.interface';
 
 @Component({
@@ -21,6 +23,8 @@ export class HistorialPrescripciones implements OnInit {
   private prescripcionesService = inject(PrescripcionesService);
   private router = inject(Router);
   private loadingBar = inject(LoadingBar);
+  private authService = inject(AuthService);
+  private reportesService = inject(Reportes);
 
   prescripciones = signal<PrescripcionResponse[]>([]);
 
@@ -34,7 +38,7 @@ export class HistorialPrescripciones implements OnInit {
       label: 'Fecha',
       sortable: true,
       filterable: true,
-      render: (row) => `<span class="font-medium text-gray-800">${formatearFecha(row.fechaCreacion)}</span>`,
+      render: (row) => renderFechaHora(row.fechaCreacion),
       exportValue: (row) => formatearFecha(row.fechaCreacion)
     },
     {
@@ -45,16 +49,13 @@ export class HistorialPrescripciones implements OnInit {
       render: (row) => `<span class="font-medium text-gray-800">${row.nombreNino}</span>`
     },
     {
-      key: 'diagnostico',
-      label: 'Diagnóstico',
-      filterable: true,
-      render: (row) => row.diagnostico || '<span class="text-gray-400 text-xs">Sin diagnóstico</span>'
-    },
-    {
-      key: 'detalleMedicamentos',
+      key: 'medicamentos',
       label: 'Medicamentos',
       filterable: true,
-      render: (row) => `<span class="text-sm text-gray-700 line-clamp-1">${row.detalleMedicamentos}</span>`
+      render: (row) => {
+        const nombres = row.medicamentos.map(m => m.nombre).join(', ');
+        return `<span class="text-sm text-gray-700 line-clamp-1" title="${nombres}">${row.medicamentos.length} medicamento(s): ${nombres}</span>`;
+      }
     },
     {
       key: 'indicaciones',
@@ -84,6 +85,38 @@ export class HistorialPrescripciones implements OnInit {
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
+    });
+  }
+
+  exportarPdf(): void {
+    this.loadingBar.show();
+    const u = this.authService.currentUser();
+    const params = { titulo: 'Mis Prescripciones', usuario: u ? `${u.nombre} ${u.apellido}` : '' };
+    this.reportesService.descargarReportePdf('reportes/prescripciones-medico-pdf', params).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `mis-prescripciones-${new Date().toISOString().split('T')[0]}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
+    });
+  }
+
+  descargarExcel(): void {
+    this.prescripcionesService.exportarExcelMisPrescripciones().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `mis-prescripciones-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {}
     });
   }
 }

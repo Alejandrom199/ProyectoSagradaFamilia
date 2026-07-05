@@ -1,5 +1,4 @@
 ﻿using SagradaFamilia.Application.DTOs;
-using SagradaFamilia.Domain.Enums;
 
 namespace SagradaFamilia.Application.Interfaces.Services
 {
@@ -17,10 +16,13 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<CitaDto.Response> CrearAsync(CitaDto.Create request, int usuarioId);
         Task<CitaDto.Response> ActualizarAsync(int id, CitaDto.Update request, int usuarioId);
 
-        Task ActualizarEstadoAsync(int id, EstadoCita nuevoEstado);
+        Task ActualizarEstadoAsync(int id, CitaDto.CambiarEstadoRequest request);
 
         Task EliminarAsync(int id);
         Task<IEnumerable<CitaDto.Response>> ObtenerPorPadreIdAsync(int padreId);
         Task<IEnumerable<CitaDto.Response>> ObtenerProximasPorMedicoAsync(int medicoId);
+
+        Task<byte[]> ExportarExcelPorNinoAsync(int ninoId);
+        Task<byte[]> ExportarExcelPorMedicoAsync(int usuarioId);
     }
 }

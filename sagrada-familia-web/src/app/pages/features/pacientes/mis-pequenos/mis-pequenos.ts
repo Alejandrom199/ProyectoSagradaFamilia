@@ -54,6 +54,14 @@ export class MisPequenos implements OnInit {
     this.router.navigate(['/alimentos'], { queryParams: { ninoId: id } });
   }
 
+  verCitas(id: number) {
+    this.router.navigate(['/citas/hijo'], { queryParams: { ninoId: id } });
+  }
+
+  verPrescripciones(id: number) {
+    this.router.navigate(['/prescripciones/hijo'], { queryParams: { ninoId: id } });
+  }
+
   readonly saludoConfig = computed(() => {
     const hora = new Date().getHours();
 

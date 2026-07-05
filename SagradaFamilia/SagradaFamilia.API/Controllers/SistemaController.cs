@@ -74,6 +74,24 @@ public class SistemaController : BaseController
         return HandleResponse(response);
     }
 
+    [HttpGet("auditoria/exportar")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> ExportarAuditoriaExcel()
+    {
+        var bytes = await _auditoriaService.ExportarExcelAsync();
+        string filename = $"auditoria-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
+    [HttpGet("auditoria/mia/exportar")]
+    [Authorize(Roles = "Administrador, Medico")]
+    public async Task<IActionResult> ExportarMiActividadExcel()
+    {
+        var bytes = await _auditoriaService.ExportarExcelPorUsuarioAsync(UsuarioId);
+        string filename = $"mi-actividad-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
     [HttpGet("auditoria/tabla/{nombreTabla}")]
     [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<IEnumerable<AuditoriaDto.Response>>>> AuditoriaTabla(string nombreTabla, [FromQuery] string? pk = null)
@@ -96,5 +114,14 @@ public class SistemaController : BaseController
     {
         var response = await _logService.ObtenerErroresRecientesAsync();
         return HandleResponse(response);
+    }
+
+    [HttpGet("logs/exportar")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> ExportarLogsExcel()
+    {
+        var bytes = await _logService.ExportarExcelAsync();
+        string filename = $"eventos-sistema-{DateTime.Now:yyyyMMdd}.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
     }
 }

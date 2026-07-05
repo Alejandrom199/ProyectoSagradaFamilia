@@ -15,5 +15,8 @@ namespace SagradaFamilia.Application.Interfaces.Services
 
         Task<PrescripcionDto.Response> ActualizarAsync(int id, PrescripcionDto.Update request);
         Task EliminarAsync(int id);
+
+        Task<byte[]> ExportarExcelPorNinoAsync(int ninoId);
+        Task<byte[]> ExportarExcelPorMedicoAsync(int medicoId);
     }
 }

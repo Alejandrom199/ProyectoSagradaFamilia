@@ -13,25 +13,28 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
         private readonly string _logoPath;
         private readonly string _marcaAguaPath;
         private readonly bool isLandscape;
+        private readonly string? _usuario;
 
         public AlimentosReportDocument(
             IEnumerable<AlimentoDto.Response> alimentos,
             string? titulo,
             string logoPath,
-            string marcaAguaPath)
+            string marcaAguaPath,
+            string? usuario = null)
         {
             _alimentos = alimentos;
             _titulo = titulo ?? "Guía de Orientación Alimentaria";
             _logoPath = logoPath;
             _marcaAguaPath = marcaAguaPath;
             isLandscape = true;
+            _usuario = usuario;
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
         public void Compose(IDocumentContainer container)
         {
-            var template = new BaseReportTemplate(_titulo, _logoPath, _marcaAguaPath, isLandscape, GenerarTabla);
+            var template = new BaseReportTemplate(_titulo, _logoPath, _marcaAguaPath, isLandscape, GenerarTabla, _usuario);
             template.Compose(container);
         }
 
