@@ -4,6 +4,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
+import { serverTimeInterceptor } from './core/interceptors/server-time-interceptor';
 import { provideIcons, provideNgIconsConfig } from '@ng-icons/core';
 import { APP_ICONS } from './core/icons/app-icons';
 import { provideMonacoEditor } from 'ngx-monaco-editor-v2';
@@ -12,7 +13,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, serverTimeInterceptor])),
     provideNgIconsConfig({ size: '1.25rem' }),
     provideIcons(APP_ICONS),
     provideMonacoEditor({ baseUrl: 'assets/monaco/vs' })

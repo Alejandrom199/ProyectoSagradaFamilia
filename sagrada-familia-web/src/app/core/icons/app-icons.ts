@@ -8,6 +8,7 @@
 import {
   heroHome, heroChevronRight, heroChevronLeft, heroChevronDown,
   heroChevronDoubleLeft, heroChevronDoubleRight,
+  heroAdjustmentsHorizontal,
   heroArrowLeft, heroArrowRight, heroArrowUp, heroArrowDown,
   heroArrowDownTray, heroArrowUpTray, heroArrowPath, heroArrowRightOnRectangle, heroArrowTrendingUp,
   heroBars3, heroBeaker, heroBriefcase,
@@ -133,6 +134,7 @@ export const APP_ICONS = {
   // Heroicons
   heroHome, heroChevronRight, heroChevronLeft, heroChevronDown,
   heroChevronDoubleLeft, heroChevronDoubleRight,
+  heroAdjustmentsHorizontal,
   heroArrowLeft, heroArrowRight, heroArrowUp, heroArrowDown,
   heroArrowDownTray, heroArrowUpTray, heroArrowPath, heroArrowRightOnRectangle, heroArrowTrendingUp,
   heroBars3, heroBeaker, heroBriefcase,

@@ -170,10 +170,71 @@
                 }
             </div>
             }
+
+            @if (columnasOrdenables.length > 0 || columnasFiltrables.length > 0) {
+            <div class="relative sm:hidden">
+                <button #btnOrdenarFiltrar (click)="toggleMenuOrdenarFiltrar($event, btnOrdenarFiltrar)"
+                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
+                    [class.bg-blue-50]="menuActivo() === 'ordenar-filtrar'" tooltip="Ordenar y filtrar"
+                    tooltipPosition="top">
+                    <ng-icon name="heroAdjustmentsHorizontal" class="text-xl"></ng-icon>
+                </button>
+                @if (menuActivo() === 'ordenar-filtrar') {
+                <div class="fixed w-64 bg-white rounded-md z-[9999] overflow-hidden border border-slate-200 font-normal text-slate-700 animate-fade-in"
+                    [ngStyle]="ordenarFiltrarPosicion" (click)="$event.stopPropagation()">
+                    <div class="p-2 flex flex-col gap-1 max-h-80 overflow-y-auto">
+                        @if (columnasOrdenables.length > 0) {
+                        <div class="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            Ordenar por</div>
+                        @for (col of columnasOrdenables; track col.key) {
+                        <div class="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50">
+                            <span class="text-sm font-medium truncate" [class.text-blue-600]="sortKey === col.key">{{ col.label }}</span>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <button
+                                    class="p-1 rounded transition-colors hover:bg-slate-100"
+                                    [class.!text-blue-600]="sortKey === col.key && sortDir === 'asc'"
+                                    [class.text-slate-400]="!(sortKey === col.key && sortDir === 'asc')"
+                                    (click)="ordenarPor(col.key, 'asc')">
+                                    <ng-icon name="heroArrowUp" class="w-4 h-4"></ng-icon>
+                                </button>
+                                <button
+                                    class="p-1 rounded transition-colors hover:bg-slate-100"
+                                    [class.!text-blue-600]="sortKey === col.key && sortDir === 'desc'"
+                                    [class.text-slate-400]="!(sortKey === col.key && sortDir === 'desc')"
+                                    (click)="ordenarPor(col.key, 'desc')">
+                                    <ng-icon name="heroArrowDown" class="w-4 h-4"></ng-icon>
+                                </button>
+                            </div>
+                        </div>
+                        }
+                        }
+
+                        @if (columnasOrdenables.length > 0 && columnasFiltrables.length > 0) {
+                        <div class="border-t border-slate-200 my-1"></div>
+                        }
+
+                        @if (columnasFiltrables.length > 0) {
+                        <div class="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            Filtrar</div>
+                        @for (col of columnasFiltrables; track col.key) {
+                        <button #btnFiltroPanel
+                            class="w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 transition-colors"
+                            [class.!text-blue-600]="filtros[col.key] || menuActivo() === 'filtro-' + col.key"
+                            (click)="toggleFiltro(col.key, $event, btnFiltroPanel)">
+                            <span class="text-sm font-medium truncate">{{ col.label }}</span>
+                            <ng-icon name="heroFunnel" class="w-4 h-4 flex-shrink-0"></ng-icon>
+                        </button>
+                        }
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
         </div>
     </div>
 
-    <div class="w-full overflow-x-auto scrollbar-thin" (scroll)="cerrarMenus()">
+    <div class="hidden sm:block w-full overflow-x-auto scrollbar-thin" (scroll)="cerrarMenus()">
         <table class="w-full min-w-full text-sm text-left relative" [class.table-fixed]="hasCustomWidths()">
 
             <thead>
@@ -200,7 +261,7 @@
                                 }
                             </div>
 
-                            @if (col.filterable && (!serverSide || filterOptions[col.key]?.length || obtenerValoresUnicos(col.key).length > 0)) {
+                            @if (tieneFiltroDisponible(col)) {
                             <button #btnFiltro
                                 class="p-1 rounded-md transition-all hover:bg-slate-100 text-slate-400 focus:outline-none ml-4 flex-shrink-0"
                                 [class.!text-blue-600]="filtros[col.key] || menuActivo() === 'filtro-' + col.key"
@@ -209,57 +270,6 @@
                             </button>
                             }
                         </div>
-
-                        @if (menuActivo() === 'filtro-' + col.key) {
-                        <div class="fixed w-64 p-2 bg-white border border-slate-200 rounded-md z-[9999] font-normal text-slate-700"
-                            [ngStyle]="filtroPosicion" (click)="$event.stopPropagation()">
-                            <div class="p-1">
-                                <label class="text-xs text-slate-500 mb-1.5 block px-1">Filtrar {{ col.label }}</label>
-
-                                <div class="relative mb-2">
-                                    <ng-icon name="heroMagnifyingGlass"
-                                        class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></ng-icon>
-                                    <input type="text"
-                                        class="w-full pl-7 pr-2 py-1.5 text-sm border border-slate-200 rounded-md bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                        placeholder="Buscar..." [(ngModel)]="busquedaFiltro[col.key]">
-                                </div>
-
-                                <label
-                                    class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer border-b border-slate-200 mb-1">
-                                    <input type="checkbox"
-                                        class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
-                                        [checked]="todosLosValoresMarcados(col.key)"
-                                        (change)="toggleTodosLosValores(col.key)">
-                                    <span class="text-sm font-semibold text-blue-600">Seleccionar todo</span>
-                                </label>
-
-                                <div class="max-h-48 overflow-y-auto">
-                                    @for (valor of valoresUnicosFiltrados(col.key); track valor) {
-                                    <label
-                                        class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer">
-                                        <input type="checkbox"
-                                            class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
-                                            [checked]="isValorMarcado(col.key, valor)"
-                                            (change)="toggleValorFiltro(col.key, valor)">
-                                        <span class="text-sm truncate" [title]="valor">{{ valor }}</span>
-                                    </label>
-                                    } @empty {
-                                    <p class="text-xs text-slate-400 text-center py-3">Sin coincidencias</p>
-                                    }
-                                </div>
-
-                                @if (filtrosSeleccion[col.key]) {
-                                <div class="border-t border-slate-200 mt-1 pt-1">
-                                    <button
-                                        class="w-full text-left px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
-                                        (click)="limpiarFiltroColumna(col.key)">
-                                        Limpiar filtro
-                                    </button>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                        }
 
                         <div class="absolute right-0 top-0 h-full w-2 cursor-col-resize opacity-0 group-hover/resize:opacity-100 transition-opacity z-10 flex items-center justify-center"
                             (mousedown)="onResizeStart($event, col.key, thEl)">
@@ -362,6 +372,151 @@
             </tbody>
         </table>
     </div>
+
+    <div class="sm:hidden">
+        @if (columnasVisibles.length === 0) {
+        <div class="px-4 py-16 text-center text-slate-400">
+            <div class="flex flex-col items-center justify-center gap-3">
+                <ng-icon name="heroViewColumns" class="text-4xl text-slate-300"></ng-icon>
+                <p class="text-base font-medium">No hay columnas visibles.</p>
+            </div>
+        </div>
+        }
+        @else if (datosPaginados.length === 0) {
+        <div class="px-4 py-16 text-center text-slate-400">
+            <div class="flex flex-col items-center justify-center gap-3">
+                <ng-icon name="heroCircleStack" class="text-4xl text-slate-300"></ng-icon>
+                <p class="text-base font-medium">{{ emptyMessage }}</p>
+            </div>
+        </div>
+        }
+        @else {
+        <div class="flex flex-col divide-y divide-slate-200">
+            @for (row of datosPaginados; track $index) {
+            <div [ngClass]="densidadPaddingCard">
+                <div class="flex items-start justify-between gap-3">
+                    <span class="font-semibold text-slate-800">
+                        @if (columnaTituloMovil?.render) {
+                        <span [innerHTML]="columnaTituloMovil!.render!(row)"></span>
+                        } @else if (columnaTituloMovil) {
+                        {{ getCellValue(row, columnaTituloMovil.key) }}
+                        }
+                    </span>
+
+                    @if (accionesProcesadas.length > 0) {
+                    <div class="relative flex-shrink-0">
+                        @if (accionesVisibles(row).length === 1) {
+                        <button class="p-1.5 rounded-md hover:bg-slate-100 focus:outline-none transition-colors"
+                            [class]="accionesVisibles(row)[0].class"
+                            [tooltip]="accionesVisibles(row)[0].label || ''" tooltipPosition="bottom"
+                            (click)="accionesVisibles(row)[0].onClick(row)">
+                            @if (accionesVisibles(row)[0].icon) {
+                            <ng-icon [name]="accionesVisibles(row)[0].icon!" class="text-lg"></ng-icon>
+                            }
+                        </button>
+                        } @else {
+                        <button #btnAccionMovil
+                            class="p-1 rounded-md text-orange-600 hover:bg-orange-100 focus:outline-none"
+                            (click)="toggleMenuAcciones($index, $event, btnAccionMovil)">
+                            <ng-icon name="heroEllipsisVertical" class="text-lg font-bold"></ng-icon>
+                        </button>
+
+                        @if (menuActivo() === 'accion-' + $index) {
+                        <div class="fixed w-40 bg-white rounded-md z-[9999] overflow-hidden divide-y divide-slate-200 font-normal text-slate-700 border border-slate-200"
+                            [ngStyle]="menuPosicion" (click)="$event.stopPropagation()">
+                            <div class="p-1.5 flex flex-col gap-0.5">
+                                @for (action of accionesVisibles(row); track $index) {
+                                <button
+                                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 w-full rounded-md group"
+                                    [class]="action.class" (click)="action.onClick(row); cerrarMenus()">
+                                    @if (action.icon) {
+                                    <ng-icon [name]="action.icon"
+                                        class="text-lg opacity-70 group-hover:opacity-100"></ng-icon>
+                                    }
+                                    <span class="font-medium">{{ action.label }}</span>
+                                </button>
+                                }
+                            </div>
+                        </div>
+                        }
+                        }
+                    </div>
+                    }
+                </div>
+
+                <div class="mt-2 flex flex-col gap-1.5">
+                    @for (col of columnasCard; track col.key) {
+                    <div class="flex items-start justify-between gap-3" [class]="col.class ?? ''">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider pt-0.5 flex-shrink-0">
+                            {{ col.label }}
+                        </span>
+
+                        <span class="text-sm text-slate-700 text-right">
+                            @if (col.render) {
+                            <span [innerHTML]="col.render(row)"></span>
+                            } @else {
+                            {{ getCellValue(row, col.key) }}
+                            }
+                        </span>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </div>
+
+    @if (columnaFiltroActiva; as colF) {
+    <div class="fixed w-64 p-2 bg-white border border-slate-200 rounded-md z-[9999] font-normal text-slate-700"
+        [ngStyle]="filtroPosicion" (click)="$event.stopPropagation()">
+        <div class="p-1">
+            <label class="text-xs text-slate-500 mb-1.5 block px-1">Filtrar {{ colF.label }}</label>
+
+            <div class="relative mb-2">
+                <ng-icon name="heroMagnifyingGlass"
+                    class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></ng-icon>
+                <input type="text"
+                    class="w-full pl-7 pr-2 py-1.5 text-sm border border-slate-200 rounded-md bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    placeholder="Buscar..." [(ngModel)]="busquedaFiltro[colF.key]">
+            </div>
+
+            <label
+                class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer border-b border-slate-200 mb-1">
+                <input type="checkbox"
+                    class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                    [checked]="todosLosValoresMarcados(colF.key)"
+                    (change)="toggleTodosLosValores(colF.key)">
+                <span class="text-sm font-semibold text-blue-600">Seleccionar todo</span>
+            </label>
+
+            <div class="max-h-48 overflow-y-auto">
+                @for (valor of valoresUnicosFiltrados(colF.key); track valor) {
+                <label
+                    class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer">
+                    <input type="checkbox"
+                        class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                        [checked]="isValorMarcado(colF.key, valor)"
+                        (change)="toggleValorFiltro(colF.key, valor)">
+                    <span class="text-sm truncate" [title]="valor">{{ valor }}</span>
+                </label>
+                } @empty {
+                <p class="text-xs text-slate-400 text-center py-3">Sin coincidencias</p>
+                }
+            </div>
+
+            @if (filtrosSeleccion[colF.key]) {
+            <div class="border-t border-slate-200 mt-1 pt-1">
+                <button
+                    class="w-full text-left px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
+                    (click)="limpiarFiltroColumna(colF.key)">
+                    Limpiar filtro
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+    }
 
     @if (!hayFiltroVacio && (serverSide ? serverTotalItems > 0 : datosFiltrados.length > 0)) {
     <div

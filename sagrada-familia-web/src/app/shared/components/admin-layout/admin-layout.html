@@ -28,8 +28,9 @@
                 </button>
             </div>
 
-            <div rightSide class="text-xs text-gray-500">
-                {{ auth.currentUser()?.rol }}
+            <div rightSide class="flex items-center gap-3 text-xs text-gray-500">
+                <span>{{ serverTime.now() | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                <span>{{ auth.currentUser()?.rol }}</span>
             </div>
         </header>
 
