@@ -74,6 +74,7 @@ export class Datatable<T extends object> implements OnChanges {
   @Input() serverTotalItems = 0;
   @Input() tooltipThreshold = 55;
   @Input() filterOptions: Record<string, string[]> = {};
+  @Input() mobileTitleKey?: string;
 
   @Output() onActualizar = new EventEmitter<void>();
   @Output() onConfiguracion = new EventEmitter<void>();
@@ -110,11 +111,29 @@ export class Datatable<T extends object> implements OnChanges {
     { valor: 'espacioso', label: 'Espacioso', desc: 'Mayor legibilidad' },
   ];
 
-  columnasPosicion = { top: '0px', left: '0px' };
-  exportarPosicion = { top: '0px', left: '0px' };
-  menuPosicion = { top: '0px', left: '0px' };
-  filtroPosicion = { top: '0px', left: '0px' };
-  configuracionPosicion = { top: '0px', left: '0px' };
+  columnasPosicion: Record<string, string> = { top: '0px', left: '0px' };
+  exportarPosicion: Record<string, string> = { top: '0px', left: '0px' };
+  menuPosicion: Record<string, string> = { top: '0px', left: '0px' };
+  filtroPosicion: Record<string, string> = { top: '0px', left: '0px' };
+  configuracionPosicion: Record<string, string> = { top: '0px', left: '0px' };
+  ordenarFiltrarPosicion: Record<string, string> = { top: '0px', left: '0px' };
+
+  // Calcula la posición de un menú flotante (fixed) evitando que se salga de la ventana:
+  // en pantallas angostas (móvil), un menú anclado con "left"/"right" sin límites puede
+  // quedar parcialmente fuera del viewport, y uno anclado con "top: rect.bottom" puede
+  // quedar cortado contra el borde inferior si se abre cerca del final de la pantalla
+  // (por eso se voltea hacia arriba, con "bottom", cuando no hay espacio suficiente debajo).
+  private posicionFlotante(rect: DOMRect, anchoMenu: number, alinearDerecha = false, altoEstimado = 300): Record<string, string> {
+    const margen = 8;
+    let left = alinearDerecha ? rect.right - anchoMenu : rect.left;
+    left = Math.min(Math.max(left, margen), window.innerWidth - anchoMenu - margen);
+
+    const espacioAbajo = window.innerHeight - rect.bottom;
+    if (espacioAbajo < altoEstimado && rect.top > espacioAbajo) {
+      return { bottom: `${window.innerHeight - rect.top + 4}px`, left: `${left}px` };
+    }
+    return { top: `${rect.bottom + 4}px`, left: `${left}px` };
+  }
 
   private readonly paginaActualSignal = signal(1);
   readonly paginaActual = this.paginaActualSignal.asReadonly();
@@ -144,12 +163,7 @@ export class Datatable<T extends object> implements OnChanges {
     }
 
     const rect = btnElement.getBoundingClientRect();
-
-    this.menuPosicion = {
-      top: `${rect.bottom + 4}px`,
-      left: `${rect.left}px`
-    };
-
+    this.menuPosicion = this.posicionFlotante(rect, 160, false, 220);
     this.menuActivo.set(menuKey);
   }
 
@@ -168,18 +182,7 @@ export class Datatable<T extends object> implements OnChanges {
     }
 
     const rect = btnElement.getBoundingClientRect();
-
-    let leftPos = rect.left;
-
-    if (leftPos + 224 > window.innerWidth) {
-      leftPos = window.innerWidth - 240;
-    }
-
-    this.filtroPosicion = {
-      top: `${rect.bottom + 8}px`,
-      left: `${leftPos}px`
-    };
-
+    this.filtroPosicion = this.posicionFlotante(rect, 256, false, 380);
     this.menuActivo.set(menuKey);
   }
 
@@ -192,12 +195,7 @@ export class Datatable<T extends object> implements OnChanges {
     }
 
     const rect = btnElement.getBoundingClientRect();
-
-    this.exportarPosicion = {
-      top: `${rect.bottom + 8}px`,
-      left: `${rect.right - 160}px`
-    };
-
+    this.exportarPosicion = this.posicionFlotante(rect, 176, true, 220);
     this.menuActivo.set('exportar');
   }
 
@@ -210,13 +208,21 @@ export class Datatable<T extends object> implements OnChanges {
     }
 
     const rect = btnElement.getBoundingClientRect();
-
-    this.columnasPosicion = {
-      top: `${rect.bottom + 8}px`,
-      left: `${rect.right - 200}px`
-    };
-
+    this.columnasPosicion = this.posicionFlotante(rect, 192, true, 300);
     this.menuActivo.set('columnas');
+  }
+
+  toggleMenuOrdenarFiltrar(event: Event, btnElement: HTMLElement) {
+    event.stopPropagation();
+
+    if (this.menuActivo() === 'ordenar-filtrar') {
+      this.menuActivo.set(null);
+      return;
+    }
+
+    const rect = btnElement.getBoundingClientRect();
+    this.ordenarFiltrarPosicion = this.posicionFlotante(rect, 260, true, 380);
+    this.menuActivo.set('ordenar-filtrar');
   }
 
   toggleVisibilidadColumna(key: string | number | symbol) {
@@ -405,6 +411,43 @@ export class Datatable<T extends object> implements OnChanges {
     return this.columns.filter(c => !c.hidden);
   }
 
+  get columnaTituloMovil(): DatatableColumn<T> | undefined {
+    const visibles = this.columnasVisibles;
+    if (this.mobileTitleKey) {
+      const porKey = visibles.find(c => c.key === this.mobileTitleKey);
+      if (porKey) return porKey;
+    }
+    return visibles[0];
+  }
+
+  get columnasCard(): DatatableColumn<T>[] {
+    const titulo = this.columnaTituloMovil;
+    return this.columnasVisibles.filter(c => c !== titulo);
+  }
+
+  get columnasOrdenables(): DatatableColumn<T>[] {
+    return this.columnasVisibles.filter(c => c.sortable);
+  }
+
+  tieneFiltroDisponible(col: DatatableColumn<T>): boolean {
+    return !!col.filterable && (!this.serverSide || !!this.filterOptions[col.key]?.length || this.obtenerValoresUnicos(col.key).length > 0);
+  }
+
+  get columnasFiltrables(): DatatableColumn<T>[] {
+    return this.columnasVisibles.filter(c => this.tieneFiltroDisponible(c));
+  }
+
+  get columnaFiltroActiva(): DatatableColumn<T> | undefined {
+    const activo = this.menuActivo();
+    if (!activo?.startsWith('filtro-')) return undefined;
+    const key = activo.slice('filtro-'.length);
+    return this.columns.find(c => String(c.key) === key);
+  }
+
+  get densidadPaddingCard(): string {
+    return this.densidad() === 'compacto' ? 'p-2' : this.densidad() === 'espacioso' ? 'p-6' : 'p-4';
+  }
+
   get accionesProcesadas(): DatatableAction<T>[] {
     const defaults: Record<ActionType, Partial<DatatableAction<T>>> = {
       ver: { label: 'Ver', icon: 'matVisibilityOutline', class: 'text-blue-600' },
@@ -537,10 +580,7 @@ export class Datatable<T extends object> implements OnChanges {
       return;
     }
     const rect = btnElement.getBoundingClientRect();
-    this.configuracionPosicion = {
-      top: `${rect.bottom + 8}px`,
-      left: `${rect.right - 208}px`,
-    };
+    this.configuracionPosicion = this.posicionFlotante(rect, 208, true, 220);
     this.menuActivo.set('configuracion');
   }
 
