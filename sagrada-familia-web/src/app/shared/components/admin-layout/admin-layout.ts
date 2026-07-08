@@ -9,6 +9,7 @@ import { Sidebar } from '../sidebar/sidebar';
 import { Header } from '../header/header';
 import { AuthService } from '../../../core/services/auth';
 import { MenuService } from '../../../core/services/menu';
+import { ServerTimeService } from '../../../core/services/server-time';
 
 @Component({
   selector: 'admin-layout',
@@ -28,6 +29,7 @@ import { MenuService } from '../../../core/services/menu';
 export class AdminLayout implements OnInit {
   readonly auth = inject(AuthService);
   private readonly menuService = inject(MenuService);
+  readonly serverTime = inject(ServerTimeService);
 
   readonly sidebarExpandido = signal<boolean>(true);
   readonly sidebarMovilAbierto = signal<boolean>(false);
