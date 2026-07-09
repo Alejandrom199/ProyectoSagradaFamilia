@@ -244,13 +244,17 @@ export class DetallePaciente implements OnInit {
   }
 
   descargarHistoriaClinica(): void {
+    this.loadingBar.show();
     const n = this.nino();
     const u = this.authService.currentUser();
     const titulo = n ? `Historia Clínica — ${n.nombre} ${n.apellido}` : 'Historia Clínica';
     const params = { ninoId: this.id, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
     this.reportesService.descargarReportePdf('reportes/historia-clinica-pdf', params).subscribe({
-      next: (blob) => this.descargarBlob(blob, `historia-clinica-${hoy()}.pdf`),
-      error: () => {}
+      next: (blob) => {
+        this.descargarBlob(blob, `historia-clinica-${hoy()}.pdf`);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
     });
   }
 
