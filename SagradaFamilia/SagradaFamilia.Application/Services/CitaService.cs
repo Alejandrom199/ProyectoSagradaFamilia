@@ -310,19 +310,19 @@ public class CitaService : ICitaService
         var pHoraFin = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "HORA_FIN");
         var pDiasHabiles = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "DIAS_HABILES");
 
-        if (pHoraInicio is not null && TimeOnly.TryParse(pHoraInicio.Valor, out var horaInicio))
+        if (pHoraInicio is { Activo: true } && TimeOnly.TryParse(pHoraInicio.Valor, out var horaInicio))
         {
             if (TimeOnly.FromDateTime(fechaHora) < horaInicio)
                 throw new BusinessException($"Las citas no pueden agendarse antes de las {pHoraInicio.Valor} horas.");
         }
 
-        if (pHoraFin is not null && TimeOnly.TryParse(pHoraFin.Valor, out var horaFin))
+        if (pHoraFin is { Activo: true } && TimeOnly.TryParse(pHoraFin.Valor, out var horaFin))
         {
             if (TimeOnly.FromDateTime(fechaHora) >= horaFin)
                 throw new BusinessException($"Las citas no pueden agendarse después de las {pHoraFin.Valor} horas.");
         }
 
-        if (pDiasHabiles is not null)
+        if (pDiasHabiles is { Activo: true })
         {
             var diasHabiles = pDiasHabiles.Valor
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
