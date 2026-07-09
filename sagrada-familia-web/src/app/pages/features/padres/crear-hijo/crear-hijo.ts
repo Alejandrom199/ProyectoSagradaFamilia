@@ -5,6 +5,8 @@ import { NgIcon } from '@ng-icons/core';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
+import { SEXO_OPTIONS } from '../../../../shared/constants/sexo.constants';
 import { PadreDetailResponse, PadreResponse } from '../../../../shared/interfaces/padre.interface';
 import { NinoCreate, NinoDetailResponse, NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { ApiResponse } from '../../../../shared/interfaces/api.interface';
@@ -14,7 +16,7 @@ import { PadresService } from '../../../../core/services/padres';
 @Component({
   selector: 'app-crear-hijo',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, SearchableSelect],
 
   templateUrl: './crear-hijo.html',
   styleUrl: './crear-hijo.css',
@@ -44,6 +46,8 @@ export class CrearHijo implements OnInit {
     };
 
   migajas: BreadcrumbItem[] = [];
+
+  readonly sexoOptions = SEXO_OPTIONS;
 
   ngOnInit(): void {
     this.padresService.obtenerPorId(parseInt(this.id)).subscribe({

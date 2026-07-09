@@ -9,6 +9,7 @@ import { ApiResponse } from '../../../../shared/interfaces/api.interface';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 import { PadresService } from '../../../../core/services/padres';
 import { MedicosService } from '../../../../core/services/medicos';
 import { AuthService } from '../../../../core/services/auth';
@@ -17,7 +18,7 @@ import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 @Component({
   selector: 'app-editar-padre',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, Breadcrumb, NgIcon],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, Breadcrumb, NgIcon, SearchableSelect],
   templateUrl: './editar-padre.html',
   styleUrl: './editar-padre.css',
 })
@@ -52,6 +53,8 @@ export class EditarPadre implements OnInit {
   exitoMedico          = signal(false);
 
   migajas: BreadcrumbItem[] = [];
+
+  readonly medicoLabelFn = (m: MedicoResponse) => `Dr(a). ${m.nombre} ${m.apellido}`;
 
   ngOnInit(): void {
     this.migajas = this.authService.esAdmin()

@@ -5,6 +5,8 @@ import { NgIcon } from '@ng-icons/core';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
+import { SEXO_OPTIONS } from '../../../../shared/constants/sexo.constants';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { NinosService } from '../../../../core/services/ninos';
 import { PadresService } from '../../../../core/services/padres';
@@ -13,7 +15,7 @@ import { PadreDetailResponse, PadreResponse } from '../../../../shared/interface
 @Component({
   selector: 'app-editar-hijo',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, SearchableSelect],
 
   templateUrl: './editar-hijo.html',
 })
@@ -40,6 +42,8 @@ export class EditarHijo implements OnInit {
   };
 
   migajas: BreadcrumbItem[] = [];
+
+  readonly sexoOptions = SEXO_OPTIONS;
 
   ngOnInit(): void {
     this.origen = this.route.snapshot.queryParamMap.get('origen') ?? 'padres';

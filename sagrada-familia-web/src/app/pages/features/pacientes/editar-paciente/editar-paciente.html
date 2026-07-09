@@ -62,12 +62,14 @@
                         </div>
                         <div class="flex flex-col gap-1.5">
                             <label class="text-xs font-bold text-slate-600 uppercase ml-1">Sexo *</label>
-                            <select [(ngModel)]="form.sexo"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
-                                <option value="">Seleccionar...</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Femenino</option>
-                            </select>
+                            <searchable-select
+                                [options]="sexoOptions"
+                                valueKey="id"
+                                [value]="form.sexo || null"
+                                (valueChange)="form.sexo = $event"
+                                placeholder="Seleccionar..."
+                                searchPlaceholder="Buscar...">
+                            </searchable-select>
                         </div>
                     </div>
 
@@ -127,13 +129,17 @@
                             Selecciona el nuevo médico responsable de este paciente.
                         </p>
                         <div class="flex gap-2">
-                            <select [ngModel]="nuevoMedicoId()" (ngModelChange)="nuevoMedicoId.set($event)"
-                                [ngModelOptions]="{standalone: true}"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
-                                @for (m of medicos(); track m.id) {
-                                <option [ngValue]="m.id">Dr(a). {{ m.nombre }} {{ m.apellido }}</option>
-                                }
-                            </select>
+                            <div class="w-full">
+                                <searchable-select
+                                    [options]="medicos()"
+                                    [labelFn]="medicoLabelFn"
+                                    valueKey="id"
+                                    [value]="nuevoMedicoId()"
+                                    (valueChange)="nuevoMedicoId.set($event)"
+                                    placeholder="Seleccionar médico..."
+                                    searchPlaceholder="Buscar médico...">
+                                </searchable-select>
+                            </div>
                             <button type="button" (click)="cambiarMedico()"
                                 [disabled]="guardandoMedico() || !nuevoMedicoId()"
                                 class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap">
@@ -194,13 +200,17 @@
                             Selecciona el nuevo representante de este niño.
                         </p>
                         <div class="flex gap-2">
-                            <select [ngModel]="nuevoPadreId()" (ngModelChange)="nuevoPadreId.set($event)"
-                                [ngModelOptions]="{standalone: true}"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
-                                @for (p of padres(); track p.id) {
-                                <option [ngValue]="p.id">{{ p.nombre }} {{ p.apellido }} — {{ p.email }}</option>
-                                }
-                            </select>
+                            <div class="w-full">
+                                <searchable-select
+                                    [options]="padres()"
+                                    [labelFn]="padreLabelFn"
+                                    valueKey="id"
+                                    [value]="nuevoPadreId()"
+                                    (valueChange)="nuevoPadreId.set($event)"
+                                    placeholder="Seleccionar representante..."
+                                    searchPlaceholder="Buscar representante...">
+                                </searchable-select>
+                            </div>
                             <button type="button" (click)="cambiarPadre()"
                                 [disabled]="guardandoPadre() || !nuevoPadreId()"
                                 class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap">

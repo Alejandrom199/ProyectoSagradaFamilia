@@ -11,6 +11,7 @@ import { AuthService } from '../../../../core/services/auth';
 import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
 import { NinoCreate } from '../../../../shared/interfaces/nino.interface';
 import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
+import { SEXO_OPTIONS } from '../../../../shared/constants/sexo.constants';
 
 @Component({
   selector: 'app-crear-paciente',
@@ -29,6 +30,7 @@ export class CrearPaciente implements OnInit {
 
   padres = signal<PadreResponse[]>([]);
   readonly padreLabelFn = (p: PadreResponse) => `${p.nombre} ${p.apellido}`;
+  readonly sexoOptions = SEXO_OPTIONS;
   guardando = signal(false);
   error = signal('');
 
