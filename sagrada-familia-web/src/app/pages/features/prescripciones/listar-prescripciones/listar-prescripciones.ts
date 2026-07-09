@@ -4,7 +4,6 @@ import { NgIcon } from '@ng-icons/core';
 
 
 import { DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
-import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { NinosService } from '../../../../core/services/ninos';
@@ -19,7 +18,7 @@ import { PrescripcionesService } from '../../../../core/services/prescripciones'
 @Component({
   selector: 'app-listar-prescripciones',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, Button, Breadcrumb],
+  imports: [NgIcon, RouterLink, Datatable, Breadcrumb],
 
   templateUrl: './listar-prescripciones.html',
   styleUrl: './listar-prescripciones.css',
