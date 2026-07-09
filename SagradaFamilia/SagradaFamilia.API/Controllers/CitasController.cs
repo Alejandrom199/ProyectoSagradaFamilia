@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Domain.Common;
 using System.Security.Claims;
 
 [Authorize]
@@ -76,7 +77,7 @@ public class CitasController : BaseController
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var usuarioId))
             return Unauthorized();
 
-        var response = await _citaService.ObtenerPorMedicoIdAsync(usuarioId, DateOnly.FromDateTime(DateTime.Now));
+        var response = await _citaService.ObtenerPorMedicoIdAsync(usuarioId, DateOnly.FromDateTime(RelojEcuador.Ahora));
         return HandleResponse(response);
     }
 

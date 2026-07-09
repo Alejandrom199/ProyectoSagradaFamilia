@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Application.Reporting.Excel.Documents;
+using SagradaFamilia.Domain.Common;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Exceptions;
@@ -187,7 +188,7 @@ public class CitaService : ICitaService
         var cita = await _citaRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Cita", id);
 
-        if (request.Estado != EstadoCita.Cancelada && DateTime.Now < cita.FechaHora)
+        if (request.Estado != EstadoCita.Cancelada && RelojEcuador.Ahora < cita.FechaHora)
             throw new BusinessException("No es posible gestionar esta cita antes de su fecha y hora programada.");
 
         var estadoAnterior = cita.Estado;

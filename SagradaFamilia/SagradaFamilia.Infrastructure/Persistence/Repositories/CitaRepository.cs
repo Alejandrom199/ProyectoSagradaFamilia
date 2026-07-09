@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SagradaFamilia.Domain.Common;
 using SagradaFamilia.Domain.Entities;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Interfaces.Repositories;
@@ -63,7 +64,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .Where(c => c.Medico.UsuarioId == usuarioId
                          && c.Estado == EstadoCita.Pendiente
                          && !c.Eliminado
-                         && c.FechaHora >= DateTime.Now.Date)
+                         && c.FechaHora >= RelojEcuador.Hoy)
                 .OrderBy(c => c.FechaHora)
                 .ToListAsync();
 
