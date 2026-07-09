@@ -179,6 +179,7 @@ export class DetallePaciente implements OnInit {
           'Completada': 'bg-green-100 text-green-700',
           'Cancelada':  'bg-red-100 text-red-600',
           'NoAsistio':  'bg-gray-100 text-gray-600',
+          'Reagendada': 'bg-violet-100 text-violet-700',
         };
         const clase = mapa[row.estado] || 'bg-gray-100 text-gray-600';
         const label = row.estado === 'NoAsistio' ? 'No asistió'
@@ -244,13 +245,17 @@ export class DetallePaciente implements OnInit {
   }
 
   descargarHistoriaClinica(): void {
+    this.loadingBar.show();
     const n = this.nino();
     const u = this.authService.currentUser();
     const titulo = n ? `Historia Clínica — ${n.nombre} ${n.apellido}` : 'Historia Clínica';
     const params = { ninoId: this.id, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
     this.reportesService.descargarReportePdf('reportes/historia-clinica-pdf', params).subscribe({
-      next: (blob) => this.descargarBlob(blob, `historia-clinica-${hoy()}.pdf`),
-      error: () => {}
+      next: (blob) => {
+        this.descargarBlob(blob, `historia-clinica-${hoy()}.pdf`);
+        this.loadingBar.complete();
+      },
+      error: () => this.loadingBar.complete()
     });
   }
 

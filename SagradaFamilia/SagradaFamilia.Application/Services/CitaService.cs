@@ -18,6 +18,7 @@ public class CitaService : ICitaService
     private readonly IParametroRepository _parametroRepository;
     private readonly IEmailService _emailService;
     private readonly IEmailTemplateService _emailTemplateService;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly ILogger<CitaService> _logger;
 
@@ -27,6 +28,7 @@ public class CitaService : ICitaService
         IParametroRepository parametroRepository,
         IEmailService emailService,
         IEmailTemplateService emailTemplateService,
+        IUnitOfWork unitOfWork,
         IMapper mapper,
         ILogger<CitaService> logger)
     {
@@ -35,6 +37,7 @@ public class CitaService : ICitaService
         _parametroRepository = parametroRepository;
         _emailService = emailService;
         _emailTemplateService = emailTemplateService;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
         _logger = logger;
     }
@@ -144,41 +147,67 @@ public class CitaService : ICitaService
     {
         _logger.LogInformation("Iniciando reagendación de la cita ID: {Id}", id);
 
-        var cita = await _citaRepository.ObtenerPorIdAsync(id)
+        var citaOrigen = await _citaRepository.ObtenerPorIdAsync(id)
             ?? throw new NotFoundException("Cita", id);
 
         var estadosReagendables = new[] { EstadoCita.Pendiente, EstadoCita.Cancelada, EstadoCita.NoAsistio };
-        if (!estadosReagendables.Contains(cita.Estado))
+        if (!estadosReagendables.Contains(citaOrigen.Estado))
             throw new BusinessException("Solo se pueden reagendar citas pendientes, canceladas o con ausencia.");
 
         if (request.FechaHoraFin <= request.FechaHora)
             throw new BusinessException("La hora de terminación debe ser posterior a la hora de inicio.");
 
         var haySolapamiento = await _citaRepository.ExisteTraslapeAsync(
-            cita.MedicoId, request.FechaHora, request.FechaHoraFin, excluirCitaId: id);
+            citaOrigen.MedicoId, request.FechaHora, request.FechaHoraFin, excluirCitaId: id);
 
         if (haySolapamiento)
             throw new BusinessException(
                 $"El médico ya tiene una cita que se solapa con el horario " +
                 $"{request.FechaHora:HH:mm}–{request.FechaHoraFin:HH:mm}.");
 
-        _mapper.Map(request, cita);
-        cita.UsuarioModificacionId = usuarioId;
+        await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            var citaNueva = new Cita
+            {
+                NinoId = citaOrigen.NinoId,
+                MedicoId = request.MedicoId,
+                FechaHora = request.FechaHora,
+                FechaHoraFin = request.FechaHoraFin,
+                Motivo = request.Motivo ?? citaOrigen.Motivo,
+                Estado = EstadoCita.Pendiente,
+                CitaOrigenId = citaOrigen.Id,
+                UsuarioCreacionId = usuarioId
+            };
+            var creada = await _citaRepository.CrearAsync(citaNueva);
 
-        // Al reagendar una cita cancelada o con ausencia, vuelve a Pendiente
-        if (cita.Estado == EstadoCita.Cancelada || cita.Estado == EstadoCita.NoAsistio)
-            cita.Estado = EstadoCita.Pendiente;
+            // Solo una cita Pendiente pasa a Reagendada. Si estaba Cancelada o
+            // NoAsistio, conserva ese estado: ya quedó registrado por qué no se realizó.
+            if (citaOrigen.Estado == EstadoCita.Pendiente)
+            {
+                citaOrigen.Estado = EstadoCita.Reagendada;
+                citaOrigen.UsuarioModificacionId = usuarioId;
+                await _citaRepository.ActualizarAsync(citaOrigen);
+            }
 
-        var actualizada = await _citaRepository.ActualizarAsync(cita);
+            await _unitOfWork.CommitAsync();
 
-        _logger.LogInformation("Cita ID: {Id} reagendada correctamente. Nueva Fecha/Hora: {FechaHora}",
-            id, actualizada.FechaHora);
+            _logger.LogInformation(
+                "Cita ID: {IdOrigen} reagendada correctamente. Nueva cita ID: {IdNueva}, Fecha/Hora: {FechaHora}",
+                citaOrigen.Id, creada.Id, creada.FechaHora);
 
-        var citaCompleta = await _citaRepository.ObtenerPorIdAsync(actualizada.Id);
+            var citaCompleta = await _citaRepository.ObtenerPorIdAsync(creada.Id);
 
-        await EnviarCorreoCitaAsync("CITA_REAGENDADA", citaCompleta!);
+            await EnviarCorreoCitaAsync("CITA_REAGENDADA", citaCompleta!);
 
-        return _mapper.Map<CitaDto.Response>(citaCompleta!);
+            return _mapper.Map<CitaDto.Response>(citaCompleta!);
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            _logger.LogError(ex, "Error al reagendar la cita ID: {Id}. Se realizó Rollback.", id);
+            throw;
+        }
     }
 
     public async Task ActualizarEstadoAsync(int id, CitaDto.CambiarEstadoRequest request)
@@ -310,19 +339,19 @@ public class CitaService : ICitaService
         var pHoraFin = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "HORA_FIN");
         var pDiasHabiles = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "DIAS_HABILES");
 
-        if (pHoraInicio is not null && TimeOnly.TryParse(pHoraInicio.Valor, out var horaInicio))
+        if (pHoraInicio is { Activo: true } && TimeOnly.TryParse(pHoraInicio.Valor, out var horaInicio))
         {
             if (TimeOnly.FromDateTime(fechaHora) < horaInicio)
                 throw new BusinessException($"Las citas no pueden agendarse antes de las {pHoraInicio.Valor} horas.");
         }
 
-        if (pHoraFin is not null && TimeOnly.TryParse(pHoraFin.Valor, out var horaFin))
+        if (pHoraFin is { Activo: true } && TimeOnly.TryParse(pHoraFin.Valor, out var horaFin))
         {
             if (TimeOnly.FromDateTime(fechaHora) >= horaFin)
                 throw new BusinessException($"Las citas no pueden agendarse después de las {pHoraFin.Valor} horas.");
         }
 
-        if (pDiasHabiles is not null)
+        if (pDiasHabiles is { Activo: true })
         {
             var diasHabiles = pDiasHabiles.Valor
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)

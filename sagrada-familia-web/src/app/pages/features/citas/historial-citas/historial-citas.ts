@@ -138,6 +138,7 @@ export class HistorialCitas implements OnInit {
       [EstadoCita.Completada]: 'bg-emerald-100 text-emerald-700',
       [EstadoCita.Cancelada]: 'bg-red-100 text-red-600',
       [EstadoCita.NoAsistio]: 'bg-gray-100 text-gray-500',
+      [EstadoCita.Reagendada]: 'bg-violet-100 text-violet-700',
     };
     const label: Record<string, string> = {
       [EstadoCita.EnCurso]: 'En curso',

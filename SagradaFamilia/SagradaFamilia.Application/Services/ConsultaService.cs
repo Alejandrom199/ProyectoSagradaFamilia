@@ -59,6 +59,7 @@ public class ConsultaService : IConsultaService
                 NinoId = cita.NinoId,
                 MedicoId = medico.Id,
                 Estado = EstadoConsulta.EnCurso,
+                Motivo = cita.Motivo,
                 UsuarioCreacionId = usuarioId
             };
             var creada = await _consultaRepository.CrearAsync(consulta);

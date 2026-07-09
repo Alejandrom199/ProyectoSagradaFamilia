@@ -13,6 +13,7 @@ export interface CitaResponse {
     notasConsulta?: string;
     motivoCancelacion?: string;
     estado: EstadoCita;
+    citaOrigenId?: number;
     fechaCreacion: string;
     tienePrescripcion: boolean;
     prescripcion?: PrescripcionResumen;
@@ -44,5 +45,6 @@ export enum EstadoCita {
     Completada = 'Completada',
     EnCurso = 'EnCurso',
     NoAsistio = 'NoAsistio',
-    Cancelada = 'Cancelada'
+    Cancelada = 'Cancelada',
+    Reagendada = 'Reagendada'
 }

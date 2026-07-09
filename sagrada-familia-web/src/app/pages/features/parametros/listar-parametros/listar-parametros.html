@@ -90,7 +90,15 @@
                         <p class="text-xs text-slate-400 mt-0.5">{{ p.descripcion }}</p>
                         }
                     </div>
-                    <div class="flex items-center gap-2 shrink-0">
+                    <div class="flex items-center gap-3 shrink-0">
+                        <label class="flex items-center cursor-pointer" [tooltip]="p.activo ? 'Inactivar' : 'Activar'"
+                            tooltipPosition="top">
+                            <div class="relative">
+                                <input type="checkbox" [checked]="p.activo" (change)="toggleActivo(p)" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-200 peer-checked:bg-blue-600 rounded-full transition-colors"></div>
+                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                            </div>
+                        </label>
                         <button (click)="iniciarEdicion(p)"
                             class="p-2 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                             title="Editar">

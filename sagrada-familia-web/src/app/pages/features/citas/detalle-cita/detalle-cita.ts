@@ -101,31 +101,16 @@ export class DetalleCita implements OnInit {
     });
   }
 
+  // Guarda los datos clínicos y completa la consulta en un solo paso.
+  // El motivo no se re-edita acá: se reenvía tal cual llegó (copiado de la cita al iniciar
+  // la consulta) para no perderlo, ya que el backend reemplaza el campo completo al actualizar.
   completarConsulta(): void {
     const consultaId = this.cita()?.consulta?.id;
     if (!consultaId) return;
 
-    this.cambiandoEstado.set(true);
+    this.guardandoConsulta.set(true);
     this.loadingBar.show();
 
-    this.consultasService.completar(consultaId).subscribe({
-      next: (r) => {
-        if (r.success) this.cargarCita();
-        this.cambiandoEstado.set(false);
-        this.loadingBar.complete();
-      },
-      error: () => {
-        this.cambiandoEstado.set(false);
-        this.loadingBar.complete();
-      }
-    });
-  }
-
-  guardarConsulta(): void {
-    const consultaId = this.cita()?.consulta?.id;
-    if (!consultaId) return;
-
-    this.guardandoConsulta.set(true);
     this.consultasService.actualizar(consultaId, {
       motivo: this.consultaMotivo() || undefined,
       diagnostico: this.consultaDiagnostico() || undefined,
@@ -133,10 +118,27 @@ export class DetalleCita implements OnInit {
       evolucion: this.consultaEvolucion() || undefined,
     }).subscribe({
       next: (r) => {
-        if (r.success) this.cargarCita();
-        this.guardandoConsulta.set(false);
+        if (!r.success) {
+          this.guardandoConsulta.set(false);
+          this.loadingBar.complete();
+          return;
+        }
+        this.consultasService.completar(consultaId).subscribe({
+          next: () => {
+            this.cargarCita();
+            this.guardandoConsulta.set(false);
+            this.loadingBar.complete();
+          },
+          error: () => {
+            this.guardandoConsulta.set(false);
+            this.loadingBar.complete();
+          }
+        });
       },
-      error: () => this.guardandoConsulta.set(false)
+      error: () => {
+        this.guardandoConsulta.set(false);
+        this.loadingBar.complete();
+      }
     });
   }
 
@@ -202,6 +204,7 @@ export class DetalleCita implements OnInit {
       'Completada': { clase: 'bg-green-100 text-green-700 border-green-200', label: 'Completada' },
       'NoAsistio': { clase: 'bg-gray-100 text-gray-600 border-gray-200', label: 'No asistió' },
       'Cancelada': { clase: 'bg-red-100 text-red-600 border-red-200', label: 'Cancelada' },
+      'Reagendada': { clase: 'bg-violet-100 text-violet-700 border-violet-200', label: 'Reagendada' },
     };
     return mapa[estado] ?? { clase: 'bg-gray-100 text-gray-600 border-gray-200', label: estado };
   }

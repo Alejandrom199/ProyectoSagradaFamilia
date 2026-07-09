@@ -130,6 +130,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                          && !c.Eliminado
                          && c.Estado != EstadoCita.Cancelada
                          && c.Estado != EstadoCita.NoAsistio
+                         && c.Estado != EstadoCita.Reagendada
                          && (excluirCitaId == null || c.Id != excluirCitaId)
                          && c.FechaHora < fin
                          && (c.FechaHoraFin.HasValue

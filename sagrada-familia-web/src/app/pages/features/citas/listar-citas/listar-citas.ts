@@ -213,7 +213,8 @@ export class ListarCitas implements OnInit {
       'Pendiente': 'bg-yellow-100 text-yellow-700',
       'Completada': 'bg-green-100 text-green-700',
       'Cancelada': 'bg-red-100 text-red-700',
-      'NoAsistio': 'bg-gray-100 text-gray-700'
+      'NoAsistio': 'bg-gray-100 text-gray-700',
+      'Reagendada': 'bg-violet-100 text-violet-700'
     };
     const clase = mapa[estado] || 'bg-gray-100 text-gray-700';
     return `<span class="px-2 py-1 rounded-full text-xs font-bold ${clase}">${estado}</span>`;

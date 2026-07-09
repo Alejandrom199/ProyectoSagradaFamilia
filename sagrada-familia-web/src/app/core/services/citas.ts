@@ -87,6 +87,7 @@ export class CitasService {
       [EstadoCita.EnCurso]: 3,
       [EstadoCita.NoAsistio]: 4,
       [EstadoCita.Cancelada]: 5,
+      [EstadoCita.Reagendada]: 6,
     };
     return mapa[estado];
   }

@@ -21,6 +21,10 @@ namespace SagradaFamilia.Domain.Entities
         public string? NotasConsulta { get; set; }
         public string? MotivoCancelacion { get; set; }
 
+        // Cita de la que proviene (cuando esta cita nació de un reagendamiento)
+        public int? CitaOrigenId { get; set; }
+        public Cita? CitaOrigen { get; set; }
+
         // Navegación
         public Nino Nino { get; set; } = null!;
         public Medico Medico { get; set; } = null!;

@@ -155,6 +155,7 @@ export class MisCitasHoy implements OnInit {
       Completada: { fondo: 'bg-emerald-50', texto: 'text-emerald-700', punto: 'bg-emerald-400', borde: 'border-emerald-200' },
       Cancelada: { fondo: 'bg-red-50', texto: 'text-red-600', punto: 'bg-red-400', borde: 'border-red-200' },
       NoAsistio: { fondo: 'bg-gray-100', texto: 'text-gray-500', punto: 'bg-gray-400', borde: 'border-gray-200' },
+      Reagendada: { fondo: 'bg-violet-50', texto: 'text-violet-700', punto: 'bg-violet-400', borde: 'border-violet-200' },
     };
     return mapa[estado] ?? { fondo: 'bg-gray-100', texto: 'text-gray-500', punto: 'bg-gray-400', borde: 'border-gray-200' };
   }

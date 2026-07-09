@@ -6,6 +6,7 @@ import { ParametrosService } from '../../../../core/services/parametros';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
+import { Tooltip } from '../../../../shared/directives/tooltip/tooltip';
 import { ParametroResponse, ParametroCreate, ParametroUpdate } from '../../../../shared/interfaces/parametro.interface';
 
 interface ParametroEditando {
@@ -18,7 +19,7 @@ interface ParametroEditando {
 @Component({
     selector: 'listar-parametros',
     standalone: true,
-    imports: [CommonModule, FormsModule, NgIcon, Breadcrumb, ConfirmModal],
+    imports: [CommonModule, FormsModule, NgIcon, Breadcrumb, ConfirmModal, Tooltip],
     templateUrl: './listar-parametros.html'
 })
 export class ListarParametros implements OnInit {
@@ -54,6 +55,19 @@ export class ListarParametros implements OnInit {
         this.parametrosService.obtenerTodos().subscribe({
             next: (r) => { if (r.success) this.parametros.set(r.data); this.loadingBar.complete(); },
             error: () => this.loadingBar.complete()
+        });
+    }
+
+    toggleActivo(p: ParametroResponse) {
+        const activo = !p.activo;
+        const request: ParametroUpdate = { valor: p.valor, descripcion: p.descripcion ?? undefined, activo };
+
+        this.parametrosService.actualizar(p.id, request).subscribe({
+            next: (r) => {
+                if (r.success) {
+                    this.parametros.update(lista => lista.map(x => x.id === p.id ? { ...x, activo } : x));
+                }
+            }
         });
     }
 
