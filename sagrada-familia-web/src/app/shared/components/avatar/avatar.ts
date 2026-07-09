@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 import { Tooltip } from '../../directives/tooltip/tooltip';
+import { rolLabel } from '../../utils/rol-label.util';
 
 @Component({
   selector: 'avatar',
@@ -36,12 +37,5 @@ export class Avatar {
     return '';
   });
 
-  textoRol = computed(() => {
-    const r = this.rol();
-    if (r === 'Medico') return 'Médico';
-    if (r === 'Padre') return 'Padre';
-    else return 'Administrador';
-
-    return null;
-  });
+  textoRol = computed(() => rolLabel(this.rol()));
 }

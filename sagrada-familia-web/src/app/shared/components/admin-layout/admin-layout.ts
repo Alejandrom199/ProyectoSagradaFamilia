@@ -10,6 +10,7 @@ import { Header } from '../header/header';
 import { AuthService } from '../../../core/services/auth';
 import { MenuService } from '../../../core/services/menu';
 import { ServerTimeService } from '../../../core/services/server-time';
+import { rolLabel } from '../../utils/rol-label.util';
 
 @Component({
   selector: 'admin-layout',
@@ -30,6 +31,7 @@ export class AdminLayout implements OnInit {
   readonly auth = inject(AuthService);
   private readonly menuService = inject(MenuService);
   readonly serverTime = inject(ServerTimeService);
+  readonly rolLabel = rolLabel;
 
   readonly sidebarExpandido = signal<boolean>(true);
   readonly sidebarMovilAbierto = signal<boolean>(false);

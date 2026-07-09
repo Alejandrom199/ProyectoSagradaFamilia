@@ -28,9 +28,15 @@
                 </button>
             </div>
 
-            <div rightSide class="flex items-center gap-3 text-xs text-gray-500">
-                <span>{{ serverTime.now() | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
-                <span>{{ auth.currentUser()?.rol }}</span>
+            <div rightSide class="flex items-center gap-4 text-xs text-gray-500">
+                <span class="flex items-center gap-1.5" [title]="serverTime.now() | date: 'dd/MM/yyyy HH:mm:ss'">
+                    <ng-icon name="matAccessTimeOutline" size="14"></ng-icon>
+                    {{ serverTime.now() | date: 'HH:mm' }}
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <ng-icon name="matBadgeOutline" size="14"></ng-icon>
+                    {{ rolLabel(auth.currentUser()?.rol) }}
+                </span>
             </div>
         </header>
 

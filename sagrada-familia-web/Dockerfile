@@ -13,6 +13,8 @@
 FROM node:22-alpine AS builder
 
 ARG BUILD_CONFIGURATION=production
+# SHA corto del commit (inyectado por CI); 'dev' en builds locales/manuales.
+ARG GIT_SHA=dev
 
 WORKDIR /app
 
@@ -39,6 +41,11 @@ COPY . .
 # apiUrl = '/api' → todas las peticiones HTTP van relativas al mismo origen,
 # lo que permite que nginx haga el proxy transparentemente.
 RUN npm run build -- --configuration ${BUILD_CONFIGURATION}
+
+# Archivo estático leído por BuildInfoService para mostrar el badge 'build-<sha>'
+# en el header. No pasa por el pipeline de Angular: se escribe directo en dist/.
+RUN mkdir -p dist/sagrada-familia-web/browser/assets \
+ && echo "{\"sha\":\"${GIT_SHA}\"}" > dist/sagrada-familia-web/browser/assets/build-info.json
 
 
 # =============================================================================
