@@ -35,10 +35,18 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
                 .HasForeignKey(c => c.MedicoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Índice para evitar que un médico tenga dos citas al mismo tiempo
+            // Cita de la que proviene, cuando esta cita nació de un reagendamiento
+            builder.HasOne(c => c.CitaOrigen)
+                .WithMany()
+                .HasForeignKey(c => c.CitaOrigenId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Índice para evitar que un médico tenga dos citas al mismo tiempo.
+            // Excluye Cancelada (5) y Reagendada (6): esos estados liberan el horario original.
             builder.HasIndex(c => new { c.MedicoId, c.FechaHora })
                 .IsUnique()
-                .HasFilter("\"Estado\" != 5 AND \"Eliminado\" = false");
+                .HasFilter("\"Estado\" != 5 AND \"Estado\" != 6 AND \"Eliminado\" = false");
         }
     }
 }

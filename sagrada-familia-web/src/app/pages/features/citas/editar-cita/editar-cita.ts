@@ -158,7 +158,7 @@ export class EditarCita implements OnInit {
       }))
       .subscribe({
         next: (res) => {
-          if (res.success) this.router.navigate(['/citas', this.citaId]);
+          if (res.success) this.router.navigate(['/citas', res.data.id]);
           else this.error.set(res.message);
         },
         error: (err) => this.error.set(err?.error?.message ?? 'Error al reagendar la cita. Intente más tarde.')

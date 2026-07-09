@@ -18,6 +18,7 @@ namespace SagradaFamilia.Application.DTOs
             public string? NotasConsulta { get; set; }
             public string? MotivoCancelacion { get; set; }
             public string Estado { get; set; } = string.Empty;
+            public int? CitaOrigenId { get; set; }
             public DateTime FechaCreacion { get; set; }
             public bool TienePrescripcion { get; set; }
             public PrescripcionResumen? Prescripcion { get; set; }

@@ -25,6 +25,7 @@ const ESTADOS: Record<EstadoCita, EstadoInfo> = {
   [EstadoCita.Completada]:{ label: 'Atendida',   fondo: 'bg-green-50',  texto: 'text-green-700',  icono: 'matCheckCircleOutline' },
   [EstadoCita.Cancelada]: { label: 'Cancelada',  fondo: 'bg-red-50',    texto: 'text-red-700',    icono: 'matCancelOutline' },
   [EstadoCita.NoAsistio]: { label: 'No asistió', fondo: 'bg-slate-100', texto: 'text-slate-600',  icono: 'matWarningAmberOutline' },
+  [EstadoCita.Reagendada]:{ label: 'Reagendada', fondo: 'bg-violet-50', texto: 'text-violet-700',  icono: 'matEditCalendarOutline' },
 };
 
 @Component({

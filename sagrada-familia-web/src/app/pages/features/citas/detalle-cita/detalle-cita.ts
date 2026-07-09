@@ -204,6 +204,7 @@ export class DetalleCita implements OnInit {
       'Completada': { clase: 'bg-green-100 text-green-700 border-green-200', label: 'Completada' },
       'NoAsistio': { clase: 'bg-gray-100 text-gray-600 border-gray-200', label: 'No asistió' },
       'Cancelada': { clase: 'bg-red-100 text-red-600 border-red-200', label: 'Cancelada' },
+      'Reagendada': { clase: 'bg-violet-100 text-violet-700 border-violet-200', label: 'Reagendada' },
     };
     return mapa[estado] ?? { clase: 'bg-gray-100 text-gray-600 border-gray-200', label: estado };
   }

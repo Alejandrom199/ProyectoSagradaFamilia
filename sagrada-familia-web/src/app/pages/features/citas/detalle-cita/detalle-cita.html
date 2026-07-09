@@ -269,6 +269,10 @@
                     @if (cita()?.estado === 'Completada') {
                     <p class="text-xs text-slate-400 text-center py-3">Esta consulta ya fue completada.</p>
                     }
+
+                    @if (cita()?.estado === 'Reagendada') {
+                    <p class="text-xs text-slate-400 text-center py-3">Esta cita fue reagendada a una nueva fecha.</p>
+                    }
                 </div>
             </div>
 

@@ -179,6 +179,7 @@ export class DetallePaciente implements OnInit {
           'Completada': 'bg-green-100 text-green-700',
           'Cancelada':  'bg-red-100 text-red-600',
           'NoAsistio':  'bg-gray-100 text-gray-600',
+          'Reagendada': 'bg-violet-100 text-violet-700',
         };
         const clase = mapa[row.estado] || 'bg-gray-100 text-gray-600';
         const label = row.estado === 'NoAsistio' ? 'No asistió'

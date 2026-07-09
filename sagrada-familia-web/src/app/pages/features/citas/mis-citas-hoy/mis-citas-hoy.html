@@ -88,7 +88,8 @@
                             [class.bg-blue-500]="c.estado === 'EnCurso'"
                             [class.bg-emerald-400]="c.estado === 'Completada'"
                             [class.bg-red-400]="c.estado === 'Cancelada'"
-                            [class.bg-slate-400]="c.estado === 'NoAsistio'">
+                            [class.bg-slate-400]="c.estado === 'NoAsistio'"
+                            [class.bg-violet-400]="c.estado === 'Reagendada'">
                         </div>
                         }
                     </div>
@@ -106,7 +107,8 @@
                 { label: 'Pendiente', color: 'bg-amber-400' },
                 { label: 'En curso', color: 'bg-blue-500' },
                 { label: 'Completada', color: 'bg-emerald-400' },
-                { label: 'Cancelada', color: 'bg-red-400' }
+                { label: 'Cancelada', color: 'bg-red-400' },
+                { label: 'Reagendada', color: 'bg-violet-400' }
                 ]; track item.label) {
                 <div class="flex items-center gap-1.5">
                     <div class="w-1.5 h-1.5 rounded-full shrink-0" [ngClass]="item.color"></div>
@@ -183,7 +185,8 @@
                                     [class.bg-blue-500]="cita.estado === 'EnCurso'"
                                     [class.bg-emerald-400]="cita.estado === 'Completada'"
                                     [class.bg-red-400]="cita.estado === 'Cancelada'"
-                                    [class.bg-slate-400]="cita.estado === 'NoAsistio'">
+                                    [class.bg-slate-400]="cita.estado === 'NoAsistio'"
+                                    [class.bg-violet-400]="cita.estado === 'Reagendada'">
                                 </div>
                             </div>
 
@@ -198,7 +201,9 @@
                                 [class.bg-red-50]="cita.estado === 'Cancelada'"
                                 [class.border-red-200]="cita.estado === 'Cancelada'"
                                 [class.bg-slate-50]="cita.estado === 'NoAsistio'"
-                                [class.border-slate-200]="cita.estado === 'NoAsistio'" (click)="verCita(cita.id)">
+                                [class.border-slate-200]="cita.estado === 'NoAsistio'"
+                                [class.bg-violet-50]="cita.estado === 'Reagendada'"
+                                [class.border-violet-200]="cita.estado === 'Reagendada'" (click)="verCita(cita.id)">
 
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
@@ -217,7 +222,9 @@
                                         [class.bg-red-200]="cita.estado === 'Cancelada'"
                                         [class.text-red-800]="cita.estado === 'Cancelada'"
                                         [class.bg-slate-200]="cita.estado === 'NoAsistio'"
-                                        [class.text-slate-600]="cita.estado === 'NoAsistio'">
+                                        [class.text-slate-600]="cita.estado === 'NoAsistio'"
+                                        [class.bg-violet-200]="cita.estado === 'Reagendada'"
+                                        [class.text-violet-800]="cita.estado === 'Reagendada'">
                                         {{ cita.estado === 'EnCurso' ? 'En curso' : cita.estado === 'NoAsistio' ? 'No
                                         asistió' : cita.estado }}
                                     </span>
