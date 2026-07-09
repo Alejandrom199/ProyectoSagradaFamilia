@@ -197,13 +197,17 @@
                             Selecciona el nuevo médico responsable de este representante.
                         </p>
                         <div class="flex gap-2">
-                            <select [ngModel]="nuevoMedicoId()" (ngModelChange)="nuevoMedicoId.set($event)"
-                                [ngModelOptions]="{standalone: true}"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
-                                @for (m of medicos(); track m.id) {
-                                <option [ngValue]="m.id">Dr(a). {{ m.nombre }} {{ m.apellido }}</option>
-                                }
-                            </select>
+                            <div class="w-full">
+                                <searchable-select
+                                    [options]="medicos()"
+                                    [labelFn]="medicoLabelFn"
+                                    valueKey="id"
+                                    [value]="nuevoMedicoId()"
+                                    (valueChange)="nuevoMedicoId.set($event)"
+                                    placeholder="Seleccionar médico..."
+                                    searchPlaceholder="Buscar médico...">
+                                </searchable-select>
+                            </div>
                             <button type="button" (click)="cambiarMedico()"
                                 [disabled]="guardandoMedico() || !nuevoMedicoId()"
                                 class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap">

@@ -59,7 +59,7 @@ export class ListarUsuarios implements OnInit {
       key: 'email', label: 'Email', sortable: true, filterable: true,
       render: (row) => `
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
             ${row.email.charAt(0).toUpperCase()}
           </div>
           <p class="font-medium text-gray-800">${row.email}</p>

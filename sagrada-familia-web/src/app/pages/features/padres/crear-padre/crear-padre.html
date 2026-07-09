@@ -49,14 +49,15 @@
                     @if (authService.esAdmin()) {
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-600 uppercase ml-1">Médico asignado *</label>
-                        <select formControlName="medicoId"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
-                            [class.border-red-500]="f['medicoId'].invalid && f['medicoId'].touched">
-                            <option [ngValue]="null">Seleccionar médico...</option>
-                            @for (m of medicos(); track m.id) {
-                            <option [ngValue]="m.id">Dr(a). {{ m.nombre }} {{ m.apellido }}</option>
-                            }
-                        </select>
+                        <searchable-select
+                            [options]="medicos()"
+                            [labelFn]="medicoLabelFn"
+                            valueKey="id"
+                            [value]="f['medicoId'].value"
+                            (valueChange)="f['medicoId'].setValue($event)"
+                            placeholder="Seleccionar médico..."
+                            searchPlaceholder="Buscar médico...">
+                        </searchable-select>
                         @if (f['medicoId'].invalid && f['medicoId'].touched) {
                         <span class="text-[11px] text-red-500 font-medium ml-1">Requerido</span>
                         }

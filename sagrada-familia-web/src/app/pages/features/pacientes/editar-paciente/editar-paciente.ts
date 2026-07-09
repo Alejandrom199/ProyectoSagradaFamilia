@@ -5,6 +5,8 @@ import { NgIcon } from '@ng-icons/core';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
+import { SEXO_OPTIONS } from '../../../../shared/constants/sexo.constants';
 import { NinosService } from '../../../../core/services/ninos';
 import { MedicosService } from '../../../../core/services/medicos';
 import { PadresService } from '../../../../core/services/padres';
@@ -15,7 +17,7 @@ import { PadreResponse } from '../../../../shared/interfaces/padre.interface';
 
 @Component({
   selector: 'app-editar-paciente',
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, SearchableSelect],
 
   templateUrl: './editar-paciente.html',
 })
@@ -60,6 +62,10 @@ export class EditarPaciente implements OnInit {
     { label: 'Pacientes', ruta: '/pacientes' },
     { label: 'Editar Paciente' },
   ];
+
+  readonly medicoLabelFn = (m: MedicoResponse) => `Dr(a). ${m.nombre} ${m.apellido}`;
+  readonly padreLabelFn = (p: PadreResponse) => `${p.nombre} ${p.apellido} — ${p.email}`;
+  readonly sexoOptions = SEXO_OPTIONS;
 
   ngOnInit(): void {
     if (this.authService.esAdmin()) {

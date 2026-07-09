@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } 
 import { NgIcon } from '@ng-icons/core';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
 import { finalize } from 'rxjs';
 import { PadresService } from '../../../../core/services/padres';
 import { AuthService } from '../../../../core/services/auth';
@@ -13,7 +14,7 @@ import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 
 @Component({
   selector: 'crear-padre',
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule, SearchableSelect],
   templateUrl: './crear-padre.html',
   styleUrl: './crear-padre.css',
 })
@@ -36,6 +37,8 @@ export class CrearPadre implements OnInit {
     { label: 'Padres', ruta: '/padres' },
     { label: 'Crear Padre' },
   ];
+
+  readonly medicoLabelFn = (m: MedicoResponse) => `Dr(a). ${m.nombre} ${m.apellido}`;
 
   ngOnInit(): void {
     this.formPadre = this.initForm();
