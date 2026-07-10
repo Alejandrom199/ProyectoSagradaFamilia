@@ -28,6 +28,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Configurations
             builder.Property(m => m.Telefono)
                 .HasMaxLength(15);
 
+            builder.Property(m => m.FirmaImagen)
+                .HasColumnType("text");
+
             // Relaciones
 
             builder.HasOne(m => m.Usuario)

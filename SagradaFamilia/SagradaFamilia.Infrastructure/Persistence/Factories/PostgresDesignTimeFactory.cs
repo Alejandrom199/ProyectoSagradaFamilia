@@ -10,6 +10,12 @@ namespace SagradaFamilia.Infrastructure.Persistence.Factories
     {
         public PostgresAppDbContext CreateDbContext(string[] args)
         {
+            // Debe coincidir con el switch que activa Program.cs en runtime; si no se
+            // replica aquí, el modelo calculado en tiempo de diseño usa el comportamiento
+            // "timestamp with time zone" de Npgsql en vez de "without time zone",
+            // generando un diff espurio en cada nueva migración.
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             // Lee la conexión de la variable de entorno para no exponer credenciales en el repo.
             // Setear antes de correr "dotnet ef migrations ...":
             //   $env:POSTGRES_CONNECTION="Host=localhost;Port=5432;Database=...;Username=postgres;Password=..."

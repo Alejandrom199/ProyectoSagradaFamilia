@@ -275,5 +275,12 @@
     </div>
     }
 
+    @if (mostrarModalDesactivar()) {
+    <desactivar-cuenta-modal [nombreUsuario]="nombreCompleto()" [errorMessage]="errorDesactivar()"
+        [procesando]="procesando()" (confirm)="confirmarDesactivar($event)"
+        (cancel)="mostrarModalDesactivar.set(false); errorDesactivar.set(null)">
+    </desactivar-cuenta-modal>
+    }
+
     }
 </div>

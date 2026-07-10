@@ -35,6 +35,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
         public DbSet<UsuarioPermiso> UsuarioPermisos => Set<UsuarioPermiso>();
         public DbSet<Rol> Roles => Set<Rol>();
         public DbSet<Accion> Acciones => Set<Accion>();
+        public DbSet<UsuarioEstadoHistorial> UsuarioEstadoHistorial => Set<UsuarioEstadoHistorial>();
 
         // ── Perfiles ─────────────────────────────────────────────
         public DbSet<Padre> Padres => Set<Padre>();
@@ -63,6 +64,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
         public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
         public DbSet<PlantillaCorreo> PlantillasCorreo => Set<PlantillaCorreo>();
         public DbSet<EventoCorreo> EventosCorreo => Set<EventoCorreo>();
+        public DbSet<ReporteGenerado> ReportesGenerados => Set<ReporteGenerado>();
 
         // ── Tipos excluidos de auditoría ─────────────────────────
         private static readonly HashSet<Type> _tiposNoAuditados = new()

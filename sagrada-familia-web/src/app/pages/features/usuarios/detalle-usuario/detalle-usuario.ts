@@ -6,6 +6,7 @@ import { finalize } from 'rxjs';
 import { formatearEdad, formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
+import { DesactivarCuentaModal } from '../../../../shared/components/desactivar-cuenta-modal/desactivar-cuenta-modal';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { UsuariosService } from '../../../../core/services/usuarios';
@@ -21,7 +22,7 @@ import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 @Component({
   selector: 'app-detalle-usuario',
   standalone: true,
-  imports: [NgIcon, RouterLink, Breadcrumb, Datatable, ConfirmModal],
+  imports: [NgIcon, RouterLink, Breadcrumb, Datatable, ConfirmModal, DesactivarCuentaModal],
   templateUrl: './detalle-usuario.html',
   styleUrl: './detalle-usuario.css',
 })
@@ -48,6 +49,9 @@ export class DetalleUsuario implements OnInit {
   mostrarModalReset = signal(false);
   resetExito        = signal(false);
   resetError        = signal('');
+
+  mostrarModalDesactivar = signal(false);
+  errorDesactivar         = signal<string | null>(null);
 
   formatearFecha = formatearFecha;
 
@@ -186,15 +190,48 @@ export class DetalleUsuario implements OnInit {
     const u = this.usuario();
     if (!u) return;
 
+    if (u.activo) {
+      this.errorDesactivar.set(null);
+      this.mostrarModalDesactivar.set(true);
+      return;
+    }
+
     this.procesando.set(true);
     this.loadingBar.show();
-    this.usuariosService.actualizarEstado(u.id, !u.activo).subscribe({
+    this.usuariosService.actualizarEstado(u.id, true).subscribe({
       next: (r) => {
-        if (r.success) this.usuario.set({ ...u, activo: !u.activo });
+        if (r.success) this.usuario.set({ ...u, activo: true });
         this.procesando.set(false);
         this.loadingBar.complete();
       },
       error: () => {
+        this.procesando.set(false);
+        this.loadingBar.complete();
+      }
+    });
+  }
+
+  confirmarDesactivar(motivo: string): void {
+    const u = this.usuario();
+    if (!u) return;
+
+    this.procesando.set(true);
+    this.errorDesactivar.set(null);
+    this.loadingBar.show();
+
+    this.usuariosService.actualizarEstado(u.id, false, motivo).subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.usuario.set({ ...u, activo: false });
+          this.mostrarModalDesactivar.set(false);
+        } else {
+          this.errorDesactivar.set(r.message);
+        }
+        this.procesando.set(false);
+        this.loadingBar.complete();
+      },
+      error: (err) => {
+        this.errorDesactivar.set(err.error?.message ?? 'No se pudo desactivar la cuenta.');
         this.procesando.set(false);
         this.loadingBar.complete();
       }

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
 import {
+  EstadoHistorialResponse,
   UsuarioCreate,
   UsuarioDetailResponse,
   UsuarioResponse,
@@ -45,8 +46,12 @@ export class UsuariosService {
     return this.http.get<PagedResponse<UsuarioResponse>>(`${this.url}/paginado`, { params, withCredentials: true });
   }
 
-  actualizarEstado(id: number, activo: boolean): Observable<ApiResponse<null>> {
-    return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/estado`, activo, { withCredentials: true });
+  actualizarEstado(id: number, activo: boolean, motivo?: string): Observable<ApiResponse<null>> {
+    return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/estado`, { activo, motivo }, { withCredentials: true });
+  }
+
+  obtenerHistorialEstado(id: number): Observable<ApiResponse<EstadoHistorialResponse[]>> {
+    return this.http.get<ApiResponse<EstadoHistorialResponse[]>>(`${this.url}/${id}/historial-estado`, { withCredentials: true });
   }
 
   exportarExcel(): Observable<Blob> {

@@ -46,11 +46,18 @@ public class UsuariosController : BaseController
     }
 
     [HttpPatch("{id:int}/estado")]
-    public async Task<ActionResult<ApiResponse>> ActualizarEstado(int id, [FromBody] bool activo)
+    public async Task<ActionResult<ApiResponse>> ActualizarEstado(int id, [FromBody] UsuarioDto.ActualizarEstadoRequest request)
     {
         var currentUserId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
-        await _usuarioService.ActualizarEstadoAsync(id, activo, currentUserId);
+        await _usuarioService.ActualizarEstadoAsync(id, request.Activo, request.Motivo, currentUserId);
         return HandleSuccess("Estado del usuario actualizado.");
+    }
+
+    [HttpGet("{id:int}/historial-estado")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<UsuarioDto.EstadoHistorialResponse>>>> ObtenerHistorialEstado(int id)
+    {
+        var historial = await _usuarioService.ObtenerHistorialEstadoAsync(id);
+        return HandleResponse(historial);
     }
 
     [HttpGet("perfil")]

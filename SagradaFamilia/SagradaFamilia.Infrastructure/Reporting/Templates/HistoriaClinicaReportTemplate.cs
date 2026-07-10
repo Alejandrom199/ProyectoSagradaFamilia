@@ -11,6 +11,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
         private readonly string _logoPath;
         private readonly string _marcaAguaPath;
         private readonly Action<IContainer> _contentComposer;
+        private readonly string _uid;
         private readonly string? _usuarioGenerador;
 
         public HistoriaClinicaReportTemplate(
@@ -18,12 +19,14 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
             string logoPath,
             string marcaAguaPath,
             Action<IContainer> contentComposer,
+            string uid,
             string? usuarioGenerador = null)
         {
             _titulo = titulo;
             _logoPath = logoPath;
             _marcaAguaPath = marcaAguaPath;
             _contentComposer = contentComposer;
+            _uid = uid;
             _usuarioGenerador = usuarioGenerador;
         }
 
@@ -54,6 +57,8 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
                     {
                         col.Item().AlignRight().Text(DateTime.Now.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("es-EC")).ToLower())
                             .FontSize(9).FontColor(Colors.Grey.Medium);
+                        col.Item().AlignRight().Text($"N.º {_uid}")
+                            .FontSize(8).Bold().FontColor(BaseReportTemplate.ColorNaval);
                         if (!string.IsNullOrWhiteSpace(_usuarioGenerador))
                             col.Item().AlignRight().Text($"Generado por: {_usuarioGenerador}")
                                 .FontSize(8).FontColor(Colors.Grey.Medium);

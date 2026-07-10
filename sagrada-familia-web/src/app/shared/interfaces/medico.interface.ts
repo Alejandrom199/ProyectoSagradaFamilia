@@ -35,3 +35,7 @@ export interface MedicoUpdate {
     especialidad?: string;
     telefono?: string;
 }
+
+export interface ActualizarFirmaRequest {
+    imagenBase64: string;
+}

@@ -247,6 +247,46 @@ public class MedicoService : IMedicoService
         _logger.LogInformation("Email de restablecimiento enviado a {Email} para médico ID: {Id}", medico.Usuario.Email, medicoId);
     }
 
+    private const int LongitudMaximaFirmaBase64 = 400_000;
+
+    public async Task<string?> ObtenerFirmaAsync(int medicoId)
+    {
+        var medico = await _medicoRepository.ObtenerPorIdAsync(medicoId)
+            ?? throw new NotFoundException("Médico", medicoId);
+
+        return medico.FirmaImagen;
+    }
+
+    public async Task ActualizarFirmaAsync(int medicoId, string imagenBase64)
+    {
+        if (string.IsNullOrWhiteSpace(imagenBase64) || !imagenBase64.StartsWith("data:image/"))
+            throw new BusinessException("La firma debe ser una imagen válida.");
+
+        if (imagenBase64.Length > LongitudMaximaFirmaBase64)
+            throw new BusinessException("La imagen de la firma es demasiado grande.");
+
+        var medico = await _medicoRepository.ObtenerPorIdAsync(medicoId)
+            ?? throw new NotFoundException("Médico", medicoId);
+
+        medico.FirmaImagen = imagenBase64;
+        medico.FirmaActualizadaEn = DateTime.UtcNow;
+        await _medicoRepository.ActualizarAsync(medico);
+
+        _logger.LogInformation("Firma actualizada para el médico ID: {Id}", medicoId);
+    }
+
+    public async Task EliminarFirmaAsync(int medicoId)
+    {
+        var medico = await _medicoRepository.ObtenerPorIdAsync(medicoId)
+            ?? throw new NotFoundException("Médico", medicoId);
+
+        medico.FirmaImagen = null;
+        medico.FirmaActualizadaEn = null;
+        await _medicoRepository.ActualizarAsync(medico);
+
+        _logger.LogInformation("Firma eliminada para el médico ID: {Id}", medicoId);
+    }
+
     public async Task<byte[]> GenerarPlantillaAsync()
     {
         _logger.LogInformation("Generando plantilla Excel para importación masiva de médicos.");

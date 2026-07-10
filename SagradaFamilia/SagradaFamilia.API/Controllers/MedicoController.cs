@@ -113,4 +113,28 @@ public class MedicoController : BaseController
 
         return HandleResponse(resultado, mensaje);
     }
+
+    [HttpGet("mi-firma")]
+    [Authorize(Roles = "Medico")]
+    public async Task<ActionResult<ApiResponse<string?>>> ObtenerMiFirma()
+    {
+        var firma = await _medicoService.ObtenerFirmaAsync(MedicoId);
+        return HandleResponse(firma);
+    }
+
+    [HttpPut("mi-firma")]
+    [Authorize(Roles = "Medico")]
+    public async Task<ActionResult<ApiResponse>> ActualizarMiFirma([FromBody] MedicoDto.ActualizarFirmaRequest request)
+    {
+        await _medicoService.ActualizarFirmaAsync(MedicoId, request.ImagenBase64);
+        return HandleSuccess("Firma guardada correctamente.");
+    }
+
+    [HttpDelete("mi-firma")]
+    [Authorize(Roles = "Medico")]
+    public async Task<ActionResult<ApiResponse>> EliminarMiFirma()
+    {
+        await _medicoService.EliminarFirmaAsync(MedicoId);
+        return HandleSuccess("Firma eliminada.");
+    }
 }

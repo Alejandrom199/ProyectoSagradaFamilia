@@ -1,5 +1,8 @@
 using QuestPDF.Fluent;
 using SagradaFamilia.Application.Interfaces.Services;
+using SagradaFamilia.Domain.Entities;
+using SagradaFamilia.Domain.Enums;
+using SagradaFamilia.Domain.Interfaces.Repositories;
 using SagradaFamilia.Infrastructure.Reporting.Documents;
 
 namespace SagradaFamilia.Infrastructure.Reporting
@@ -17,6 +20,8 @@ namespace SagradaFamilia.Infrastructure.Reporting
         private readonly IConsultaService _consultaService;
         private readonly ILogSistemaService _logService;
         private readonly IAuditoriaService _auditoriaService;
+        private readonly IPrediccionService _prediccionService;
+        private readonly IReporteGeneradoRepository _reporteGeneradoRepository;
 
         public ReportesService(
             IAlimentoService alimentoService,
@@ -29,7 +34,9 @@ namespace SagradaFamilia.Infrastructure.Reporting
             ICitaService citaService,
             IConsultaService consultaService,
             ILogSistemaService logService,
-            IAuditoriaService auditoriaService)
+            IAuditoriaService auditoriaService,
+            IPrediccionService prediccionService,
+            IReporteGeneradoRepository reporteGeneradoRepository)
         {
             _alimentoService = alimentoService;
             _padreService = padreService;
@@ -42,6 +49,26 @@ namespace SagradaFamilia.Infrastructure.Reporting
             _consultaService = consultaService;
             _logService = logService;
             _auditoriaService = auditoriaService;
+            _prediccionService = prediccionService;
+            _reporteGeneradoRepository = reporteGeneradoRepository;
+        }
+
+        private async Task<string> GenerarUidAsync(TipoReporte tipo, int ninoId, int usuarioGeneradorId)
+        {
+            var anio = DateTime.UtcNow.Year;
+            var correlativo = await _reporteGeneradoRepository.ContarPorTipoYAnioAsync(tipo, anio) + 1;
+            var prefijo = tipo == TipoReporte.HistoriaClinica ? "HC" : "PR";
+            var uid = $"{prefijo}-{anio}-{correlativo:D6}";
+
+            await _reporteGeneradoRepository.RegistrarAsync(new ReporteGenerado
+            {
+                Uid = uid,
+                Tipo = tipo,
+                NinoId = ninoId,
+                UsuarioGeneradorId = usuarioGeneradorId
+            });
+
+            return uid;
         }
 
         public async Task<byte[]> GenerarAlimentosPdf(string? titulo, string logoPath, string marcaAguaPath, string? usuario = null)
@@ -104,13 +131,31 @@ namespace SagradaFamilia.Infrastructure.Reporting
             return new PrescripcionesReportDocument(prescripciones, titulo, logoPath, marcaAguaPath, usuario).GeneratePdf();
         }
 
-        public async Task<byte[]> GenerarHistoriaClinicaPdf(int ninoId, string? titulo, string logoPath, string marcaAguaPath, string? usuario = null)
+        public async Task<byte[]> GenerarHistoriaClinicaPdf(
+            int ninoId, int usuarioGeneradorId, string? titulo, string logoPath, string marcaAguaPath,
+            string? graficaCrecimientoBase64 = null, string? graficaImcBase64 = null, string? usuario = null)
         {
             var nino = await _ninoService.ObtenerPorIdAsync(ninoId);
             var medidas = await _medidaService.ObtenerPorNinoAsync(ninoId);
             var consultas = await _consultaService.ObtenerHistorialPorNinoAsync(ninoId);
             var prescripciones = await _prescripcionService.ObtenerHistorialPorNinoAsync(ninoId);
-            return new HistoriaClinicaReportDocument(nino, medidas, consultas, prescripciones, titulo, logoPath, marcaAguaPath, usuario).GeneratePdf();
+            var firmaMedico = await _medicoService.ObtenerFirmaAsync(nino.MedicoId);
+            var uid = await GenerarUidAsync(TipoReporte.HistoriaClinica, ninoId, usuarioGeneradorId);
+            return new HistoriaClinicaReportDocument(
+                nino, medidas, consultas, prescripciones, titulo, logoPath, marcaAguaPath, uid,
+                firmaMedico, graficaCrecimientoBase64, graficaImcBase64, usuario).GeneratePdf();
+        }
+
+        public async Task<byte[]> GenerarPrediccionPdf(
+            int ninoId, int usuarioGeneradorId, string? titulo, string logoPath, string marcaAguaPath,
+            string? graficaPrediccionBase64 = null, string? graficaPrecisionBase64 = null, string? usuario = null)
+        {
+            var nino = await _ninoService.ObtenerPorIdAsync(ninoId);
+            var prediccion = await _prediccionService.ObtenerPrediccionesAsync(ninoId);
+            var uid = await GenerarUidAsync(TipoReporte.Prediccion, ninoId, usuarioGeneradorId);
+            return new PrediccionReportDocument(
+                nino, prediccion, titulo, logoPath, marcaAguaPath, uid,
+                graficaPrediccionBase64, graficaPrecisionBase64, usuario).GeneratePdf();
         }
 
         public async Task<byte[]> GenerarLogsPdf(string? titulo, string logoPath, string marcaAguaPath, string? usuario = null)

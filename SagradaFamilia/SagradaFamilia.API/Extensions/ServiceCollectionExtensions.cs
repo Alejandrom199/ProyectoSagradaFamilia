@@ -130,6 +130,8 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             services.AddScoped<IPlantillaCorreoRepository, PlantillaCorreoRepository>();
             services.AddScoped<IEventoCorreoRepository, EventoCorreoRepository>();
+            services.AddScoped<IReporteGeneradoRepository, ReporteGeneradoRepository>();
+            services.AddScoped<IUsuarioEstadoHistorialRepository, UsuarioEstadoHistorialRepository>();
 
             return services;
         }

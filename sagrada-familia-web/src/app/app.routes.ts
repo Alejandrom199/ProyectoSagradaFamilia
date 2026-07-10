@@ -28,6 +28,11 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard)
             },
             {
+                path: 'perfil',
+                canActivate: [authGuard],
+                loadComponent: () => import('./pages/perfil/perfil').then(m => m.Perfil)
+            },
+            {
                 path: 'mis-pequenos',
                 canActivate: [padreGuard],
                 loadComponent: () => import('./pages/features/pacientes/mis-pequenos/mis-pequenos').then(m => m.MisPequenos)

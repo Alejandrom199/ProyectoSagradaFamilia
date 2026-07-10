@@ -31,3 +31,11 @@ export interface UsuarioUpdate {
     rolId: number;
     activo: boolean;
 }
+
+export interface EstadoHistorialResponse {
+    id: number;
+    estadoNuevo: boolean;
+    motivo?: string;
+    fechaCambio: string;
+    realizadoPor: string;
+}
