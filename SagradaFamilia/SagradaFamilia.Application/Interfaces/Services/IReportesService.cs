@@ -12,7 +12,13 @@
         Task<byte[]> GenerarCitasNinoPdf(int ninoId, string? titulo, string logoPath, string marcaAguaPath, string? usuario = null);
         Task<byte[]> GenerarCitasMedicoPdf(int usuarioId, string? titulo, string logoPath, string marcaAguaPath, string? usuario = null);
         Task<byte[]> GenerarPrescripcionesMedicoPdf(int usuarioId, string? titulo, string logoPath, string marcaAguaPath, string? usuario = null);
-        Task<byte[]> GenerarHistoriaClinicaPdf(int ninoId, string? titulo, string logoPath, string marcaAguaPath, string? usuario = null);
+        Task<byte[]> GenerarHistoriaClinicaPdf(
+            int ninoId, int usuarioGeneradorId, string? titulo, string logoPath, string marcaAguaPath,
+            string? graficaCrecimientoBase64 = null, string? graficaImcBase64 = null, string? usuario = null);
+
+        Task<byte[]> GenerarPrediccionPdf(
+            int ninoId, int usuarioGeneradorId, string? titulo, string logoPath, string marcaAguaPath,
+            string? graficaPrediccionBase64 = null, string? graficaPrecisionBase64 = null, string? usuario = null);
         Task<byte[]> GenerarLogsPdf(string? titulo, string logoPath, string marcaAguaPath, string? usuario = null);
         Task<byte[]> GenerarAuditoriaPdf(string? titulo, string logoPath, string marcaAguaPath, string? usuario = null);
     }

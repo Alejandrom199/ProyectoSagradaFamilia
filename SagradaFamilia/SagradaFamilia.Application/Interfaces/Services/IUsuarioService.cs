@@ -16,7 +16,8 @@ namespace SagradaFamilia.Application.Interfaces.Services
 
         Task<UsuarioDto.DetailResponse> ActualizarAsync(int id, UsuarioDto.Update request);
 
-        Task ActualizarEstadoAsync(int id, bool activo, int currentUserId);
+        Task ActualizarEstadoAsync(int id, bool activo, string? motivo, int currentUserId);
+        Task<IEnumerable<UsuarioDto.EstadoHistorialResponse>> ObtenerHistorialEstadoAsync(int id);
 
         Task EliminarAsync(int id);
 

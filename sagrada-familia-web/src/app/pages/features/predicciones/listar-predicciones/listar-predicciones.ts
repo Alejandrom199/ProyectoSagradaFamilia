@@ -1,8 +1,8 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, computed, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
-import { NgApexchartsModule } from 'ng-apexcharts';
+import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
 
 import { Predicciones as PrediccionesService } from '../../../../core/services/predicciones';
 import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
@@ -14,6 +14,7 @@ import { PredictionChart } from '../../../../shared/components/prediction-chart/
 import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { NinosService } from '../../../../core/services/ninos';
 import { AuthService } from '../../../../core/services/auth';
+import { Reportes } from '../../../../core/services/reportes';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { CurvasOmsResponse, PrediccionResponse, PuntoPrediccion } from '../../../../shared/interfaces/prediccion.interface';
 import { formatearFecha } from '../../../../shared/utils/date.utils';
@@ -39,13 +40,18 @@ export class ListarPredicciones implements OnInit {
   private ninosService       = inject(NinosService);
   private prediccionesService = inject(PrediccionesService);
   private loadingBar         = inject(LoadingBar);
+  private reportesService    = inject(Reportes);
   readonly auth              = inject(AuthService);
+
+  private readonly predictionChartRef = viewChild<PredictionChart>('predictionChartRef');
+  private readonly precisionChartRef  = viewChild<ChartComponent>('precisionChartRef');
 
   ninos             = signal<NinoResponse[]>([]);
   ninoSeleccionado  = signal<NinoResponse | null>(null);
   prediccion        = signal<PrediccionResponse | null>(null);
   curvasOms         = signal<CurvasOmsResponse | null>(null);
   cargando          = signal(false);
+  descargandoReporte = signal(false);
   estadoMotor       = signal<'comprobando' | 'online' | 'offline'>('comprobando');
   versionMotor      = signal<string>('');
 
@@ -184,4 +190,58 @@ export class ListarPredicciones implements OnInit {
       error: () => {} // silencioso: el gráfico funciona sin las curvas OMS
     });
   }
+
+  async descargarReportePrediccion(): Promise<void> {
+    const nino = this.ninoSeleccionado();
+    if (!nino) return;
+
+    this.descargandoReporte.set(true);
+    this.loadingBar.show();
+
+    const [graficaPrediccionBase64, graficaPrecisionBase64] = await Promise.all([
+      this.predictionChartRef()?.capturarImagen() ?? Promise.resolve(null),
+      this.capturarGraficaPrecision(),
+    ]);
+
+    const u = this.auth.currentUser();
+    this.reportesService.descargarPrediccionPdf({
+      ninoId: nino.id,
+      titulo: `Reporte de Predicción — ${nino.nombre} ${nino.apellido}`,
+      usuario: u ? `${u.nombre} ${u.apellido}` : '',
+      graficaPrediccionBase64,
+      graficaPrecisionBase64,
+    }).subscribe({
+      next: (blob) => {
+        this.descargarBlob(blob, `prediccion-${nino.nombre}-${nino.apellido}-${hoy()}.pdf`);
+        this.descargandoReporte.set(false);
+        this.loadingBar.complete();
+      },
+      error: () => {
+        this.descargandoReporte.set(false);
+        this.loadingBar.complete();
+      }
+    });
+  }
+
+  private async capturarGraficaPrecision(): Promise<string | null> {
+    const chart = this.precisionChartRef();
+    if (!chart) return null;
+    try {
+      const resultado = await chart.dataURI() as { imgURI?: string };
+      return resultado.imgURI ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private descargarBlob(blob: Blob, nombre: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nombre;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
 }
+
+function hoy(): string { return new Date().toISOString().split('T')[0]; }

@@ -1,0 +1,16 @@
+<div class="flex flex-col gap-3">
+    <canvas #canvas width="500" height="180"
+        class="w-full max-w-[500px] aspect-[500/180] border-2 border-dashed border-slate-300 rounded-md bg-white cursor-crosshair touch-none"
+        (mousedown)="iniciarTrazo($event)" (mousemove)="dibujar($event)" (mouseup)="terminarTrazo()"
+        (mouseleave)="terminarTrazo()" (touchstart)="iniciarTrazo($event)" (touchmove)="dibujar($event)"
+        (touchend)="terminarTrazo()"></canvas>
+
+    <p class="text-xs text-slate-500">Dibuja tu firma con el mouse dentro del recuadro.</p>
+
+    <div class="flex items-center gap-3">
+        <btn variant="outline" width="120px" (clicked)="limpiar()">Limpiar</btn>
+        <btn variant="primary" width="140px" [disabled]="!tieneTrazo()" (clicked)="onGuardarClick()">Guardar
+            firma</btn>
+        <btn variant="ghost" width="100px" (clicked)="cancelar.emit()">Cancelar</btn>
+    </div>
+</div>

@@ -22,5 +22,9 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<byte[]> GenerarPlantillaAsync();
         Task<byte[]> ExportarExcelAsync();
         Task<MedicoDto.ImportResultado> ImportarAsync(Stream archivoStream);
+
+        Task<string?> ObtenerFirmaAsync(int medicoId);
+        Task ActualizarFirmaAsync(int medicoId, string imagenBase64);
+        Task EliminarFirmaAsync(int medicoId);
     }
 }

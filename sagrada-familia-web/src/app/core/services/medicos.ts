@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse, PagedResponse } from '../../shared/interfaces/api.interface';
 import {
+  ActualizarFirmaRequest,
   MedicoCreate,
   MedicoDetailResponse,
   MedicoResponse,
@@ -62,5 +63,18 @@ export class MedicosService {
 
   actualizar(id: number, request: MedicoUpdate): Observable<ApiResponse<MedicoDetailResponse>> {
     return this.http.put<ApiResponse<MedicoDetailResponse>>(`${this.url}/${id}`, request, { withCredentials: true });
+  }
+
+  obtenerMiFirma(): Observable<ApiResponse<string | null>> {
+    return this.http.get<ApiResponse<string | null>>(`${this.url}/mi-firma`, { withCredentials: true });
+  }
+
+  actualizarMiFirma(imagenBase64: string): Observable<ApiResponse<null>> {
+    const request: ActualizarFirmaRequest = { imagenBase64 };
+    return this.http.put<ApiResponse<null>>(`${this.url}/mi-firma`, request, { withCredentials: true });
+  }
+
+  eliminarMiFirma(): Observable<ApiResponse<null>> {
+    return this.http.delete<ApiResponse<null>>(`${this.url}/mi-firma`, { withCredentials: true });
   }
 }

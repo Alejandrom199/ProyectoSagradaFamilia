@@ -18,7 +18,7 @@ import { PrescripcionesService } from '../../../../core/services/prescripciones'
 @Component({
   selector: 'app-listar-prescripciones',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, Breadcrumb],
+  imports: [Datatable, Breadcrumb],
 
   templateUrl: './listar-prescripciones.html',
   styleUrl: './listar-prescripciones.css',

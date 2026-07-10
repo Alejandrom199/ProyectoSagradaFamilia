@@ -1,8 +1,8 @@
-import { Component, Input, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, Input, OnInit, inject, signal, computed, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
-import { NgApexchartsModule } from 'ng-apexcharts';
+import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
 import type {
   ApexAxisChartSeries, ApexChart, ApexXAxis, ApexYAxis,
   ApexStroke, ApexDataLabels, ApexTooltip, ApexLegend,
@@ -55,6 +55,9 @@ export class DetallePaciente implements OnInit {
   private authService         = inject(AuthService);
   private reportesService     = inject(Reportes);
   private loadingBar          = inject(LoadingBar);
+
+  private readonly chartPesoTallaRef = viewChild<ChartComponent>('chartPesoTallaRef');
+  private readonly chartImcRef       = viewChild<ChartComponent>('chartImcRef');
 
   nino           = signal<NinoDetailResponse | null>(null);
   citas          = signal<CitaResponse[]>([]);
@@ -244,19 +247,40 @@ export class DetallePaciente implements OnInit {
     });
   }
 
-  descargarHistoriaClinica(): void {
+  async descargarHistoriaClinica(): Promise<void> {
     this.loadingBar.show();
     const n = this.nino();
     const u = this.authService.currentUser();
     const titulo = n ? `Historia Clínica — ${n.nombre} ${n.apellido}` : 'Historia Clínica';
-    const params = { ninoId: this.id, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
-    this.reportesService.descargarReportePdf('reportes/historia-clinica-pdf', params).subscribe({
+
+    const [graficaCrecimientoBase64, graficaImcBase64] = await Promise.all([
+      this.capturarGrafica(this.chartPesoTallaRef()),
+      this.capturarGrafica(this.chartImcRef()),
+    ]);
+
+    this.reportesService.descargarHistoriaClinicaPdf({
+      ninoId: parseInt(this.id),
+      titulo,
+      usuario: u ? `${u.nombre} ${u.apellido}` : '',
+      graficaCrecimientoBase64,
+      graficaImcBase64,
+    }).subscribe({
       next: (blob) => {
         this.descargarBlob(blob, `historia-clinica-${hoy()}.pdf`);
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
     });
+  }
+
+  private async capturarGrafica(chart: ChartComponent | undefined): Promise<string | null> {
+    if (!chart) return null;
+    try {
+      const resultado = await chart.dataURI() as { imgURI?: string };
+      return resultado.imgURI ?? null;
+    } catch {
+      return null;
+    }
   }
 
   private descargarBlob(blob: Blob, nombre: string): void {

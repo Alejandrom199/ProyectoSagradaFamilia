@@ -103,10 +103,10 @@
 
         @if (sidebarExpandido()) {
         <div class="flex items-center justify-between px-2 py-2 rounded-md bg-[var(--color-surface-alt)]">
-            <div class="min-w-0 flex-1 overflow-hidden pr-4">
+            <a routerLink="/perfil" class="min-w-0 flex-1 overflow-hidden pr-4" tooltip="Mi Perfil" tooltipPosition="top">
                 <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
                     [sidebarExpandido]="true"></avatar>
-            </div>
+            </a>
             <button
                 class="flex items-center justify-center w-8 h-8 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none flex-shrink-0"
                 (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="top">
@@ -117,10 +117,12 @@
         } @else {
         <div class="flex flex-col items-center gap-2">
             <div class="w-full flex flex-col items-center gap-2 py-2 rounded-md bg-[var(--color-surface-alt)]">
-                <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
-                    [sidebarExpandido]="false"
-                    [tooltip]="(auth.currentUser()?.nombre ?? '') + ' ' + (auth.currentUser()?.apellido ?? '') + ' · ' + (auth.currentUser()?.rol ?? '')"
-                    tooltipPosition="right"></avatar>
+                <a routerLink="/perfil">
+                    <avatar [nombre]="nombre()" [apellido]="apellido()" [rol]="auth.currentUser()?.rol"
+                        [sidebarExpandido]="false"
+                        [tooltip]="(auth.currentUser()?.nombre ?? '') + ' ' + (auth.currentUser()?.apellido ?? '') + ' · ' + (auth.currentUser()?.rol ?? '')"
+                        tooltipPosition="right"></avatar>
+                </a>
                 <button
                     class="flex items-center justify-center w-8 h-8 rounded-md text-[var(--sidebar-text)] hover:text-red-600 hover:bg-red-50 transition-colors focus:outline-none cursor-pointer"
                     (click)="logout.emit()" tooltip="Cerrar Sesión" tooltipPosition="right">

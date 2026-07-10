@@ -13,6 +13,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
         private readonly bool _isLandscape;
         private readonly Action<IContainer> _contentComposer;
         private readonly string? _usuarioGenerador;
+        private readonly string? _uid;
 
         // PALETA DE COLORES GLOBAL
         public static Color ColorNaval => Color.FromHex("#1B355A");
@@ -57,7 +58,8 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
             string marcaAguaPath,
             bool isLandscape,
             Action<IContainer> contentComposer,
-            string? usuarioGenerador = null)
+            string? usuarioGenerador = null,
+            string? uid = null)
         {
             _titulo = titulo;
             _logoPath = logoPath;
@@ -65,6 +67,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
             _isLandscape = isLandscape;
             _contentComposer = contentComposer;
             _usuarioGenerador = usuarioGenerador;
+            _uid = uid;
         }
 
         public void Compose(IDocumentContainer container)
@@ -94,6 +97,9 @@ namespace SagradaFamilia.Infrastructure.Reporting.Templates
                     {
                         col.Item().AlignRight().Text(DateTime.Now.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("es-EC")).ToLower())
                             .FontSize(9).FontColor(Colors.Grey.Medium);
+                        if (!string.IsNullOrWhiteSpace(_uid))
+                            col.Item().AlignRight().Text($"N.º {_uid}")
+                                .FontSize(8).Bold().FontColor(ColorNaval);
                         if (!string.IsNullOrWhiteSpace(_usuarioGenerador))
                             col.Item().AlignRight().Text($"Generado por: {_usuarioGenerador}")
                                 .FontSize(8).FontColor(Colors.Grey.Medium);

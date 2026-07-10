@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
 using System.IO;
 using System.Security.Claims;
@@ -110,13 +111,28 @@ namespace SagradaFamilia.API.Controllers
             return File(pdf, "application/pdf", $"reporte-mis-prescripciones-{DateTime.Now:yyyyMMdd}.pdf");
         }
 
-        [HttpGet("historia-clinica-pdf")]
+        [HttpPost("historia-clinica-pdf")]
         [Authorize(Roles = "Medico,Administrador")]
-        public async Task<IActionResult> GenerarHistoriaClinicaPdf([FromQuery] int ninoId, [FromQuery] string? titulo, [FromQuery] string? usuario)
+        public async Task<IActionResult> GenerarHistoriaClinicaPdf([FromBody] ReporteDto.HistoriaClinicaRequest request)
         {
+            var usuarioGeneradorId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var (logo, marca) = Rutas();
-            var pdf = await _reportesService.GenerarHistoriaClinicaPdf(ninoId, titulo, logo, marca, usuario);
+            var pdf = await _reportesService.GenerarHistoriaClinicaPdf(
+                request.NinoId, usuarioGeneradorId, request.Titulo, logo, marca,
+                request.GraficaCrecimientoBase64, request.GraficaImcBase64, request.Usuario);
             return File(pdf, "application/pdf", $"historia-clinica-{DateTime.Now:yyyyMMdd}.pdf");
+        }
+
+        [HttpPost("prediccion-pdf")]
+        [Authorize(Roles = "Medico,Administrador")]
+        public async Task<IActionResult> GenerarPrediccionPdf([FromBody] ReporteDto.PrediccionRequest request)
+        {
+            var usuarioGeneradorId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var (logo, marca) = Rutas();
+            var pdf = await _reportesService.GenerarPrediccionPdf(
+                request.NinoId, usuarioGeneradorId, request.Titulo, logo, marca,
+                request.GraficaPrediccionBase64, request.GraficaPrecisionBase64, request.Usuario);
+            return File(pdf, "application/pdf", $"prediccion-{DateTime.Now:yyyyMMdd}.pdf");
         }
 
         [HttpGet("logs-pdf")]

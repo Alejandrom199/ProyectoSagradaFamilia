@@ -43,6 +43,21 @@
             public bool Activo { get; set; }
         }
 
+        public class ActualizarEstadoRequest
+        {
+            public bool Activo { get; set; }
+            public string? Motivo { get; set; }
+        }
+
+        public class EstadoHistorialResponse
+        {
+            public int Id { get; set; }
+            public bool EstadoNuevo { get; set; }
+            public string? Motivo { get; set; }
+            public DateTime FechaCambio { get; set; }
+            public string RealizadoPor { get; set; } = string.Empty;
+        }
+
         public class ImportResultado
         {
             public int TotalProcesadas { get; set; }

@@ -1,6 +1,6 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgApexchartsModule } from 'ng-apexcharts';
+import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
 import type {
   ApexAxisChartSeries,
   ApexChart,
@@ -40,9 +40,22 @@ export type PredictionChartOptions = {
   styleUrl: './prediction-chart.css',
 })
 export class PredictionChart {
+  private readonly chartRef = viewChild<ChartComponent>('chartRef');
+
   predicciones = input.required<PuntoPrediccion[]>();
   curvasOms    = input<CurvasOmsResponse | null>(null);
   title        = input<string>('Curva de Crecimiento — Peso');
+
+  async capturarImagen(): Promise<string | null> {
+    const chart = this.chartRef();
+    if (!chart) return null;
+    try {
+      const resultado = await chart.dataURI() as { imgURI?: string };
+      return resultado.imgURI ?? null;
+    } catch {
+      return null;
+    }
+  }
 
   chartOptions = computed<Partial<PredictionChartOptions> | null>(() => {
     const pts = this.predicciones();

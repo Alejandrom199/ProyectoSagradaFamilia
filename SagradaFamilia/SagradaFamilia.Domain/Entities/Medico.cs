@@ -9,6 +9,8 @@ namespace SagradaFamilia.Domain.Entities
         public string Apellido { get; set; } = string.Empty;
         public string? Telefono { get; set; }
         public string? Especialidad { get; set; }
+        public string? FirmaImagen { get; set; }
+        public DateTime? FirmaActualizadaEn { get; set; }
 
         // Navegación
         public Usuario Usuario { get; set; } = null!;

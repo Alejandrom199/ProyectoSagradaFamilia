@@ -22,8 +22,15 @@
             public string? Especialidad { get; set; }
             public string? Telefono { get; set; }
             public DateTime FechaCreacion { get; set; }
+            public string? FirmaImagen { get; set; }
+            public DateTime? FirmaActualizadaEn { get; set; }
 
             public List<NinoDto.ListResponse> Pacientes { get; set; } = new();
+        }
+
+        public class ActualizarFirmaRequest
+        {
+            public string ImagenBase64 { get; set; } = string.Empty;
         }
 
         public class Create

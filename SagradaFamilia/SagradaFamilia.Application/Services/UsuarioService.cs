@@ -21,6 +21,7 @@ public class UsuarioService : IUsuarioService
     private readonly IMedicoRepository _medicoRepository;
     private readonly IPadreRepository _padreRepository;
     private readonly IPasswordResetTokenRepository _resetTokenRepository;
+    private readonly IUsuarioEstadoHistorialRepository _estadoHistorialRepository;
     private readonly IEmailService _emailService;
     private readonly IEmailTemplateService _emailTemplateService;
     private readonly AppSettings _appSettings;
@@ -28,11 +29,14 @@ public class UsuarioService : IUsuarioService
     private readonly IMapper _mapper;
     private readonly ILogger<UsuarioService> _logger;
 
+    private const int LongitudMinimaMotivo = 10;
+
     public UsuarioService(
         IUsuarioRepository usuarioRepository,
         IMedicoRepository medicoRepository,
         IPadreRepository padreRepository,
         IPasswordResetTokenRepository resetTokenRepository,
+        IUsuarioEstadoHistorialRepository estadoHistorialRepository,
         IEmailService emailService,
         IEmailTemplateService emailTemplateService,
         IOptions<AppSettings> appSettings,
@@ -44,6 +48,7 @@ public class UsuarioService : IUsuarioService
         _medicoRepository = medicoRepository;
         _padreRepository = padreRepository;
         _resetTokenRepository = resetTokenRepository;
+        _estadoHistorialRepository = estadoHistorialRepository;
         _emailService = emailService;
         _emailTemplateService = emailTemplateService;
         _appSettings = appSettings.Value;
@@ -159,7 +164,7 @@ public class UsuarioService : IUsuarioService
         return _mapper.Map<UsuarioDto.DetailResponse>(usuarioCompleto!);
     }
 
-    public async Task ActualizarEstadoAsync(int id, bool activo, int currentUserId)
+    public async Task ActualizarEstadoAsync(int id, bool activo, string? motivo, int currentUserId)
     {
         _logger.LogInformation("Intentando cambiar el estado del usuario ID: {Id} a Activo={Activo}", id, activo);
 
@@ -176,11 +181,36 @@ public class UsuarioService : IUsuarioService
                 throw new BusinessException("No puedes desactivar al único administrador activo del sistema.");
         }
 
+        if (!activo && (motivo is null || motivo.Trim().Length < LongitudMinimaMotivo))
+            throw new BusinessException($"Debes indicar un motivo de al menos {LongitudMinimaMotivo} caracteres para desactivar la cuenta.");
+
         usuario.Activo = activo;
         await _usuarioRepository.ActualizarAsync(usuario);
 
+        await _estadoHistorialRepository.RegistrarAsync(new UsuarioEstadoHistorial
+        {
+            UsuarioId = id,
+            EstadoNuevo = activo,
+            Motivo = activo ? null : motivo!.Trim(),
+            UsuarioQueRealizoCambioId = currentUserId
+        });
+
         _logger.LogInformation("Estado del usuario {Email} cambiado con éxito a: {Estado}",
             usuario.Email, activo ? "Habilitado" : "Bloqueado");
+    }
+
+    public async Task<IEnumerable<UsuarioDto.EstadoHistorialResponse>> ObtenerHistorialEstadoAsync(int id)
+    {
+        var historial = await _estadoHistorialRepository.ObtenerPorUsuarioAsync(id);
+
+        return historial.Select(h => new UsuarioDto.EstadoHistorialResponse
+        {
+            Id = h.Id,
+            EstadoNuevo = h.EstadoNuevo,
+            Motivo = h.Motivo,
+            FechaCambio = h.FechaCambio,
+            RealizadoPor = h.UsuarioQueRealizoCambio.Email
+        });
     }
 
     public async Task EliminarAsync(int id)

@@ -5,6 +5,7 @@ import { NgIcon } from '@ng-icons/core';
 import { DatatableAction, DatatableColumn, Datatable, ServerQuery } from '../../../../shared/components/datatable/datatable';
 import { ImportModal } from '../../../../shared/components/import-modal/import-modal';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
+import { DesactivarCuentaModal } from '../../../../shared/components/desactivar-cuenta-modal/desactivar-cuenta-modal';
 import { Button } from '../../../../shared/components/button/button';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -22,7 +23,7 @@ import { RutaApp } from '../../../../shared/enums/ruta-app.enum';
 @Component({
   selector: 'app-listar-usuarios',
   standalone: true,
-  imports: [NgIcon, RouterLink, Datatable, ImportModal, ConfirmModal, Button, Breadcrumb],
+  imports: [NgIcon, RouterLink, Datatable, ImportModal, ConfirmModal, DesactivarCuentaModal, Button, Breadcrumb],
   templateUrl: './listar-usuarios.html',
   styleUrl: './listar-usuarios.css',
 })
@@ -45,6 +46,10 @@ export class ListarUsuarios implements OnInit {
   usuarioAEliminar = signal<UsuarioResponse | null>(null);
   errorEliminar = signal<string | null>(null);
   eliminando = signal(false);
+
+  usuarioADesactivar = signal<UsuarioResponse | null>(null);
+  errorDesactivar = signal<string | null>(null);
+  desactivando = signal(false);
 
   readonly filterOptions: Record<string, string[]> = {
     rolNombre: ['Administrador', 'Medico', 'Padre'],
@@ -113,7 +118,7 @@ export class ListarUsuarios implements OnInit {
       icon: 'matLockOutline',
       class: 'text-red-600 hover:bg-red-50',
       visible: (row) => row.activo && row.id !== this.authService.currentUser()?.id,
-      onClick: (row) => this.toggleEstado(row, false)
+      onClick: (row) => { this.errorDesactivar.set(null); this.usuarioADesactivar.set(row); }
     },
     {
       label: 'Activar',
@@ -182,6 +187,33 @@ export class ListarUsuarios implements OnInit {
         this.loadingBar.complete();
       },
       error: () => this.loadingBar.complete()
+    });
+  }
+
+  confirmarDesactivar(motivo: string): void {
+    const usuario = this.usuarioADesactivar();
+    if (!usuario) return;
+
+    this.desactivando.set(true);
+    this.errorDesactivar.set(null);
+    this.loadingBar.show();
+
+    this.usuariosService.actualizarEstado(usuario.id, false, motivo).subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.usuarios.update(lista => lista.map(u => u.id === usuario.id ? { ...u, activo: false } : u));
+          this.usuarioADesactivar.set(null);
+        } else {
+          this.errorDesactivar.set(r.message);
+        }
+        this.desactivando.set(false);
+        this.loadingBar.complete();
+      },
+      error: (err) => {
+        this.errorDesactivar.set(err.error?.message ?? 'No se pudo desactivar la cuenta.');
+        this.desactivando.set(false);
+        this.loadingBar.complete();
+      }
     });
   }
 
