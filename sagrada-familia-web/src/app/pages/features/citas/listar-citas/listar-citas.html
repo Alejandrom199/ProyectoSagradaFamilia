@@ -12,7 +12,7 @@
         </btn>
     </div>
 
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Historial de citas" [data]="citas()" [columns]="columnas" [actions]="acciones"
             [serverSide]="true" [serverTotalItems]="totalCitas()" [filterOptions]="filterOptions()" (onServerQuery)="onServerQuery($event)"
             [exportExcel]="true" exportFileName="citas-paciente" [showActualizar]="true" [showExportar]="true"

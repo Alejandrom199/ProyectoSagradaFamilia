@@ -12,7 +12,8 @@ import { PermisosService } from '../../../../core/services/permisos';
 import { AccionPorNombrePipe } from '../../../../shared/pipes/accion-por-nombre-pipe';
 
 const ACCIONES = ['Ver', 'Crear', 'Editar', 'Eliminar'] as const;
-const NOMBRES_ROL: Record<number, string> = { 2: 'Médico', 3: 'Padre' };
+const NOMBRES_ROL: Record<number, string> = { 1: 'Administrador', 2: 'Médico', 3: 'Padre' };
+const ROL_ADMINISTRADOR = 1;
 
 @Component({
   selector: 'app-permisos-rol',
@@ -38,6 +39,7 @@ export class PermisosRol implements OnInit {
   readonly acciones = ACCIONES;
 
   readonly nombreRol = computed(() => NOMBRES_ROL[parseInt(this.rolId())] ?? 'Rol');
+  readonly soloLectura = computed(() => parseInt(this.rolId()) === ROL_ADMINISTRADOR);
 
   readonly migajas = computed<BreadcrumbItem[]>(() => [
     { label: 'Roles y Permisos', ruta: '/roles' },
@@ -64,6 +66,8 @@ export class PermisosRol implements OnInit {
   }
 
   togglePermiso(opcionAccionId: number, valorActual: boolean): void {
+    if (this.soloLectura()) return;
+
     const nuevoValor = !valorActual;
 
     this.modulos.update(modulos =>

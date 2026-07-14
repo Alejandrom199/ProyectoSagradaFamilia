@@ -15,6 +15,8 @@ import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface
 import { formatearFecha } from '../../../../shared/utils/date.utils';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
+import { ESTADO_NUTRICIONAL_COLOR, ESTADO_NUTRICIONAL_LABEL, EstadoNutricional } from '../../../../shared/constants/estado-nutricional.constants';
+import { badgeHtml } from '../../../../shared/utils/badge.util';
 
 @Component({
   selector: 'listar-medidas',
@@ -67,22 +69,8 @@ export class ListarMedidas implements OnInit {
     {
       key: 'estadoNutricional', label: 'Estado', sortable: true, filterable: true,
       render: (r) => {
-        const estilos: Record<string, string> = {
-          'Normal': 'bg-green-50 text-green-700',
-          'BajoPeso': 'bg-amber-50 text-amber-700',
-          'BajoPesoSevero': 'bg-red-50 text-red-700',
-          'Sobrepeso': 'bg-orange-50 text-orange-700',
-          'Obesidad': 'bg-red-50 text-red-700',
-        };
-        const etiquetas: Record<string, string> = {
-          'Normal': 'Normal',
-          'BajoPeso': 'Bajo peso',
-          'BajoPesoSevero': 'Bajo peso severo',
-          'Sobrepeso': 'Sobrepeso',
-          'Obesidad': 'Obesidad',
-        };
-        const cls = estilos[r.estadoNutricional] ?? 'bg-slate-100 text-slate-600';
-        return `<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium ${cls}">${etiquetas[r.estadoNutricional] ?? r.estadoNutricional}</span>`;
+        const estado = r.estadoNutricional as EstadoNutricional;
+        return badgeHtml(ESTADO_NUTRICIONAL_LABEL[estado] ?? r.estadoNutricional, ESTADO_NUTRICIONAL_COLOR[estado] ?? 'muted');
       }
     },
     {

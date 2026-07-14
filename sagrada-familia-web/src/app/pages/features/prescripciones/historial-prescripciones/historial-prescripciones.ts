@@ -46,7 +46,7 @@ export class HistorialPrescripciones implements OnInit {
       label: 'Paciente',
       sortable: true,
       filterable: true,
-      render: (row) => `<span class="font-medium text-gray-800">${row.nombreNino}</span>`
+      render: (row) => `<span class="font-medium text-[var(--color-text-primary)]">${row.nombreNino}</span>`
     },
     {
       key: 'medicamentos',
@@ -54,13 +54,13 @@ export class HistorialPrescripciones implements OnInit {
       filterable: true,
       render: (row) => {
         const nombres = row.medicamentos.map(m => m.nombre).join(', ');
-        return `<span class="text-sm text-gray-700 line-clamp-1" title="${nombres}">${row.medicamentos.length} medicamento(s): ${nombres}</span>`;
+        return `<span class="text-sm text-[var(--color-text-secondary)] line-clamp-1" title="${nombres}">${row.medicamentos.length} medicamento(s): ${nombres}</span>`;
       }
     },
     {
       key: 'indicaciones',
       label: 'Indicaciones',
-      render: (row) => row.indicaciones || '<span class="text-gray-400 text-xs">Sin indicaciones</span>'
+      render: (row) => row.indicaciones || '<span class="text-muted text-xs">Sin indicaciones</span>'
     }
   ];
 

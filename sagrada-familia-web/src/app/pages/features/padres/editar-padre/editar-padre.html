@@ -2,13 +2,13 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="max-w-5xl mx-auto">
-        <div class="bg-white border border-slate-200 overflow-hidden flex flex-col lg:flex-row">
+        <div class="card overflow-hidden flex flex-col lg:flex-row">
 
             <!-- Panel lateral -->
-            <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
+            <div class="lg:w-1/3 bg-slate-50 dark:bg-zinc-800/50 border-r border-slate-200 dark:border-zinc-700 p-8">
                 <div class="sticky top-8">
                     <div
-                        class="w-16 h-16 bg-blue-100 text-blue-600 rounded-md flex items-center justify-center text-2xl font-black mb-6">
+                        class="w-16 h-16 bg-blue-100 dark:bg-blue-500/15 text-blue-600 rounded-md flex items-center justify-center text-2xl font-black mb-6">
                         @if (padre()) {
                         {{ padre()?.nombre?.charAt(0) }}{{ padre()?.apellido?.charAt(0) }}
                         } @else {
@@ -17,7 +17,7 @@
                     </div>
 
                     <h2 class="panel-title">Editar Perfil</h2>
-                    <p class="text-sm text-slate-500 mt-2 leading-relaxed">
+                    <p class="text-sm text-secondary mt-2 leading-relaxed">
                         Actualizando información de: <br>
                         <span class="text-blue-600 font-bold text-base">{{ padre()?.nombre }} {{ padre()?.apellido
                             }}</span>
@@ -34,9 +34,9 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Nombre(s) *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Nombre(s) *</label>
                             <input formControlName="nombre" type="text" placeholder="Ej. Juan"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="form-input"
                                 [class.border-red-500]="f['nombre'].invalid && f['nombre'].touched">
                             @if (f['nombre'].invalid && f['nombre'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Campo requerido (mín. 3
@@ -45,9 +45,9 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Apellido(s) *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Apellido(s) *</label>
                             <input formControlName="apellido" type="text" placeholder="Ej. Pérez"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="form-input"
                                 [class.border-red-500]="f['apellido'].invalid && f['apellido'].touched">
                             @if (f['apellido'].invalid && f['apellido'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Campo requerido (mín. 3
@@ -56,12 +56,12 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Teléfono de contacto</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Teléfono de contacto</label>
                             <div class="relative">
                                 <ng-icon name="matPhoneOutline"
-                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
+                                    class="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-base"></ng-icon>
                                 <input formControlName="telefono" type="tel" placeholder="09XXXXXXXX"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                    class="form-input pl-10"
                                     [class.border-red-500]="f['telefono'].invalid && f['telefono'].touched">
                             </div>
                             @if (f['telefono'].invalid && f['telefono'].touched) {
@@ -72,15 +72,15 @@
 
                     @if (error()) {
                     <div
-                        class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-md text-xs font-medium flex items-center gap-2">
+                        class="p-3 alert-error rounded-md text-xs font-medium flex items-center gap-2">
                         <ng-icon name="matErrorOutline" class="text-base shrink-0"></ng-icon>
                         {{ error() }}
                     </div>
                     }
 
-                    <div class="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+                    <div class="pt-4 border-t border-slate-200 dark:border-zinc-700 flex items-center justify-end gap-3">
                         <a routerLink="/padres"
-                            class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors">
+                            class="px-4 py-2 text-sm font-medium text-muted hover:text-slate-600 transition-colors">
                             Cancelar
                         </a>
                         <button type="submit" [disabled]="guardando() || formPadre.invalid"
@@ -98,19 +98,19 @@
                 </form>
 
                 <!-- ── Sección: Cambiar correo electrónico ───────────────────── -->
-                <div class="border-t border-slate-200 pt-6">
+                <div class="border-t border-slate-200 dark:border-zinc-700 pt-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h3 class="text-sm font-semibold text-slate-700">Correo electrónico</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">{{ padre()?.email }}</p>
+                            <h3 class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Correo electrónico</h3>
+                            <p class="text-xs text-muted mt-0.5">{{ padre()?.email }}</p>
                         </div>
                         <button type="button" (click)="toggleCambioEmail()"
                             class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors"
-                            [class.border-slate-200]="!mostrarCambioEmail()"
-                            [class.text-slate-600]="!mostrarCambioEmail()"
-                            [class.hover:bg-slate-50]="!mostrarCambioEmail()"
+                            [class.border-slate-200]="!mostrarCambioEmail()" [class.dark:border-zinc-700]="!mostrarCambioEmail()"
+                            [class.text-slate-600]="!mostrarCambioEmail()" [class.dark:text-zinc-400]="!mostrarCambioEmail()"
+                            [class.hover:bg-slate-50]="!mostrarCambioEmail()" [class.dark:hover:bg-zinc-800]="!mostrarCambioEmail()"
                             [class.border-red-200]="mostrarCambioEmail()" [class.text-red-500]="mostrarCambioEmail()"
-                            [class.hover:bg-red-50]="mostrarCambioEmail()">
+                            [class.hover:bg-red-50]="mostrarCambioEmail()" [class.dark:hover:bg-red-500/10]="mostrarCambioEmail()">
                             @if (mostrarCambioEmail()) {
                             <ng-icon name="matCloseOutline" size="13"></ng-icon>
                             Cancelar
@@ -122,18 +122,18 @@
                     </div>
 
                     @if (mostrarCambioEmail()) {
-                    <div class="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-3">
-                        <p class="text-xs text-slate-500">
+                    <div class="bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md p-4 space-y-3">
+                        <p class="text-xs text-secondary">
                             Ingresa el nuevo correo. El representante deberá usarlo para iniciar sesión a partir de este
                             cambio.
                         </p>
                         <div class="flex gap-2">
                             <div class="relative flex-1">
                                 <ng-icon name="matEmailOutline"
-                                    class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base"></ng-icon>
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-base"></ng-icon>
                                 <input type="email" placeholder="nuevo@correo.com" [value]="nuevoEmail()"
                                     (input)="nuevoEmail.set($any($event.target).value)"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
                             </div>
                             <button type="button" (click)="cambiarEmail()"
                                 [disabled]="guardandoEmail() || !nuevoEmail().trim()"
@@ -148,7 +148,7 @@
                             </button>
                         </div>
                         @if (errorEmail()) {
-                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-100 rounded-md">
+                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-100 rounded-md">
                             <ng-icon name="matErrorOutline" size="14" class="text-red-500 shrink-0"></ng-icon>
                             <p class="text-xs text-red-600">{{ errorEmail() }}</p>
                         </div>
@@ -158,7 +158,7 @@
 
                     @if (exitoEmail()) {
                     <div
-                        class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-md mt-3">
+                        class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 rounded-md mt-3">
                         <ng-icon name="matCheckCircleOutline" size="15" class="text-emerald-500 shrink-0"></ng-icon>
                         <p class="text-xs text-emerald-700 font-medium">Correo electrónico actualizado correctamente.
                         </p>
@@ -168,19 +168,19 @@
 
                 <!-- ── Sección: Reasignar médico (solo Admin) ───────────────────── -->
                 @if (authService.esAdmin()) {
-                <div class="border-t border-slate-200 pt-6">
+                <div class="border-t border-slate-200 dark:border-zinc-700 pt-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h3 class="text-sm font-semibold text-slate-700">Médico asignado</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">{{ padre()?.medicoNombreCompleto }}</p>
+                            <h3 class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Médico asignado</h3>
+                            <p class="text-xs text-muted mt-0.5">{{ padre()?.medicoNombreCompleto }}</p>
                         </div>
                         <button type="button" (click)="toggleCambioMedico()"
                             class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors"
-                            [class.border-slate-200]="!mostrarCambioMedico()"
-                            [class.text-slate-600]="!mostrarCambioMedico()"
-                            [class.hover:bg-slate-50]="!mostrarCambioMedico()"
+                            [class.border-slate-200]="!mostrarCambioMedico()" [class.dark:border-zinc-700]="!mostrarCambioMedico()"
+                            [class.text-slate-600]="!mostrarCambioMedico()" [class.dark:text-zinc-400]="!mostrarCambioMedico()"
+                            [class.hover:bg-slate-50]="!mostrarCambioMedico()" [class.dark:hover:bg-zinc-800]="!mostrarCambioMedico()"
                             [class.border-red-200]="mostrarCambioMedico()" [class.text-red-500]="mostrarCambioMedico()"
-                            [class.hover:bg-red-50]="mostrarCambioMedico()">
+                            [class.hover:bg-red-50]="mostrarCambioMedico()" [class.dark:hover:bg-red-500/10]="mostrarCambioMedico()">
                             @if (mostrarCambioMedico()) {
                             <ng-icon name="matCloseOutline" size="13"></ng-icon>
                             Cancelar
@@ -192,8 +192,8 @@
                     </div>
 
                     @if (mostrarCambioMedico()) {
-                    <div class="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-3">
-                        <p class="text-xs text-slate-500">
+                    <div class="bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md p-4 space-y-3">
+                        <p class="text-xs text-secondary">
                             Selecciona el nuevo médico responsable de este representante.
                         </p>
                         <div class="flex gap-2">
@@ -221,7 +221,7 @@
                             </button>
                         </div>
                         @if (errorMedico()) {
-                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-100 rounded-md">
+                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-100 rounded-md">
                             <ng-icon name="matErrorOutline" size="14" class="text-red-500 shrink-0"></ng-icon>
                             <p class="text-xs text-red-600">{{ errorMedico() }}</p>
                         </div>
@@ -231,7 +231,7 @@
 
                     @if (exitoMedico()) {
                     <div
-                        class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-md mt-3">
+                        class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 rounded-md mt-3">
                         <ng-icon name="matCheckCircleOutline" size="15" class="text-emerald-500 shrink-0"></ng-icon>
                         <p class="text-xs text-emerald-700 font-medium">Médico reasignado correctamente.</p>
                     </div>

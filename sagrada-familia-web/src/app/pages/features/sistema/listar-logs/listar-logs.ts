@@ -39,19 +39,19 @@ export class ListarLogs implements OnInit {
     },
     {
       key: 'mensaje', label: 'Mensaje', sortable: true,
-      render: (row) => `<p class="text-sm text-gray-800 max-w-md truncate" title="${row.mensaje.replace(/"/g, '&quot;')}">${row.mensaje}</p>`
+      render: (row) => `<p class="text-sm text-[var(--color-text-primary)] max-w-md truncate" title="${row.mensaje.replace(/"/g, '&quot;')}">${row.mensaje}</p>`
     },
     {
       key: 'endpoint', label: 'Endpoint',
       render: (row) => row.endpoint
-        ? `<code class="text-xs bg-gray-100 px-2 py-1 rounded">${row.endpoint}</code>`
-        : '<span class="text-gray-400">—</span>'
+        ? `<code class="text-xs bg-[var(--color-surface-alt)] px-2 py-1 rounded">${row.endpoint}</code>`
+        : '<span class="text-muted">—</span>'
     },
     {
       key: 'usuarioId', label: 'Usuario', filterable: true,
       render: (row) => row.usuarioId
-        ? `<span class="text-xs text-gray-600">ID ${row.usuarioId}</span>`
-        : '<span class="text-gray-400">Sistema</span>'
+        ? `<span class="text-xs text-[var(--color-text-secondary)]">ID ${row.usuarioId}</span>`
+        : '<span class="text-muted">Sistema</span>'
     }
   ];
 
@@ -117,12 +117,12 @@ export class ListarLogs implements OnInit {
 
   private badgeNivel(nivel: string): string {
     const mapa: Record<string, string> = {
-      'Error': 'bg-red-100 text-red-700',
-      'Warning': 'bg-yellow-100 text-yellow-700',
-      'Information': 'bg-blue-100 text-blue-700',
-      'Critical': 'bg-purple-100 text-purple-700'
+      'Error': 'bg-danger-soft text-danger',
+      'Warning': 'bg-warning-soft text-warning',
+      'Information': 'bg-info-soft text-info',
+      'Critical': 'bg-purple-100 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400'
     };
-    const clase = mapa[nivel] || 'bg-gray-100 text-gray-700';
+    const clase = mapa[nivel] || 'bg-[var(--color-surface-alt)] text-muted';
     return `<span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${clase}">${nivel}</span>`;
   }
 }

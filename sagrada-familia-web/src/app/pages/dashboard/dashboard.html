@@ -16,8 +16,8 @@
     @if (auth.esAdmin()) {
 
     @if (cargandoAdmin()) {
-    <div class="flex items-center justify-center py-20 text-slate-400">
-        <span class="w-5 h-5 border-2 border-slate-300 border-t-blue-500 rounded-full animate-spin mr-3"></span>
+    <div class="flex items-center justify-center py-20 text-muted">
+        <span class="w-5 h-5 border-2 border-slate-300 dark:border-zinc-600 border-t-blue-500 rounded-full animate-spin mr-3"></span>
         Cargando datos del sistema...
     </div>
     }
@@ -28,68 +28,68 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
         <a routerLink="/usuarios"
-            class="bg-white border border-slate-200 rounded-md p-5 flex items-center gap-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer">
-            <div class="w-12 h-12 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+            class="card p-5 flex items-center gap-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer">
+            <div class="w-12 h-12 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
                 <ng-icon name="matPeopleOutline" class="text-blue-500 text-xl"></ng-icon>
             </div>
             <div>
-                <p class="text-2xl font-bold text-slate-800 leading-none">{{ d.usuariosActivos }}</p>
-                <p class="text-xs text-slate-500 mt-1">Usuarios activos</p>
+                <p class="text-2xl font-bold text-slate-800 dark:text-zinc-100 leading-none">{{ d.usuariosActivos }}</p>
+                <p class="text-xs text-secondary mt-1">Usuarios activos</p>
             </div>
         </a>
 
         <a routerLink="/usuarios"
-            class="bg-white border border-slate-200 rounded-md p-5 flex items-center gap-4 hover:shadow-sm transition-all cursor-pointer"
+            class="card p-5 flex items-center gap-4 hover:shadow-sm transition-all cursor-pointer"
             [class.hover:border-amber-300]="d.cuentasPendientes > 0"
-            [class.hover:border-slate-300]="d.cuentasPendientes === 0">
+            [class.hover:border-slate-300]="d.cuentasPendientes === 0" [class.dark:hover:border-zinc-600]="d.cuentasPendientes === 0">
             <div class="w-12 h-12 rounded-md flex items-center justify-center shrink-0"
-                [class.bg-amber-50]="d.cuentasPendientes > 0"
-                [class.bg-slate-50]="d.cuentasPendientes === 0">
+                [class.bg-amber-50]="d.cuentasPendientes > 0" [class.dark:bg-amber-500/10]="d.cuentasPendientes > 0"
+                [class.bg-slate-50]="d.cuentasPendientes === 0" [class.dark:bg-zinc-800]="d.cuentasPendientes === 0">
                 <ng-icon name="matHourglassBottomOutline" class="text-xl"
                     [class.text-amber-500]="d.cuentasPendientes > 0"
-                    [class.text-slate-300]="d.cuentasPendientes === 0">
+                    [class.text-slate-300]="d.cuentasPendientes === 0" [class.dark:text-zinc-600]="d.cuentasPendientes === 0">
                 </ng-icon>
             </div>
             <div>
                 <p class="text-2xl font-bold leading-none"
                     [class.text-amber-600]="d.cuentasPendientes > 0"
-                    [class.text-slate-800]="d.cuentasPendientes === 0">
+                    [class.text-slate-800]="d.cuentasPendientes === 0" [class.dark:text-zinc-100]="d.cuentasPendientes === 0">
                     {{ d.cuentasPendientes }}
                 </p>
-                <p class="text-xs text-slate-500 mt-1">Pend. activación</p>
+                <p class="text-xs text-secondary mt-1">Pend. activación</p>
             </div>
         </a>
 
         <a routerLink="/sistema/auditoria"
-            class="bg-white border border-slate-200 rounded-md p-5 flex items-center gap-4 hover:border-indigo-300 hover:shadow-sm transition-all cursor-pointer">
-            <div class="w-12 h-12 rounded-md bg-indigo-50 flex items-center justify-center shrink-0">
+            class="card p-5 flex items-center gap-4 hover:border-indigo-300 hover:shadow-sm transition-all cursor-pointer">
+            <div class="w-12 h-12 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
                 <ng-icon name="matBoltOutline" class="text-indigo-500 text-xl"></ng-icon>
             </div>
             <div>
-                <p class="text-2xl font-bold text-slate-800 leading-none">{{ d.accionesHoy }}</p>
-                <p class="text-xs text-slate-500 mt-1">Acciones hoy</p>
+                <p class="text-2xl font-bold text-slate-800 dark:text-zinc-100 leading-none">{{ d.accionesHoy }}</p>
+                <p class="text-xs text-secondary mt-1">Acciones hoy</p>
             </div>
         </a>
 
         <a routerLink="/sistema/logs"
-            class="bg-white border border-slate-200 rounded-md p-5 flex items-center gap-4 hover:shadow-sm transition-all cursor-pointer"
+            class="card p-5 flex items-center gap-4 hover:shadow-sm transition-all cursor-pointer"
             [class.hover:border-red-300]="d.alertasSemana > 0"
-            [class.hover:border-slate-300]="d.alertasSemana === 0">
+            [class.hover:border-slate-300]="d.alertasSemana === 0" [class.dark:hover:border-zinc-600]="d.alertasSemana === 0">
             <div class="w-12 h-12 rounded-md flex items-center justify-center shrink-0"
-                [class.bg-red-50]="d.alertasSemana > 0"
-                [class.bg-slate-50]="d.alertasSemana === 0">
+                [class.bg-red-50]="d.alertasSemana > 0" [class.dark:bg-red-500/10]="d.alertasSemana > 0"
+                [class.bg-slate-50]="d.alertasSemana === 0" [class.dark:bg-zinc-800]="d.alertasSemana === 0">
                 <ng-icon name="matErrorOutline" class="text-xl"
                     [class.text-red-500]="d.alertasSemana > 0"
-                    [class.text-slate-300]="d.alertasSemana === 0">
+                    [class.text-slate-300]="d.alertasSemana === 0" [class.dark:text-zinc-600]="d.alertasSemana === 0">
                 </ng-icon>
             </div>
             <div>
                 <p class="text-2xl font-bold leading-none"
                     [class.text-red-600]="d.alertasSemana > 0"
-                    [class.text-slate-800]="d.alertasSemana === 0">
+                    [class.text-slate-800]="d.alertasSemana === 0" [class.dark:text-zinc-100]="d.alertasSemana === 0">
                     {{ d.alertasSemana }}
                 </p>
-                <p class="text-xs text-slate-500 mt-1">Errores (7 días)</p>
+                <p class="text-xs text-secondary mt-1">Errores (7 días)</p>
             </div>
         </a>
 
@@ -99,9 +99,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
 
         <!-- Actividad de la semana (ocupa 2/3) -->
-        <div class="lg:col-span-2 bg-white border border-slate-200 rounded-md p-5">
-            <h3 class="text-sm font-bold text-slate-700 mb-1">Actividad del sistema</h3>
-            <p class="text-xs text-slate-400 mb-4">Acciones registradas en auditoría — últimos 7 días</p>
+        <div class="lg:col-span-2 card p-5">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 mb-1">Actividad del sistema</h3>
+            <p class="text-xs text-muted mb-4">Acciones registradas en auditoría — últimos 7 días</p>
             <apx-chart
                 [series]="actividadChart().series"
                 [chart]="actividadChart().chart"
@@ -115,9 +115,9 @@
         </div>
 
         <!-- Usuarios por rol (ocupa 1/3) -->
-        <div class="bg-white border border-slate-200 rounded-md p-5">
-            <h3 class="text-sm font-bold text-slate-700 mb-1">Usuarios por rol</h3>
-            <p class="text-xs text-slate-400 mb-4">Distribución de cuentas en el sistema</p>
+        <div class="card p-5">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 mb-1">Usuarios por rol</h3>
+            <p class="text-xs text-muted mb-4">Distribución de cuentas en el sistema</p>
             <apx-chart
                 [series]="rolesChart().series"
                 [chart]="rolesChart().chart"
@@ -132,69 +132,54 @@
 
     </div>
 
-    <!-- Fila 3: Tablas -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Fila 3: Registro de usuarios + Salud del sistema -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-        <!-- Últimas acciones (auditoría) -->
-        <div class="bg-white border border-slate-200 rounded-md overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-                <h3 class="text-sm font-bold text-slate-700">Últimas acciones del sistema</h3>
-                <a routerLink="/sistema/auditoria" class="text-xs text-blue-600 hover:underline">Ver todo</a>
-            </div>
-            @if (d.accionesRecientes.length === 0) {
-            <p class="text-xs text-slate-400 text-center py-8">Sin actividad registrada aún.</p>
-            } @else {
-            <div class="divide-y divide-slate-50">
-                @for (a of d.accionesRecientes; track a.id) {
-                <div class="px-5 py-3 flex items-start gap-3">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-semibold shrink-0 mt-0.5"
-                        [ngClass]="etiquetaAccion(a).clase">
-                        {{ etiquetaAccion(a).texto }}
-                    </span>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-xs font-medium text-slate-700 truncate">
-                            {{ a.tabla }} #{{ a.clavePrimaria }}
-                        </p>
-                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">
-                            {{ a.usuarioEmail }}  ·  {{ formatearFecha(a.fecha) }}
-                        </p>
-                    </div>
-                </div>
-                }
-            </div>
-            }
+        <!-- Registro de usuarios por mes (ocupa 2/3) -->
+        <div class="lg:col-span-2 card p-5">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 mb-1">Registro de usuarios</h3>
+            <p class="text-xs text-muted mb-4">Cuentas nuevas por mes — últimos 6 meses</p>
+            <apx-chart
+                [series]="registrosChart().series"
+                [chart]="registrosChart().chart"
+                [xaxis]="registrosChart().xaxis"
+                [colors]="registrosChart().colors"
+                [plotOptions]="registrosChart().plotOptions"
+                [dataLabels]="registrosChart().dataLabels"
+                [tooltip]="registrosChart().tooltip">
+            </apx-chart>
         </div>
 
-        <!-- Alertas recientes (logs de error) -->
-        <div class="bg-white border border-slate-200 rounded-md overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-                <h3 class="text-sm font-bold text-slate-700">Alertas del sistema</h3>
-                <a routerLink="/sistema/logs" class="text-xs text-blue-600 hover:underline">Ver logs</a>
-            </div>
-            @if (d.alertasRecientes.length === 0) {
-            <div class="flex flex-col items-center justify-center py-10 gap-2 text-slate-400">
-                <ng-icon name="matCheckCircleOutline" class="text-3xl text-emerald-400"></ng-icon>
-                <p class="text-xs font-medium">Sin errores recientes</p>
-            </div>
-            } @else {
-            <div class="divide-y divide-slate-50">
-                @for (log of d.alertasRecientes; track log.id) {
-                <div class="px-5 py-3 flex items-start gap-3">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-semibold shrink-0 mt-0.5"
-                        [ngClass]="etiquetaNivel(log).clase">
-                        {{ etiquetaNivel(log).texto }}
-                    </span>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-xs font-medium text-slate-700 truncate">{{ log.mensaje }}</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">
-                            {{ formatearFecha(log.fechaHora) }}
-                            @if (log.endpoint) { · {{ log.endpoint }} }
-                        </p>
+        <!-- Salud del sistema (ocupa 1/3) -->
+        <div class="card p-5">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 mb-1">Salud del sistema</h3>
+            <p class="text-xs text-muted mb-4">Estado del servidor</p>
+
+            <div class="space-y-3">
+                <div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-zinc-800">
+                    <div class="flex items-center gap-2 text-secondary">
+                        <ng-icon name="matBoltOutline" class="text-emerald-500"></ng-icon>
+                        <span class="text-xs">Uptime</span>
                     </div>
+                    <span class="text-sm font-bold text-slate-800 dark:text-zinc-100">{{ uptimeTexto() }}</span>
                 </div>
-                }
+
+                <div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-zinc-800">
+                    <div class="flex items-center gap-2 text-secondary">
+                        <ng-icon name="matHourglassBottomOutline" class="text-blue-500"></ng-icon>
+                        <span class="text-xs">Entorno</span>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 dark:text-zinc-100">{{ d.salud.entorno }}</span>
+                </div>
+
+                <div class="flex items-center justify-between py-2">
+                    <div class="flex items-center gap-2 text-secondary">
+                        <ng-icon name="matErrorOutline" class="text-indigo-500"></ng-icon>
+                        <span class="text-xs">Versión</span>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 dark:text-zinc-100">{{ d.salud.version }}</span>
+                </div>
             </div>
-            }
         </div>
 
     </div>
@@ -207,15 +192,15 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         @for (stat of stats(); track stat.label; let i = $index) {
         <a [routerLink]="stat.ruta"
-            class="lift fade-up rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-slate-300 group"
+            class="lift fade-up card p-5 flex items-center gap-4 hover:border-slate-300 dark:hover:border-zinc-600 group"
             [ngClass]="'stagger-' + (i + 1)">
             <div class="w-12 h-12 rounded-md flex items-center justify-center shrink-0"
                 [style.background-color]="stat.bgColor">
                 <ng-icon [name]="stat.icon" [style.color]="stat.color" class="text-xl"></ng-icon>
             </div>
             <div class="min-w-0">
-                <p class="text-2xl font-bold text-slate-800 leading-none">{{ stat.valor }}</p>
-                <p class="text-xs text-slate-500 mt-1 truncate">{{ stat.label }}</p>
+                <p class="text-2xl font-bold text-slate-800 dark:text-zinc-100 leading-none">{{ stat.valor }}</p>
+                <p class="text-xs text-secondary mt-1 truncate">{{ stat.label }}</p>
             </div>
         </a>
         }
@@ -226,75 +211,75 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
             <a routerLink="/pacientes/crear"
-                class="lift fade-up stagger-1 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 group">
-                <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+                class="lift fade-up stagger-1 card p-5 flex items-center gap-4 hover:border-blue-300 group">
+                <div class="w-10 h-10 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/15 transition-colors">
                     <ng-icon name="matPeopleOutline" class="text-blue-500 text-lg"></ng-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-slate-800">Nuevo paciente</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Registrar un niño</p>
+                    <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Nuevo paciente</p>
+                    <p class="text-xs text-muted mt-0.5">Registrar un niño</p>
                 </div>
-                <ng-icon name="matArrowForwardOutline" class="text-slate-300 group-hover:text-blue-400 transition-colors shrink-0"></ng-icon>
+                <ng-icon name="matArrowForwardOutline" class="text-slate-300 dark:text-zinc-600 group-hover:text-blue-400 transition-colors shrink-0"></ng-icon>
             </a>
 
             <a routerLink="/citas/crear"
-                class="lift fade-up stagger-2 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-purple-300 group">
-                <div class="w-10 h-10 rounded-md bg-purple-50 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
+                class="lift fade-up stagger-2 card p-5 flex items-center gap-4 hover:border-purple-300 group">
+                <div class="w-10 h-10 rounded-md bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center shrink-0 group-hover:bg-purple-100 dark:group-hover:bg-purple-500/15 transition-colors">
                     <ng-icon name="matCalendarMonthOutline" class="text-purple-500 text-lg"></ng-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-slate-800">Programar cita</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Agendar consulta</p>
+                    <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Programar cita</p>
+                    <p class="text-xs text-muted mt-0.5">Agendar consulta</p>
                 </div>
-                <ng-icon name="matArrowForwardOutline" class="text-slate-300 group-hover:text-purple-400 transition-colors shrink-0"></ng-icon>
+                <ng-icon name="matArrowForwardOutline" class="text-slate-300 dark:text-zinc-600 group-hover:text-purple-400 transition-colors shrink-0"></ng-icon>
             </a>
 
             <a routerLink="/padres/crear"
-                class="lift fade-up stagger-3 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-red-300 group">
-                <div class="w-10 h-10 rounded-md bg-red-50 flex items-center justify-center shrink-0 group-hover:bg-red-100 transition-colors">
+                class="lift fade-up stagger-3 card p-5 flex items-center gap-4 hover:border-red-300 group">
+                <div class="w-10 h-10 rounded-md bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0 group-hover:bg-red-100 dark:group-hover:bg-red-500/15 transition-colors">
                     <ng-icon name="matFavoriteBorderOutline" class="text-red-500 text-lg"></ng-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-slate-800">Nuevo representante</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Registrar padre o tutor</p>
+                    <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Nuevo representante</p>
+                    <p class="text-xs text-muted mt-0.5">Registrar padre o tutor</p>
                 </div>
-                <ng-icon name="matArrowForwardOutline" class="text-slate-300 group-hover:text-red-400 transition-colors shrink-0"></ng-icon>
+                <ng-icon name="matArrowForwardOutline" class="text-slate-300 dark:text-zinc-600 group-hover:text-red-400 transition-colors shrink-0"></ng-icon>
             </a>
 
             <a routerLink="/predicciones"
-                class="lift fade-up stagger-4 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-green-300 group">
-                <div class="w-10 h-10 rounded-md bg-green-50 flex items-center justify-center shrink-0 group-hover:bg-green-100 transition-colors">
+                class="lift fade-up stagger-4 card p-5 flex items-center gap-4 hover:border-green-300 group">
+                <div class="w-10 h-10 rounded-md bg-green-50 dark:bg-green-500/10 flex items-center justify-center shrink-0 group-hover:bg-green-100 dark:group-hover:bg-green-500/15 transition-colors">
                     <ng-icon name="matQueryStatsOutline" class="text-green-500 text-lg"></ng-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-slate-800">Predicciones</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Motor predictivo IA</p>
+                    <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Predicciones</p>
+                    <p class="text-xs text-muted mt-0.5">Motor predictivo IA</p>
                 </div>
-                <ng-icon name="matArrowForwardOutline" class="text-slate-300 group-hover:text-green-400 transition-colors shrink-0"></ng-icon>
+                <ng-icon name="matArrowForwardOutline" class="text-slate-300 dark:text-zinc-600 group-hover:text-green-400 transition-colors shrink-0"></ng-icon>
             </a>
 
             <a routerLink="/alimentos"
-                class="lift fade-up stagger-5 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-amber-300 group">
-                <div class="w-10 h-10 rounded-md bg-amber-50 flex items-center justify-center shrink-0 group-hover:bg-amber-100 transition-colors">
+                class="lift fade-up stagger-5 card p-5 flex items-center gap-4 hover:border-amber-300 group">
+                <div class="w-10 h-10 rounded-md bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0 group-hover:bg-amber-100 dark:group-hover:bg-amber-500/15 transition-colors">
                     <ng-icon name="matCakeOutline" class="text-amber-500 text-lg"></ng-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-slate-800">Alimentos</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Catálogo nutricional</p>
+                    <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Alimentos</p>
+                    <p class="text-xs text-muted mt-0.5">Catálogo nutricional</p>
                 </div>
-                <ng-icon name="matArrowForwardOutline" class="text-slate-300 group-hover:text-amber-400 transition-colors shrink-0"></ng-icon>
+                <ng-icon name="matArrowForwardOutline" class="text-slate-300 dark:text-zinc-600 group-hover:text-amber-400 transition-colors shrink-0"></ng-icon>
             </a>
 
             <a routerLink="/citas"
-                class="lift fade-up stagger-6 rounded-md bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-purple-300 group">
-                <div class="w-10 h-10 rounded-md bg-purple-50 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
+                class="lift fade-up stagger-6 card p-5 flex items-center gap-4 hover:border-purple-300 group">
+                <div class="w-10 h-10 rounded-md bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center shrink-0 group-hover:bg-purple-100 dark:group-hover:bg-purple-500/15 transition-colors">
                     <ng-icon name="matScienceOutline" class="text-purple-500 text-lg"></ng-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-slate-800">Agenda de hoy</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Ver citas del día</p>
+                    <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Agenda de hoy</p>
+                    <p class="text-xs text-muted mt-0.5">Ver citas del día</p>
                 </div>
-                <ng-icon name="matArrowForwardOutline" class="text-slate-300 group-hover:text-purple-400 transition-colors shrink-0"></ng-icon>
+                <ng-icon name="matArrowForwardOutline" class="text-slate-300 dark:text-zinc-600 group-hover:text-purple-400 transition-colors shrink-0"></ng-icon>
             </a>
 
         </div>

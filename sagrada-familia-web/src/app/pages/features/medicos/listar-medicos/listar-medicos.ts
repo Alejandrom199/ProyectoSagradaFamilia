@@ -53,17 +53,17 @@ export class ListarMedicos implements OnInit {
     },
     {
       key: 'email', label: 'Email', sortable: true, filterable: true,
-      render: (row) => `<span class="text-gray-700">${row.email}</span>`
+      render: (row) => `<span class="text-[var(--color-text-secondary)]">${row.email}</span>`
     },
     {
       key: 'especialidad', label: 'Especialidad', sortable: true, filterable: true,
       render: (row) => row.especialidad
         ? `<span class="badge badge-primary">${row.especialidad}</span>`
-        : '<span class="text-gray-400">Sin especialidad</span>'
+        : '<span class="text-muted">Sin especialidad</span>'
     },
     {
       key: 'telefono', label: 'Teléfono', sortable: true,
-      render: (row) => row.telefono || '<span class="text-gray-400">Sin registrar</span>'
+      render: (row) => row.telefono || '<span class="text-muted">Sin registrar</span>'
     }
   ];
 

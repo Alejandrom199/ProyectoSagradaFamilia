@@ -6,7 +6,7 @@
     <!-- Cabecera -->
     <div class="mb-6 flex justify-between items-end">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">{{ nino()?.nombre }} {{ nino()?.apellido }}</h2>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-zinc-100">{{ nino()?.nombre }} {{ nino()?.apellido }}</h2>
             <p class="page-subtitle">
                 {{ formatearEdad(nino()!.edadMeses) }} · {{ nino()?.sexo === 'M' ? 'Masculino' : 'Femenino' }}
             </p>
@@ -18,7 +18,7 @@
                 Historia Clínica
             </button>
             <a [routerLink]="['/pacientes', id, 'editar']"
-                class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-md text-sm font-bold hover:bg-slate-50 transition-colors">
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-400 rounded-md text-sm font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
                 <ng-icon name="matEditOutline" class="text-base"></ng-icon>
                 Editar
             </a>
@@ -26,29 +26,29 @@
     </div>
 
     <!-- Info del paciente -->
-    <div class="bg-white border border-slate-200 mb-6">
-        <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
-            <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+    <div class="card mb-6">
+        <div class="card-header">
+            <div class="w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
                 <ng-icon name="matPersonOutline" class="text-blue-500 text-base"></ng-icon>
             </div>
-            <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Información del paciente</h3>
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Información del paciente</h3>
         </div>
         <div class="px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-6">
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Nacimiento</p>
-                <p class="text-sm font-medium text-slate-700">{{ formatearFecha(nino()!.fechaNacimiento) }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Nacimiento</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">{{ formatearFecha(nino()!.fechaNacimiento) }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Edad</p>
-                <p class="text-sm font-semibold text-slate-800">{{ formatearEdad(nino()!.edadMeses) }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Edad</p>
+                <p class="text-sm font-semibold text-slate-800 dark:text-zinc-100">{{ formatearEdad(nino()!.edadMeses) }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Representante</p>
-                <p class="text-sm font-medium text-slate-700">{{ nino()?.padreNombreCompleto }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Representante</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">{{ nino()?.padreNombreCompleto }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Médico tratante</p>
-                <p class="text-sm font-medium text-slate-700">Dr(a). {{ nino()?.medicoNombreCompleto }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Médico tratante</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">Dr(a). {{ nino()?.medicoNombreCompleto }}</p>
             </div>
         </div>
     </div>
@@ -56,33 +56,33 @@
     <!-- Accesos rápidos -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <a [routerLink]="['/medidas', id]"
-            class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
-            <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+            class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
+            <div class="w-10 h-10 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/15 transition-colors">
                 <ng-icon name="matBarChartOutline" class="text-blue-500"></ng-icon>
             </div>
             <div>
-                <p class="text-sm font-bold text-slate-800">Medidas</p>
-                <p class="text-xs text-slate-500 mt-0.5">Historial de peso y talla</p>
+                <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Medidas</p>
+                <p class="text-xs text-secondary mt-0.5">Historial de peso y talla</p>
             </div>
         </a>
         <a [routerLink]="['/citas/nino', id]"
-            class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
-            <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+            class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
+            <div class="w-10 h-10 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/15 transition-colors">
                 <ng-icon name="matCalendarMonthOutline" class="text-blue-500"></ng-icon>
             </div>
             <div>
-                <p class="text-sm font-bold text-slate-800">Citas</p>
-                <p class="text-xs text-slate-500 mt-0.5">Historial de consultas</p>
+                <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Citas</p>
+                <p class="text-xs text-secondary mt-0.5">Historial de consultas</p>
             </div>
         </a>
         <a [routerLink]="['/prescripciones/nino', id]"
-            class="bg-white border border-slate-200 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
-            <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+            class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 p-5 flex items-center gap-4 hover:border-blue-300 transition-colors group">
+            <div class="w-10 h-10 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/15 transition-colors">
                 <ng-icon name="matScienceOutline" class="text-blue-500"></ng-icon>
             </div>
             <div>
-                <p class="text-sm font-bold text-slate-800">Prescripciones</p>
-                <p class="text-xs text-slate-500 mt-0.5">Recetas médicas emitidas</p>
+                <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">Prescripciones</p>
+                <p class="text-xs text-secondary mt-0.5">Recetas médicas emitidas</p>
             </div>
         </a>
     </div>
@@ -90,11 +90,11 @@
     <!-- Citas recientes -->
     <div class="mb-6">
         <div class="mb-3 flex justify-between items-end">
-            <h3 class="text-lg font-bold text-slate-800">Citas recientes</h3>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Citas recientes</h3>
             <a [routerLink]="['/citas/nino', id]"
                 class="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">Ver todas →</a>
         </div>
-        <div class="border border-slate-200 overflow-hidden">
+        <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
             <datatable [data]="citas()" [columns]="columnasCitas" [showExportar]="false" [showActualizar]="false"
                 [pageSize]="5" emptyMessage="No hay citas registradas para este paciente.">
             </datatable>
@@ -104,11 +104,11 @@
     <!-- Prescripciones recientes -->
     <div class="mb-6">
         <div class="mb-3 flex justify-between items-end">
-            <h3 class="text-lg font-bold text-slate-800">Prescripciones recientes</h3>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Prescripciones recientes</h3>
             <a [routerLink]="['/prescripciones/nino', id]"
                 class="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">Ver todas →</a>
         </div>
-        <div class="border border-slate-200 overflow-hidden">
+        <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
             <datatable [data]="prescripciones()" [columns]="columnasPrescripciones" [showExportar]="false"
                 [showActualizar]="false" [pageSize]="5"
                 emptyMessage="No hay prescripciones registradas para este paciente.">
@@ -120,16 +120,16 @@
     @if (medidas().length >= 2) {
     <div>
         <div class="mb-3">
-            <h3 class="text-lg font-bold text-slate-800">Evolución clínica</h3>
-            <p class="text-xs text-slate-400 mt-0.5">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Evolución clínica</h3>
+            <p class="text-xs text-muted mt-0.5">
                 {{ medidas().length }} mediciones registradas.
             </p>
         </div>
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
 
             <!-- Curva Peso + Talla -->
-            <div class="border border-slate-200 bg-white p-5">
-                <h4 class="text-sm font-bold text-slate-700 mb-4">Curva de Crecimiento</h4>
+            <div class="card p-5">
+                <h4 class="text-sm font-bold text-slate-700 dark:text-zinc-300 mb-4">Curva de Crecimiento</h4>
                 @if (chartPesoTalla()) {
                 <apx-chart #chartPesoTallaRef
                     [series]="chartPesoTalla()!.series!"
@@ -147,10 +147,10 @@
             </div>
 
             <!-- IMC en el tiempo -->
-            <div class="border border-slate-200 bg-white p-5">
+            <div class="card p-5">
                 <div class="flex items-start justify-between mb-4">
-                    <h4 class="text-sm font-bold text-slate-700">Índice de Masa Corporal</h4>
-                    <span class="text-[10px] text-slate-400 text-right leading-tight">
+                    <h4 class="text-sm font-bold text-slate-700 dark:text-zinc-300">Índice de Masa Corporal</h4>
+                    <span class="text-[10px] text-muted text-right leading-tight">
                         Líneas ref.: 18.5 y 25<br>orientativas
                     </span>
                 </div>

@@ -3,11 +3,17 @@ import { NgIcon } from '@ng-icons/core';
 
 import { AuthService } from '../../core/services/auth';
 import { MedicosService } from '../../core/services/medicos';
+import { PadresService } from '../../core/services/padres';
+import { UsuariosService } from '../../core/services/usuarios';
 import { LoadingBar } from '../../core/services/loading-bar';
 import { Breadcrumb, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb';
 import { FirmaPad } from '../../shared/components/firma-pad/firma-pad';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { Button } from '../../shared/components/button/button';
+import { UsuarioDetailResponse } from '../../shared/interfaces/usuario.interface';
+import { MedicoDetailResponse } from '../../shared/interfaces/medico.interface';
+import { PadreDetailResponse } from '../../shared/interfaces/padre.interface';
+import { formatearFecha } from '../../shared/utils/date.utils';
 
 @Component({
   selector: 'app-perfil',
@@ -18,9 +24,17 @@ import { Button } from '../../shared/components/button/button';
 export class Perfil implements OnInit {
   readonly authService = inject(AuthService);
   private readonly medicosService = inject(MedicosService);
+  private readonly padresService = inject(PadresService);
+  private readonly usuariosService = inject(UsuariosService);
   private readonly loadingBar = inject(LoadingBar);
 
+  readonly formatearFecha = formatearFecha;
   readonly migajas: BreadcrumbItem[] = [{ label: 'Mi Perfil' }];
+
+  readonly cargandoPerfil = signal(true);
+  readonly perfilUsuario = signal<UsuarioDetailResponse | null>(null);
+  readonly infoMedico = signal<MedicoDetailResponse | null>(null);
+  readonly infoPadre = signal<PadreDetailResponse | null>(null);
 
   readonly cargandoFirma = signal(true);
   readonly firmaActual = signal<string | null>(null);
@@ -32,8 +46,31 @@ export class Perfil implements OnInit {
   readonly eliminandoFirma = signal(false);
 
   ngOnInit(): void {
-    if (!this.authService.esMedico()) return;
-    this.cargarFirma();
+    this.cargarPerfil();
+    if (this.authService.esMedico()) this.cargarFirma();
+  }
+
+  private cargarPerfil(): void {
+    this.cargandoPerfil.set(true);
+    this.usuariosService.obtenerPerfilActual().subscribe({
+      next: (res) => {
+        if (!res.success) return;
+        this.perfilUsuario.set(res.data);
+
+        if (this.authService.esMedico() && res.data.medicoId) {
+          this.medicosService.obtenerPorId(res.data.medicoId).subscribe(r => {
+            if (r.success) this.infoMedico.set(r.data);
+          });
+        }
+
+        if (this.authService.esPadre() && res.data.padreId) {
+          this.padresService.obtenerPorId(res.data.padreId).subscribe(r => {
+            if (r.success) this.infoPadre.set(r.data);
+          });
+        }
+      },
+      complete: () => this.cargandoPerfil.set(false)
+    });
   }
 
   private cargarFirma(): void {

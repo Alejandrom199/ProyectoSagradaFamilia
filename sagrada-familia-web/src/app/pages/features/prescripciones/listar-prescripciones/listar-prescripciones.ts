@@ -50,23 +50,23 @@ export class ListarPrescripciones implements OnInit {
       key: 'nombreMedico', label: 'Médico', sortable: true, filterable: true,
       render: (row) => `
         <div>
-          <p class="font-medium text-gray-800">Dr(a). ${row.nombreMedico}</p>
-          ${row.especialidadMedico ? `<p class="text-xs text-gray-500">${row.especialidadMedico}</p>` : ''}
+          <p class="font-medium text-[var(--color-text-primary)]">Dr(a). ${row.nombreMedico}</p>
+          ${row.especialidadMedico ? `<p class="text-xs text-muted">${row.especialidadMedico}</p>` : ''}
         </div>`
     },
     {
       key: 'medicamentos', label: 'Medicamentos',
       render: (row) => {
         const nombres = row.medicamentos.map(m => m.nombre).join(', ');
-        return `<p class="text-sm text-gray-800 max-w-md truncate" title="${nombres}">${row.medicamentos.length} medicamento(s): ${nombres}</p>`;
+        return `<p class="text-sm text-[var(--color-text-primary)] max-w-md truncate" title="${nombres}">${row.medicamentos.length} medicamento(s): ${nombres}</p>`;
       },
       exportValue: (row) => row.medicamentos.map(m => `${m.nombre} (${m.dosis}, ${m.frecuencia})`).join('; ')
     },
     {
       key: 'indicaciones', label: 'Indicaciones',
       render: (row) => row.indicaciones
-        ? `<p class="text-xs text-gray-600 max-w-xs truncate" title="${row.indicaciones}">${row.indicaciones}</p>`
-        : '<span class="text-gray-400">—</span>'
+        ? `<p class="text-xs text-[var(--color-text-secondary)] max-w-xs truncate" title="${row.indicaciones}">${row.indicaciones}</p>`
+        : '<span class="text-muted">—</span>'
     }
   ];
 

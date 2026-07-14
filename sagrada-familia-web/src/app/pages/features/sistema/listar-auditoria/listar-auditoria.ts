@@ -115,20 +115,20 @@ export class ListarAuditoria implements OnInit {
       key: 'usuarioEmail', label: 'Usuario', sortable: true, filterable: true,
       render: (row) => {
         const nombre = row.usuarioNombreCompleto
-          ? `<span class="text-sm font-medium text-slate-800">${row.usuarioNombreCompleto}</span><br><span class="text-xs text-slate-400">${row.usuarioEmail}</span>`
-          : `<span class="text-sm text-slate-700">${row.usuarioEmail || 'Sistema'}</span>`;
+          ? `<span class="text-sm font-medium text-[var(--color-text-primary)]">${row.usuarioNombreCompleto}</span><br><span class="text-xs text-muted">${row.usuarioEmail}</span>`
+          : `<span class="text-sm text-[var(--color-text-secondary)]">${row.usuarioEmail || 'Sistema'}</span>`;
         return nombre;
       }
     },
     {
       key: 'clavePrimaria', label: 'Registro',
-      render: (row) => `<code class="text-xs bg-slate-100 px-2 py-1 rounded">${row.tabla} #${row.clavePrimaria}</code>`
+      render: (row) => `<code class="text-xs bg-[var(--color-surface-alt)] px-2 py-1 rounded">${row.tabla} #${row.clavePrimaria}</code>`
     },
     {
       key: 'ipAddress', label: 'IP',
       render: (row) => row.ipAddress
-        ? `<span class="text-xs text-slate-500">${row.ipAddress}</span>`
-        : '<span class="text-slate-400">—</span>'
+        ? `<span class="text-xs text-[var(--color-text-secondary)]">${row.ipAddress}</span>`
+        : '<span class="text-muted">—</span>'
     }
   ];
 
@@ -144,13 +144,13 @@ export class ListarAuditoria implements OnInit {
     },
     {
       key: 'tabla', label: 'Módulo', filterable: true,
-      render: (row) => `<span class="text-sm text-slate-700">${this.tablaAmigable(row.tabla)}</span>`
+      render: (row) => `<span class="text-sm text-[var(--color-text-secondary)]">${this.tablaAmigable(row.tabla)}</span>`
     },
     {
       key: 'usuarioNombreCompleto', label: 'Realizado por', filterable: true,
       render: (row) => row.usuarioNombreCompleto
-        ? `<span class="text-sm font-medium text-slate-800">${row.usuarioNombreCompleto}</span>`
-        : `<span class="text-xs text-slate-400">${row.usuarioEmail || 'Sistema'}</span>`
+        ? `<span class="text-sm font-medium text-[var(--color-text-primary)]">${row.usuarioNombreCompleto}</span>`
+        : `<span class="text-xs text-muted">${row.usuarioEmail || 'Sistema'}</span>`
     }
   ];
 
@@ -349,11 +349,11 @@ export class ListarAuditoria implements OnInit {
 
   private badgeAccion(accion: string): string {
     const mapa: Record<string, string> = {
-      'Creación': 'bg-green-100 text-green-700',
-      'Actualización': 'bg-blue-100 text-blue-700',
-      'Eliminación': 'bg-red-100 text-red-700',
+      'Creación': 'bg-success-soft text-success',
+      'Actualización': 'bg-info-soft text-info',
+      'Eliminación': 'bg-danger-soft text-danger',
     };
-    const clase = mapa[accion] || 'bg-slate-100 text-slate-700';
+    const clase = mapa[accion] || 'bg-[var(--color-surface-alt)] text-muted';
     return `<span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase ${clase}">${accion}</span>`;
   }
 }

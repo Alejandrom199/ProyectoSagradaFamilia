@@ -9,6 +9,7 @@ import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadc
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { CitasService } from '../../../../core/services/citas';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
+import { ESTADO_CITA_CHIP } from '../../../../shared/constants/estado-cita.constants';
 import { finalize, forkJoin } from 'rxjs';
 
 @Component({
@@ -148,15 +149,7 @@ export class MisCitasHoy implements OnInit {
     return this.fechaSeleccionada().toDateString() === new Date().toDateString();
   }
 
-  colorEstado(estado: string): { fondo: string; texto: string; punto: string; borde: string } {
-    const mapa: Record<string, { fondo: string; texto: string; punto: string; borde: string }> = {
-      Pendiente: { fondo: 'bg-amber-50', texto: 'text-amber-700', punto: 'bg-amber-400', borde: 'border-amber-200' },
-      EnCurso: { fondo: 'bg-blue-50', texto: 'text-blue-700', punto: 'bg-blue-500', borde: 'border-blue-200' },
-      Completada: { fondo: 'bg-emerald-50', texto: 'text-emerald-700', punto: 'bg-emerald-400', borde: 'border-emerald-200' },
-      Cancelada: { fondo: 'bg-red-50', texto: 'text-red-600', punto: 'bg-red-400', borde: 'border-red-200' },
-      NoAsistio: { fondo: 'bg-gray-100', texto: 'text-gray-500', punto: 'bg-gray-400', borde: 'border-gray-200' },
-      Reagendada: { fondo: 'bg-violet-50', texto: 'text-violet-700', punto: 'bg-violet-400', borde: 'border-violet-200' },
-    };
-    return mapa[estado] ?? { fondo: 'bg-gray-100', texto: 'text-gray-500', punto: 'bg-gray-400', borde: 'border-gray-200' };
+  colorEstado(estado: EstadoCita): { fondo: string; texto: string; punto: string; borde: string } {
+    return ESTADO_CITA_CHIP[estado];
   }
 }

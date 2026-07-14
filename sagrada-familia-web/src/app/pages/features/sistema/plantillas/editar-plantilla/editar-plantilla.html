@@ -2,10 +2,10 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="max-w-6xl mx-auto">
-        <div class="bg-white border border-slate-200 overflow-hidden flex flex-col lg:flex-row">
+        <div class="card overflow-hidden flex flex-col lg:flex-row">
 
             <!-- Panel lateral -->
-            <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
+            <div class="lg:w-1/3 bg-slate-50 dark:bg-zinc-800/50 border-r border-slate-200 dark:border-zinc-700 p-8">
                 <div class="sticky top-8 space-y-8">
 
                     <div>
@@ -16,11 +16,11 @@
 
                         @if (plantilla()) {
                         <div class="mt-3 flex items-center gap-2">
-                            <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-blue-50 text-blue-700">
+                            <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400">
                                 {{ plantilla()!.codigo }}
                             </span>
                         </div>
-                        <p class="text-sm text-slate-500 mt-3 leading-relaxed">
+                        <p class="text-sm text-secondary mt-3 leading-relaxed">
                             {{ plantilla()!.nombre }}
                         </p>
                         }
@@ -28,27 +28,27 @@
 
                     <!-- Variables disponibles -->
                     <div>
-                        <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-3">Variables disponibles</h3>
-                        <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                        <h3 class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider mb-3">Variables disponibles</h3>
+                        <p class="text-xs text-muted mb-4 leading-relaxed">
                             Hacé clic en una variable para insertarla en el cuerpo en la posición del cursor.
                         </p>
 
                         <div class="space-y-2">
                             @for (v of variablesAplicables(); track v.token) {
                             <button type="button" (click)="insertar(v.token)"
-                                class="w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-md border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/40 transition-colors group">
-                                <code class="text-xs font-mono font-semibold text-blue-600 group-hover:text-blue-700 mt-0.5 shrink-0">
+                                class="w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors group">
+                                <code class="text-xs font-mono font-semibold text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 mt-0.5 shrink-0">
                                     {{ v.token }}
                                 </code>
-                                <span class="text-xs text-slate-500 leading-relaxed">{{ v.descripcion }}</span>
+                                <span class="text-xs text-secondary leading-relaxed">{{ v.descripcion }}</span>
                             </button>
                             }
                         </div>
                     </div>
 
                     <!-- Nota -->
-                    <div class="p-3 bg-amber-50 border border-amber-100 rounded-md">
-                        <p class="text-xs text-amber-700 leading-relaxed">
+                    <div class="p-3 bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 rounded-md">
+                        <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
                             El cuerpo es HTML puro. Los estilos deben ser <strong>inline</strong> para compatibilidad con clientes de correo.
                         </p>
                     </div>
@@ -61,7 +61,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Nombre *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Nombre *</label>
                             <input
                                 type="text"
                                 name="nombre"
@@ -69,27 +69,27 @@
                                 [(ngModel)]="form.nombre"
                                 required
                                 [class.border-red-400]="nombre.invalid && (nombre.touched || submitted())"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="form-input">
                             @if (nombre.invalid && (nombre.touched || submitted())) {
                             <p class="text-xs text-red-500 ml-1">El nombre es obligatorio.</p>
                             }
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Estado</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Estado</label>
                             <label class="flex items-center gap-3 h-[42px] cursor-pointer">
                                 <div class="relative">
                                     <input type="checkbox" name="activo" [(ngModel)]="form.activo" class="sr-only peer">
-                                    <div class="w-9 h-5 bg-slate-200 peer-checked:bg-blue-600 rounded-full transition-colors"></div>
-                                    <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                                    <div class="w-9 h-5 bg-slate-200 dark:bg-zinc-700 peer-checked:bg-blue-600 rounded-full transition-colors"></div>
+                                    <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white dark:bg-zinc-900 rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
                                 </div>
-                                <span class="text-sm text-slate-600">{{ form.activo ? 'Activa' : 'Inactiva' }}</span>
+                                <span class="text-sm text-slate-600 dark:text-zinc-400">{{ form.activo ? 'Activa' : 'Inactiva' }}</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Asunto del correo *</label>
+                        <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Asunto del correo *</label>
                         <input
                             type="text"
                             name="asunto"
@@ -97,7 +97,7 @@
                             [(ngModel)]="form.asunto"
                             required
                             [class.border-red-400]="asunto.invalid && (asunto.touched || submitted())"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                            class="form-input">
                         @if (asunto.invalid && (asunto.touched || submitted())) {
                         <p class="text-xs text-red-500 ml-1">El asunto es obligatorio.</p>
                         }
@@ -105,29 +105,29 @@
 
                     <div class="flex flex-col gap-1.5">
                         <div class="flex items-center justify-between ml-1">
-                            <label class="text-xs font-bold text-slate-600 uppercase">Cuerpo HTML *</label>
-                            <div class="flex items-center border border-slate-200 rounded-md overflow-hidden">
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase">Cuerpo HTML *</label>
+                            <div class="flex items-center border border-slate-200 dark:border-zinc-700 rounded-md overflow-hidden">
                                 <button type="button" (click)="vistaPrevia.set(false)"
                                     class="px-3 py-1 text-xs font-semibold transition-colors"
                                     [class.bg-blue-600]="!vistaPrevia()"
                                     [class.text-white]="!vistaPrevia()"
-                                    [class.text-slate-400]="vistaPrevia()"
-                                    [class.hover:text-slate-600]="vistaPrevia()">
+                                    [class.text-slate-400]="vistaPrevia()" [class.dark:text-zinc-500]="vistaPrevia()"
+                                    [class.hover:text-slate-600]="vistaPrevia()" [class.dark:hover:text-zinc-300]="vistaPrevia()">
                                     Código
                                 </button>
                                 <button type="button" (click)="vistaPrevia.set(true)"
-                                    class="px-3 py-1 text-xs font-semibold border-l border-slate-200 transition-colors"
+                                    class="px-3 py-1 text-xs font-semibold border-l border-slate-200 dark:border-zinc-700 transition-colors"
                                     [class.bg-blue-600]="vistaPrevia()"
                                     [class.text-white]="vistaPrevia()"
-                                    [class.text-slate-400]="!vistaPrevia()"
-                                    [class.hover:text-slate-600]="!vistaPrevia()">
+                                    [class.text-slate-400]="!vistaPrevia()" [class.dark:text-zinc-500]="!vistaPrevia()"
+                                    [class.hover:text-slate-600]="!vistaPrevia()" [class.dark:hover:text-zinc-300]="!vistaPrevia()">
                                     Vista previa
                                 </button>
                             </div>
                         </div>
 
                         @if (!vistaPrevia()) {
-                        <div class="border border-slate-200 rounded-md overflow-hidden"
+                        <div class="border border-slate-200 dark:border-zinc-700 rounded-md overflow-hidden"
                             [class.border-red-400]="submitted() && !form.cuerpo.trim()">
                             <ngx-monaco-editor
                                 style="height: 480px; display: block;"
@@ -144,20 +144,20 @@
                         <iframe
                             [srcdoc]="htmlSeguro"
                             sandbox="allow-same-origin"
-                            class="w-full h-[480px] border border-slate-200 rounded-md bg-white">
+                            class="w-full h-[480px] border border-slate-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900">
                         </iframe>
                         }</div>
 
                     @if (error()) {
-                    <div class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-md text-xs font-semibold flex items-center gap-2">
+                    <div class="p-3 alert-error rounded-md text-xs font-semibold flex items-center gap-2">
                         <span class="w-1.5 h-1.5 bg-red-500 rounded-full shrink-0"></span>
                         {{ error() }}
                     </div>
                     }
 
-                    <div class="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
+                    <div class="pt-6 border-t border-slate-200 dark:border-zinc-700 flex items-center justify-end gap-3">
                         <a routerLink="/sistema/plantillas"
-                            class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                            class="px-4 py-2 text-sm font-bold text-muted hover:text-slate-600 transition-colors">
                             Cancelar
                         </a>
                         <button [disabled]="guardando()" (click)="guardar()"

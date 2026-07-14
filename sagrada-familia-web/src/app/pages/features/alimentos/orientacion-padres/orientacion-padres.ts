@@ -112,11 +112,11 @@ export class OrientacionPadres implements OnInit {
 
   private estiloCategoria(nombre: string): { icono: string; color: string } {
     const mapa: Record<string, { icono: string; color: string }> = {
-      'Frutas':               { icono: 'heroSparkles',      color: 'bg-orange-100 text-orange-600' },
-      'Verduras':             { icono: 'matEcoOutline',     color: 'bg-green-100 text-green-600' },
-      'Proteínas':            { icono: 'heroShieldCheck',   color: 'bg-red-100 text-red-600' },
-      'Cereales y tubérculos':{ icono: 'heroCake',          color: 'bg-amber-100 text-amber-700' },
-      'Lácteos':              { icono: 'heroBeaker',        color: 'bg-blue-100 text-blue-600' },
+      'Frutas':               { icono: 'heroSparkles',      color: 'bg-orange-100 dark:bg-orange-500/15 text-orange-600' },
+      'Verduras':             { icono: 'matEcoOutline',     color: 'bg-green-100 dark:bg-green-500/15 text-green-600' },
+      'Proteínas':            { icono: 'heroShieldCheck',   color: 'bg-red-100 dark:bg-red-500/15 text-red-600' },
+      'Cereales y tubérculos':{ icono: 'heroCake',          color: 'bg-amber-100 dark:bg-amber-500/15 text-amber-700' },
+      'Lácteos':              { icono: 'heroBeaker',        color: 'bg-blue-100 dark:bg-blue-500/15 text-blue-600' },
     };
     return mapa[nombre] ?? { icono: 'matAutoAwesomeOutline', color: 'bg-slate-100 text-slate-600' };
   }

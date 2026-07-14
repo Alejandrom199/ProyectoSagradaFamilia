@@ -7,27 +7,27 @@
     @if (esMedico) {
 
     @if (resetExito()) {
-    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-green-50 border border-green-200 text-green-700 text-sm">
+    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md alert-success text-sm">
         Se envió el correo de restablecimiento correctamente.
     </div>
     }
     @if (resetError()) {
-    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md alert-error text-sm">
         {{ resetError() }}
     </div>
     }
 
     <div class="mb-6 flex justify-between items-center">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">{{ nombreCompleto() }}</h2>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-zinc-100">{{ nombreCompleto() }}</h2>
             <p class="page-subtitle">Médico del sistema</p>
         </div>
         <div class="flex items-center gap-3">
             @if (!esPropioUsuario()) {
             <button (click)="toggleEstado()" [disabled]="procesando()"
                 class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors"
-                [class.bg-red-100]="u.activo" [class.text-red-700]="u.activo" [class.hover:bg-red-200]="u.activo"
-                [class.bg-green-100]="!u.activo" [class.text-green-700]="!u.activo" [class.hover:bg-green-200]="!u.activo">
+                [class.bg-red-100]="u.activo" [class.dark:bg-red-500/15]="u.activo" [class.text-red-700]="u.activo" [class.hover:bg-red-200]="u.activo"
+                [class.bg-green-100]="!u.activo" [class.dark:bg-green-500/15]="!u.activo" [class.text-green-700]="!u.activo" [class.hover:bg-green-200]="!u.activo">
                 <ng-icon [name]="u.activo ? 'matLockOutline' : 'matLockOpenOutline'" class="text-base"></ng-icon>
                 {{ u.activo ? 'Desactivar' : 'Activar' }}
             </button>
@@ -41,34 +41,34 @@
     </div>
 
     @if (medico(); as m) {
-    <div class="bg-white border border-slate-200 mb-6">
-        <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
-            <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+    <div class="card mb-6">
+        <div class="card-header">
+            <div class="w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
                 <ng-icon name="matSchoolOutline" class="text-blue-500 text-base"></ng-icon>
             </div>
-            <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Información del médico</h3>
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Información del médico</h3>
             <span class="ml-auto px-2 py-0.5 rounded text-xs font-bold"
-                [class.bg-green-100]="u.activo" [class.text-green-700]="u.activo"
-                [class.bg-red-100]="!u.activo" [class.text-red-700]="!u.activo">
+                [class.bg-green-100]="u.activo" [class.dark:bg-green-500/15]="u.activo" [class.text-green-700]="u.activo"
+                [class.bg-red-100]="!u.activo" [class.dark:bg-red-500/15]="!u.activo" [class.text-red-700]="!u.activo">
                 {{ u.activo ? 'Activo' : 'Inactivo' }}
             </span>
         </div>
         <div class="px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-6">
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre completo</p>
-                <p class="text-sm font-semibold text-slate-800">{{ m.nombre }} {{ m.apellido }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Nombre completo</p>
+                <p class="text-sm font-semibold text-slate-800 dark:text-zinc-100">{{ m.nombre }} {{ m.apellido }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Email</p>
-                <p class="text-sm font-medium text-slate-700 break-all">{{ m.email }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Email</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300 break-all">{{ m.email }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Especialidad</p>
-                <p class="text-sm font-medium text-slate-700">{{ m.especialidad ?? '—' }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Especialidad</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">{{ m.especialidad ?? '—' }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Teléfono</p>
-                <p class="text-sm font-medium text-slate-700">{{ m.telefono ?? '—' }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Teléfono</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">{{ m.telefono ?? '—' }}</p>
             </div>
         </div>
     </div>
@@ -76,14 +76,14 @@
 
     <div class="flex items-center justify-between mb-4">
         <div>
-            <h3 class="text-lg font-bold text-slate-800">Pacientes asignados</h3>
-            <p class="text-sm text-slate-500 mt-0.5">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Pacientes asignados</h3>
+            <p class="text-sm text-secondary mt-0.5">
                 {{ pacientes().length }} paciente{{ pacientes().length !== 1 ? 's' : '' }} bajo cuidado
             </p>
         </div>
     </div>
 
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Pacientes del médico" [data]="pacientes()" [columns]="columnasPacientes"
             [actions]="accionesPacientes" searchPlaceholder="Buscar por nombre..."
             emptyMessage="Este médico aún no tiene pacientes asignados." [showExportar]="false">
@@ -102,27 +102,27 @@
     @if (esPadre) {
 
     @if (resetExito()) {
-    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-green-50 border border-green-200 text-green-700 text-sm">
+    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md alert-success text-sm">
         Se envió el correo de restablecimiento correctamente.
     </div>
     }
     @if (resetError()) {
-    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+    <div class="mb-4 flex items-center gap-2 px-4 py-3 rounded-md alert-error text-sm">
         {{ resetError() }}
     </div>
     }
 
     <div class="mb-6 flex justify-between items-center">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800">{{ nombreCompleto() }}</h2>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-zinc-100">{{ nombreCompleto() }}</h2>
             <p class="page-subtitle">Representante del sistema</p>
         </div>
         <div class="flex items-center gap-3">
             @if (!esPropioUsuario()) {
             <button (click)="toggleEstado()" [disabled]="procesando()"
                 class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors"
-                [class.bg-red-100]="u.activo" [class.text-red-700]="u.activo" [class.hover:bg-red-200]="u.activo"
-                [class.bg-green-100]="!u.activo" [class.text-green-700]="!u.activo" [class.hover:bg-green-200]="!u.activo">
+                [class.bg-red-100]="u.activo" [class.dark:bg-red-500/15]="u.activo" [class.text-red-700]="u.activo" [class.hover:bg-red-200]="u.activo"
+                [class.bg-green-100]="!u.activo" [class.dark:bg-green-500/15]="!u.activo" [class.text-green-700]="!u.activo" [class.hover:bg-green-200]="!u.activo">
                 <ng-icon [name]="u.activo ? 'matLockOutline' : 'matLockOpenOutline'" class="text-base"></ng-icon>
                 {{ u.activo ? 'Desactivar' : 'Activar' }}
             </button>
@@ -136,34 +136,34 @@
     </div>
 
     @if (padre(); as p) {
-    <div class="bg-white border border-slate-200 mb-6">
-        <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
-            <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+    <div class="card mb-6">
+        <div class="card-header">
+            <div class="w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
                 <ng-icon name="matPersonOutline" class="text-blue-500 text-base"></ng-icon>
             </div>
-            <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Información del representante</h3>
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Información del representante</h3>
             <span class="ml-auto px-2 py-0.5 rounded text-xs font-bold"
-                [class.bg-green-100]="u.activo" [class.text-green-700]="u.activo"
-                [class.bg-red-100]="!u.activo" [class.text-red-700]="!u.activo">
+                [class.bg-green-100]="u.activo" [class.dark:bg-green-500/15]="u.activo" [class.text-green-700]="u.activo"
+                [class.bg-red-100]="!u.activo" [class.dark:bg-red-500/15]="!u.activo" [class.text-red-700]="!u.activo">
                 {{ u.activo ? 'Activo' : 'Inactivo' }}
             </span>
         </div>
         <div class="px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-6">
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre completo</p>
-                <p class="text-sm font-semibold text-slate-800">{{ p.nombre }} {{ p.apellido }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Nombre completo</p>
+                <p class="text-sm font-semibold text-slate-800 dark:text-zinc-100">{{ p.nombre }} {{ p.apellido }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Email</p>
-                <p class="text-sm font-medium text-slate-700 break-all">{{ p.email }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Email</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300 break-all">{{ p.email }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Teléfono</p>
-                <p class="text-sm font-medium text-slate-700">{{ p.telefono ?? '—' }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Teléfono</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">{{ p.telefono ?? '—' }}</p>
             </div>
             <div class="flex flex-col gap-1">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Médico asignado</p>
-                <p class="text-sm font-medium text-slate-700">{{ p.medicoNombreCompleto }}</p>
+                <p class="text-xs font-bold text-secondary uppercase tracking-wider">Médico asignado</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">{{ p.medicoNombreCompleto }}</p>
             </div>
         </div>
     </div>
@@ -171,14 +171,14 @@
 
     <div class="flex items-center justify-between mb-4">
         <div>
-            <h3 class="text-lg font-bold text-slate-800">Hijos registrados</h3>
-            <p class="text-sm text-slate-500 mt-0.5">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Hijos registrados</h3>
+            <p class="text-sm text-secondary mt-0.5">
                 {{ hijos().length }} hijo{{ hijos().length !== 1 ? 's' : '' }} registrado{{ hijos().length !== 1 ? 's' : '' }}
             </p>
         </div>
     </div>
 
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Hijos del representante" [data]="hijos()" [columns]="columnasHijos"
             [actions]="accionesHijos" searchPlaceholder="Buscar por nombre..."
             emptyMessage="Este representante no tiene hijos registrados." [showExportar]="false">
@@ -196,64 +196,64 @@
     <!-- ===================== VISTA ADMIN (cuenta administrativa) ===================== -->
     @if (!esMedico && !esPadre) {
     <div class="max-w-4xl mx-auto">
-        <div class="bg-white border border-slate-200 overflow-hidden">
+        <div class="card overflow-hidden">
 
-            <div class="bg-slate-50 p-8 border-b border-slate-200 flex items-center gap-6">
-                <div class="w-20 h-20 bg-white text-blue-600 rounded-md flex items-center justify-center text-3xl font-black border border-slate-200">
+            <div class="bg-slate-50 dark:bg-zinc-800 p-8 border-b border-slate-200 dark:border-zinc-700 flex items-center gap-6">
+                <div class="w-20 h-20 bg-white dark:bg-zinc-900 text-blue-600 rounded-md flex items-center justify-center text-3xl font-black border border-slate-200 dark:border-zinc-700">
                     {{ u.email.charAt(0).toUpperCase() }}
                 </div>
                 <div class="flex-1">
-                    <h2 class="text-2xl font-bold text-slate-800">{{ u.email }}</h2>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-zinc-100">{{ u.email }}</h2>
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-blue-100 text-blue-700">
+                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-blue-100 dark:bg-blue-500/15 text-blue-700">
                             {{ u.rolNombre }}
                         </span>
                         @if (u.activo) {
-                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-green-100 text-green-700">Activo</span>
+                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-green-100 dark:bg-green-500/15 text-green-700">Activo</span>
                         } @else {
-                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-red-100 text-red-700">Inactivo</span>
+                        <span class="px-3 py-1 rounded-md text-xs font-bold bg-red-100 dark:bg-red-500/15 text-red-700">Inactivo</span>
                         }
                     </div>
                 </div>
             </div>
 
             <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
+                <div class="flex gap-4 p-4 bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
                     <ng-icon name="matEmailOutline" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</p>
-                        <p class="text-sm text-slate-800 font-medium break-all">{{ u.email }}</p>
+                        <p class="text-[10px] font-black text-muted uppercase tracking-widest">Email</p>
+                        <p class="text-sm text-slate-800 dark:text-zinc-100 font-medium break-all">{{ u.email }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
+                <div class="flex gap-4 p-4 bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
                     <ng-icon name="matAdminPanelSettingsOutline" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rol</p>
-                        <p class="text-sm text-slate-800 font-medium">{{ u.rolNombre }}</p>
+                        <p class="text-[10px] font-black text-muted uppercase tracking-widest">Rol</p>
+                        <p class="text-sm text-slate-800 dark:text-zinc-100 font-medium">{{ u.rolNombre }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
+                <div class="flex gap-4 p-4 bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
                     <ng-icon name="matCalendarMonthOutline" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fecha de alta</p>
-                        <p class="text-sm text-slate-800 font-medium">{{ formatearFecha(u.fechaCreacion) }}</p>
+                        <p class="text-[10px] font-black text-muted uppercase tracking-widest">Fecha de alta</p>
+                        <p class="text-sm text-slate-800 dark:text-zinc-100 font-medium">{{ formatearFecha(u.fechaCreacion) }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-4 p-4 bg-slate-50/50 border border-slate-200">
+                <div class="flex gap-4 p-4 bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
                     <ng-icon name="matAccountCircleOutline" class="text-blue-500 text-2xl mt-1"></ng-icon>
                     <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tipo de cuenta</p>
-                        <p class="text-sm text-slate-800 font-medium">Cuenta administrativa</p>
+                        <p class="text-[10px] font-black text-muted uppercase tracking-widest">Tipo de cuenta</p>
+                        <p class="text-sm text-slate-800 dark:text-zinc-100 font-medium">Cuenta administrativa</p>
                     </div>
                 </div>
             </div>
 
-            <div class="px-8 py-6 border-t border-slate-200 flex items-center justify-between">
+            <div class="px-8 py-6 border-t border-slate-200 dark:border-zinc-700 flex items-center justify-between">
                 <a routerLink="/usuarios"
-                    class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                    class="px-4 py-2 text-sm font-bold text-muted hover:text-slate-600 transition-colors">
                     Volver
                 </a>
                 @if (!esPropioUsuario()) {

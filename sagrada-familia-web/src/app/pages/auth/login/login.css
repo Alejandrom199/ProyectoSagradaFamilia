@@ -10,6 +10,21 @@
     background-repeat: no-repeat;
 }
 
+/* Modo oscuro: mismo acento celeste, pero sobre gris oscuro en vez de blanco.
+   :host-context(.dark) es necesario (en vez de .dark) porque la clase .dark
+   vive en <html>, fuera de este componente — con encapsulación emulada,
+   Angular le exige el atributo _ngcontent del componente a CADA clase del
+   selector, incluyendo ancestros externos, así que ".dark .login-background"
+   nunca hace match. */
+:host-context(.dark) .login-background {
+    background-color: var(--color-background);
+    background-image:
+        radial-gradient(ellipse 65% 65% at -5% -5%,   rgba(37, 99, 235, 0.38) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 55% at 105% 108%,  rgba(99, 102, 241, 0.32) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 45% at 108% -2%,  rgba(147, 197, 253, 0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at -2%  108%, rgba(165, 180, 252, 0.12) 0%, transparent 55%);
+}
+
 /* Efecto de cristal para la tarjeta */
 .card {
     background: rgba(255, 255, 255, 0.75);

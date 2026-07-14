@@ -1,21 +1,32 @@
 <div class="flex items-center" [class.gap-3]="sidebarExpandido()">
-    <div class="w-10 h-10 rounded-md flex items-center justify-center text-sm font-bold border border-none shrink-0"
-        [ngClass]="colorClase()">
+    @if (enlacePerfil()) {
+    <a routerLink="/perfil" class="w-10 h-10 rounded-md flex items-center justify-center text-sm font-bold shrink-0"
+        [ngClass]="colorClase()"
+        [tooltip]="tooltipTexto()"
+        [tooltipPosition]="tooltipPosicion()">
+        {{ iniciales() }}
+    </a>
+    } @else {
+    <div class="w-10 h-10 rounded-md flex items-center justify-center text-sm font-bold shrink-0"
+        [ngClass]="colorClase()"
+        [tooltip]="tooltipTexto()"
+        [tooltipPosition]="tooltipPosicion()">
         {{ iniciales() }}
     </div>
+    }
 
     @if (sidebarExpandido()) {
     <div class="flex-1 min-w-0">
-        <p class="text-slate-800 text-sm truncate"
+        <p class="text-slate-800 dark:text-zinc-100 text-sm truncate"
            [tooltip]="nombre() + ' ' + apellido()"
            tooltipPosition="top">{{ nombre() }} {{ apellido() }}</p>
 
         @if (textoSexo()) {
-        <p class="text-xs text-slate-500 truncate">{{ textoSexo() }}</p>
+        <p class="text-xs text-secondary truncate">{{ textoSexo() }}</p>
         }
 
         @if (textoRol()) {
-        <p class="text-xs text-slate-500 truncate">{{ textoRol() }}</p>
+        <p class="text-xs text-secondary truncate">{{ textoRol() }}</p>
         }
     </div>
     }

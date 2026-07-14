@@ -2,33 +2,33 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="max-w-5xl mx-auto">
-        <div class="bg-white border border-slate-200 overflow-hidden flex flex-col lg:flex-row">
+        <div class="card overflow-hidden flex flex-col lg:flex-row">
 
-            <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
+            <div class="lg:w-1/3 bg-slate-50 dark:bg-zinc-800/50 border-r border-slate-200 dark:border-zinc-700 p-8">
                 <div class="sticky top-8">
                     <div class="w-12 h-12 bg-blue-600 rounded-md flex items-center justify-center mb-6">
                         <ng-icon name="matScienceOutline" color="white"></ng-icon>
                     </div>
 
                     <h2 class="panel-title">Nueva receta médica</h2>
-                    <p class="text-sm text-slate-500 mt-3 leading-relaxed">
+                    <p class="text-sm text-secondary mt-3 leading-relaxed">
                         Registra los medicamentos prescritos durante la consulta.
                     </p>
 
                     @if (cita()) {
-                    <div class="mt-6 p-4 bg-white rounded-md border border-slate-200">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Contexto</p>
+                    <div class="mt-6 p-4 card">
+                        <p class="text-xs font-bold text-secondary uppercase tracking-wider mb-3">Contexto</p>
                         <div class="space-y-2">
                             <div class="flex items-center gap-2">
                                 <ng-icon name="matPersonOutline" class="text-blue-400 text-sm shrink-0"></ng-icon>
-                                <span class="text-sm font-semibold text-slate-800">{{ cita()?.nombreNino }}</span>
+                                <span class="text-sm font-semibold text-slate-800 dark:text-zinc-100">{{ cita()?.nombreNino }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <ng-icon name="matCalendarMonthOutline" class="text-blue-400 text-sm shrink-0"></ng-icon>
-                                <span class="text-xs text-slate-500">{{ formatearFecha(cita()!.fechaHora) }}</span>
+                                <span class="text-xs text-secondary">{{ formatearFecha(cita()!.fechaHora) }}</span>
                             </div>
                             @if (cita()?.motivo) {
-                            <p class="text-xs text-slate-500 pl-5">{{ cita()?.motivo }}</p>
+                            <p class="text-xs text-secondary pl-5">{{ cita()?.motivo }}</p>
                             }
                         </div>
                     </div>
@@ -38,15 +38,15 @@
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="matScienceOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Medicamentos</h4>
-                                <p class="text-xs text-slate-500 mt-1">Agrega uno o más medicamentos con dosis, frecuencia, vía y duración.</p>
+                                <h4 class="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Medicamentos</h4>
+                                <p class="text-xs text-secondary mt-1">Agrega uno o más medicamentos con dosis, frecuencia, vía y duración.</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="matAssignmentOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Indicaciones</h4>
-                                <p class="text-xs text-slate-500 mt-1">Observaciones adicionales para los padres.</p>
+                                <h4 class="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Indicaciones</h4>
+                                <p class="text-xs text-secondary mt-1">Observaciones adicionales para los padres.</p>
                             </div>
                         </div>
                     </div>
@@ -57,91 +57,91 @@
                 <form [formGroup]="formPrescripcion" (ngSubmit)="guardar()" class="space-y-6">
 
                     <div formArrayName="medicamentos" class="space-y-4">
-                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Medicamentos *</label>
+                        <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Medicamentos *</label>
 
                         @for (grupo of medicamentos.controls; track $index; let i = $index) {
-                        <div [formGroupName]="i" class="relative grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 border border-slate-200 rounded-md bg-slate-50/30">
+                        <div [formGroupName]="i" class="relative grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 border border-slate-200 dark:border-zinc-700 rounded-md bg-slate-50 dark:bg-zinc-800/30">
                             @if (medicamentos.length > 1) {
                             <button type="button" (click)="quitarMedicamento(i)"
-                                class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                                class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-md text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
                                 <ng-icon name="matCancelOutline" class="text-sm"></ng-icon>
                             </button>
                             }
 
                             <div class="flex flex-col gap-1 sm:col-span-2">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase">Nombre del medicamento *</label>
+                                <label class="text-[11px] font-bold text-secondary uppercase">Nombre del medicamento *</label>
                                 <input formControlName="nombre" type="text" placeholder="Ej. Paracetamol"
-                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
                             </div>
 
                             <div class="flex flex-col gap-1">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase">Presentación</label>
+                                <label class="text-[11px] font-bold text-secondary uppercase">Presentación</label>
                                 <input formControlName="presentacion" type="text" placeholder="Ej. Jarabe 120mg/5mL"
-                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
                             </div>
 
                             <div class="flex flex-col gap-1">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase">Dosis *</label>
+                                <label class="text-[11px] font-bold text-secondary uppercase">Dosis *</label>
                                 <input formControlName="dosis" type="text" placeholder="Ej. 2.5mL"
-                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
                             </div>
 
                             <div class="flex flex-col gap-1">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase">Frecuencia *</label>
+                                <label class="text-[11px] font-bold text-secondary uppercase">Frecuencia *</label>
                                 <input formControlName="frecuencia" type="text" placeholder="Ej. Cada 6 horas"
-                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
                             </div>
 
                             <div class="flex flex-col gap-1">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase">Vía de administración *</label>
+                                <label class="text-[11px] font-bold text-secondary uppercase">Vía de administración *</label>
                                 <input formControlName="viaAdministracion" type="text" placeholder="Ej. Oral"
-                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
                             </div>
 
                             <div class="flex flex-col gap-1">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase">Duración</label>
+                                <label class="text-[11px] font-bold text-secondary uppercase">Duración</label>
                                 <input formControlName="duracion" type="text" placeholder="Ej. 3 días"
-                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
                             </div>
 
                             <div class="flex flex-col gap-1">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase">Cantidad</label>
+                                <label class="text-[11px] font-bold text-secondary uppercase">Cantidad</label>
                                 <input formControlName="cantidad" type="text" placeholder="Ej. 1 frasco"
-                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
                             </div>
 
                             <div class="flex flex-col gap-1 sm:col-span-2">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase">Observaciones</label>
+                                <label class="text-[11px] font-bold text-secondary uppercase">Observaciones</label>
                                 <textarea formControlName="observaciones" rows="2"
-                                    class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm resize-none"></textarea>
+                                    class="w-full px-3 py-2 rounded-md border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm resize-none"></textarea>
                             </div>
                         </div>
                         }
 
                         <button type="button" (click)="agregarMedicamento()"
-                            class="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+                            class="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-md transition-colors">
                             <ng-icon name="matScienceOutline" class="text-sm"></ng-icon>
                             Agregar medicamento
                         </button>
                     </div>
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Indicaciones adicionales</label>
+                        <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Indicaciones adicionales</label>
                         <textarea formControlName="indicaciones" rows="3"
                             placeholder="Ej. Reposo en cama, abundantes líquidos, controlar fiebre."
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm resize-none"></textarea>
+                            class="form-input resize-none"></textarea>
                     </div>
 
                     @if (error()) {
-                    <div class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-md text-xs font-semibold flex items-center gap-2">
+                    <div class="p-3 alert-error rounded-md text-xs font-semibold flex items-center gap-2">
                         <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                         {{ error() }}
                     </div>
                     }
 
-                    <div class="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
+                    <div class="pt-6 border-t border-slate-200 dark:border-zinc-700 flex items-center justify-end gap-3">
                         <button type="button" (click)="cancelar()"
-                            class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                            class="px-4 py-2 text-sm font-bold text-muted hover:text-slate-600 transition-colors">
                             Cancelar
                         </button>
                         <button type="submit" [disabled]="guardando() || formPrescripcion.invalid"

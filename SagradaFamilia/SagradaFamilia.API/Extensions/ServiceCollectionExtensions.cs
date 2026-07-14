@@ -158,6 +158,7 @@ namespace SagradaFamilia.API.Extensions
             services.AddScoped<IPlantillaCorreoService, PlantillaCorreoService>();
             services.AddScoped<IEventoCorreoService, EventoCorreoService>();
             services.AddScoped<IDashboardAdminService, DashboardAdminService>();
+            services.AddScoped<IVersionService, VersionService>();
 
             return services;
         }

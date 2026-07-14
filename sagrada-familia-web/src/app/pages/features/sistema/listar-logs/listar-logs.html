@@ -8,7 +8,7 @@
 
     </div>
 
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Eventos del sistema" [data]="logs()" [columns]="columnas" [serverSide]="true"
             [serverTotalItems]="totalLogs()" (onServerQuery)="onServerQuery($event)" [exportExcel]="true"
             exportFileName="logs-sistema" [showActualizar]="true" [showExportar]="true" [showColumnas]="true"

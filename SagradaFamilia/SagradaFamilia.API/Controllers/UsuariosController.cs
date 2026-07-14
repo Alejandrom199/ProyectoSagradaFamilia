@@ -6,7 +6,6 @@ using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.DTOs.Common;
 using SagradaFamilia.Application.Interfaces.Services;
 
-[Authorize(Roles = "Administrador")]
 [ApiController]
 [Route("api/[controller]")]
 public class UsuariosController : BaseController
@@ -16,6 +15,7 @@ public class UsuariosController : BaseController
     public UsuariosController(IUsuarioService usuarioService) => _usuarioService = usuarioService;
 
     [HttpGet]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<IEnumerable<UsuarioDto.ListResponse>>>> ObtenerTodos()
     {
         var response = await _usuarioService.ObtenerTodosAsync();
@@ -23,6 +23,7 @@ public class UsuariosController : BaseController
     }
 
     [HttpGet("paginado")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<PagedResponse<UsuarioDto.ListResponse>>> ObtenerPaginado(
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
         [FromQuery] string? search = null, [FromQuery] string? sortBy = null, [FromQuery] bool asc = true)
@@ -32,6 +33,7 @@ public class UsuariosController : BaseController
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<UsuarioDto.DetailResponse>>> ObtenerPorId(int id)
     {
         var response = await _usuarioService.ObtenerPorIdAsync(id);
@@ -39,6 +41,7 @@ public class UsuariosController : BaseController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<UsuarioDto.DetailResponse>>> CrearAdmin([FromBody] UsuarioDto.Create request)
     {
         var response = await _usuarioService.CrearAsync(request);
@@ -46,6 +49,7 @@ public class UsuariosController : BaseController
     }
 
     [HttpPatch("{id:int}/estado")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse>> ActualizarEstado(int id, [FromBody] UsuarioDto.ActualizarEstadoRequest request)
     {
         var currentUserId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
@@ -54,6 +58,7 @@ public class UsuariosController : BaseController
     }
 
     [HttpGet("{id:int}/historial-estado")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<IEnumerable<UsuarioDto.EstadoHistorialResponse>>>> ObtenerHistorialEstado(int id)
     {
         var historial = await _usuarioService.ObtenerHistorialEstadoAsync(id);
@@ -71,6 +76,7 @@ public class UsuariosController : BaseController
     }
 
     [HttpGet("exportar")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> ExportarExcel()
     {
         var bytes = await _usuarioService.ExportarExcelAsync();
@@ -79,6 +85,7 @@ public class UsuariosController : BaseController
     }
 
     [HttpGet("plantilla")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> DescargarPlantilla()
     {
         var bytes = await _usuarioService.GenerarPlantillaAsync();
@@ -88,6 +95,7 @@ public class UsuariosController : BaseController
 
     [HttpPost("importar")]
     [Consumes("multipart/form-data")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ApiResponse<UsuarioDto.ImportResultado>>> Importar([FromForm] ImportarArchivoRequest request)
     {
         var archivo = request.Archivo;

@@ -12,12 +12,12 @@
     </div>
 
     @if (auth.esAdmin()) {
-    <div class="bg-white border border-slate-200 p-6 mb-6">
-        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Filtrar por registro</p>
+    <div class="card p-6 mb-6">
+        <p class="text-xs font-bold text-secondary uppercase tracking-wider mb-4">Filtrar por registro</p>
         <form [formGroup]="formFiltro" (ngSubmit)="buscar()"
             class="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end">
             <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-slate-600 uppercase ml-1">Tabla *</label>
+                <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Tabla *</label>
                 <searchable-select [options]="tablasOpciones" labelKey="label" valueKey="value"
                     [value]="f['tabla'].value" (valueChange)="f['tabla'].setValue($event)"
                     placeholder="Seleccionar tabla..." searchPlaceholder="Buscar módulo...">
@@ -25,10 +25,10 @@
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-slate-600 uppercase ml-1">Clave primaria <span
-                        class="text-slate-400 normal-case font-normal">(opcional)</span></label>
+                <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Clave primaria <span
+                        class="text-muted normal-case font-normal">(opcional)</span></label>
                 <input formControlName="pk" type="text" placeholder="Ej. 42 — dejar vacío para ver toda la tabla"
-                    class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                    class="form-input">
             </div>
 
             <button type="submit" [disabled]="formFiltro.invalid"
@@ -42,9 +42,9 @@
 
     @if (tablaFiltroActivo()) {
     <div class="flex items-center gap-3 mb-3 px-1">
-        <span class="text-xs text-slate-500">
-            Mostrando <strong class="text-slate-700">{{ registros().length }}</strong> registros de
-            <strong class="text-slate-700">{{ formFiltro.get('tabla')?.value }}</strong>
+        <span class="text-xs text-secondary">
+            Mostrando <strong class="text-slate-700 dark:text-zinc-300">{{ registros().length }}</strong> registros de
+            <strong class="text-slate-700 dark:text-zinc-300">{{ formFiltro.get('tabla')?.value }}</strong>
         </span>
         <button (click)="limpiarFiltroTabla()"
             class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1">
@@ -54,7 +54,7 @@
     </div>
     }
 
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable [title]="auth.esAdmin() ? 'Historial de cambios' : 'Mi actividad'" [data]="registros()"
             [columns]="columnasActivas" [actions]="acciones" [serverSide]="auth.esAdmin() && !tablaFiltroActivo()"
             [serverTotalItems]="totalRegistros()" [filterOptions]="filterOptions"
@@ -68,13 +68,13 @@
     @if (registroDetalle(); as d) {
     <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
         <div
-            class="bg-white rounded-md w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200">
+            class="card w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
 
             <!-- Cabecera del modal -->
-            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
+            <div class="card-header justify-between shrink-0">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800">Detalle del cambio</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Detalle del cambio</h3>
+                    <p class="text-xs text-secondary mt-0.5">
                         @if (auth.esAdmin()) {
                         {{ d.tabla }} #{{ d.clavePrimaria }} · {{ d.accion }} · {{ d.usuarioNombreCompleto ||
                         d.usuarioEmail || 'Sistema' }}
@@ -84,79 +84,79 @@
                     </p>
                 </div>
                 <button (click)="registroDetalle.set(null)"
-                    class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+                    class="text-muted hover:text-slate-600 dark:hover:text-zinc-300 text-2xl leading-none">&times;</button>
             </div>
 
             @if (auth.esAdmin()) {
             <!-- Vista admin: JSON formateado -->
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-auto">
                 <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Valores
+                    <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-2">Valores
                         anteriores</p>
                     <pre
-                        class="text-xs bg-red-50 p-3 rounded-md border border-red-100 overflow-auto max-h-80 text-red-900 whitespace-pre-wrap">{{ d.valoresAntiguos | jsonFormat }}</pre>
+                        class="text-xs bg-red-50 dark:bg-red-500/10 p-3 rounded-md border border-red-100 dark:border-red-500/20 overflow-auto max-h-80 text-red-900 dark:text-red-300 whitespace-pre-wrap">{{ d.valoresAntiguos | jsonFormat }}</pre>
                 </div>
                 <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Valores
+                    <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-2">Valores
                         nuevos</p>
                     <pre
-                        class="text-xs bg-green-50 p-3 rounded-md border border-green-100 overflow-auto max-h-80 text-green-900 whitespace-pre-wrap">{{ d.valoresNuevos | jsonFormat }}</pre>
+                        class="text-xs bg-green-50 dark:bg-green-500/10 p-3 rounded-md border border-green-100 dark:border-green-500/20 overflow-auto max-h-80 text-green-900 dark:text-green-300 whitespace-pre-wrap">{{ d.valoresNuevos | jsonFormat }}</pre>
                 </div>
             </div>
             } @else {
             <!-- Vista médico: tabla legible -->
             <div class="p-6 overflow-auto">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
+                <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-4">
                     @if (d.accion === 'Creación') { Datos registrados }
                     @else if (d.accion === 'Eliminación') { Registro eliminado }
                     @else { Campos modificados }
                 </p>
 
                 @if (camposModificados().length === 0) {
-                <p class="text-sm text-slate-400 italic text-center py-8">Sin detalle disponible</p>
+                <p class="text-sm text-muted italic text-center py-8">Sin detalle disponible</p>
                 } @else {
-                <div class="border border-slate-200 overflow-hidden">
+                <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
                     <table class="w-full text-sm">
-                        <thead class="bg-slate-50 border-b border-slate-200">
+                        <thead class="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700">
                             <tr>
-                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase w-1/3">
+                                <th class="text-left px-4 py-2.5 text-xs font-bold text-secondary uppercase w-1/3">
                                     Campo</th>
                                 @if (d.accion === 'Actualización') {
-                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-400 uppercase w-1/3">
+                                <th class="text-left px-4 py-2.5 text-xs font-bold text-muted uppercase w-1/3">
                                     Antes</th>
-                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-700 uppercase w-1/3">
+                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase w-1/3">
                                     Después</th>
                                 } @else {
-                                <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase">
+                                <th class="text-left px-4 py-2.5 text-xs font-bold text-secondary uppercase">
                                     Valor</th>
                                 }
                             </tr>
                         </thead>
                         <tbody>
                             @for (campo of camposModificados(); track campo.clave) {
-                            <tr class="border-b border-slate-100 last:border-0" [class.bg-blue-50]="campo.cambio">
+                            <tr class="border-b border-slate-100 dark:border-zinc-800 last:border-0" [class.bg-blue-50]="campo.cambio" [class.dark:bg-blue-500/10]="campo.cambio">
                                 <td class="px-4 py-2.5">
                                     <div class="flex items-center gap-2">
                                         @if (campo.cambio) {
                                         <span class="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0"></span>
                                         }
-                                        <span class="font-medium" [class.text-slate-800]="campo.cambio"
-                                            [class.text-slate-500]="!campo.cambio">
+                                        <span class="font-medium" [class.text-slate-800]="campo.cambio" [class.dark:text-zinc-100]="campo.cambio"
+                                            [class.text-slate-500]="!campo.cambio" [class.dark:text-zinc-400]="!campo.cambio">
                                             {{ campo.etiqueta }}
                                         </span>
                                     </div>
                                 </td>
                                 @if (d.accion === 'Actualización') {
-                                <td class="px-4 py-2.5" [class.text-red-600]="campo.cambio"
-                                    [class.line-through]="campo.cambio" [class.text-slate-400]="!campo.cambio">
+                                <td class="px-4 py-2.5" [class.text-red-600]="campo.cambio" [class.dark:text-red-400]="campo.cambio"
+                                    [class.line-through]="campo.cambio" [class.text-slate-400]="!campo.cambio" [class.dark:text-zinc-500]="!campo.cambio">
                                     {{ campo.antes }}
                                 </td>
-                                <td class="px-4 py-2.5 font-medium" [class.text-green-700]="campo.cambio"
-                                    [class.text-slate-500]="!campo.cambio">
+                                <td class="px-4 py-2.5 font-medium" [class.text-green-700]="campo.cambio" [class.dark:text-green-400]="campo.cambio"
+                                    [class.text-slate-500]="!campo.cambio" [class.dark:text-zinc-400]="!campo.cambio">
                                     {{ campo.despues }}
                                 </td>
                                 } @else {
-                                <td class="px-4 py-2.5 text-slate-700">
+                                <td class="px-4 py-2.5 text-slate-700 dark:text-zinc-300">
                                     {{ d.accion === 'Eliminación' ? campo.antes : campo.despues }}
                                 </td>
                                 }
@@ -170,9 +170,9 @@
             }
 
             <!-- Pie del modal -->
-            <div class="px-6 py-4 border-t border-slate-200 flex justify-end shrink-0">
+            <div class="px-6 py-4 border-t border-slate-200 dark:border-zinc-700 flex justify-end shrink-0">
                 <button (click)="registroDetalle.set(null)"
-                    class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">
+                    class="px-4 py-2 text-sm font-bold text-slate-600 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-100 transition-colors">
                     Cerrar
                 </button>
             </div>

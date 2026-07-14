@@ -57,7 +57,7 @@ export class ListarPacientes implements OnInit {
     },
     {
       key: 'edadMeses', label: 'Edad Actual', sortable: true, filterable: true,
-      render: (row) => `<span class="font-medium text-gray-700">${formatearEdad(row.edadMeses)}</span>`,
+      render: (row) => `<span class="font-medium text-[var(--color-text-secondary)]">${formatearEdad(row.edadMeses)}</span>`,
       exportValue: (row) => formatearEdad(row.edadMeses)
     },
     {

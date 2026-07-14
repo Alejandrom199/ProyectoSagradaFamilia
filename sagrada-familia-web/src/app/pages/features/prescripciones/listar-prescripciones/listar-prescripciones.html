@@ -7,7 +7,7 @@
         </div>
     </div>
 
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Recetas médicas" [data]="prescripciones()" [columns]="columnas"
             [serverSide]="true" [serverTotalItems]="totalPrescripciones()" [filterOptions]="filterOptions()" (onServerQuery)="onServerQuery($event)"
             [exportExcel]="true" exportFileName="prescripciones-paciente" [showActualizar]="true" [showExportar]="true"

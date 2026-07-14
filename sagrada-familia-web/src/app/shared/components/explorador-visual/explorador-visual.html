@@ -3,23 +3,23 @@
     <!-- Búsqueda -->
     <div class="relative">
         <ng-icon name="matSearchOutline" size="16"
-            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></ng-icon>
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"></ng-icon>
         <input type="text" [value]="busqueda()" (input)="actualizarBusqueda($event)"
             placeholder="Buscar alimento por nombre o descripción..."
-            class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-md text-sm bg-white
+            class="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-zinc-700 rounded-md text-sm bg-white dark:bg-zinc-900 dark:text-zinc-100
                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all">
     </div>
 
     <!-- Filtros de categoría -->
     <div>
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">Grupos alimenticios</p>
+        <p class="text-xs font-bold text-muted uppercase tracking-wider mb-2.5">Grupos alimenticios</p>
         <div class="flex flex-wrap gap-2">
 
             <button (click)="filtrarCategoria(null)"
                 class="press inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold border cursor-pointer transition-colors"
                 [class]="categoriaSeleccionadaId() === null
                     ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'">
+                    : 'bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800'">
                 <ng-icon name="matAutoAwesomeOutline" size="14"></ng-icon>
                 Todas
             </button>
@@ -40,7 +40,7 @@
     <div>
         @if (itemsFiltrados().length > 0) {
 
-        <p class="text-xs text-slate-400 mb-3 fade-up stagger-1">
+        <p class="text-xs text-muted mb-3 fade-up stagger-1">
             {{ itemsFiltrados().length }} alimento{{ itemsFiltrados().length !== 1 ? 's' : '' }} encontrado{{ itemsFiltrados().length !== 1 ? 's' : '' }}
         </p>
 
@@ -63,16 +63,16 @@
                 </div>
 
                 <!-- Nombre -->
-                <h4 class="text-sm font-semibold text-slate-800 leading-snug">{{ item.nombre }}</h4>
+                <h4 class="text-sm font-semibold text-slate-800 dark:text-zinc-100 leading-snug">{{ item.nombre }}</h4>
 
                 <!-- Descripción -->
-                <p class="text-xs text-slate-500 leading-relaxed line-clamp-3 flex-1">
+                <p class="text-xs text-secondary leading-relaxed line-clamp-3 flex-1">
                     {{ item.descripcion }}
                 </p>
 
                 <!-- Desde qué edad -->
                 @if (item.badge) {
-                <div class="flex items-center gap-1.5 text-xs text-blue-600 font-medium pt-2.5 border-t border-slate-100">
+                <div class="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-medium pt-2.5 border-t border-slate-100 dark:border-zinc-800">
                     <ng-icon name="matScheduleOutline" size="13"></ng-icon>
                     {{ item.badge }}
                 </div>
@@ -92,12 +92,12 @@
 
         } @else {
 
-        <div class="flex flex-col items-center justify-center py-16 text-center border border-dashed border-slate-200 rounded-md">
-            <div class="bounce-in w-10 h-10 bg-slate-100 rounded-md flex items-center justify-center mb-3">
-                <ng-icon name="matNoMealsOutline" class="text-slate-400" size="20"></ng-icon>
+        <div class="flex flex-col items-center justify-center py-16 text-center border border-dashed border-slate-200 dark:border-zinc-700 rounded-md">
+            <div class="bounce-in w-10 h-10 bg-slate-100 dark:bg-zinc-800 rounded-md flex items-center justify-center mb-3">
+                <ng-icon name="matNoMealsOutline" class="text-muted" size="20"></ng-icon>
             </div>
-            <p class="text-sm font-semibold text-slate-700">Sin resultados</p>
-            <p class="text-xs text-slate-400 mt-1">Intenta cambiando el filtro o la búsqueda.</p>
+            <p class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Sin resultados</p>
+            <p class="text-xs text-muted mt-1">Intenta cambiando el filtro o la búsqueda.</p>
         </div>
 
         }
