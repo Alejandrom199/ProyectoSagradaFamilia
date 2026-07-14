@@ -1,4 +1,4 @@
-<div class="bg-white rounded-md animate-fade-in">
+<div class="card animate-fade-in">
 <div class="page-container py-8">
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
@@ -7,17 +7,17 @@
         <h1 class="page-title">
             Orientación Alimentaria
             @if (ninoSeleccionado()) {
-                <span class="font-normal text-slate-600"> — {{ ninoSeleccionado()!.nombre }} {{ ninoSeleccionado()!.apellido }}</span>
+                <span class="font-normal text-slate-600 dark:text-zinc-400"> — {{ ninoSeleccionado()!.nombre }} {{ ninoSeleccionado()!.apellido }}</span>
             }
         </h1>
-        <p class="text-sm text-slate-400 mt-0.5">
+        <p class="text-sm text-muted mt-0.5">
             Alimentos recomendados según la edad actual de tu hijo.
         </p>
     </div>
 
     <!-- Error -->
     @if (error()) {
-    <div class="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-100 rounded-md text-sm text-red-600 mb-6">
+    <div class="flex items-center gap-2 alert alert-error mb-6">
         <ng-icon name="matErrorOutline" size="16"></ng-icon>
         {{ error() }}
     </div>
@@ -26,10 +26,10 @@
     <!-- Cargando -->
     @if (cargando()) {
     <div class="space-y-4">
-        <div class="h-10 bg-slate-100 rounded-md animate-pulse w-72"></div>
+        <div class="h-10 bg-slate-100 dark:bg-zinc-800 rounded-md animate-pulse w-72"></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             @for (i of [1,2,3,4,5,6]; track i) {
-            <div class="h-32 bg-slate-100 rounded-md animate-pulse"></div>
+            <div class="h-32 bg-slate-100 dark:bg-zinc-800 rounded-md animate-pulse"></div>
             }
         </div>
     </div>
@@ -37,21 +37,21 @@
     <!-- Sin niño encontrado (cargó pero no hay hijo registrado) -->
     } @else if (!ninoSeleccionado()) {
     <div class="flex flex-col items-center justify-center py-20 text-center">
-        <div class="w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-4">
-            <ng-icon name="matChildCareOutline" class="text-slate-400" size="22"></ng-icon>
+        <div class="w-12 h-12 rounded-md bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
+            <ng-icon name="matChildCareOutline" class="text-muted" size="22"></ng-icon>
         </div>
-        <p class="text-sm font-medium text-slate-700">No hay niños registrados</p>
-        <p class="text-xs text-slate-400 mt-1">El médico debe registrar un paciente a tu nombre primero.</p>
+        <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">No hay niños registrados</p>
+        <p class="text-xs text-muted mt-1">El médico debe registrar un paciente a tu nombre primero.</p>
     </div>
 
     <!-- Con niño, sin alimentos que coincidan -->
     } @else if (itemsParaElNino().length === 0) {
     <div class="flex flex-col items-center justify-center py-20 text-center">
-        <div class="w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-4">
-            <ng-icon name="matNoMealsOutline" class="text-slate-400" size="22"></ng-icon>
+        <div class="w-12 h-12 rounded-md bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
+            <ng-icon name="matNoMealsOutline" class="text-muted" size="22"></ng-icon>
         </div>
-        <p class="text-sm font-medium text-slate-700">Sin recomendaciones disponibles</p>
-        <p class="text-xs text-slate-400 mt-1 max-w-xs">
+        <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">Sin recomendaciones disponibles</p>
+        <p class="text-xs text-muted mt-1 max-w-xs">
             Aún no hay alimentos cargados para la edad de {{ ninoSeleccionado()!.nombre }} ({{ ninoSeleccionado()!.edadMeses }} meses).
         </p>
     </div>

@@ -450,10 +450,10 @@ export class Datatable<T extends object> implements OnChanges {
 
   get accionesProcesadas(): DatatableAction<T>[] {
     const defaults: Record<ActionType, Partial<DatatableAction<T>>> = {
-      ver: { label: 'Ver', icon: 'matVisibilityOutline', class: 'text-blue-600' },
-      editar: { label: 'Editar', icon: 'matEditOutline', class: 'text-amber-600' },
-      eliminar: { label: 'Eliminar', icon: 'matDeleteOutline', class: 'text-red-600' },
-      medidas: { label: 'Medidas', icon: 'matBarChartOutline', class: 'text-purple-600' },
+      ver: { label: 'Ver', icon: 'matVisibilityOutline', class: 'text-blue-600 dark:text-blue-400' },
+      editar: { label: 'Editar', icon: 'matEditOutline', class: 'text-amber-600 dark:text-amber-400' },
+      eliminar: { label: 'Eliminar', icon: 'matDeleteOutline', class: 'text-red-600 dark:text-red-400' },
+      medidas: { label: 'Medidas', icon: 'matBarChartOutline', class: 'text-purple-600 dark:text-purple-400' },
     };
 
     return this.actions.map((action: DatatableAction<T>) => {

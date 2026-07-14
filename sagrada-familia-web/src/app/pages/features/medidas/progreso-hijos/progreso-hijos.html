@@ -1,4 +1,4 @@
-<div class="bg-white rounded-md animate-fade-in">
+<div class="card animate-fade-in">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
 
     <breadcrumb [items]="migajas" homeRoute="/mis-pequenos"></breadcrumb>
@@ -18,25 +18,25 @@
     </div>
 
     @if (!ninoSeleccionado()) {
-    <div class="text-sm text-slate-400 text-center py-16">No hay niño seleccionado.</div>
+    <div class="text-sm text-muted text-center py-16">No hay niño seleccionado.</div>
 
     } @else if (cargando()) {
     <div class="space-y-4">
-        <div class="h-28 bg-slate-100 rounded-md shimmer"></div>
+        <div class="h-28 bg-slate-100 dark:bg-zinc-800 rounded-md shimmer"></div>
         <div class="grid grid-cols-2 gap-4">
-            <div class="h-36 bg-slate-100 rounded-md shimmer"></div>
-            <div class="h-36 bg-slate-100 rounded-md shimmer"></div>
+            <div class="h-36 bg-slate-100 dark:bg-zinc-800 rounded-md shimmer"></div>
+            <div class="h-36 bg-slate-100 dark:bg-zinc-800 rounded-md shimmer"></div>
         </div>
-        <div class="h-48 bg-slate-100 rounded-md shimmer"></div>
+        <div class="h-48 bg-slate-100 dark:bg-zinc-800 rounded-md shimmer"></div>
     </div>
 
     } @else if (!hayDatos()) {
-    <div class="flex flex-col items-center justify-center py-20 text-center border border-dashed border-slate-200 rounded-md">
-        <div class="bounce-in w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-4">
-            <ng-icon name="matSentimentSatisfiedOutline" class="text-slate-400" size="22"></ng-icon>
+    <div class="flex flex-col items-center justify-center py-20 text-center border border-dashed border-slate-200 dark:border-zinc-700 rounded-md">
+        <div class="bounce-in w-12 h-12 rounded-md bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
+            <ng-icon name="matSentimentSatisfiedOutline" class="text-muted" size="22"></ng-icon>
         </div>
-        <p class="text-sm font-medium text-slate-700">Aún no hay medidas registradas</p>
-        <p class="text-xs text-slate-400 mt-1 max-w-xs">
+        <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">Aún no hay medidas registradas</p>
+        <p class="text-xs text-muted mt-1 max-w-xs">
             El pediatra registrará las medidas de {{ ninoSeleccionado()!.nombre }} en su próxima cita médica.
         </p>
     </div>
@@ -67,10 +67,10 @@
     <!-- Medidas actuales -->
     <div class="grid grid-cols-2 gap-4 mb-5">
 
-        <div class="lift fade-up stagger-1 rounded-md border border-blue-100 bg-blue-50 p-5">
+        <div class="lift fade-up stagger-1 rounded-md border border-blue-100 bg-blue-50 dark:bg-blue-500/10 p-5">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Peso actual</span>
-                <div class="w-8 h-8 bg-blue-100 text-blue-500 rounded-md flex items-center justify-center">
+                <div class="w-8 h-8 bg-blue-100 dark:bg-blue-500/15 text-blue-500 rounded-md flex items-center justify-center">
                     <ng-icon name="matMonitorWeightOutline" size="16"></ng-icon>
                 </div>
             </div>
@@ -78,10 +78,10 @@
             <span class="text-sm text-blue-400 mt-1 block">kilogramos</span>
         </div>
 
-        <div class="lift fade-up stagger-2 rounded-md border border-indigo-100 bg-indigo-50 p-5">
+        <div class="lift fade-up stagger-2 rounded-md border border-indigo-100 bg-indigo-50 dark:bg-indigo-500/10 p-5">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Estatura</span>
-                <div class="w-8 h-8 bg-indigo-100 text-indigo-500 rounded-md flex items-center justify-center">
+                <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-500/15 text-indigo-500 rounded-md flex items-center justify-center">
                     <ng-icon name="matHeightOutline" size="16"></ng-icon>
                 </div>
             </div>
@@ -93,24 +93,24 @@
 
     <!-- Historial de medidas -->
     @if (todasMedidas().length > 1) {
-    <div class="rounded-md border border-slate-200 fade-up stagger-3">
-        <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-2">
-            <ng-icon name="matHistoryOutline" class="text-slate-400" size="15"></ng-icon>
-            <h3 class="text-sm font-bold text-slate-700">Historial de medidas</h3>
+    <div class="rounded-md border border-slate-200 dark:border-zinc-700 fade-up stagger-3">
+        <div class="px-4 py-3 border-b border-slate-100 dark:border-zinc-800 flex items-center gap-2">
+            <ng-icon name="matHistoryOutline" class="text-muted" size="15"></ng-icon>
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300">Historial de medidas</h3>
         </div>
-        <div class="divide-y divide-slate-100">
+        <div class="divide-y divide-slate-100 dark:divide-zinc-800">
             @for (m of todasMedidas().slice(0, 5); track m.id; let i = $index) {
             <div class="fade-up px-4 py-3 flex items-center justify-between"
                  [ngClass]="'stagger-' + (i + 1)">
                 <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
-                        <ng-icon name="matCalendarMonthOutline" class="text-slate-400" size="13"></ng-icon>
+                    <div class="w-7 h-7 rounded-md bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex items-center justify-center shrink-0">
+                        <ng-icon name="matCalendarMonthOutline" class="text-muted" size="13"></ng-icon>
                     </div>
-                    <span class="text-sm text-slate-600">{{ formatearFecha(m.fechaMedicion) }}</span>
+                    <span class="text-sm text-slate-600 dark:text-zinc-400">{{ formatearFecha(m.fechaMedicion) }}</span>
                 </div>
                 <div class="flex items-center gap-5 text-sm">
-                    <span class="text-slate-500">Peso: <strong class="text-slate-800">{{ m.peso }} kg</strong></span>
-                    <span class="text-slate-500">Talla: <strong class="text-slate-800">{{ m.talla }} cm</strong></span>
+                    <span class="text-secondary">Peso: <strong class="text-slate-800 dark:text-zinc-100">{{ m.peso }} kg</strong></span>
+                    <span class="text-secondary">Talla: <strong class="text-slate-800 dark:text-zinc-100">{{ m.talla }} cm</strong></span>
                 </div>
             </div>
             }

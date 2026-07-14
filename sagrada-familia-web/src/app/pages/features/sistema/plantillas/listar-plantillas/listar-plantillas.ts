@@ -53,7 +53,7 @@ export class ListarPlantillas implements OnInit {
     {
       key: 'activo', label: 'Estado', sortable: true,
       render: (row) => row.activo
-        ? `<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">Activa</span>`
+        ? `<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700">Activa</span>`
         : `<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">Inactiva</span>`
     },
     {
@@ -108,10 +108,10 @@ export class ListarPlantillas implements OnInit {
 
   private etiquetaCodigo(codigo: string): string {
     const mapa: Record<string, string> = {
-      'CAMBIO_CLAVE':  'bg-blue-50 text-blue-700',
-      'CUENTA_PADRE':  'bg-emerald-50 text-emerald-700',
-      'CUENTA_MEDICO': 'bg-violet-50 text-violet-700',
-      'CUENTA_ADMIN':  'bg-purple-50 text-purple-700',
+      'CAMBIO_CLAVE':  'bg-blue-50 dark:bg-blue-500/10 text-blue-700',
+      'CUENTA_PADRE':  'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700',
+      'CUENTA_MEDICO': 'bg-violet-50 dark:bg-violet-500/10 text-violet-700',
+      'CUENTA_ADMIN':  'bg-purple-50 dark:bg-purple-500/10 text-purple-700',
     };
     return mapa[codigo] ?? 'bg-slate-100 text-slate-600';
   }

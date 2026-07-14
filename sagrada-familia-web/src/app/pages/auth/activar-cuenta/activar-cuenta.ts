@@ -10,6 +10,7 @@ import { passwordValidator } from '../../../shared/validators/password.validator
   standalone: true,
   imports: [ReactiveFormsModule, NgIcon],
   templateUrl: './activar-cuenta.html',
+  styleUrl: './activar-cuenta.css',
 })
 export class ActivarCuenta implements OnInit {
   private route = inject(ActivatedRoute);

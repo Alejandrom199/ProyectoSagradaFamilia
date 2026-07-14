@@ -4,14 +4,24 @@
     <!-- Header -->
     <div class="mb-6 flex items-end justify-between">
         <div>
-            <h2 class="page-title">Permisos — {{ nombreRol() }}</h2>
-            <p class="page-subtitle">Configura qué puede hacer este rol en el sistema</p>
+            <h2 class="page-title flex items-center gap-2">
+                Permisos — {{ nombreRol() }}
+                @if (soloLectura()) {
+                <span class="text-[10px] font-bold text-red-400 bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded-md border border-red-200 align-middle">
+                    Solo lectura
+                </span>
+                }
+            </h2>
+            <p class="page-subtitle">
+                @if (soloLectura()) { Consulta qué puede hacer este rol en el sistema — no es modificable }
+                @else { Configura qué puede hacer este rol en el sistema }
+            </p>
         </div>
 
         @if (hayCambios()) {
         <div class="flex items-center gap-2">
             <button (click)="cancelar()"
-                class="px-4 py-2 rounded-md border border-slate-200 text-slate-500 text-sm font-semibold hover:bg-slate-50 transition-colors">
+                class="px-4 py-2 rounded-md border border-slate-200 dark:border-zinc-700 text-secondary text-sm font-semibold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
                 Cancelar
             </button>
             <button (click)="guardar()" [disabled]="guardando()"
@@ -25,12 +35,12 @@
     <!-- Feedback -->
     @if (exitoso()) {
     <div
-        class="mb-4 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-md text-sm font-semibold text-emerald-700">
+        class="mb-4 px-4 py-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 rounded-md text-sm font-semibold text-emerald-700">
         ✓ Permisos guardados correctamente
     </div>
     }
     @if (error()) {
-    <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-md text-sm font-semibold text-red-600">
+    <div class="mb-4 alert alert-error font-semibold">
         {{ error() }}
     </div>
     }
@@ -39,17 +49,17 @@
     @if (cargando()) {
     <div class="flex flex-col gap-3">
         @for (i of [1, 2, 3]; track i) {
-        <div class="bg-white border border-slate-200 animate-pulse">
-            <div class="px-4 py-2 bg-slate-50 border-b border-slate-100">
-                <div class="h-2.5 bg-slate-200 rounded w-1/5"></div>
+        <div class="card animate-pulse">
+            <div class="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-b border-slate-100 dark:border-zinc-800">
+                <div class="h-2.5 bg-slate-200 dark:bg-zinc-700 rounded w-1/5"></div>
             </div>
-            <div class="divide-y divide-slate-100">
+            <div class="divide-y divide-slate-100 dark:divide-zinc-800">
                 @for (j of [1, 2, 3]; track j) {
                 <div class="flex items-center justify-between px-4 py-2.5">
-                    <div class="h-3 bg-slate-100 rounded w-1/3"></div>
+                    <div class="h-3 bg-slate-100 dark:bg-zinc-800 rounded w-1/3"></div>
                     <div class="flex gap-1.5">
                         @for (k of [1, 2, 3, 4]; track k) {
-                        <div class="h-6 w-14 bg-slate-100 rounded"></div>
+                        <div class="h-6 w-14 bg-slate-100 dark:bg-zinc-800 rounded"></div>
                         }
                     </div>
                 </div>
@@ -63,20 +73,20 @@
     <!-- Matriz de permisos -->
     <div class="flex flex-col gap-3">
         @for (modulo of modulos(); track trackModulo($index, modulo)) {
-        <div class="bg-white border border-slate-200 overflow-hidden">
+        <div class="card overflow-hidden">
 
             <!-- Header módulo -->
-            <div class="px-4 py-2 bg-slate-50 border-b border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <div class="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-b border-slate-100 dark:border-zinc-800">
+                <p class="text-[10px] font-black text-muted uppercase tracking-widest">
                     {{ modulo.moduloNombre }}
                 </p>
             </div>
 
             <!-- Filas de opciones -->
-            <div class="divide-y divide-slate-100">
+            <div class="divide-y divide-slate-100 dark:divide-zinc-800">
                 @for (opcion of modulo.opciones; track trackOpcion($index, opcion)) {
-                <div class="flex items-center justify-between px-4 py-2.5 hover:bg-slate-50/50 transition-colors">
-                    <span class="text-sm font-medium text-slate-700 min-w-0 flex-1">
+                <div class="flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors">
+                    <span class="text-sm font-medium text-slate-700 dark:text-zinc-300 min-w-0 flex-1">
                         {{ opcion.opcionNombre }}
                     </span>
                     <div class="flex items-center gap-1.5 ml-4 flex-shrink-0">
@@ -84,13 +94,15 @@
                         @let accion = opcion.acciones | accionPorNombre: accionNombre;
                         @if (accion) {
                         <button (click)="togglePermiso(accion.opcionAccionId, accion.permitido)"
+                            [disabled]="soloLectura()"
                             class="px-2.5 py-1 rounded text-[11px] font-semibold border transition-all"
+                            [class.cursor-not-allowed]="soloLectura()"
                             [class.bg-blue-600]="accion.permitido"
                             [class.text-white]="accion.permitido"
                             [class.border-blue-600]="accion.permitido"
-                            [class.bg-white]="!accion.permitido"
-                            [class.text-slate-400]="!accion.permitido"
-                            [class.border-slate-200]="!accion.permitido">
+                            [class.bg-white]="!accion.permitido" [class.dark:bg-zinc-900]="!accion.permitido"
+                            [class.text-slate-400]="!accion.permitido" [class.dark:text-zinc-500]="!accion.permitido"
+                            [class.border-slate-200]="!accion.permitido" [class.dark:border-zinc-700]="!accion.permitido">
                             {{ accionNombre }}
                         </button>
                         }

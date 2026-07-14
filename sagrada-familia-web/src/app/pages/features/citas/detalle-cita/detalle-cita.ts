@@ -9,6 +9,8 @@ import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.int
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { formatearFecha, formatearHora } from '../../../../shared/utils/date.utils';
+import { ESTADO_CITA_COLOR, ESTADO_CITA_LABEL, ESTADO_CITA_CHIP } from '../../../../shared/constants/estado-cita.constants';
+import { BADGE_UTILITY_POR_COLOR } from '../../../../shared/constants/badge-color.constants';
 
 @Component({
   selector: 'detalle-cita',
@@ -19,29 +21,29 @@ import { formatearFecha, formatearHora } from '../../../../shared/utils/date.uti
 export class DetalleCita implements OnInit {
   @Input() citaId!: string;
 
-  private citasService     = inject(CitasService);
+  private citasService = inject(CitasService);
   private consultasService = inject(ConsultasService);
-  private router       = inject(Router);
-  private loadingBar   = inject(LoadingBar);
+  private router = inject(Router);
+  private loadingBar = inject(LoadingBar);
 
-  cita            = signal<CitaResponse | null>(null);
+  cita = signal<CitaResponse | null>(null);
   cambiandoEstado = signal(false);
-  formatearFecha  = formatearFecha;
-  formatearHora   = formatearHora;
-  EstadoCita      = EstadoCita;
+  formatearFecha = formatearFecha;
+  formatearHora = formatearHora;
+  EstadoCita = EstadoCita;
 
   // Estado de modales
-  mostrarModalEstado    = signal(false);
-  estadoPendiente       = signal<EstadoCita | null>(null);
-  motivoCancelacion     = signal('');
+  mostrarModalEstado = signal(false);
+  estadoPendiente = signal<EstadoCita | null>(null);
+  motivoCancelacion = signal('');
   mostrarModalReagendar = signal(false);
 
   // Datos clínicos de la consulta (editables mientras está EnCurso)
-  consultaMotivo        = signal('');
-  consultaDiagnostico   = signal('');
-  consultaIndicaciones  = signal('');
-  consultaEvolucion     = signal('');
-  guardandoConsulta     = signal(false);
+  consultaMotivo = signal('');
+  consultaDiagnostico = signal('');
+  consultaIndicaciones = signal('');
+  consultaEvolucion = signal('');
+  guardandoConsulta = signal(false);
 
   puedeAccionar = computed(() => {
     const c = this.cita();
@@ -197,15 +199,11 @@ export class DetalleCita implements OnInit {
     });
   }
 
-  badge(estado: string): { clase: string; label: string } {
-    const mapa: Record<string, { clase: string; label: string }> = {
-      'Pendiente': { clase: 'bg-yellow-100 text-yellow-700 border-yellow-200', label: 'Pendiente' },
-      'En Curso': { clase: 'bg-blue-100 text-blue-700 border-blue-200', label: 'En curso' },
-      'Completada': { clase: 'bg-green-100 text-green-700 border-green-200', label: 'Completada' },
-      'NoAsistio': { clase: 'bg-gray-100 text-gray-600 border-gray-200', label: 'No asistió' },
-      'Cancelada': { clase: 'bg-red-100 text-red-600 border-red-200', label: 'Cancelada' },
-      'Reagendada': { clase: 'bg-violet-100 text-violet-700 border-violet-200', label: 'Reagendada' },
+  badge(estado: EstadoCita): { clase: string; label: string } {
+    const color = ESTADO_CITA_COLOR[estado];
+    return {
+      clase: `${BADGE_UTILITY_POR_COLOR[color]} ${ESTADO_CITA_CHIP[estado].borde}`,
+      label: ESTADO_CITA_LABEL[estado],
     };
-    return mapa[estado] ?? { clase: 'bg-gray-100 text-gray-600 border-gray-200', label: estado };
   }
 }

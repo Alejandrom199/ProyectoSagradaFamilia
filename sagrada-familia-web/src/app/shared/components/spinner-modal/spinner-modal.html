@@ -1,10 +1,10 @@
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
 
-    <div class="bg-white border border-slate-200 rounded-md px-8 py-7 flex flex-col items-center gap-5 min-w-[220px] max-w-xs">
+    <div class="card px-8 py-7 flex flex-col items-center gap-5 min-w-[220px] max-w-xs">
 
         <!-- Spinner sobre fondo azul suave -->
-        <div class="relative flex items-center justify-center w-12 h-12 rounded-md bg-blue-50">
-            <svg class="animate-spin w-6 h-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+        <div class="relative flex items-center justify-center w-12 h-12 rounded-md bg-blue-50 dark:bg-blue-500/10">
+            <svg class="animate-spin w-6 h-6 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24">
                 <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
                 <path class="opacity-90" fill="currentColor"
@@ -15,12 +15,12 @@
 
         <!-- Texto -->
         <div class="text-center">
-            <p class="text-sm font-semibold text-slate-800">{{ message() }}</p>
-            <p class="text-xs text-slate-400 mt-0.5">Por favor espere</p>
+            <p class="text-sm font-semibold text-slate-800 dark:text-zinc-100">{{ message() }}</p>
+            <p class="text-xs text-muted mt-0.5">Por favor espere</p>
         </div>
 
         <!-- Barra de progreso indeterminada -->
-        <div class="w-full h-0.5 bg-slate-100 rounded-full relative overflow-hidden">
+        <div class="w-full h-0.5 bg-slate-100 dark:bg-zinc-800 rounded-full relative overflow-hidden">
             <div class="progress-bar"></div>
         </div>
 

@@ -121,13 +121,13 @@ export class ListarPredicciones implements OnInit {
     },
     {
       key: 'pesoMinimo', label: 'Rango de confianza',
-      render: (r) => `<span class="text-xs text-gray-500">${r.pesoMinimo.toFixed(2)} — ${r.pesoMaximo.toFixed(2)} kg</span>`
+      render: (r) => `<span class="text-xs text-[var(--color-text-secondary)]">${r.pesoMinimo.toFixed(2)} — ${r.pesoMaximo.toFixed(2)} kg</span>`
     },
     {
       key: 'pesoReal', label: 'Peso real',
       render: (r) => r.pesoReal !== null
-        ? `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">${r.pesoReal.toFixed(2)} kg</span>`
-        : '<span class="text-gray-400 font-medium">Aún sin medir</span>'
+        ? `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-success-soft text-success">${r.pesoReal.toFixed(2)} kg</span>`
+        : '<span class="text-muted font-medium">Aún sin medir</span>'
     }
   ];
 

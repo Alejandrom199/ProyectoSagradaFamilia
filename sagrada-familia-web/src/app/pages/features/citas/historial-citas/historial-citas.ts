@@ -11,6 +11,8 @@ import { CitasService } from '../../../../core/services/citas';
 import { AuthService } from '../../../../core/services/auth';
 import { Reportes } from '../../../../core/services/reportes';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
+import { ESTADO_CITA_COLOR, ESTADO_CITA_LABEL } from '../../../../shared/constants/estado-cita.constants';
+import { badgeHtml } from '../../../../shared/utils/badge.util';
 
 @Component({
   selector: 'historial-citas',
@@ -47,13 +49,13 @@ export class HistorialCitas implements OnInit {
       label: 'Paciente',
       sortable: true,
       filterable: true,
-      render: (row) => `<span class="font-medium text-gray-800">${row.nombreNino}</span>`
+      render: (row) => `<span class="font-medium text-[var(--color-text-primary)]">${row.nombreNino}</span>`
     },
     {
       key: 'motivo',
       label: 'Motivo',
       sortable: true,
-      render: (row) => row.motivo || '<span class="text-gray-400 text-xs">Sin motivo</span>'
+      render: (row) => row.motivo || '<span class="text-muted text-xs">Sin motivo</span>'
     },
     {
       key: 'estado',
@@ -69,8 +71,8 @@ export class HistorialCitas implements OnInit {
       sortable: true,
       filterable: true,
       render: (row) => row.tienePrescripcion
-        ? `<span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Emitida</span>`
-        : `<span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">No</span>`,
+        ? `<span class="inline-flex items-center gap-1 text-xs font-semibold text-success bg-success-soft px-2 py-0.5 rounded-full">Emitida</span>`
+        : `<span class="inline-flex items-center gap-1 text-xs font-semibold text-muted bg-[var(--color-surface-alt)] px-2 py-0.5 rounded-full">No</span>`,
       exportValue: (row) => row.tienePrescripcion ? 'Sí' : 'No'
     }
   ];
@@ -131,21 +133,7 @@ export class HistorialCitas implements OnInit {
     });
   }
 
-  private badgeEstado(estado: string): string {
-    const mapa: Record<string, string> = {
-      [EstadoCita.Pendiente]: 'bg-amber-100 text-amber-700',
-      [EstadoCita.EnCurso]: 'bg-blue-100 text-blue-700',
-      [EstadoCita.Completada]: 'bg-emerald-100 text-emerald-700',
-      [EstadoCita.Cancelada]: 'bg-red-100 text-red-600',
-      [EstadoCita.NoAsistio]: 'bg-gray-100 text-gray-500',
-      [EstadoCita.Reagendada]: 'bg-violet-100 text-violet-700',
-    };
-    const label: Record<string, string> = {
-      [EstadoCita.EnCurso]: 'En curso',
-      [EstadoCita.NoAsistio]: 'No asistió',
-    };
-    const clase = mapa[estado] ?? 'bg-gray-100 text-gray-500';
-    const texto = label[estado] ?? estado;
-    return `<span class="px-2 py-0.5 rounded-full text-xs font-bold ${clase}">${texto}</span>`;
+  private badgeEstado(estado: EstadoCita): string {
+    return badgeHtml(ESTADO_CITA_LABEL[estado], ESTADO_CITA_COLOR[estado]);
   }
 }

@@ -46,8 +46,8 @@ export function formatearHora(fecha: string): string {
 export function renderFechaHora(fecha: string): string {
     return `
         <div>
-            <p class="font-medium text-gray-800 text-sm">${formatearFecha(fecha)}</p>
-            <p class="text-xs text-gray-500">${formatearHora(fecha)}</p>
+            <p class="font-medium text-gray-800 dark:text-zinc-100 text-sm">${formatearFecha(fecha)}</p>
+            <p class="text-xs text-gray-500 dark:text-zinc-400">${formatearHora(fecha)}</p>
         </div>`;
 }
 

@@ -11,7 +11,7 @@ import { AlimentosService } from '../../core/services/alimentos';
 import { CitasService } from '../../core/services/citas';
 import { SistemaService } from '../../core/services/sistema';
 import { Predicciones } from '../../core/services/predicciones';
-import { DashboardAdminResponse, AuditoriaResponse, LogSistemaResponse } from '../../shared/interfaces/sistema.interface';
+import { DashboardAdminResponse } from '../../shared/interfaces/sistema.interface';
 import { formatearFecha } from '../../shared/utils/date.utils';
 
 @Component({
@@ -74,6 +74,36 @@ export class Dashboard implements OnInit {
     };
   });
 
+  // Gráfico de registro de usuarios por mes (barras)
+  readonly registrosChart = computed(() => {
+    const d = this.dashboard();
+    const labels    = d?.registrosPorMes.map(r => r.mes)      ?? [];
+    const cantidades = d?.registrosPorMes.map(r => r.cantidad) ?? [];
+    return {
+      series: [{ name: 'Registros', data: cantidades }] as ApexAxisChartSeries,
+      chart:  { type: 'bar', height: 220, toolbar: { show: false }, fontFamily: 'inherit' } as ApexChart,
+      xaxis:  { categories: labels, labels: { style: { fontSize: '11px' } } } as ApexXAxis,
+      colors: ['#16a34a'],
+      plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } as ApexPlotOptions,
+      dataLabels: { enabled: false } as ApexDataLabels,
+      tooltip: { y: { formatter: (v: number) => `${v} usuarios nuevos` } } as ApexTooltip,
+    };
+  });
+
+  // Salud del sistema
+  readonly uptimeTexto = computed(() => {
+    const inicio = this.dashboard()?.salud?.iniciadoEn;
+    if (!inicio) return '—';
+
+    const ms = Date.now() - new Date(inicio).getTime();
+    const dias  = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((ms / (1000 * 60 * 60)) % 24);
+
+    if (dias > 0) return `${dias}d ${horas}h`;
+    const minutos = Math.floor((ms / (1000 * 60)) % 60);
+    return `${horas}h ${minutos}m`;
+  });
+
   ngOnInit() {
     if (this.auth.esAdmin()) {
       this.cargarDashboardAdmin();
@@ -124,22 +154,4 @@ export class Dashboard implements OnInit {
     if (hora >= 12 && hora < 19) return { texto: 'Buenas tardes', icono: 'heroCloud', color: 'text-blue-500' };
     return { texto: 'Buenas noches', icono: 'heroMoon', color: 'text-indigo-600' };
   });
-
-  etiquetaAccion(accion: AuditoriaResponse): { texto: string; clase: string } {
-    const mapa: Record<string, { texto: string; clase: string }> = {
-      'Creación':     { texto: 'Creación',     clase: 'bg-emerald-50 text-emerald-700' },
-      'Actualización':{ texto: 'Edición',      clase: 'bg-blue-50 text-blue-700' },
-      'Eliminación':  { texto: 'Eliminación',  clase: 'bg-red-50 text-red-700' },
-    };
-    return mapa[accion.accion] ?? { texto: accion.accion, clase: 'bg-slate-100 text-slate-600' };
-  }
-
-  etiquetaNivel(log: LogSistemaResponse): { texto: string; clase: string } {
-    const mapa: Record<string, { texto: string; clase: string }> = {
-      'Error':    { texto: 'Error',    clase: 'bg-red-50 text-red-700' },
-      'Critical': { texto: 'Crítico', clase: 'bg-red-100 text-red-800' },
-      'Warning':  { texto: 'Aviso',   clase: 'bg-amber-50 text-amber-700' },
-    };
-    return mapa[log.nivel] ?? { texto: log.nivel, clase: 'bg-slate-100 text-slate-600' };
-  }
 }

@@ -20,13 +20,13 @@
     </div>
 
     <!-- Selector de paciente -->
-    <div class="bg-white border border-slate-200 mb-6">
+    <div class="card mb-6">
         <div class="p-5 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+            <div class="w-10 h-10 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
                 <ng-icon name="matPersonOutline" class="text-blue-500 text-xl"></ng-icon>
             </div>
             <div class="flex-1 max-w-md">
-                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                <label class="block text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
                     Paciente a consultar
                 </label>
                 <searchable-select
@@ -49,12 +49,12 @@
     @if (!cargando() && prediccion()) {
 
     @if (!prediccion()!.puedePredecir) {
-    <div class="bg-white border border-slate-200 p-12 text-center">
-        <div class="w-16 h-16 bg-red-50 rounded-md flex items-center justify-center mx-auto mb-4">
+    <div class="card p-12 text-center">
+        <div class="w-16 h-16 bg-red-50 dark:bg-red-500/10 rounded-md flex items-center justify-center mx-auto mb-4">
             <ng-icon name="matWarningAmberOutline" class="text-red-500 text-3xl"></ng-icon>
         </div>
-        <h3 class="font-bold text-xl text-slate-800 mb-2">Datos insuficientes</h3>
-        <p class="text-slate-500 max-w-md mx-auto text-sm leading-relaxed">
+        <h3 class="font-bold text-xl text-slate-800 dark:text-zinc-100 mb-2">Datos insuficientes</h3>
+        <p class="text-secondary max-w-md mx-auto text-sm leading-relaxed">
             {{ prediccion()!.mensaje }} Se requieren al menos 3 medidas históricas para generar un pronóstico fiable.
         </p>
     </div>
@@ -64,7 +64,7 @@
     <!-- Banner de resultado -->
     <div class="bg-blue-600 rounded-md p-6 text-white mb-6 flex justify-between items-center">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 bg-white/20 rounded-md flex items-center justify-center shrink-0">
+            <div class="w-14 h-14 bg-white dark:bg-zinc-900/20 rounded-md flex items-center justify-center shrink-0">
                 <ng-icon name="matBarChartOutline" class="text-white text-2xl"></ng-icon>
             </div>
             <div>
@@ -80,7 +80,7 @@
                 <p class="font-bold text-xl">Hasta 1 año</p>
             </div>
             <button (click)="descargarReportePrediccion()" [disabled]="descargandoReporte()"
-                class="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-blue-700 rounded-md text-sm font-bold hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-zinc-900 text-blue-700 rounded-md text-sm font-bold hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <ng-icon name="matDescriptionOutline" class="text-base"></ng-icon>
                 {{ descargandoReporte() ? 'Generando...' : 'Descargar reporte' }}
             </button>
@@ -91,18 +91,18 @@
     @if (resumenPredicciones().length > 0) {
     <div class="grid grid-cols-3 gap-4 mb-6">
         @for (item of resumenPredicciones(); track item.mes) {
-        <div class="bg-white border border-slate-200 p-4">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+        <div class="card p-4">
+            <p class="text-[10px] font-bold text-muted uppercase tracking-widest mb-2">
                 En {{ item.mes }} meses
             </p>
-            <p class="text-3xl font-black text-slate-800 leading-none">
+            <p class="text-3xl font-black text-slate-800 dark:text-zinc-100 leading-none">
                 {{ item.punto.pesoPredicho.toFixed(2) }}
-                <span class="text-base font-normal text-slate-400">kg</span>
+                <span class="text-base font-normal text-muted">kg</span>
             </p>
-            <p class="text-xs text-slate-400 mt-1.5">
+            <p class="text-xs text-muted mt-1.5">
                 Rango: {{ item.punto.pesoMinimo.toFixed(2) }} – {{ item.punto.pesoMaximo.toFixed(2) }} kg
             </p>
-            <p class="text-[10px] text-slate-300 mt-0.5">{{ formatearFecha(item.punto.fechaObjetivo) }}</p>
+            <p class="text-[10px] text-slate-300 dark:text-zinc-600 mt-0.5">{{ formatearFecha(item.punto.fechaObjetivo) }}</p>
         </div>
         }
     </div>
@@ -120,13 +120,13 @@
 
         <!-- Gráfica 2: precisión histórica (si hay datos reales) -->
         @if (chartPrecision()) {
-        <div class="border border-slate-200 p-5">
+        <div class="border border-slate-200 dark:border-zinc-700 p-5">
             <div class="flex items-start justify-between mb-4">
                 <div>
-                    <h3 class="text-sm font-bold text-slate-700">Precisión histórica del modelo</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Diferencia entre peso real medido y peso predicho.</p>
+                    <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300">Precisión histórica del modelo</h3>
+                    <p class="text-xs text-muted mt-0.5">Diferencia entre peso real medido y peso predicho.</p>
                 </div>
-                <div class="text-[10px] text-slate-400 text-right leading-tight shrink-0 ml-4">
+                <div class="text-[10px] text-muted text-right leading-tight shrink-0 ml-4">
                     +: pesó más<br>−: pesó menos
                 </div>
             </div>
@@ -146,7 +146,7 @@
 
         } @else {
         <!-- Sin datos reales: mostrar tabla en lugar del segundo chart -->
-        <div class="border border-slate-200 overflow-hidden">
+        <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
             <datatable
                 [title]="'Desglose · ' + ninoSeleccionado()?.nombre + ' ' + ninoSeleccionado()?.apellido"
                 [data]="prediccion()!.predicciones" [columns]="columnas"
@@ -160,7 +160,7 @@
 
     <!-- Tabla completa (solo cuando se muestra el chart de precisión) -->
     @if (chartPrecision()) {
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable
             [title]="'Desglose · ' + ninoSeleccionado()?.nombre + ' ' + ninoSeleccionado()?.apellido"
             [data]="prediccion()!.predicciones" [columns]="columnas"
@@ -175,12 +175,12 @@
 
     <!-- Estado vacío -->
     @if (!cargando() && !prediccion() && !ninoSeleccionado()) {
-    <div class="bg-slate-50 rounded-md border-2 border-dashed border-slate-200 p-16 text-center mt-6">
-        <div class="w-20 h-20 bg-white rounded-md flex items-center justify-center mx-auto mb-4 border border-slate-200">
+    <div class="bg-slate-50 dark:bg-zinc-800 rounded-md border-2 border-dashed border-slate-200 dark:border-zinc-700 p-16 text-center mt-6">
+        <div class="w-20 h-20 bg-white dark:bg-zinc-900 rounded-md flex items-center justify-center mx-auto mb-4 border border-slate-200 dark:border-zinc-700">
             <ng-icon name="matBarChartOutline" class="text-blue-400 text-4xl"></ng-icon>
         </div>
-        <h3 class="font-bold text-xl text-slate-700 mb-2">Módulo de Pronósticos</h3>
-        <p class="text-slate-500 max-w-md mx-auto text-sm leading-relaxed">
+        <h3 class="font-bold text-xl text-slate-700 dark:text-zinc-300 mb-2">Módulo de Pronósticos</h3>
+        <p class="text-secondary max-w-md mx-auto text-sm leading-relaxed">
             Seleccione un paciente de su lista para visualizar la curva de crecimiento estimada por nuestro modelo
             predictivo.
         </p>

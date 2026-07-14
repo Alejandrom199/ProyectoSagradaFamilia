@@ -15,25 +15,25 @@
 
     <!-- Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div class="bg-white rounded-md p-4 border border-slate-200">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hoy total</p>
-            <p class="text-4xl font-black text-slate-900 mt-1 leading-none">{{ totalHoy() }}</p>
-            <p class="text-xs text-slate-400 mt-1.5">citas del día</p>
+        <div class="card p-4">
+            <p class="text-[10px] font-bold text-muted uppercase tracking-widest">Hoy total</p>
+            <p class="text-4xl font-black text-slate-900 dark:text-zinc-100 mt-1 leading-none">{{ totalHoy() }}</p>
+            <p class="text-xs text-muted mt-1.5">citas del día</p>
         </div>
-        <div class="bg-amber-50 rounded-md p-4 border border-amber-200">
-            <p class="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Pendientes</p>
-            <p class="text-4xl font-black text-amber-600 mt-1 leading-none">{{ pendientesHoy() }}</p>
-            <p class="text-xs text-amber-400 mt-1.5">por atender</p>
+        <div class="bg-amber-50 dark:bg-amber-500/10 rounded-md p-4 border border-amber-200 dark:border-amber-500/20">
+            <p class="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest">Pendientes</p>
+            <p class="text-4xl font-black text-amber-600 dark:text-amber-400 mt-1 leading-none">{{ pendientesHoy() }}</p>
+            <p class="text-xs text-amber-400 dark:text-amber-500 mt-1.5">por atender</p>
         </div>
-        <div class="bg-emerald-50 rounded-md p-4 border border-emerald-200">
-            <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Completadas</p>
-            <p class="text-4xl font-black text-emerald-600 mt-1 leading-none">{{ completadasHoy() }}</p>
-            <p class="text-xs text-emerald-400 mt-1.5">finalizadas hoy</p>
+        <div class="bg-emerald-50 dark:bg-emerald-500/10 rounded-md p-4 border border-emerald-200 dark:border-emerald-500/20">
+            <p class="text-[10px] font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-widest">Completadas</p>
+            <p class="text-4xl font-black text-emerald-600 dark:text-emerald-400 mt-1 leading-none">{{ completadasHoy() }}</p>
+            <p class="text-xs text-emerald-400 dark:text-emerald-500 mt-1.5">finalizadas hoy</p>
         </div>
-        <div class="bg-blue-50 rounded-md p-4 border border-blue-200">
-            <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Próximas</p>
-            <p class="text-4xl font-black text-blue-600 mt-1 leading-none">{{ proximasTotal() }}</p>
-            <p class="text-xs text-blue-400 mt-1.5">agendadas</p>
+        <div class="bg-blue-50 dark:bg-blue-500/10 rounded-md p-4 border border-blue-200 dark:border-blue-500/20">
+            <p class="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest">Próximas</p>
+            <p class="text-4xl font-black text-blue-600 dark:text-blue-400 mt-1 leading-none">{{ proximasTotal() }}</p>
+            <p class="text-xs text-blue-400 dark:text-blue-500 mt-1.5">agendadas</p>
         </div>
     </div>
 
@@ -41,17 +41,17 @@
     <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 items-start">
 
         <!-- ── Calendario ── -->
-        <div class="bg-white border border-slate-200 p-5 lg:sticky lg:top-4">
+        <div class="card p-5 lg:sticky lg:top-4">
 
             <!-- Navegación mes -->
             <div class="flex items-center justify-between mb-5">
                 <button (click)="mesAnterior()"
-                    class="w-8 h-8 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors">
+                    class="w-8 h-8 rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 flex items-center justify-center text-secondary transition-colors">
                     <ng-icon name="matChevronLeftOutline" size="1em"></ng-icon>
                 </button>
-                <p class="text-sm font-bold text-slate-800 capitalize">{{ nombreMes() }}</p>
+                <p class="text-sm font-bold text-slate-800 dark:text-zinc-100 capitalize">{{ nombreMes() }}</p>
                 <button (click)="mesSiguiente()"
-                    class="w-8 h-8 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors">
+                    class="w-8 h-8 rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 flex items-center justify-center text-secondary transition-colors">
                     <ng-icon name="matChevronRightOutline" size="1em"></ng-icon>
                 </button>
             </div>
@@ -59,7 +59,7 @@
             <!-- Cabeceras días -->
             <div class="grid grid-cols-7 mb-1">
                 @for (d of ['Lu','Ma','Mi','Ju','Vi','Sa','Do']; track d) {
-                <div class="text-center text-[9px] font-bold text-slate-400 uppercase tracking-wider py-1">{{ d }}</div>
+                <div class="text-center text-[9px] font-bold text-muted uppercase tracking-wider py-1">{{ d }}</div>
                 }
             </div>
 
@@ -72,12 +72,16 @@
                 <div class="flex flex-col items-center py-0.5">
                     <button (click)="seleccionarDia(dia)"
                         class="w-8 h-8 rounded-md text-sm font-medium transition-all flex items-center justify-center relative"
-                        [class.bg-slate-900]="esDiaSeleccionado(dia)" [class.text-white]="esDiaSeleccionado(dia)"
+                        [class.bg-slate-900]="esDiaSeleccionado(dia)" [class.dark:bg-zinc-100]="esDiaSeleccionado(dia)"
+                        [class.text-white]="esDiaSeleccionado(dia)" [class.dark:text-zinc-900]="esDiaSeleccionado(dia)"
                         [class.ring-2]="esHoy(dia) && !esDiaSeleccionado(dia)"
                         [class.ring-slate-900]="esHoy(dia) && !esDiaSeleccionado(dia)"
-                        [class.text-slate-900]="esHoy(dia) && !esDiaSeleccionado(dia)" [class.font-bold]="esHoy(dia)"
-                        [class.text-slate-600]="!esHoy(dia) && !esDiaSeleccionado(dia)"
-                        [class.hover:bg-slate-100]="!esDiaSeleccionado(dia)">
+                        [class.dark:ring-zinc-100]="esHoy(dia) && !esDiaSeleccionado(dia)"
+                        [class.text-slate-900]="esHoy(dia) && !esDiaSeleccionado(dia)" [class.dark:text-zinc-100]="esHoy(dia) && !esDiaSeleccionado(dia)"
+                        [class.dark:text-zinc-100]="esHoy(dia) && !esDiaSeleccionado(dia)" [class.font-bold]="esHoy(dia)"
+                        [class.text-slate-600]="!esHoy(dia) && !esDiaSeleccionado(dia)" [class.dark:text-zinc-400]="!esHoy(dia) && !esDiaSeleccionado(dia)"
+                        [class.dark:text-zinc-400]="!esHoy(dia) && !esDiaSeleccionado(dia)"
+                        [class.hover:bg-slate-100]="!esDiaSeleccionado(dia)" [class.dark:hover:bg-zinc-700]="!esDiaSeleccionado(dia)" [class.dark:hover:bg-zinc-800]="!esDiaSeleccionado(dia)">
                         {{ dia.getDate() }}
                     </button>
                     <!-- Puntos de estado -->
@@ -88,7 +92,7 @@
                             [class.bg-blue-500]="c.estado === 'EnCurso'"
                             [class.bg-emerald-400]="c.estado === 'Completada'"
                             [class.bg-red-400]="c.estado === 'Cancelada'"
-                            [class.bg-slate-400]="c.estado === 'NoAsistio'"
+                            [class.bg-slate-400]="c.estado === 'NoAsistio'" [class.dark:bg-zinc-500]="c.estado === 'NoAsistio'"
                             [class.bg-violet-400]="c.estado === 'Reagendada'">
                         </div>
                         }
@@ -102,7 +106,7 @@
             </div>
 
             <!-- Leyenda -->
-            <div class="mt-5 pt-4 border-t border-slate-200 grid grid-cols-2 gap-x-4 gap-y-1.5">
+            <div class="mt-5 pt-4 border-t border-slate-200 dark:border-zinc-700 grid grid-cols-2 gap-x-4 gap-y-1.5">
                 @for (item of [
                 { label: 'Pendiente', color: 'bg-amber-400' },
                 { label: 'En curso', color: 'bg-blue-500' },
@@ -112,21 +116,21 @@
                 ]; track item.label) {
                 <div class="flex items-center gap-1.5">
                     <div class="w-1.5 h-1.5 rounded-full shrink-0" [ngClass]="item.color"></div>
-                    <span class="text-[11px] text-slate-500">{{ item.label }}</span>
+                    <span class="text-[11px] text-secondary">{{ item.label }}</span>
                 </div>
                 }
             </div>
         </div>
 
         <!-- ── Timeline del día seleccionado ── -->
-        <div class="bg-white border border-slate-200 overflow-hidden">
+        <div class="card overflow-hidden">
 
             <!-- Header timeline -->
-            <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+            <div class="px-6 py-5 border-b border-slate-200 dark:border-zinc-700 flex items-center justify-between">
                 <div>
-                    <h3 class="text-base font-bold text-slate-900 capitalize">{{ formatearFechaSel() }}</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">
-                        @if (esHoySeleccionado()) { <span class="text-blue-600 font-semibold">Hoy · </span> }
+                    <h3 class="text-base font-bold text-slate-900 dark:text-zinc-100 capitalize">{{ formatearFechaSel() }}</h3>
+                    <p class="text-xs text-muted mt-0.5">
+                        @if (esHoySeleccionado()) { <span class="text-blue-600 dark:text-blue-400 font-semibold">Hoy · </span> }
                         {{ citasDelDiaSeleccionado().length }}
                         {{ citasDelDiaSeleccionado().length === 1 ? 'cita' : 'citas' }}
                     </p>
@@ -143,20 +147,20 @@
                 <div class="flex flex-col gap-4">
                     @for (i of [1,2,3]; track i) {
                     <div class="flex gap-4 items-start animate-pulse">
-                        <div class="w-12 h-4 bg-slate-200 rounded shrink-0 mt-2"></div>
-                        <div class="w-3 h-3 rounded-full bg-slate-200 mt-2 shrink-0"></div>
-                        <div class="flex-1 h-20 bg-slate-100 rounded-md"></div>
+                        <div class="w-12 h-4 bg-slate-200 dark:bg-zinc-700 rounded shrink-0 mt-2"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-zinc-700 mt-2 shrink-0"></div>
+                        <div class="flex-1 h-20 bg-slate-100 dark:bg-zinc-800 rounded-md"></div>
                     </div>
                     }
                 </div>
 
                 } @else if (citasDelDiaSeleccionado().length === 0) {
                 <div class="flex flex-col items-center justify-center py-16 text-center">
-                    <div class="w-14 h-14 bg-slate-100 rounded-md flex items-center justify-center mb-4">
-                        <ng-icon name="matCalendarMonthOutline" size="1.75em" class="text-slate-300"></ng-icon>
+                    <div class="w-14 h-14 bg-slate-100 dark:bg-zinc-800 rounded-md flex items-center justify-center mb-4">
+                        <ng-icon name="matCalendarMonthOutline" size="1.75em" class="text-slate-300 dark:text-zinc-600"></ng-icon>
                     </div>
-                    <p class="text-sm font-semibold text-slate-500">Sin citas este día</p>
-                    <p class="text-xs text-slate-400 mt-1 max-w-48">
+                    <p class="text-sm font-semibold text-secondary">Sin citas este día</p>
+                    <p class="text-xs text-muted mt-1 max-w-48">
                         Selecciona otro día en el calendario o programa una nueva cita
                     </p>
                 </div>
@@ -165,7 +169,7 @@
                 <!-- Timeline -->
                 <div class="relative">
                     <!-- Línea vertical -->
-                    <div class="absolute left-[116px] top-3 bottom-3 w-px bg-slate-200"></div>
+                    <div class="absolute left-[116px] top-3 bottom-3 w-px bg-slate-200 dark:bg-zinc-700"></div>
 
                     <div class="flex flex-col gap-2">
                         @for (cita of citasDelDiaSeleccionado(); track cita.id) {
@@ -173,7 +177,7 @@
 
                             <!-- Hora -->
                             <div class="w-[116px] shrink-0 pt-2.5 text-right pr-1">
-                                <span class="text-xs font-bold text-slate-600 tabular-nums whitespace-nowrap">
+                                <span class="text-xs font-bold text-slate-600 dark:text-zinc-300 tabular-nums whitespace-nowrap">
                                     {{ formatearHora(cita.fechaHora) }}{{ cita.fechaHoraFin ? ' – ' + formatearHora(cita.fechaHoraFin) : '' }}
                                 </span>
                             </div>
@@ -185,46 +189,46 @@
                                     [class.bg-blue-500]="cita.estado === 'EnCurso'"
                                     [class.bg-emerald-400]="cita.estado === 'Completada'"
                                     [class.bg-red-400]="cita.estado === 'Cancelada'"
-                                    [class.bg-slate-400]="cita.estado === 'NoAsistio'"
+                                    [class.bg-slate-400]="cita.estado === 'NoAsistio'" [class.dark:bg-zinc-500]="cita.estado === 'NoAsistio'"
                                     [class.bg-violet-400]="cita.estado === 'Reagendada'">
                                 </div>
                             </div>
 
                             <!-- Tarjeta -->
                             <div class="flex-1 rounded-md border px-3 py-2.5 cursor-pointer transition-colors"
-                                [class.bg-amber-50]="cita.estado === 'Pendiente'"
-                                [class.border-amber-200]="cita.estado === 'Pendiente'"
-                                [class.bg-blue-50]="cita.estado === 'EnCurso'"
-                                [class.border-blue-200]="cita.estado === 'EnCurso'"
-                                [class.bg-emerald-50]="cita.estado === 'Completada'"
-                                [class.border-emerald-200]="cita.estado === 'Completada'"
-                                [class.bg-red-50]="cita.estado === 'Cancelada'"
-                                [class.border-red-200]="cita.estado === 'Cancelada'"
-                                [class.bg-slate-50]="cita.estado === 'NoAsistio'"
-                                [class.border-slate-200]="cita.estado === 'NoAsistio'"
-                                [class.bg-violet-50]="cita.estado === 'Reagendada'"
-                                [class.border-violet-200]="cita.estado === 'Reagendada'" (click)="verCita(cita.id)">
+                                [class.bg-amber-50]="cita.estado === 'Pendiente'" [class.dark:bg-amber-500/10]="cita.estado === 'Pendiente'"
+                                [class.border-amber-200]="cita.estado === 'Pendiente'" [class.dark:border-amber-500/20]="cita.estado === 'Pendiente'"
+                                [class.bg-blue-50]="cita.estado === 'EnCurso'" [class.dark:bg-blue-500/10]="cita.estado === 'EnCurso'"
+                                [class.border-blue-200]="cita.estado === 'EnCurso'" [class.dark:border-blue-500/20]="cita.estado === 'EnCurso'"
+                                [class.bg-emerald-50]="cita.estado === 'Completada'" [class.dark:bg-emerald-500/10]="cita.estado === 'Completada'"
+                                [class.border-emerald-200]="cita.estado === 'Completada'" [class.dark:border-emerald-500/20]="cita.estado === 'Completada'"
+                                [class.bg-red-50]="cita.estado === 'Cancelada'" [class.dark:bg-red-500/10]="cita.estado === 'Cancelada'"
+                                [class.border-red-200]="cita.estado === 'Cancelada'" [class.dark:border-red-500/20]="cita.estado === 'Cancelada'"
+                                [class.bg-slate-50]="cita.estado === 'NoAsistio'" [class.dark:bg-zinc-800]="cita.estado === 'NoAsistio'"
+                                [class.border-slate-200]="cita.estado === 'NoAsistio'" [class.dark:border-zinc-700]="cita.estado === 'NoAsistio'"
+                                [class.bg-violet-50]="cita.estado === 'Reagendada'" [class.dark:bg-violet-500/10]="cita.estado === 'Reagendada'"
+                                [class.border-violet-200]="cita.estado === 'Reagendada'" [class.dark:border-violet-500/20]="cita.estado === 'Reagendada'" (click)="verCita(cita.id)">
 
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
-                                        <p class="font-bold text-slate-900 text-sm truncate">{{ cita.nombreNino }}</p>
-                                        <p class="text-xs text-slate-500 mt-0.5 line-clamp-1">
+                                        <p class="font-bold text-slate-900 dark:text-zinc-100 text-sm truncate">{{ cita.nombreNino }}</p>
+                                        <p class="text-xs text-secondary mt-0.5 line-clamp-1">
                                             {{ cita.motivo || 'Sin motivo registrado' }}
                                         </p>
                                     </div>
                                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0"
-                                        [class.bg-amber-200]="cita.estado === 'Pendiente'"
-                                        [class.text-amber-800]="cita.estado === 'Pendiente'"
-                                        [class.bg-blue-200]="cita.estado === 'EnCurso'"
-                                        [class.text-blue-800]="cita.estado === 'EnCurso'"
-                                        [class.bg-emerald-200]="cita.estado === 'Completada'"
-                                        [class.text-emerald-800]="cita.estado === 'Completada'"
-                                        [class.bg-red-200]="cita.estado === 'Cancelada'"
-                                        [class.text-red-800]="cita.estado === 'Cancelada'"
-                                        [class.bg-slate-200]="cita.estado === 'NoAsistio'"
-                                        [class.text-slate-600]="cita.estado === 'NoAsistio'"
-                                        [class.bg-violet-200]="cita.estado === 'Reagendada'"
-                                        [class.text-violet-800]="cita.estado === 'Reagendada'">
+                                        [class.bg-amber-200]="cita.estado === 'Pendiente'" [class.dark:bg-amber-500/20]="cita.estado === 'Pendiente'"
+                                        [class.text-amber-800]="cita.estado === 'Pendiente'" [class.dark:text-amber-400]="cita.estado === 'Pendiente'"
+                                        [class.bg-blue-200]="cita.estado === 'EnCurso'" [class.dark:bg-blue-500/20]="cita.estado === 'EnCurso'"
+                                        [class.text-blue-800]="cita.estado === 'EnCurso'" [class.dark:text-blue-400]="cita.estado === 'EnCurso'"
+                                        [class.bg-emerald-200]="cita.estado === 'Completada'" [class.dark:bg-emerald-500/20]="cita.estado === 'Completada'"
+                                        [class.text-emerald-800]="cita.estado === 'Completada'" [class.dark:text-emerald-400]="cita.estado === 'Completada'"
+                                        [class.bg-red-200]="cita.estado === 'Cancelada'" [class.dark:bg-red-500/20]="cita.estado === 'Cancelada'"
+                                        [class.text-red-800]="cita.estado === 'Cancelada'" [class.dark:text-red-400]="cita.estado === 'Cancelada'"
+                                        [class.bg-slate-200]="cita.estado === 'NoAsistio'" [class.dark:bg-zinc-700]="cita.estado === 'NoAsistio'"
+                                        [class.text-slate-600]="cita.estado === 'NoAsistio'" [class.dark:text-zinc-400]="cita.estado === 'NoAsistio'" [class.dark:text-zinc-300]="cita.estado === 'NoAsistio'"
+                                        [class.bg-violet-200]="cita.estado === 'Reagendada'" [class.dark:bg-violet-500/20]="cita.estado === 'Reagendada'"
+                                        [class.text-violet-800]="cita.estado === 'Reagendada'" [class.dark:text-violet-400]="cita.estado === 'Reagendada'">
                                         {{ cita.estado === 'EnCurso' ? 'En curso' : cita.estado === 'NoAsistio' ? 'No
                                         asistió' : cita.estado }}
                                     </span>
@@ -232,9 +236,9 @@
 
                                 <!-- Acción inline solo para consultas en curso -->
                                 @if (cita.estado === 'EnCurso') {
-                                <div class="flex items-center mt-3 pt-3 border-t border-black/5">
+                                <div class="flex items-center mt-3 pt-3 border-t border-black/5 dark:border-white/10">
                                     <button (click)="cambiarEstado(cita.id, EstadoCita.Completada, $event)"
-                                        class="text-xs font-semibold text-emerald-600 hover:text-emerald-800 transition-colors">
+                                        class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors">
                                         Marcar completada →
                                     </button>
                                 </div>

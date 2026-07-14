@@ -2,16 +2,16 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="max-w-5xl mx-auto">
-        <div class="bg-white border border-slate-200 overflow-hidden flex flex-col lg:flex-row">
+        <div class="card overflow-hidden flex flex-col lg:flex-row">
 
-            <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
+            <div class="lg:w-1/3 bg-slate-50 dark:bg-zinc-800/50 border-r border-slate-200 dark:border-zinc-700 p-8">
                 <div class="sticky top-8">
                     <div class="w-12 h-12 bg-blue-600 rounded-md flex items-center justify-center mb-6">
                         <ng-icon name="matPersonOutline" color="white"></ng-icon>
                     </div>
 
                     <h2 class="panel-title">Editar paciente</h2>
-                    <p class="text-sm text-slate-500 mt-3 leading-relaxed">
+                    <p class="text-sm text-secondary mt-3 leading-relaxed">
                         Modificando los datos de
                         <strong>{{ nino()?.nombre }} {{ nino()?.apellido }}</strong>.
                     </p>
@@ -20,15 +20,15 @@
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="matPersonOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Identidad</h4>
-                                <p class="text-xs text-slate-500 mt-1">Nombre, apellido y fecha de nacimiento del niño.</p>
+                                <h4 class="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Identidad</h4>
+                                <p class="text-xs text-secondary mt-1">Nombre, apellido y fecha de nacimiento del niño.</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="matPersonOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Nota</h4>
-                                <p class="text-xs text-slate-500 mt-1">
+                                <h4 class="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Nota</h4>
+                                <p class="text-xs text-secondary mt-1">
                                     El médico y el representante se reasignan por separado, abajo, para evitar cambios accidentales.
                                 </p>
                             </div>
@@ -43,25 +43,25 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Nombre *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Nombre *</label>
                             <input type="text" [(ngModel)]="form.nombre" placeholder="Ej. Lucas"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="form-input">
                         </div>
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Apellido *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Apellido *</label>
                             <input type="text" [(ngModel)]="form.apellido" placeholder="Ej. Pérez"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="form-input">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Fecha de nacimiento *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Fecha de nacimiento *</label>
                             <input type="date" [(ngModel)]="form.fechaNacimiento"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm">
+                                class="form-input">
                         </div>
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Sexo *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Sexo *</label>
                             <searchable-select
                                 [options]="sexoOptions"
                                 valueKey="id"
@@ -74,15 +74,15 @@
                     </div>
 
                     @if (error()) {
-                    <div class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-md text-xs font-semibold flex items-center gap-2">
+                    <div class="p-3 alert-error rounded-md text-xs font-semibold flex items-center gap-2">
                         <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                         {{ error() }}
                     </div>
                     }
 
-                    <div class="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
+                    <div class="pt-6 border-t border-slate-200 dark:border-zinc-700 flex items-center justify-end gap-3">
                         <a [routerLink]="['/pacientes', id]"
-                            class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                            class="px-4 py-2 text-sm font-bold text-muted hover:text-slate-600 transition-colors">
                             Cancelar
                         </a>
                         <button (click)="guardar()" [disabled]="guardando()"
@@ -100,19 +100,19 @@
 
                 <!-- ── Sección: Reasignar médico (solo Admin) ───────────────────── -->
                 @if (authService.esAdmin()) {
-                <div class="border-t border-slate-200 pt-6">
+                <div class="border-t border-slate-200 dark:border-zinc-700 pt-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h3 class="text-sm font-semibold text-slate-700">Médico asignado</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">{{ nino()?.medicoNombreCompleto }}</p>
+                            <h3 class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Médico asignado</h3>
+                            <p class="text-xs text-muted mt-0.5">{{ nino()?.medicoNombreCompleto }}</p>
                         </div>
                         <button type="button" (click)="toggleCambioMedico()"
                             class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors"
-                            [class.border-slate-200]="!mostrarCambioMedico()"
-                            [class.text-slate-600]="!mostrarCambioMedico()"
-                            [class.hover:bg-slate-50]="!mostrarCambioMedico()"
+                            [class.border-slate-200]="!mostrarCambioMedico()" [class.dark:border-zinc-700]="!mostrarCambioMedico()"
+                            [class.text-slate-600]="!mostrarCambioMedico()" [class.dark:text-zinc-400]="!mostrarCambioMedico()"
+                            [class.hover:bg-slate-50]="!mostrarCambioMedico()" [class.dark:hover:bg-zinc-800]="!mostrarCambioMedico()"
                             [class.border-red-200]="mostrarCambioMedico()" [class.text-red-500]="mostrarCambioMedico()"
-                            [class.hover:bg-red-50]="mostrarCambioMedico()">
+                            [class.hover:bg-red-50]="mostrarCambioMedico()" [class.dark:hover:bg-red-500/10]="mostrarCambioMedico()">
                             @if (mostrarCambioMedico()) {
                             <ng-icon name="matCloseOutline" size="13"></ng-icon>
                             Cancelar
@@ -124,8 +124,8 @@
                     </div>
 
                     @if (mostrarCambioMedico()) {
-                    <div class="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-3">
-                        <p class="text-xs text-slate-500">
+                    <div class="bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md p-4 space-y-3">
+                        <p class="text-xs text-secondary">
                             Selecciona el nuevo médico responsable de este paciente.
                         </p>
                         <div class="flex gap-2">
@@ -152,7 +152,7 @@
                             </button>
                         </div>
                         @if (errorMedico()) {
-                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-100 rounded-md">
+                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-100 rounded-md">
                             <ng-icon name="matErrorOutline" size="14" class="text-red-500 shrink-0"></ng-icon>
                             <p class="text-xs text-red-600">{{ errorMedico() }}</p>
                         </div>
@@ -161,7 +161,7 @@
                     }
 
                     @if (exitoMedico()) {
-                    <div class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-md mt-3">
+                    <div class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 rounded-md mt-3">
                         <ng-icon name="matCheckCircleOutline" size="15" class="text-emerald-500 shrink-0"></ng-icon>
                         <p class="text-xs text-emerald-700 font-medium">Médico reasignado correctamente.</p>
                     </div>
@@ -171,19 +171,19 @@
 
                 <!-- ── Sección: Reasignar representante (solo Médico) ───────────────────── -->
                 @if (authService.esMedico()) {
-                <div class="border-t border-slate-200 pt-6">
+                <div class="border-t border-slate-200 dark:border-zinc-700 pt-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h3 class="text-sm font-semibold text-slate-700">Representante</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">{{ nino()?.padreNombreCompleto }}</p>
+                            <h3 class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Representante</h3>
+                            <p class="text-xs text-muted mt-0.5">{{ nino()?.padreNombreCompleto }}</p>
                         </div>
                         <button type="button" (click)="toggleCambioPadre()"
                             class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors"
-                            [class.border-slate-200]="!mostrarCambioPadre()"
-                            [class.text-slate-600]="!mostrarCambioPadre()"
-                            [class.hover:bg-slate-50]="!mostrarCambioPadre()"
+                            [class.border-slate-200]="!mostrarCambioPadre()" [class.dark:border-zinc-700]="!mostrarCambioPadre()"
+                            [class.text-slate-600]="!mostrarCambioPadre()" [class.dark:text-zinc-400]="!mostrarCambioPadre()"
+                            [class.hover:bg-slate-50]="!mostrarCambioPadre()" [class.dark:hover:bg-zinc-800]="!mostrarCambioPadre()"
                             [class.border-red-200]="mostrarCambioPadre()" [class.text-red-500]="mostrarCambioPadre()"
-                            [class.hover:bg-red-50]="mostrarCambioPadre()">
+                            [class.hover:bg-red-50]="mostrarCambioPadre()" [class.dark:hover:bg-red-500/10]="mostrarCambioPadre()">
                             @if (mostrarCambioPadre()) {
                             <ng-icon name="matCloseOutline" size="13"></ng-icon>
                             Cancelar
@@ -195,8 +195,8 @@
                     </div>
 
                     @if (mostrarCambioPadre()) {
-                    <div class="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-3">
-                        <p class="text-xs text-slate-500">
+                    <div class="bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md p-4 space-y-3">
+                        <p class="text-xs text-secondary">
                             Selecciona el nuevo representante de este niño.
                         </p>
                         <div class="flex gap-2">
@@ -223,7 +223,7 @@
                             </button>
                         </div>
                         @if (errorPadre()) {
-                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-100 rounded-md">
+                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-100 rounded-md">
                             <ng-icon name="matErrorOutline" size="14" class="text-red-500 shrink-0"></ng-icon>
                             <p class="text-xs text-red-600">{{ errorPadre() }}</p>
                         </div>
@@ -232,7 +232,7 @@
                     }
 
                     @if (exitoPadre()) {
-                    <div class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-md mt-3">
+                    <div class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 rounded-md mt-3">
                         <ng-icon name="matCheckCircleOutline" size="15" class="text-emerald-500 shrink-0"></ng-icon>
                         <p class="text-xs text-emerald-700 font-medium">Representante reasignado correctamente.</p>
                     </div>

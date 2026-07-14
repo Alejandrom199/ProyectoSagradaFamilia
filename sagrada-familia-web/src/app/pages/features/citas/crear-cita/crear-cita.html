@@ -2,16 +2,16 @@
     <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
 
     <div class="max-w-5xl mx-auto">
-        <div class="bg-white border border-slate-200 overflow-hidden flex flex-col lg:flex-row">
+        <div class="card overflow-hidden flex flex-col lg:flex-row">
 
-            <div class="lg:w-1/3 bg-slate-50/50 border-r border-slate-200 p-8">
+            <div class="lg:w-1/3 bg-slate-50 dark:bg-zinc-800/50 border-r border-slate-200 dark:border-zinc-700 p-8">
                 <div class="sticky top-8">
                     <div class="w-12 h-12 bg-blue-600 rounded-md flex items-center justify-center mb-6">
                         <ng-icon name="matCalendarMonthOutline" color="white"></ng-icon>
                     </div>
 
                     <h2 class="panel-title">Programar cita</h2>
-                    <p class="text-sm text-slate-500 mt-3 leading-relaxed">
+                    <p class="text-sm text-secondary mt-3 leading-relaxed">
                         Reserva un turno para la atención pediátrica del paciente.
                     </p>
 
@@ -19,30 +19,30 @@
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="matPersonOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Paciente</h4>
-                                <p class="text-xs text-slate-500 mt-1">Selecciona al niño que será atendido.</p>
+                                <h4 class="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Paciente</h4>
+                                <p class="text-xs text-secondary mt-1">Selecciona al niño que será atendido.</p>
                             </div>
                         </div>
 
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="matScheduleOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Hora</h4>
-                                <p class="text-xs text-slate-500 mt-1">Define la fecha y hora exactas del turno.</p>
+                                <h4 class="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Hora</h4>
+                                <p class="text-xs text-secondary mt-1">Define la fecha y hora exactas del turno.</p>
                             </div>
                         </div>
 
                         <div class="flex gap-4">
                             <div class="mt-1"><ng-icon name="matDescriptionOutline" class="text-blue-500 text-lg"></ng-icon></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Motivo</h4>
-                                <p class="text-xs text-slate-500 mt-1">Describe brevemente el propósito de la consulta.</p>
+                                <h4 class="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Motivo</h4>
+                                <p class="text-xs text-secondary mt-1">Describe brevemente el propósito de la consulta.</p>
                             </div>
                         </div>
                     </div>
 
                     @if (horaInicioAtencion() && horaFinAtencion()) {
-                    <div class="mt-6 p-3 bg-blue-50 border border-blue-100 rounded-md">
+                    <div class="mt-6 p-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-100 rounded-md">
                         <p class="text-[11px] font-bold text-blue-700 uppercase tracking-wide mb-1">Horario de atención</p>
                         <p class="text-xs text-blue-600">
                             {{ horaInicioAtencion() }} — {{ horaFinAtencion() }} hrs
@@ -57,7 +57,7 @@
 
                     <div [class]="esMedico() ? 'grid grid-cols-1 gap-6' : 'grid grid-cols-1 md:grid-cols-2 gap-6'">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Paciente *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Paciente *</label>
                             <searchable-select
                                 [options]="pacientes()"
                                 [labelFn]="pacienteLabelFn"
@@ -74,7 +74,7 @@
 
                         @if (!esMedico()) {
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Médico *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Médico *</label>
                             <searchable-select
                                 [options]="medicos()"
                                 [labelFn]="medicoLabelFn"
@@ -93,9 +93,9 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Fecha *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Fecha *</label>
                             <input formControlName="fecha" type="date" [min]="fechaMinima"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="form-input"
                                 [class.border-red-500]="f['fecha'].invalid && f['fecha'].touched">
                             @if (f['fecha'].invalid && f['fecha'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Fecha requerida</span>
@@ -103,9 +103,9 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Hora inicio *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Hora inicio *</label>
                             <input formControlName="hora" type="time"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="form-input"
                                 [class.border-red-500]="f['hora'].invalid && f['hora'].touched">
                             @if (f['hora'].invalid && f['hora'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Hora requerida</span>
@@ -113,9 +113,9 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600 uppercase ml-1">Hora terminación *</label>
+                            <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Hora terminación *</label>
                             <input formControlName="horaFin" type="time"
-                                class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                                class="form-input"
                                 [class.border-red-500]="f['horaFin'].invalid && f['horaFin'].touched">
                             @if (f['horaFin'].invalid && f['horaFin'].touched) {
                             <span class="text-[11px] text-red-500 font-medium ml-1">Hora de terminación requerida</span>
@@ -130,21 +130,21 @@
                     }
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase ml-1">Motivo de la consulta</label>
+                        <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Motivo de la consulta</label>
                         <textarea formControlName="motivo" rows="3" placeholder="Ej. Control mensual de crecimiento"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm resize-none"></textarea>
+                            class="form-input resize-none"></textarea>
                     </div>
 
                     @if (error()) {
-                    <div class="p-3 bg-red-50 border border-red-100 text-red-600 rounded-md text-xs font-semibold flex items-center gap-2 animate-shake">
+                    <div class="p-3 alert-error rounded-md text-xs font-semibold flex items-center gap-2 animate-shake">
                         <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                         {{ error() }}
                     </div>
                     }
 
-                    <div class="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
+                    <div class="pt-6 border-t border-slate-200 dark:border-zinc-700 flex items-center justify-end gap-3">
                         <a routerLink="/citas"
-                            class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                            class="px-4 py-2 text-sm font-bold text-muted hover:text-slate-600 transition-colors">
                             Cancelar
                         </a>
                         <button type="submit" [disabled]="guardando() || formCita.invalid"

@@ -1,15 +1,15 @@
-<div class="bg-white border border-slate-200 w-full max-w-full relative">
+<div class="card w-full max-w-full relative">
     @if (menuActivo()) {
     <div class="fixed inset-0 z-[9998]" (click)="cerrarMenus()"></div>
     }
 
-    <div class="p-4 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200">
+    <div class="p-4 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-zinc-700">
         <div class="relative w-full sm:w-96">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <ng-icon name="heroMagnifyingGlass" class="text-blue-600 text-lg"></ng-icon>
+                <ng-icon name="heroMagnifyingGlass" class="text-blue-600 dark:text-blue-400 text-lg"></ng-icon>
             </div>
             <input type="text"
-                class="w-full pl-10 pr-10 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 font-medium"
+                class="w-full pl-10 pr-10 py-2 text-sm text-slate-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400 dark:placeholder-zinc-500 font-medium"
                 placeholder="BUSCAR..." [(ngModel)]="busquedaGlobal" (ngModelChange)="onSearchChange($event)">
             @if (busquedaGlobal.trim()) {
             <button
@@ -19,7 +19,7 @@
             </button>
             } @else {
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <ng-icon name="heroFunnel" class="text-blue-600 text-lg"></ng-icon>
+                <ng-icon name="heroFunnel" class="text-blue-600 dark:text-blue-400 text-lg"></ng-icon>
             </div>
             }
         </div>
@@ -27,7 +27,7 @@
         <div class="flex items-center gap-2">
             @if (showActualizar){
             <button
-                class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
+                class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 dark:border-zinc-700 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors focus:outline-none"
                 tooltip="Actualizar" tooltipPosition="top" (click)="limpiarFiltrosColumna(); onActualizar.emit()">
                 <ng-icon name="heroArrowPath" class="text-xl"></ng-icon>
             </button>
@@ -36,27 +36,27 @@
             @if (showColumnas){
             <div class="relative">
                 <button #btnColumnas (click)="toggleMenuColumnas($event, btnColumnas)"
-                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
-                    [class.bg-blue-50]="menuActivo() === 'columnas'" tooltip="Columnas" tooltipPosition="top">
+                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 dark:border-zinc-700 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors focus:outline-none"
+                    [class.bg-blue-50]="menuActivo() === 'columnas'" [class.dark:bg-blue-500/10]="menuActivo() === 'columnas'" tooltip="Columnas" tooltipPosition="top">
                     <ng-icon name="heroViewColumns" class="text-xl"></ng-icon>
                 </button>
                 @if (menuActivo() === 'columnas') {
-                <div class="fixed w-48 bg-white rounded-md z-[9999] overflow-hidden border border-slate-200 font-normal text-slate-700 animate-fade-in"
+                <div class="fixed w-48 card z-[9999] overflow-hidden font-normal text-slate-700 dark:text-zinc-300 animate-fade-in"
                     [ngStyle]="columnasPosicion" (click)="$event.stopPropagation()">
                     <div class="p-2 flex flex-col gap-1 max-h-64 overflow-y-auto">
-                        <div class="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <div class="px-2 py-1.5 text-xs font-bold text-muted uppercase tracking-wider">
                             Mostrar/Ocultar</div>
                         <button
-                            class="w-full text-left px-2 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                            class="w-full text-left px-2 py-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-md transition-colors"
                             (click)="toggleTodasLasColumnas()">
                             {{ todasLasColumnasVisibles ? 'Deseleccionar todas' : 'Seleccionar todas' }}
                         </button>
-                        <div class="border-t border-slate-200 my-1"></div>
+                        <div class="border-t border-slate-200 dark:border-zinc-700 my-1"></div>
                         @for (col of columns; track col.key) {
                         <label
-                            class="flex items-center gap-3 px-2 py-2 hover:bg-slate-50 rounded-md cursor-pointer transition-colors">
+                            class="flex items-center gap-3 px-2 py-2 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-md cursor-pointer transition-colors">
                             <input type="checkbox"
-                                class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                                class="w-4 h-4 accent-blue-600 rounded border-slate-300 dark:border-zinc-600 focus:ring-blue-500 cursor-pointer"
                                 [checked]="!col.hidden" (change)="toggleVisibilidadColumna(col.key)">
                             <span class="text-sm font-medium select-none truncate">{{ col.label }}</span>
                         </label>
@@ -70,20 +70,20 @@
             @if (showExportar && (exportExcel || exportPdf || showPlantilla || showImportar)){
             <div class="relative">
                 <button #btnExportar (click)="toggleMenuExportar($event, btnExportar)"
-                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
-                    [class.bg-blue-50]="menuActivo() === 'exportar'" tooltip="Exportar / Importar"
+                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 dark:border-zinc-700 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors focus:outline-none"
+                    [class.bg-blue-50]="menuActivo() === 'exportar'" [class.dark:bg-blue-500/10]="menuActivo() === 'exportar'" tooltip="Exportar / Importar"
                     tooltipPosition="top">
                     <ng-icon name="heroArrowDownTray" class="text-xl"></ng-icon>
                 </button>
                 @if (menuActivo() === 'exportar') {
-                <div class="fixed w-44 bg-white rounded-md z-[9999] overflow-hidden font-normal text-slate-700 animate-fade-in border border-slate-200"
+                <div class="fixed w-44 card z-[9999] overflow-hidden font-normal text-slate-700 dark:text-zinc-300 animate-fade-in"
                     [ngStyle]="exportarPosicion" (click)="$event.stopPropagation()">
 
                     @if (exportExcel || exportPdf) {
                     <div class="p-1.5 flex flex-col gap-0.5">
                         @if (exportExcel) {
                         <button
-                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-green-50 hover:text-green-700 w-full focus:outline-none transition-colors rounded-md group"
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-green-50 dark:hover:bg-green-500/10 hover:text-green-700 dark:hover:text-green-400 w-full focus:outline-none transition-colors rounded-md group"
                             (click)="exportarExcel(); cerrarMenus()">
                             <ng-icon name="matBorderAllOutline"
                                 class="text-lg text-green-600 opacity-80 group-hover:opacity-100"></ng-icon>
@@ -92,7 +92,7 @@
                         }
                         @if (exportPdf) {
                         <button
-                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-red-50 hover:text-red-700 w-full focus:outline-none transition-colors rounded-md group"
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-700 dark:hover:text-red-400 w-full focus:outline-none transition-colors rounded-md group"
                             (click)="exportarPdf(); cerrarMenus()">
                             <ng-icon name="matPictureAsPdfOutline"
                                 class="text-lg text-red-600 opacity-80 group-hover:opacity-100"></ng-icon>
@@ -103,14 +103,14 @@
                     }
 
                     @if ((exportExcel || exportPdf) && (showPlantilla || showImportar)) {
-                    <div class="border-t border-slate-200"></div>
+                    <div class="border-t border-slate-200 dark:border-zinc-700"></div>
                     }
 
                     @if (showPlantilla || showImportar) {
                     <div class="p-1.5 flex flex-col gap-0.5">
                         @if (showImportar) {
                         <button
-                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-blue-50 hover:text-blue-700 w-full focus:outline-none transition-colors rounded-md group"
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 w-full focus:outline-none transition-colors rounded-md group"
                             (click)="onImportar.emit(); cerrarMenus()">
                             <ng-icon name="heroArrowUpTray"
                                 class="text-lg text-blue-500 opacity-80 group-hover:opacity-100"></ng-icon>
@@ -119,10 +119,10 @@
                         }
                         @if (showPlantilla) {
                         <button
-                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 hover:text-slate-900 w-full focus:outline-none transition-colors rounded-md group"
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-100 w-full focus:outline-none transition-colors rounded-md group"
                             (click)="onPlantilla.emit(); cerrarMenus()">
                             <ng-icon name="heroArrowDownTray"
-                                class="text-lg text-slate-500 opacity-80 group-hover:opacity-100"></ng-icon>
+                                class="text-lg text-secondary opacity-80 group-hover:opacity-100"></ng-icon>
                             <span class="font-medium">Plantilla</span>
                         </button>
                         }
@@ -137,31 +137,31 @@
             @if (showConfiguracion) {
             <div class="relative">
                 <button #btnConfiguracion (click)="toggleMenuConfiguracion($event, btnConfiguracion)"
-                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
-                    [class.bg-blue-50]="menuActivo() === 'configuracion'" tooltip="Configuración" tooltipPosition="top">
+                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 dark:border-zinc-700 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors focus:outline-none"
+                    [class.bg-blue-50]="menuActivo() === 'configuracion'" [class.dark:bg-blue-500/10]="menuActivo() === 'configuracion'" tooltip="Configuración" tooltipPosition="top">
                     <ng-icon name="heroCog8Tooth" class="text-xl"></ng-icon>
                 </button>
                 @if (menuActivo() === 'configuracion') {
-                <div class="fixed w-52 bg-white rounded-md z-[9999] overflow-hidden border border-slate-200 animate-fade-in"
+                <div class="fixed w-52 card z-[9999] overflow-hidden animate-fade-in"
                     [ngStyle]="configuracionPosicion" (click)="$event.stopPropagation()">
                     <div class="p-2">
-                        <div class="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        <div class="px-2 py-1.5 text-xs font-bold text-muted uppercase tracking-wider mb-1">
                             Densidad de filas
                         </div>
                         @for (op of densidadOpciones; track op.valor) {
                         <button
-                            class="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700"
+                            class="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors text-sm font-medium text-slate-700 dark:text-zinc-300"
                             [class.!text-blue-600]="densidad() === op.valor" (click)="setDensidad(op.valor)">
                             <span class="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
                                 [class.border-blue-600]="densidad() === op.valor"
-                                [class.border-slate-300]="densidad() !== op.valor">
+                                [class.border-slate-300]="densidad() !== op.valor" [class.dark:border-zinc-600]="densidad() !== op.valor">
                                 @if (densidad() === op.valor) {
                                 <span class="w-2 h-2 rounded-full bg-blue-600 block"></span>
                                 }
                             </span>
                             <span class="flex flex-col text-left leading-tight">
                                 {{ op.label }}
-                                <span class="text-[10px] font-normal text-slate-400">{{ op.desc }}</span>
+                                <span class="text-[10px] font-normal text-muted">{{ op.desc }}</span>
                             </span>
                         </button>
                         }
@@ -174,33 +174,33 @@
             @if (columnasOrdenables.length > 0 || columnasFiltrables.length > 0) {
             <div class="relative sm:hidden">
                 <button #btnOrdenarFiltrar (click)="toggleMenuOrdenarFiltrar($event, btnOrdenarFiltrar)"
-                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 text-blue-600 rounded-md hover:bg-blue-50 transition-colors focus:outline-none"
-                    [class.bg-blue-50]="menuActivo() === 'ordenar-filtrar'" tooltip="Ordenar y filtrar"
+                    class="w-9 h-9 flex items-center justify-center p-0 border border-slate-200 dark:border-zinc-700 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors focus:outline-none"
+                    [class.bg-blue-50]="menuActivo() === 'ordenar-filtrar'" [class.dark:bg-blue-500/10]="menuActivo() === 'ordenar-filtrar'" tooltip="Ordenar y filtrar"
                     tooltipPosition="top">
                     <ng-icon name="heroAdjustmentsHorizontal" class="text-xl"></ng-icon>
                 </button>
                 @if (menuActivo() === 'ordenar-filtrar') {
-                <div class="fixed w-64 bg-white rounded-md z-[9999] overflow-hidden border border-slate-200 font-normal text-slate-700 animate-fade-in"
+                <div class="fixed w-64 card z-[9999] overflow-hidden font-normal text-slate-700 dark:text-zinc-300 animate-fade-in"
                     [ngStyle]="ordenarFiltrarPosicion" (click)="$event.stopPropagation()">
                     <div class="p-2 flex flex-col gap-1 max-h-80 overflow-y-auto">
                         @if (columnasOrdenables.length > 0) {
-                        <div class="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <div class="px-2 py-1.5 text-xs font-bold text-muted uppercase tracking-wider">
                             Ordenar por</div>
                         @for (col of columnasOrdenables; track col.key) {
-                        <div class="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50">
+                        <div class="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-zinc-800">
                             <span class="text-sm font-medium truncate" [class.text-blue-600]="sortKey === col.key">{{ col.label }}</span>
                             <div class="flex items-center gap-1 flex-shrink-0">
                                 <button
-                                    class="p-1 rounded transition-colors hover:bg-slate-100"
+                                    class="p-1 rounded transition-colors hover:bg-slate-100 dark:hover:bg-zinc-700"
                                     [class.!text-blue-600]="sortKey === col.key && sortDir === 'asc'"
-                                    [class.text-slate-400]="!(sortKey === col.key && sortDir === 'asc')"
+                                    [class.text-slate-400]="!(sortKey === col.key && sortDir === 'asc')" [class.dark:text-zinc-500]="!(sortKey === col.key && sortDir === 'asc')"
                                     (click)="ordenarPor(col.key, 'asc')">
                                     <ng-icon name="heroArrowUp" class="w-4 h-4"></ng-icon>
                                 </button>
                                 <button
-                                    class="p-1 rounded transition-colors hover:bg-slate-100"
+                                    class="p-1 rounded transition-colors hover:bg-slate-100 dark:hover:bg-zinc-700"
                                     [class.!text-blue-600]="sortKey === col.key && sortDir === 'desc'"
-                                    [class.text-slate-400]="!(sortKey === col.key && sortDir === 'desc')"
+                                    [class.text-slate-400]="!(sortKey === col.key && sortDir === 'desc')" [class.dark:text-zinc-500]="!(sortKey === col.key && sortDir === 'desc')"
                                     (click)="ordenarPor(col.key, 'desc')">
                                     <ng-icon name="heroArrowDown" class="w-4 h-4"></ng-icon>
                                 </button>
@@ -210,15 +210,15 @@
                         }
 
                         @if (columnasOrdenables.length > 0 && columnasFiltrables.length > 0) {
-                        <div class="border-t border-slate-200 my-1"></div>
+                        <div class="border-t border-slate-200 dark:border-zinc-700 my-1"></div>
                         }
 
                         @if (columnasFiltrables.length > 0) {
-                        <div class="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <div class="px-2 py-1.5 text-xs font-bold text-muted uppercase tracking-wider">
                             Filtrar</div>
                         @for (col of columnasFiltrables; track col.key) {
                         <button #btnFiltroPanel
-                            class="w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 transition-colors"
+                            class="w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
                             [class.!text-blue-600]="filtros[col.key] || menuActivo() === 'filtro-' + col.key"
                             (click)="toggleFiltro(col.key, $event, btnFiltroPanel)">
                             <span class="text-sm font-medium truncate">{{ col.label }}</span>
@@ -238,7 +238,7 @@
         <table class="w-full min-w-full text-sm text-left relative" [class.table-fixed]="hasCustomWidths()">
 
             <thead>
-                <tr class="bg-[#F8FAFC] border-b border-slate-200">
+                <tr class="bg-[#F8FAFC] dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700">
 
                     @if (accionesProcesadas.length > 0) {
                     <th class="w-10 px-2 py-3 text-center"></th>
@@ -246,7 +246,7 @@
 
                     @for (col of columnasVisibles; track col.key) {
                     <th #thEl
-                        class="px-4 py-3 font-medium text-slate-500 whitespace-nowrap relative group/resize overflow-visible"
+                        class="px-4 py-3 font-medium text-secondary whitespace-nowrap relative group/resize overflow-visible"
                         [style.width.px]="columnWidths()[col.key] || null">
 
                         <div class="flex items-center justify-between w-full group">
@@ -263,7 +263,7 @@
 
                             @if (tieneFiltroDisponible(col)) {
                             <button #btnFiltro
-                                class="p-1 rounded-md transition-all hover:bg-slate-100 text-slate-400 focus:outline-none ml-4 flex-shrink-0"
+                                class="p-1 rounded-md transition-all hover:bg-slate-100 dark:hover:bg-zinc-700 text-muted focus:outline-none ml-4 flex-shrink-0"
                                 [class.!text-blue-600]="filtros[col.key] || menuActivo() === 'filtro-' + col.key"
                                 (click)="toggleFiltro(col.key, $event, btnFiltro)">
                                 <ng-icon name="heroFunnel" class="w-4 h-4"></ng-icon>
@@ -284,9 +284,9 @@
                 @if (columnasVisibles.length === 0) {
                 <tr>
                     <td [attr.colspan]="accionesProcesadas.length > 0 ? 1 : 0"
-                        class="px-4 py-16 text-center text-slate-400">
+                        class="px-4 py-16 text-center text-muted">
                         <div class="flex flex-col items-center justify-center gap-3">
-                            <ng-icon name="heroViewColumns" class="text-4xl text-slate-300"></ng-icon>
+                            <ng-icon name="heroViewColumns" class="text-4xl text-slate-300 dark:text-zinc-600"></ng-icon>
                             <p class="text-base font-medium">No hay columnas visibles.</p>
                         </div>
                     </td>
@@ -295,9 +295,9 @@
                 @else if (datosPaginados.length === 0) {
                 <tr>
                     <td [attr.colspan]="columnasVisibles.length + (accionesProcesadas.length > 0 ? 1 : 0)"
-                        class="px-4 py-16 text-center text-slate-400">
+                        class="px-4 py-16 text-center text-muted">
                         <div class="flex flex-col items-center justify-center gap-3">
-                            <ng-icon name="heroCircleStack" class="text-4xl text-slate-300"></ng-icon>
+                            <ng-icon name="heroCircleStack" class="text-4xl text-slate-300 dark:text-zinc-600"></ng-icon>
                             <p class="text-base font-medium">{{ emptyMessage }}</p>
                         </div>
                     </td>
@@ -306,14 +306,14 @@
                 @else {
 
                 @for (row of datosPaginados; track $index) {
-                <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                <tr class="border-b border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
 
                     @if (accionesProcesadas.length > 0 && columnasVisibles.length > 0) {
                     <td class="w-10 px-2 py-3 relative text-center">
                         <div class="flex items-center justify-center">
 
                             @if (accionesVisibles(row).length === 1) {
-                            <button class="p-1.5 rounded-md hover:bg-slate-100 focus:outline-none transition-colors"
+                            <button class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 focus:outline-none transition-colors"
                                 [class]="accionesVisibles(row)[0].class"
                                 [tooltip]="accionesVisibles(row)[0].label || ''" tooltipPosition="bottom"
                                 (click)="accionesVisibles(row)[0].onClick(row)">
@@ -324,18 +324,18 @@
 
                             } @else {
                             <button #btnAccion
-                                class="p-1 rounded-md text-orange-600 hover:bg-orange-100 focus:outline-none"
+                                class="w-7 h-7 flex items-center justify-center rounded-md text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/10 focus:outline-none"
                                 (click)="toggleMenuAcciones($index, $event, btnAccion)">
                                 <ng-icon name="heroEllipsisVertical" class="text-lg font-bold"></ng-icon>
                             </button>
 
                             @if (menuActivo() === 'accion-' + $index) {
-                            <div class="fixed w-40 bg-white rounded-md z-[9999] overflow-hidden divide-y divide-slate-200 font-normal text-slate-700 border border-slate-200"
+                            <div class="fixed w-40 card z-[9999] overflow-hidden divide-y divide-slate-200 dark:divide-zinc-700 font-normal text-slate-700 dark:text-zinc-300"
                                 [ngStyle]="menuPosicion" (click)="$event.stopPropagation()">
                                 <div class="p-1.5 flex flex-col gap-0.5">
                                     @for (action of accionesVisibles(row); track $index) {
                                     <button
-                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 w-full rounded-md group"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 dark:hover:bg-zinc-800 w-full rounded-md group"
                                         [class]="action.class" (click)="action.onClick(row); cerrarMenus()">
                                         @if (action.icon) {
                                         <ng-icon [name]="action.icon"
@@ -354,7 +354,7 @@
                     }
 
                     @for (col of columnasVisibles; track col.key) {
-                    <td class="px-4 text-slate-700 whitespace-nowrap overflow-hidden"
+                    <td class="px-4 text-slate-700 dark:text-zinc-300 whitespace-nowrap overflow-hidden"
                         [ngClass]="densidad() === 'compacto' ? 'py-1.5' : densidad() === 'espacioso' ? 'py-6' : 'py-4'"
                         [class]="col.class ?? ''">
                         @if (col.render) {
@@ -375,27 +375,27 @@
 
     <div class="sm:hidden">
         @if (columnasVisibles.length === 0) {
-        <div class="px-4 py-16 text-center text-slate-400">
+        <div class="px-4 py-16 text-center text-muted">
             <div class="flex flex-col items-center justify-center gap-3">
-                <ng-icon name="heroViewColumns" class="text-4xl text-slate-300"></ng-icon>
+                <ng-icon name="heroViewColumns" class="text-4xl text-slate-300 dark:text-zinc-600"></ng-icon>
                 <p class="text-base font-medium">No hay columnas visibles.</p>
             </div>
         </div>
         }
         @else if (datosPaginados.length === 0) {
-        <div class="px-4 py-16 text-center text-slate-400">
+        <div class="px-4 py-16 text-center text-muted">
             <div class="flex flex-col items-center justify-center gap-3">
-                <ng-icon name="heroCircleStack" class="text-4xl text-slate-300"></ng-icon>
+                <ng-icon name="heroCircleStack" class="text-4xl text-slate-300 dark:text-zinc-600"></ng-icon>
                 <p class="text-base font-medium">{{ emptyMessage }}</p>
             </div>
         </div>
         }
         @else {
-        <div class="flex flex-col divide-y divide-slate-200">
+        <div class="flex flex-col divide-y divide-slate-200 dark:divide-zinc-700">
             @for (row of datosPaginados; track $index) {
             <div [ngClass]="densidadPaddingCard">
                 <div class="flex items-start justify-between gap-3">
-                    <span class="font-semibold text-slate-800">
+                    <span class="font-semibold text-slate-800 dark:text-zinc-100">
                         @if (columnaTituloMovil?.render) {
                         <span [innerHTML]="columnaTituloMovil!.render!(row)"></span>
                         } @else if (columnaTituloMovil) {
@@ -406,7 +406,7 @@
                     @if (accionesProcesadas.length > 0) {
                     <div class="relative flex-shrink-0">
                         @if (accionesVisibles(row).length === 1) {
-                        <button class="p-1.5 rounded-md hover:bg-slate-100 focus:outline-none transition-colors"
+                        <button class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 focus:outline-none transition-colors"
                             [class]="accionesVisibles(row)[0].class"
                             [tooltip]="accionesVisibles(row)[0].label || ''" tooltipPosition="bottom"
                             (click)="accionesVisibles(row)[0].onClick(row)">
@@ -416,18 +416,18 @@
                         </button>
                         } @else {
                         <button #btnAccionMovil
-                            class="p-1 rounded-md text-orange-600 hover:bg-orange-100 focus:outline-none"
+                            class="w-7 h-7 flex items-center justify-center rounded-md text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/10 focus:outline-none"
                             (click)="toggleMenuAcciones($index, $event, btnAccionMovil)">
                             <ng-icon name="heroEllipsisVertical" class="text-lg font-bold"></ng-icon>
                         </button>
 
                         @if (menuActivo() === 'accion-' + $index) {
-                        <div class="fixed w-40 bg-white rounded-md z-[9999] overflow-hidden divide-y divide-slate-200 font-normal text-slate-700 border border-slate-200"
+                        <div class="fixed w-40 card z-[9999] overflow-hidden divide-y divide-slate-200 dark:divide-zinc-700 font-normal text-slate-700 dark:text-zinc-300"
                             [ngStyle]="menuPosicion" (click)="$event.stopPropagation()">
                             <div class="p-1.5 flex flex-col gap-0.5">
                                 @for (action of accionesVisibles(row); track $index) {
                                 <button
-                                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 w-full rounded-md group"
+                                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-slate-50 dark:hover:bg-zinc-800 w-full rounded-md group"
                                     [class]="action.class" (click)="action.onClick(row); cerrarMenus()">
                                     @if (action.icon) {
                                     <ng-icon [name]="action.icon"
@@ -447,11 +447,11 @@
                 <div class="mt-2 flex flex-col gap-1.5">
                     @for (col of columnasCard; track col.key) {
                     <div class="flex items-start justify-between gap-3" [class]="col.class ?? ''">
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider pt-0.5 flex-shrink-0">
+                        <span class="text-xs font-bold text-muted uppercase tracking-wider pt-0.5 flex-shrink-0">
                             {{ col.label }}
                         </span>
 
-                        <span class="text-sm text-slate-700 text-right">
+                        <span class="text-sm text-slate-700 dark:text-zinc-300 text-right">
                             @if (col.render) {
                             <span [innerHTML]="col.render(row)"></span>
                             } @else {
@@ -468,23 +468,23 @@
     </div>
 
     @if (columnaFiltroActiva; as colF) {
-    <div class="fixed w-64 p-2 bg-white border border-slate-200 rounded-md z-[9999] font-normal text-slate-700"
+    <div class="fixed w-64 p-2 card z-[9999] font-normal text-slate-700 dark:text-zinc-300"
         [ngStyle]="filtroPosicion" (click)="$event.stopPropagation()">
         <div class="p-1">
-            <label class="text-xs text-slate-500 mb-1.5 block px-1">Filtrar {{ colF.label }}</label>
+            <label class="text-xs text-secondary mb-1.5 block px-1">Filtrar {{ colF.label }}</label>
 
             <div class="relative mb-2">
                 <ng-icon name="heroMagnifyingGlass"
-                    class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></ng-icon>
+                    class="absolute left-2 top-1/2 -translate-y-1/2 text-muted text-sm"></ng-icon>
                 <input type="text"
-                    class="w-full pl-7 pr-2 py-1.5 text-sm border border-slate-200 rounded-md bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    class="w-full pl-7 pr-2 py-1.5 text-sm border border-slate-200 dark:border-zinc-700 rounded-md bg-slate-50 dark:bg-zinc-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     placeholder="Buscar..." [(ngModel)]="busquedaFiltro[colF.key]">
             </div>
 
             <label
-                class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer border-b border-slate-200 mb-1">
+                class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded cursor-pointer border-b border-slate-200 dark:border-zinc-700 mb-1">
                 <input type="checkbox"
-                    class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                    class="w-4 h-4 accent-blue-600 rounded border-slate-300 dark:border-zinc-600 focus:ring-blue-500 cursor-pointer"
                     [checked]="todosLosValoresMarcados(colF.key)"
                     (change)="toggleTodosLosValores(colF.key)">
                 <span class="text-sm font-semibold text-blue-600">Seleccionar todo</span>
@@ -493,22 +493,22 @@
             <div class="max-h-48 overflow-y-auto">
                 @for (valor of valoresUnicosFiltrados(colF.key); track valor) {
                 <label
-                    class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer">
+                    class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded cursor-pointer">
                     <input type="checkbox"
-                        class="w-4 h-4 accent-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                        class="w-4 h-4 accent-blue-600 rounded border-slate-300 dark:border-zinc-600 focus:ring-blue-500 cursor-pointer"
                         [checked]="isValorMarcado(colF.key, valor)"
                         (change)="toggleValorFiltro(colF.key, valor)">
                     <span class="text-sm truncate" [title]="valor">{{ valor }}</span>
                 </label>
                 } @empty {
-                <p class="text-xs text-slate-400 text-center py-3">Sin coincidencias</p>
+                <p class="text-xs text-muted text-center py-3">Sin coincidencias</p>
                 }
             </div>
 
             @if (filtrosSeleccion[colF.key]) {
-            <div class="border-t border-slate-200 mt-1 pt-1">
+            <div class="border-t border-slate-200 dark:border-zinc-700 mt-1 pt-1">
                 <button
-                    class="w-full text-left px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
+                    class="w-full text-left px-2 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-colors"
                     (click)="limpiarFiltroColumna(colF.key)">
                     Limpiar filtro
                 </button>
@@ -520,12 +520,12 @@
 
     @if (!hayFiltroVacio && (serverSide ? serverTotalItems > 0 : datosFiltrados.length > 0)) {
     <div
-        class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-slate-500 border-t border-slate-200">
+        class="px-6 py-4 flex flex-wrap items-center justify-end gap-6 text-sm text-secondary border-t border-slate-200 dark:border-zinc-700">
 
         <div class="flex items-center gap-2">
             <span class="tracking-wide">REGISTROS POR PÁGINA:</span>
             <select
-                class="bg-transparent border border-slate-200 rounded text-slate-700 py-1 pl-2 pr-6 focus:ring-1 focus:ring-blue-500 outline-none cursor-pointer"
+                class="bg-transparent border border-slate-200 dark:border-zinc-700 rounded text-slate-700 dark:text-zinc-300 py-1 pl-2 pr-6 focus:ring-1 focus:ring-blue-500 outline-none cursor-pointer"
                 [ngModel]="pageSize" (ngModelChange)="cambiarTamanoPagina($event)">
                 @for (size of pageSizes; track size) {
                 <option [value]="size">{{ size }}</option>
@@ -537,24 +537,24 @@
             {{ inicio + 1 }} - {{ fin }} DE {{ serverSide ? serverTotalItems : datosFiltrados.length }}
         </span>
 
-        <div class="flex items-center gap-4 text-slate-400">
+        <div class="flex items-center gap-4 text-muted">
             <button
-                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors focus:outline-none"
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-muted transition-colors focus:outline-none"
                 [disabled]="paginaActual() === 1" (click)="cambiarPagina(1)">
                 <ng-icon name="heroChevronDoubleLeft" class="text-lg"></ng-icon>
             </button>
             <button
-                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors focus:outline-none"
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-muted transition-colors focus:outline-none"
                 [disabled]="paginaActual() === 1" (click)="cambiarPagina(paginaActual() - 1)">
                 <ng-icon name="heroChevronLeft" class="text-lg"></ng-icon>
             </button>
             <button
-                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors focus:outline-none"
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-muted transition-colors focus:outline-none"
                 [disabled]="paginaActual() === totalPaginas" (click)="cambiarPagina(paginaActual() + 1)">
                 <ng-icon name="heroChevronRight" class="text-lg"></ng-icon>
             </button>
             <button
-                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors focus:outline-none"
+                class="hover:text-blue-600 disabled:opacity-30 disabled:hover:text-muted transition-colors focus:outline-none"
                 [disabled]="paginaActual() === totalPaginas" (click)="cambiarPagina(totalPaginas)">
                 <ng-icon name="heroChevronDoubleRight" class="text-lg"></ng-icon>
             </button>

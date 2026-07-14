@@ -5,7 +5,9 @@ using SagradaFamilia.Application.DTOs;
 using SagradaFamilia.Application.Interfaces.Services;
 using SagradaFamilia.Domain.Enums;
 using SagradaFamilia.Domain.Interfaces.Repositories;
+using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 
 public class DashboardAdminService : IDashboardAdminService
 {
@@ -31,6 +33,7 @@ public class DashboardAdminService : IDashboardAdminService
         const int DiasActividad  = 7;
         const int MaxRecientes   = 8;
         const int MaxAlertasPool = 50;
+        const int MesesRegistro  = 6;
 
         // EF Core no es thread-safe: el DbContext es Scoped (una instancia por request).
         // Las queries deben ejecutarse secuencialmente para evitar InvalidOperationException.
@@ -53,6 +56,17 @@ public class DashboardAdminService : IDashboardAdminService
             })
             .ToList();
 
+        // Registros de usuarios por mes (últimos 6 meses) — agrupación en memoria
+        var inicioMeses = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(-(MesesRegistro - 1));
+        var registrosPorMes = Enumerable.Range(0, MesesRegistro)
+            .Select(i => inicioMeses.AddMonths(i))
+            .Select(mes => new RegistroMensualDto
+            {
+                Mes      = mes.ToString("MMM yyyy", new CultureInfo("es-ES")),
+                Cantidad = usuarios.Count(u => u.FechaCreacion.Year == mes.Year && u.FechaCreacion.Month == mes.Month)
+            })
+            .ToList();
+
         return new SistemaDashboardDto
         {
             UsuariosActivos   = usuarios.Count(u => u.Activo),
@@ -69,8 +83,17 @@ public class DashboardAdminService : IDashboardAdminService
                 new UsuarioPorRolDto { Rol = "Padre",         Cantidad = usuarios.Count(u => u.RolId == (int)RolEnum.Padre) },
             },
 
+            RegistrosPorMes = registrosPorMes,
+
             AccionesRecientes = _mapper.Map<IEnumerable<AuditoriaDto.Response>>(recientes),
             AlertasRecientes  = _mapper.Map<IEnumerable<LogSistemaDto.Response>>(errores.Take(5)),
+
+            Salud = new SaludSistemaDto
+            {
+                Version    = Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "1.0.0",
+                Entorno    = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production",
+                IniciadoEn = Process.GetCurrentProcess().StartTime.ToUniversalTime(),
+            },
         };
     }
 }

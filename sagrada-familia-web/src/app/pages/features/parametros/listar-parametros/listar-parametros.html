@@ -15,31 +15,31 @@
 
     <!-- Formulario nuevo parámetro -->
     @if (mostrarFormNuevo()) {
-    <div class="bg-white border border-blue-200 p-6 mb-6">
-        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+    <div class="bg-white dark:bg-zinc-900 border border-blue-200 p-6 mb-6">
+        <h3 class="font-bold text-slate-800 dark:text-zinc-100 mb-4 flex items-center gap-2">
             <ng-icon name="matAddOutline" size="1em" class="text-blue-500"></ng-icon>
             Agregar nuevo parámetro
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Grupo <span class="text-red-400">*</span></label>
+                <label class="block text-xs font-semibold text-secondary mb-1">Grupo <span class="text-red-400">*</span></label>
                 <input [(ngModel)]="nuevoParametro.grupo" placeholder="Ej: HORARIO_ATENCION"
-                    class="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                    class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
             </div>
             <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Código <span class="text-red-400">*</span></label>
+                <label class="block text-xs font-semibold text-secondary mb-1">Código <span class="text-red-400">*</span></label>
                 <input [(ngModel)]="nuevoParametro.codigo" placeholder="Ej: HORA_INICIO"
-                    class="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                    class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
             </div>
             <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Valor <span class="text-red-400">*</span></label>
+                <label class="block text-xs font-semibold text-secondary mb-1">Valor <span class="text-red-400">*</span></label>
                 <input [(ngModel)]="nuevoParametro.valor" placeholder="Ej: 08:00"
-                    class="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                    class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
             </div>
             <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Descripción</label>
+                <label class="block text-xs font-semibold text-secondary mb-1">Descripción</label>
                 <input [(ngModel)]="nuevoParametro.descripcion" placeholder="Descripción opcional"
-                    class="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                    class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
             </div>
         </div>
         @if (errorNuevo()) {
@@ -52,7 +52,7 @@
                 {{ creando() ? 'Guardando...' : 'Guardar' }}
             </button>
             <button (click)="mostrarFormNuevo.set(false)"
-                class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700 rounded-md border border-slate-200 hover:bg-slate-50 transition-colors">
+                class="px-4 py-2 text-sm text-secondary hover:text-slate-700 dark:hover:text-zinc-200 rounded-md border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
                 Cancelar
             </button>
         </div>
@@ -61,18 +61,18 @@
 
     <!-- Grupos de parámetros -->
     @for (grupo of grupos(); track grupo.grupo) {
-    <div class="bg-white border border-slate-200 mb-6">
-        <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-200">
-            <div class="w-9 h-9 bg-blue-50 rounded-md flex items-center justify-center">
+    <div class="card mb-6">
+        <div class="card-header">
+            <div class="w-9 h-9 bg-blue-50 dark:bg-blue-500/10 rounded-md flex items-center justify-center">
                 <ng-icon name="matSettingsOutline" size="1.1em" class="text-blue-500"></ng-icon>
             </div>
             <div>
-                <p class="font-bold text-slate-800 text-sm">{{ grupo.grupo }}</p>
-                <p class="text-xs text-slate-400">{{ grupo.items.length }} parámetro{{ grupo.items.length !== 1 ? 's' : '' }}</p>
+                <p class="font-bold text-slate-800 dark:text-zinc-100 text-sm">{{ grupo.grupo }}</p>
+                <p class="text-xs text-muted">{{ grupo.items.length }} parámetro{{ grupo.items.length !== 1 ? 's' : '' }}</p>
             </div>
         </div>
 
-        <div class="divide-y divide-slate-100">
+        <div class="divide-y divide-slate-100 dark:divide-zinc-800">
             @for (p of grupo.items; track p.id) {
             <div class="px-6 py-4">
                 <!-- Vista normal -->
@@ -80,14 +80,14 @@
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="text-xs font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{{ p.codigo }}</span>
+                            <span class="text-xs font-mono font-bold text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-md">{{ p.codigo }}</span>
                             @if (!p.activo) {
-                            <span class="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">Inactivo</span>
+                            <span class="text-[10px] font-semibold text-muted bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">Inactivo</span>
                             }
                         </div>
-                        <p class="text-base font-semibold text-slate-800 mt-1">{{ p.valor }}</p>
+                        <p class="text-base font-semibold text-slate-800 dark:text-zinc-100 mt-1">{{ p.valor }}</p>
                         @if (p.descripcion) {
-                        <p class="text-xs text-slate-400 mt-0.5">{{ p.descripcion }}</p>
+                        <p class="text-xs text-muted mt-0.5">{{ p.descripcion }}</p>
                         }
                     </div>
                     <div class="flex items-center gap-3 shrink-0">
@@ -95,17 +95,17 @@
                             tooltipPosition="top">
                             <div class="relative">
                                 <input type="checkbox" [checked]="p.activo" (change)="toggleActivo(p)" class="sr-only peer">
-                                <div class="w-9 h-5 bg-slate-200 peer-checked:bg-blue-600 rounded-full transition-colors"></div>
-                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                                <div class="w-9 h-5 bg-slate-200 dark:bg-zinc-700 peer-checked:bg-blue-600 rounded-full transition-colors"></div>
+                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white dark:bg-zinc-900 rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
                             </div>
                         </label>
                         <button (click)="iniciarEdicion(p)"
-                            class="p-2 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                            class="p-2 rounded-md text-muted hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
                             title="Editar">
                             <ng-icon name="matEditOutline" size="1em"></ng-icon>
                         </button>
                         <button (click)="parametroAEliminar.set(p)"
-                            class="p-2 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                            class="p-2 rounded-md text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                             title="Eliminar">
                             <ng-icon name="matDeleteOutline" size="1em"></ng-icon>
                         </button>
@@ -117,25 +117,25 @@
                 @if (estaEditando(p.id)) {
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
-                        <span class="text-xs font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{{ p.codigo }}</span>
-                        <span class="text-xs text-slate-400">editando</span>
+                        <span class="text-xs font-mono font-bold text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-md">{{ p.codigo }}</span>
+                        <span class="text-xs text-muted">editando</span>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Valor</label>
+                            <label class="block text-xs font-semibold text-secondary mb-1">Valor</label>
                             <input [(ngModel)]="editando()!.valor"
                                 class="w-full border border-blue-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Descripción</label>
+                            <label class="block text-xs font-semibold text-secondary mb-1">Descripción</label>
                             <input [(ngModel)]="editando()!.descripcion"
-                                class="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                                class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="checkbox" [(ngModel)]="editando()!.activo" id="activo-{{p.id}}"
-                            class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-300" />
-                        <label [for]="'activo-' + p.id" class="text-xs text-slate-600 cursor-pointer">Activo</label>
+                            class="w-4 h-4 rounded border-slate-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-300" />
+                        <label [for]="'activo-' + p.id" class="text-xs text-slate-600 dark:text-zinc-400 cursor-pointer">Activo</label>
                     </div>
                     @if (errorGuardado()) {
                     <p class="text-red-500 text-xs">{{ errorGuardado() }}</p>
@@ -147,7 +147,7 @@
                             {{ guardando() ? 'Guardando...' : 'Guardar' }}
                         </button>
                         <button (click)="cancelarEdicion()"
-                            class="px-3 py-1.5 text-xs text-slate-500 rounded-md border border-slate-200 hover:bg-slate-50 transition-colors">
+                            class="px-3 py-1.5 text-xs text-secondary rounded-md border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
                             <ng-icon name="matCloseOutline" size="0.85em"></ng-icon>
                             Cancelar
                         </button>
@@ -161,7 +161,7 @@
     }
 
     @if (grupos().length === 0) {
-    <div class="text-center py-16 text-slate-400">
+    <div class="text-center py-16 text-muted">
         <ng-icon name="matSettingsOutline" size="3em" class="mb-4 opacity-30"></ng-icon>
         <p class="text-sm">No hay parámetros configurados.</p>
     </div>

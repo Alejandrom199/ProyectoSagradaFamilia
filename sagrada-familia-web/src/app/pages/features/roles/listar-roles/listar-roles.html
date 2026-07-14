@@ -8,38 +8,39 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         @for (rol of roles(); track rol.id) {
-        <div class="bg-white border border-slate-200 p-6 flex flex-col gap-4">
+        <div class="card p-6 flex flex-col gap-4">
             <div class="flex items-start justify-between">
-                <div class="w-11 h-11 rounded-md flex items-center justify-center" [class.bg-red-50]="!rol.editable"
-                    [class.bg-blue-50]="rol.editable">
+                <div class="w-11 h-11 rounded-md flex items-center justify-center" [class.bg-red-50]="!rol.editable" [class.dark:bg-red-500/10]="!rol.editable"
+                    [class.bg-blue-50]="rol.editable" [class.dark:bg-blue-500/10]="rol.editable">
                     <ng-icon name="matAdminPanelSettingsOutline" [class.text-red-400]="!rol.editable"
                         [class.text-blue-500]="rol.editable" size="1.4em">
                     </ng-icon>
                 </div>
                 @if (!rol.editable) {
                 <span
-                    class="text-[10px] font-bold text-red-400 bg-red-50 px-2 py-0.5 rounded-md border border-red-200">
+                    class="text-[10px] font-bold text-red-400 bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded-md border border-red-200">
                     Protegido
                 </span>
                 }
             </div>
 
             <div>
-                <p class="font-bold text-slate-900">{{ rol.nombre }}</p>
-                <p class="text-xs text-slate-400 mt-0.5">{{ rol.descripcion }}</p>
+                <p class="font-bold text-slate-900 dark:text-zinc-100">{{ rol.nombre }}</p>
+                <p class="text-xs text-muted mt-0.5">{{ rol.descripcion }}</p>
             </div>
 
             @if (rol.editable) {
             <button (click)="gestionarPermisos(rol.id)"
-                class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-blue-200 text-blue-600 text-xs font-bold hover:bg-blue-50 transition-colors">
+                class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-blue-200 text-blue-600 text-xs font-bold hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">
                 <ng-icon name="matEditNoteOutline" size="1em"></ng-icon>
                 Gestionar permisos
             </button>
             } @else {
-            <div
-                class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-slate-200 text-slate-300 text-xs font-medium cursor-not-allowed">
-                No modificable
-            </div>
+            <button (click)="gestionarPermisos(rol.id)"
+                class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-slate-200 dark:border-zinc-700 text-secondary text-xs font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
+                <ng-icon name="matVisibilityOutline" size="1em"></ng-icon>
+                Ver permisos
+            </button>
             }
         </div>
         }

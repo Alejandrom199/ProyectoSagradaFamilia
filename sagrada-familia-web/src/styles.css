@@ -1,4 +1,29 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter/wght.css";
+
+@theme {
+    --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* Alias de utilidades Tailwind hacia los tokens de :root/.dark definidos abajo.
+       Genera bg-success-soft/text-success, bg-warning-soft/text-warning, etc. —
+       ya vienen theme-aware (referencian variables que .dark redefine), no hace
+       falta escribir dark: en cada uso. */
+    --color-muted:        var(--color-text-muted);
+    --color-secondary:    var(--color-text-secondary);
+    --color-success:      var(--color-success-text);
+    --color-success-soft: var(--color-success-bg);
+    --color-warning:      var(--color-warning-text);
+    --color-warning-soft: var(--color-warning-bg);
+    --color-danger:       var(--color-danger-text);
+    --color-danger-soft:  var(--color-danger-bg);
+    --color-info:         var(--color-info-text);
+    --color-info-soft:    var(--color-info-bg);
+}
+
+/* Modo oscuro basado en clase (no en preferencia del SO): el `dark:` de Tailwind
+   se activa cuando <html> (o un ancestro) tiene la clase `.dark`. La clase la
+   pone/saca ThemeService (src/app/core/services/theme.ts). */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* ── Escala tipográfica centralizada ─────────────────────────────────────────
    Modificar aquí propaga el cambio a todo el sistema.
@@ -7,13 +32,18 @@
    panel-title → h2 dentro de paneles de formulario (columna lateral)
    section-label → etiqueta de sección en uppercase
    ─────────────────────────────────────────────────────────────────────────── */
-.page-title    { @apply text-xl font-bold text-slate-800; }
-.page-subtitle { @apply text-sm text-slate-500 mt-1; }
-.panel-title   { @apply text-lg font-bold text-slate-800 leading-tight; }
-.section-label { @apply text-xs font-bold text-slate-500 uppercase tracking-wider; }
+.page-title    { @apply text-xl font-bold text-slate-800 dark:text-zinc-100; }
+.page-subtitle { @apply text-sm text-slate-500 mt-1 dark:text-zinc-400; }
+.panel-title   { @apply text-lg font-bold text-slate-800 leading-tight dark:text-zinc-100; }
+.section-label { @apply text-xs font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400; }
 
 /* Definir la paleta de colores de La Sagrada Familia */
 :root {
+    /* Le dice al navegador que use widgets nativos claros (scrollbar, checkboxes,
+       inputs de fecha, etc. en navegadores que no siguen ::-webkit-scrollbar,
+       como Firefox). Sin esto, esos controles quedan claros aunque .dark esté activo. */
+    color-scheme: light;
+
     /* Fondo y superficies */
     --color-background: #f5f5f5;
     --color-surface: #ffffff;
@@ -23,6 +53,7 @@
     /* Textos */
     --color-text-primary: #18181b;
     --color-text-secondary: #71717a;
+    --color-text-muted: #a1a1aa;
 
     /* Textos en tarjetas sobre fondos con imagen (auth pages) */
     --color-card-text: #18181b;
@@ -32,6 +63,19 @@
     --color-primary: #2563eb;
     --color-primary-hover: #1d4ed8;
     --color-primary-light: #eff6ff;
+
+    /* ── Estados semánticos (badges, alertas) ────────────────────────────────
+       Usar SIEMPRE bg+text del mismo estado juntos — están calibrados para
+       contraste correcto en ambos temas.
+       ──────────────────────────────────────────────────────────────────────── */
+    --color-success-bg:   #dcfce7;
+    --color-success-text: #15803d;
+    --color-warning-bg:   #fef9c3;
+    --color-warning-text: #b45309;
+    --color-danger-bg:    #fee2e2;
+    --color-danger-text:  #b91c1c;
+    --color-info-bg:      #dbeafe;
+    --color-info-text:    #1d4ed8;
 
     /* Sidebar — mismo fondo que el contenido, borde derecho */
     --sidebar-bg: #ffffff;
@@ -66,16 +110,64 @@
     --ease-bounce:   cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* ── Modo oscuro ──────────────────────────────────────────────────────────────
+   Redefine SOLO los tokens de color de :root — la escala `zinc` (gris neutro,
+   sin el sesgo azul de `slate`). Nada de radios/duraciones, esos no cambian
+   por tema. Cualquier componente que ya use var(--color-*)/var(--sidebar-*)
+   se adapta automáticamente; no hace falta tocarlo.
+   ─────────────────────────────────────────────────────────────────────────── */
+.dark {
+    color-scheme: dark;
+
+    /* Fondo y superficies */
+    --color-background: #09090b;
+    --color-surface: #18181b;
+    --color-surface-alt: #27272a;
+    --color-surface-border: #3f3f46;
+
+    /* Textos */
+    --color-text-primary: #f4f4f5;
+    --color-text-secondary: #a1a1aa;
+    --color-text-muted: #71717a;
+
+    /* Textos en tarjetas sobre fondos con imagen (auth pages) */
+    --color-card-text: #f4f4f5;
+    --color-card-text-muted: #a1a1aa;
+
+    /* Primario — más claro que en modo claro para mantener contraste sobre fondos casi negros */
+    --color-primary: #3b82f6;
+    --color-primary-hover: #60a5fa;
+    --color-primary-light: rgba(59, 130, 246, 0.14);
+
+    /* Estados semánticos — tinte translúcido + texto claro, no pastel sólido */
+    --color-success-bg:   rgba(34, 197, 94, 0.15);
+    --color-success-text: #4ade80;
+    --color-warning-bg:   rgba(245, 158, 11, 0.15);
+    --color-warning-text: #fbbf24;
+    --color-danger-bg:    rgba(239, 68, 68, 0.15);
+    --color-danger-text:  #f87171;
+    --color-info-bg:      rgba(59, 130, 246, 0.15);
+    --color-info-text:    #60a5fa;
+
+    /* Sidebar — mismo fondo que el contenido, borde derecho */
+    --sidebar-bg: #18181b;
+    --sidebar-text: #a1a1aa;
+    --sidebar-text-active: #f4f4f5;
+    --sidebar-accent: #3b82f6;
+    --sidebar-item-hover: #27272a;
+    --sidebar-item-active-bg: rgba(59, 130, 246, 0.16);
+}
+
 /* Construir tus clases personalizadas usando Tailwind */
 @layer components {
 
     /* Diseño de la tarjeta */
     .card {
-        @apply bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-md overflow-hidden;
+        @apply bg-[var(--color-surface)] border border-[var(--color-surface-border)] rounded-md;
     }
 
     .card-header {
-        @apply px-6 py-4 border-b border-[var(--color-surface-border)] font-semibold text-[var(--color-text-primary)] text-lg;
+        @apply px-6 py-4 border-b border-[var(--color-surface-border)] flex items-center gap-3;
     }
 
     .card-body {
@@ -92,7 +184,7 @@
     }
 
     .form-input {
-        @apply w-full px-4 py-2 border border-[var(--color-surface-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent bg-transparent transition-all;
+        @apply w-full px-4 py-2.5 rounded-md border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/30 focus:bg-white dark:focus:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm;
     }
 
     .input-error {
@@ -134,15 +226,15 @@
     }
 
     .alert-error {
-        @apply bg-red-50 text-red-700 border border-red-200;
+        @apply bg-danger-soft text-danger border border-red-200 dark:border-red-500/20;
     }
 
     .alert-success {
-        @apply bg-green-50 text-green-700 border border-green-200;
+        @apply bg-success-soft text-success border border-green-200 dark:border-green-500/20;
     }
 
     .alert-warning {
-        @apply bg-amber-50 text-amber-700 border border-amber-200;
+        @apply bg-warning-soft text-warning border border-amber-200 dark:border-amber-500/20;
     }
 
     /* Badges — rounded-md para badges rectangulares estándar */
@@ -151,19 +243,52 @@
     }
 
     .badge-primary {
-        @apply bg-blue-100 text-blue-700;
+        @apply bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400;
     }
 
     .badge-success {
-        @apply bg-green-100 text-green-700;
+        @apply bg-success-soft text-success;
     }
 
     .badge-warning {
-        @apply bg-amber-100 text-amber-700;
+        @apply bg-warning-soft text-warning;
     }
 
     .badge-danger {
-        @apply bg-red-100 text-red-700;
+        @apply bg-danger-soft text-danger;
+    }
+
+    .badge-pink {
+        @apply bg-pink-100 dark:bg-pink-500/15 text-pink-700 dark:text-pink-400;
+    }
+
+    .badge-purple {
+        @apply bg-purple-100 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400;
+    }
+
+    .badge-violet {
+        @apply bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-400;
+    }
+
+    .badge-amber {
+        @apply bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400;
+    }
+
+    .badge-orange {
+        @apply bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-400;
+    }
+
+    .badge-indigo {
+        @apply bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400;
+    }
+
+    .badge-emerald {
+        @apply bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400;
+    }
+
+    /* Avatar sin sexo definido — más apagado que la paleta de badges */
+    .avatar-neutral {
+        @apply bg-white text-gray-600 dark:bg-zinc-800 dark:text-zinc-300;
     }
 
     /* Ocultar el ojito nativo que agrega Microsoft Edge a las contraseñas */
@@ -184,7 +309,7 @@
    ─────────────────────────────────────────────────────────────────────────── */
 @keyframes fade-in {
     from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: none; }
 }
 
 @keyframes shake {
@@ -211,23 +336,28 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 /* Entrada desde abajo — listas, items que cargan */
+/* El "to" termina en transform:none (no translateY(0)) a propósito: cualquier
+   valor de transform distinto de "none" deja al elemento con un stacking
+   context propio de forma PERMANENTE (aunque sea la identidad visual), lo que
+   atrapa dropdowns/menús hijos con z-index alto detrás de elementos hermanos
+   posteriores en el DOM. Ver bug: combo oculto tras la tarjeta siguiente. */
 @keyframes fade-up {
     from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: none; }
 }
 
 /* Entrada desde la derecha — paneles laterales, drawers */
 @keyframes slide-in-right {
     from { opacity: 0; transform: translateX(16px); }
-    to   { opacity: 1; transform: translateX(0); }
+    to   { opacity: 1; transform: none; }
 }
 
 /* Pop — badge o chip que aparece/cambia de estado */
 @keyframes pop {
-    0%   { transform: scale(1); }
+    0%   { transform: none; }
     45%  { transform: scale(1.18); }
     75%  { transform: scale(0.96); }
-    100% { transform: scale(1); }
+    100% { transform: none; }
 }
 
 /* Bounce-in — elemento que llega con energía (success states) */
@@ -235,7 +365,7 @@
     0%   { transform: scale(0.82); opacity: 0; }
     55%  { transform: scale(1.06); opacity: 1; }
     80%  { transform: scale(0.97); }
-    100% { transform: scale(1); }
+    100% { transform: none; }
 }
 
 /* Shimmer — skeleton loader */
@@ -435,4 +565,14 @@ html {
 ::-webkit-scrollbar-thumb:hover {
     background-color: #94a3b8;
     /* Se oscurece al pasar el mouse */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background-color: #3f3f46;
+    /* zinc-700 — visible sobre fondo casi negro sin ser una barra blanca */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #52525b;
+    /* zinc-600 */
 }

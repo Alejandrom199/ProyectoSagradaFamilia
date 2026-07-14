@@ -6,7 +6,7 @@
         <div>
             <h1 class="page-title">Medidas clínicas</h1>
             @if (nino()) {
-            <p class="text-sm text-slate-400 mt-0.5">
+            <p class="text-sm text-muted mt-0.5">
                 {{ nino()?.nombre }} {{ nino()?.apellido }}
             </p>
             }
@@ -28,21 +28,21 @@
     <!-- Modal registrar / editar -->
     @if (modalAbierto()) {
     <div class="fixed inset-0 bg-black/25 z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md border border-slate-200 overflow-hidden">
+        <div class="card w-full max-w-md overflow-hidden">
 
             <!-- Cabecera -->
-            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+            <div class="card-header justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+                    <div class="w-7 h-7 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
                         <ng-icon name="matHeightOutline" class="text-blue-500 text-sm"></ng-icon>
                     </div>
-                    <span class="text-sm font-bold text-slate-800">
+                    <span class="text-sm font-bold text-slate-800 dark:text-zinc-100">
                         {{ editando() ? 'Editar medida' : 'Nueva medida' }}
                     </span>
                 </div>
                 <button (click)="cerrarModal()"
-                    class="w-7 h-7 flex items-center justify-center rounded-md text-slate-400
-                           hover:text-slate-600 hover:bg-slate-100 transition-colors">
+                    class="w-7 h-7 flex items-center justify-center rounded-md text-muted
+                           hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors">
                     <ng-icon name="matCloseOutline" class="text-base"></ng-icon>
                 </button>
             </div>
@@ -51,40 +51,40 @@
             <div class="px-6 py-5 space-y-5">
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">
+                    <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider ml-1">
                         Fecha de medición *
                     </label>
                     <input type="date" [(ngModel)]="form.fechaMedicion" [max]="hoy"
-                        class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30
-                               focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-                               outline-none transition-all text-sm text-slate-700">
+                        class="w-full px-4 py-2.5 rounded-md border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/30
+                               focus:bg-white dark:focus:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500
+                               outline-none transition-all text-sm text-slate-700 dark:text-zinc-300">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">
+                        <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider ml-1">
                             Peso (kg) *
                         </label>
                         <input type="number" [(ngModel)]="form.peso" step="0.1" min="0.1" max="30"
                             placeholder="Ej. 10.5"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30
-                                   focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-                                   outline-none transition-all text-sm text-slate-700">
+                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/30
+                                   focus:bg-white dark:focus:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500
+                                   outline-none transition-all text-sm text-slate-700 dark:text-zinc-300">
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">
+                        <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider ml-1">
                             Talla (cm) *
                         </label>
                         <input type="number" [(ngModel)]="form.talla" step="0.1" min="0.1" max="130"
                             placeholder="Ej. 78.0"
-                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 bg-slate-50/30
-                                   focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-                                   outline-none transition-all text-sm text-slate-700">
+                            class="w-full px-4 py-2.5 rounded-md border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/30
+                                   focus:bg-white dark:focus:bg-zinc-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500
+                                   outline-none transition-all text-sm text-slate-700 dark:text-zinc-300">
                     </div>
                 </div>
 
                 @if (errorModal()) {
-                <div class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-md">
+                <div class="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-500/10 border border-red-100 rounded-md">
                     <span class="w-1.5 h-1.5 bg-red-500 rounded-full shrink-0"></span>
                     <p class="text-xs text-red-600 font-medium">{{ errorModal() }}</p>
                 </div>
@@ -93,9 +93,9 @@
             </div>
 
             <!-- Pie -->
-            <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-end gap-3">
+            <div class="px-6 py-4 border-t border-slate-200 dark:border-zinc-700 flex items-center justify-end gap-3">
                 <button (click)="cerrarModal()"
-                    class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                    class="px-4 py-2 text-sm font-bold text-muted hover:text-slate-600 transition-colors">
                     Cancelar
                 </button>
                 <button (click)="guardar()" [disabled]="guardando()"

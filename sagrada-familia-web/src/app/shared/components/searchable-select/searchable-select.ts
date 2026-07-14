@@ -1,6 +1,7 @@
 import {
   Component, Input, Output, EventEmitter,
-  HostListener, ElementRef, inject, signal
+  HostListener, ElementRef, Renderer2, inject, signal, viewChild,
+  AfterViewInit, OnDestroy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,8 +13,9 @@ import { NgIcon } from '@ng-icons/core';
   imports: [CommonModule, FormsModule, NgIcon],
   templateUrl: './searchable-select.html',
 })
-export class SearchableSelect {
-  private el = inject(ElementRef);
+export class SearchableSelect implements AfterViewInit, OnDestroy {
+  private el       = inject(ElementRef<HTMLElement>);
+  private renderer = inject(Renderer2);
 
   @Input() options: any[] = [];
   @Input() valueKey = 'id';
@@ -26,6 +28,55 @@ export class SearchableSelect {
 
   abierto  = signal(false);
   busqueda = '';
+
+  // Panel del dropdown: se porta a <body> (ver ngAfterViewInit) para escapar de
+  // cualquier stacking context/overflow de tarjetas o contenedores ancestros —
+  // el mismo problema que ya resuelve la directiva Tooltip de la misma forma.
+  readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
+
+  // Altura estimada del panel (buscador + lista con max-h-52). No se mide el DOM
+  // real: en vez de eso, cuando no cabe abajo se ancla desde `bottom` (no `top`),
+  // así el panel crece hacia arriba sin necesitar saber su altura exacta.
+  private static readonly ALTURA_ESTIMADA_PANEL = 280;
+
+  readonly panelTop    = signal<number | null>(0);
+  readonly panelBottom = signal<number | null>(null);
+  readonly panelLeft   = signal(0);
+  readonly panelWidth  = signal(0);
+
+  private readonly actualizarPosicion = (): void => {
+    if (!this.abierto()) return;
+
+    const rect = this.el.nativeElement.getBoundingClientRect();
+    const espacioAbajo  = window.innerHeight - rect.bottom;
+    const espacioArriba = rect.top;
+
+    this.panelLeft.set(rect.left);
+    this.panelWidth.set(rect.width);
+
+    const noCabeAbajo = espacioAbajo < SearchableSelect.ALTURA_ESTIMADA_PANEL
+      && espacioArriba > espacioAbajo;
+
+    if (noCabeAbajo) {
+      this.panelTop.set(null);
+      this.panelBottom.set(window.innerHeight - rect.top + 4);
+    } else {
+      this.panelBottom.set(null);
+      this.panelTop.set(rect.bottom + 4);
+    }
+  };
+
+  ngAfterViewInit(): void {
+    this.renderer.appendChild(document.body, this.panel().nativeElement);
+    window.addEventListener('scroll', this.actualizarPosicion, true);
+    window.addEventListener('resize', this.actualizarPosicion);
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.actualizarPosicion, true);
+    window.removeEventListener('resize', this.actualizarPosicion);
+    this.panel().nativeElement.remove();
+  }
 
   getLabel(item: any): string {
     return this.labelFn ? this.labelFn(item) : String(item[this.labelKey] ?? '');
@@ -44,8 +95,10 @@ export class SearchableSelect {
   }
 
   toggle(): void {
-    this.abierto.update(v => !v);
-    if (!this.abierto()) this.busqueda = '';
+    const abrir = !this.abierto();
+    this.abierto.set(abrir);
+    if (abrir) this.actualizarPosicion();
+    else this.busqueda = '';
   }
 
   seleccionar(opt: any): void {
@@ -63,7 +116,10 @@ export class SearchableSelect {
 
   @HostListener('document:click', ['$event'])
   onClickOutside(e: Event): void {
-    if (!this.el.nativeElement.contains(e.target)) {
+    const target = e.target as Node;
+    const dentroDelHost  = this.el.nativeElement.contains(target);
+    const dentroDelPanel = this.panel().nativeElement.contains(target);
+    if (!dentroDelHost && !dentroDelPanel) {
       this.abierto.set(false);
       this.busqueda = '';
     }

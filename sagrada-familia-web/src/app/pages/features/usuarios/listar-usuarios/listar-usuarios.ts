@@ -18,6 +18,8 @@ import { UsuarioResponse } from '../../../../shared/interfaces/usuario.interface
 import { formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
 import { MenuService } from '../../../../core/services/menu';
 import { Accion } from '../../../../shared/enums/accion.enum';
+import { ROL_BADGE_COLOR } from '../../../../shared/constants/rol-badge.constants';
+import { badgeHtml } from '../../../../shared/utils/badge.util';
 import { RutaApp } from '../../../../shared/enums/ruta-app.enum';
 
 @Component({
@@ -64,29 +66,29 @@ export class ListarUsuarios implements OnInit {
       key: 'email', label: 'Email', sortable: true, filterable: true,
       render: (row) => `
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold">
             ${row.email.charAt(0).toUpperCase()}
           </div>
-          <p class="font-medium text-gray-800">${row.email}</p>
+          <p class="font-medium text-[var(--color-text-primary)]">${row.email}</p>
         </div>`
     },
     {
       key: 'rolNombre', label: 'Rol', sortable: true, filterable: true,
-      render: (row) => `<span class="px-2 py-1 rounded-full text-xs font-bold ${this.colorRol(row.rolNombre)}">${row.rolNombre}</span>`
+      render: (row) => badgeHtml(row.rolNombre, ROL_BADGE_COLOR[row.rolNombre] ?? 'muted')
     },
     {
       key: 'esMedico', label: 'Perfil',
       render: (row) => {
-        if (row.esMedico) return '<span class="text-xs text-blue-700 font-semibold">Médico vinculado</span>';
-        if (row.esPadre) return '<span class="text-xs text-pink-700 font-semibold">Padre vinculado</span>';
-        return '<span class="text-xs text-gray-400">Administrativo</span>';
+        if (row.esMedico) return '<span class="text-xs text-blue-700 dark:text-blue-400 font-semibold">Médico vinculado</span>';
+        if (row.esPadre) return '<span class="text-xs text-pink-700 dark:text-pink-400 font-semibold">Padre vinculado</span>';
+        return '<span class="text-xs text-muted">Administrativo</span>';
       }
     },
     {
       key: 'activo', label: 'Estado', sortable: true,
       render: (row) => row.activo
-        ? `<span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Activo</span>`
-        : `<span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">Inactivo</span>`
+        ? `<span class="px-2 py-1 rounded-full text-xs font-bold bg-success-soft text-success">Activo</span>`
+        : `<span class="px-2 py-1 rounded-full text-xs font-bold bg-danger-soft text-danger">Inactivo</span>`
     },
     {
       key: 'fechaCreacion', label: 'Registro', sortable: true,
@@ -116,14 +118,14 @@ export class ListarUsuarios implements OnInit {
     {
       label: 'Desactivar',
       icon: 'matLockOutline',
-      class: 'text-red-600 hover:bg-red-50',
+      class: 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10',
       visible: (row) => row.activo && row.id !== this.authService.currentUser()?.id,
       onClick: (row) => { this.errorDesactivar.set(null); this.usuarioADesactivar.set(row); }
     },
     {
       label: 'Activar',
       icon: 'matLockOpenOutline',
-      class: 'text-green-600 hover:bg-green-50',
+      class: 'text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-500/10',
       visible: (row) => !row.activo,
       onClick: (row) => this.toggleEstado(row, true)
     }
@@ -252,14 +254,6 @@ export class ListarUsuarios implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
-  private colorRol(rol: string): string {
-    const mapa: Record<string, string> = {
-      'Administrador': 'bg-purple-100 text-purple-700',
-      'Medico': 'bg-blue-100 text-blue-700',
-      'Padre': 'bg-pink-100 text-pink-700',
-    };
-    return mapa[rol] ?? 'bg-gray-100 text-gray-700';
-  }
 }
 
 function hoy(): string { return new Date().toISOString().split('T')[0]; }

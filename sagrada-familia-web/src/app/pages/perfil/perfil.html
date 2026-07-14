@@ -2,46 +2,108 @@
     <breadcrumb [items]="migajas"></breadcrumb>
 
     <div class="mb-6">
-        <h2 class="text-2xl font-bold text-slate-800">Mi Perfil</h2>
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-zinc-100">Mi Perfil</h2>
         <p class="page-subtitle">
             {{ authService.currentUser()?.nombre }} {{ authService.currentUser()?.apellido }} ·
             {{ authService.currentUser()?.rol }}
         </p>
     </div>
 
-    @if (authService.esMedico()) {
-    <div class="bg-white border border-slate-200 max-w-2xl">
-        <div class="px-6 py-4 border-b border-slate-200 flex items-center gap-3">
-            <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
-                <ng-icon name="matEditNoteOutline" class="text-blue-500 text-base"></ng-icon>
+    <div class="card max-w-2xl mb-6">
+        <div class="card-header">
+            <div class="w-8 h-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
+                <ng-icon name="matPersonOutline" class="text-indigo-500 text-base"></ng-icon>
             </div>
-            <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Firma digital</h3>
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Información personal</h3>
         </div>
 
         <div class="px-6 py-5">
-            <p class="text-sm text-slate-500 mb-4">
+            @if (cargandoPerfil()) {
+            <p class="text-sm text-muted">Cargando...</p>
+            } @else {
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <p class="text-xs text-muted mb-1">Nombre completo</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">
+                        {{ authService.currentUser()?.nombre }} {{ authService.currentUser()?.apellido }}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs text-muted mb-1">Correo</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ perfilUsuario()?.email ?? '—' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-muted mb-1">Rol</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">
+                        {{ perfilUsuario()?.rolNombre ?? authService.currentUser()?.rol }}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs text-muted mb-1">Miembro desde</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">
+                        @if (perfilUsuario(); as p) { {{ formatearFecha(p.fechaCreacion) }} } @else { — }
+                    </p>
+                </div>
+
+                @if (authService.esMedico()) {
+                <div>
+                    <p class="text-xs text-muted mb-1">Especialidad</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ infoMedico()?.especialidad ?? 'No especificada' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-muted mb-1">Teléfono</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ infoMedico()?.telefono ?? 'No registrado' }}</p>
+                </div>
+                }
+
+                @if (authService.esPadre()) {
+                <div>
+                    <p class="text-xs text-muted mb-1">Teléfono</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ infoPadre()?.telefono ?? 'No registrado' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-muted mb-1">Médico asignado</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ infoPadre()?.medicoNombreCompleto ?? '—' }}</p>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+
+    @if (authService.esMedico()) {
+    <div class="card max-w-2xl">
+        <div class="card-header">
+            <div class="w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
+                <ng-icon name="matEditNoteOutline" class="text-blue-500 text-base"></ng-icon>
+            </div>
+            <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Firma digital</h3>
+        </div>
+
+        <div class="px-6 py-5">
+            <p class="text-sm text-secondary mb-4">
                 Esta firma se incluirá automáticamente al final de los reportes de historia clínica que generes.
             </p>
 
             @if (exitoFirma()) {
-            <div class="mb-4 px-4 py-2.5 bg-green-50 border border-green-200 rounded-md text-sm text-green-700">
+            <div class="mb-4 px-4 py-2.5 alert-success rounded-md text-sm">
                 Firma guardada correctamente.
             </div>
             }
             @if (errorFirma()) {
-            <div class="mb-4 px-4 py-2.5 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
+            <div class="mb-4 px-4 py-2.5 alert-error rounded-md text-sm">
                 {{ errorFirma() }}
             </div>
             }
 
             @if (cargandoFirma()) {
-            <p class="text-sm text-slate-400">Cargando...</p>
+            <p class="text-sm text-muted">Cargando...</p>
             } @else if (editandoFirma() || !firmaActual()) {
             <firma-pad (guardar)="guardarFirma($event)" (cancelar)="cancelarEdicion()"></firma-pad>
             } @else {
             <div class="flex flex-col gap-4">
                 <img [src]="firmaActual()" alt="Firma guardada"
-                    class="w-full max-w-[500px] border border-slate-200 rounded-md bg-white p-2" />
+                    class="w-full max-w-[500px] border border-slate-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 p-2" />
                 <div class="flex items-center gap-3">
                     <btn variant="outline" width="140px" (clicked)="iniciarEdicion()">Editar firma</btn>
                     <btn variant="danger" width="140px" (clicked)="mostrarConfirmEliminar.set(true)">Eliminar

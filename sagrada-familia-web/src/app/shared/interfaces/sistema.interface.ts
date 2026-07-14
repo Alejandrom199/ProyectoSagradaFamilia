@@ -8,6 +8,17 @@ export interface UsuarioPorRolResponse {
     cantidad: number;
 }
 
+export interface RegistroMensualResponse {
+    mes:      string;
+    cantidad: number;
+}
+
+export interface SaludSistemaResponse {
+    version:    string;
+    entorno:    string;
+    iniciadoEn: string;
+}
+
 export interface DashboardAdminResponse {
     usuariosActivos:    number;
     cuentasPendientes:  number;
@@ -15,8 +26,10 @@ export interface DashboardAdminResponse {
     alertasSemana:      number;
     actividadSemana:    ActividadDiariaResponse[];
     usuariosPorRol:     UsuarioPorRolResponse[];
+    registrosPorMes:    RegistroMensualResponse[];
     accionesRecientes:  AuditoriaResponse[];
     alertasRecientes:   LogSistemaResponse[];
+    salud:              SaludSistemaResponse;
 }
 
 export interface AuditoriaResponse {

@@ -13,15 +13,18 @@ public class SistemaController : BaseController
     private readonly IAuditoriaService    _auditoriaService;
     private readonly ILogSistemaService   _logService;
     private readonly IDashboardAdminService _dashboardService;
+    private readonly IVersionService      _versionService;
 
     public SistemaController(
         IAuditoriaService    auditoriaService,
         ILogSistemaService   logService,
-        IDashboardAdminService dashboardService)
+        IDashboardAdminService dashboardService,
+        IVersionService      versionService)
     {
         _auditoriaService  = auditoriaService;
         _logService        = logService;
         _dashboardService  = dashboardService;
+        _versionService     = versionService;
     }
 
     [HttpGet("dashboard")]
@@ -29,6 +32,16 @@ public class SistemaController : BaseController
     public async Task<ActionResult<ApiResponse<SistemaDashboardDto>>> Dashboard()
     {
         var data = await _dashboardService.ObtenerAsync();
+        return HandleResponse(data);
+    }
+
+    // Endpoint liviano: no requiere rol Administrador ni trae datos sensibles,
+    // solo el número de versión de la app para mostrarlo en toda la UI.
+    [HttpGet("version")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<VersionDto>>> Version()
+    {
+        var data = await _versionService.ObtenerAsync();
         return HandleResponse(data);
     }
 

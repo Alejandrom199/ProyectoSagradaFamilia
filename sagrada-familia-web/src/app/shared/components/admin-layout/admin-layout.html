@@ -28,7 +28,14 @@
                 </button>
             </div>
 
-            <div rightSide class="flex items-center gap-4 text-xs text-gray-500">
+            <div rightSide class="flex items-center gap-4 text-xs text-gray-500 dark:text-zinc-400">
+                <button type="button" (click)="theme.toggle()"
+                    class="flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-[var(--color-surface-alt)]"
+                    [title]="theme.oscuro() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+                    <ng-icon [name]="theme.oscuro() ? 'heroSun' : 'heroMoon'"
+                        style="font-size: 15px; color: var(--sidebar-text);"></ng-icon>
+                </button>
+
                 <span class="flex items-center gap-1.5" [title]="serverTime.now() | date: 'dd/MM/yyyy HH:mm:ss'">
                     <ng-icon name="matAccessTimeOutline" size="14"></ng-icon>
                     {{ serverTime.now() | date: 'HH:mm' }}
@@ -45,3 +52,5 @@
         </main>
     </div>
 </div>
+
+<app-version-badge></app-version-badge>

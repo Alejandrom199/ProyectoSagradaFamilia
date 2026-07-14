@@ -13,7 +13,7 @@
         }
     </div>
 
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Listado de Pacientes" [data]="ninos()" [columns]="columnas" [actions]="acciones()"
             (onExportPdf)="descargarPacientesPdf($event)" (onExportExcel)="descargarExcel()"
             exportFileName="catalogo-pacientes" searchPlaceholder="Buscar"

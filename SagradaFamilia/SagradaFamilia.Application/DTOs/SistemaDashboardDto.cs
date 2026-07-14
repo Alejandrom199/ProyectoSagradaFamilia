@@ -9,12 +9,16 @@ namespace SagradaFamilia.Application.DTOs
         public int AlertasSemana      { get; set; } // errores en los últimos 7 días
 
         // ── Gráficos ─────────────────────────────────────────────
-        public IEnumerable<ActividadDiariaDto> ActividadSemana  { get; set; } = [];
-        public IEnumerable<UsuarioPorRolDto>   UsuariosPorRol   { get; set; } = [];
+        public IEnumerable<ActividadDiariaDto>  ActividadSemana  { get; set; } = [];
+        public IEnumerable<UsuarioPorRolDto>    UsuariosPorRol   { get; set; } = [];
+        public IEnumerable<RegistroMensualDto>  RegistrosPorMes  { get; set; } = [];
 
         // ── Tablas ───────────────────────────────────────────────
         public IEnumerable<AuditoriaDto.Response>  AccionesRecientes { get; set; } = [];
         public IEnumerable<LogSistemaDto.Response> AlertasRecientes  { get; set; } = [];
+
+        // ── Salud del sistema ──────────────────────────────────────
+        public SaludSistemaDto Salud { get; set; } = new();
     }
 
     public class ActividadDiariaDto
@@ -27,5 +31,18 @@ namespace SagradaFamilia.Application.DTOs
     {
         public string Rol      { get; set; } = string.Empty;
         public int    Cantidad { get; set; }
+    }
+
+    public class RegistroMensualDto
+    {
+        public string Mes      { get; set; } = string.Empty; // "Ene 2026"
+        public int    Cantidad { get; set; }
+    }
+
+    public class SaludSistemaDto
+    {
+        public string   Version    { get; set; } = string.Empty;
+        public string   Entorno    { get; set; } = string.Empty;
+        public DateTime IniciadoEn { get; set; }
     }
 }

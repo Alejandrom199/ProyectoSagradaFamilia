@@ -54,7 +54,7 @@ export class ListarPadres implements OnInit {
     },
     {
       key: 'telefono', label: 'Teléfono', sortable: true, filterable: true,
-      render: (row) => row.telefono || '<span class="text-gray-400">Sin registrar</span>'
+      render: (row) => row.telefono || '<span class="text-muted">Sin registrar</span>'
     },
     {
       key: 'totalHijos', label: 'Hijos', sortable: true, filterable: true,

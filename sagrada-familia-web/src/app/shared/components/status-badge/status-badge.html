@@ -1,10 +1,10 @@
 <span class="inline-block px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide"
   [class.pop]="popping()"
   [ngClass]="{
-    'bg-green-100 text-green-800': status() === 'success',
-    'bg-yellow-100 text-yellow-800': status() === 'warning',
-    'bg-red-100 text-red-800': status() === 'danger',
-    'bg-blue-100 text-blue-800': status() === 'info'
+    'bg-success-soft text-success': status() === 'success',
+    'bg-warning-soft text-warning': status() === 'warning',
+    'bg-danger-soft text-danger': status() === 'danger',
+    'bg-info-soft text-info': status() === 'info'
   }">
   {{ text() }}
 </span>

@@ -2,43 +2,49 @@
 
     <!-- Trigger -->
     <button type="button" (click)="toggle()"
-        class="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-md border border-slate-200
-               bg-slate-50/30 hover:bg-white focus:bg-white focus:ring-1 focus:ring-blue-500
+        class="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-md border border-slate-200 dark:border-zinc-700
+               bg-slate-50 dark:bg-zinc-800/30 hover:bg-white dark:hover:bg-zinc-800 focus:bg-white dark:focus:bg-zinc-900 focus:ring-1 focus:ring-blue-500
                focus:border-blue-500 outline-none transition-all text-sm text-left">
         <span class="truncate flex-1"
-            [class.text-slate-700]="etiquetaSeleccionada"
-            [class.text-slate-400]="!etiquetaSeleccionada">
+            [class.text-slate-700]="etiquetaSeleccionada" [class.dark:text-zinc-300]="etiquetaSeleccionada"
+            [class.text-slate-400]="!etiquetaSeleccionada" [class.dark:text-zinc-500]="!etiquetaSeleccionada">
             {{ etiquetaSeleccionada || placeholder }}
         </span>
         <div class="flex items-center gap-1 shrink-0">
             @if (etiquetaSeleccionada) {
             <button type="button" (click)="limpiar($event)"
-                class="text-slate-300 hover:text-slate-500 transition-colors focus:outline-none">
+                class="text-slate-300 dark:text-zinc-600 hover:text-slate-500 dark:hover:text-zinc-400 transition-colors focus:outline-none">
                 <ng-icon name="matCloseOutline" class="text-sm"></ng-icon>
             </button>
             }
             <ng-icon name="matExpandMoreOutline"
-                class="text-slate-400 transition-transform duration-150 text-base"
+                class="text-muted transition-transform duration-150 text-base"
                 [class.rotate-180]="abierto()">
             </ng-icon>
         </div>
     </button>
 
-    <!-- Dropdown — z-[9999] para aparecer sobre cualquier elemento padre -->
-    @if (abierto()) {
-    <div class="absolute z-[9999] w-full mt-1 bg-white border border-slate-200
-                rounded-md shadow-lg overflow-hidden animate-fade-in"
+    <!-- Dropdown — portado a <body> en ngAfterViewInit (ver searchable-select.ts) para
+         escapar de cualquier stacking context/overflow de contenedores ancestros.
+         Posicionado con position:fixed + coordenadas calculadas del trigger. -->
+    <div #panel
+        class="fixed z-[9999] card shadow-lg overflow-hidden"
+        [class.hidden]="!abierto()"
+        [style.top.px]="panelTop()"
+        [style.bottom.px]="panelBottom()"
+        [style.left.px]="panelLeft()"
+        [style.width.px]="panelWidth()"
         (click)="$event.stopPropagation()">
 
-        <div class="p-2 border-b border-slate-100">
+        <div class="p-2 border-b border-slate-100 dark:border-zinc-800">
             <div class="relative">
                 <ng-icon name="heroMagnifyingGlass"
-                    class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">
+                    class="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted text-sm pointer-events-none">
                 </ng-icon>
                 <input type="text" [(ngModel)]="busqueda"
                     [placeholder]="searchPlaceholder"
-                    class="w-full pl-8 pr-3 py-1.5 text-sm border border-slate-200 rounded-md bg-slate-50
-                           focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500
+                    class="w-full pl-8 pr-3 py-1.5 text-sm border border-slate-200 dark:border-zinc-700 rounded-md bg-slate-50 dark:bg-zinc-800 dark:text-zinc-100
+                           focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-blue-500
                            focus:border-blue-500 transition-all">
             </div>
         </div>
@@ -47,19 +53,18 @@
             @for (opt of opcionesFiltradas; track opt[valueKey]) {
             <button type="button" (click)="seleccionar(opt)"
                 class="w-full text-left px-4 py-2.5 text-sm transition-colors"
-                [class.bg-blue-50]="opt[valueKey] === value"
-                [class.text-blue-700]="opt[valueKey] === value"
+                [class.bg-blue-50]="opt[valueKey] === value" [class.dark:bg-blue-500/15]="opt[valueKey] === value"
+                [class.text-blue-700]="opt[valueKey] === value" [class.dark:text-blue-400]="opt[valueKey] === value"
                 [class.font-semibold]="opt[valueKey] === value"
-                [class.text-slate-700]="opt[valueKey] !== value"
-                [class.hover:bg-slate-50]="opt[valueKey] !== value">
+                [class.text-slate-700]="opt[valueKey] !== value" [class.dark:text-zinc-300]="opt[valueKey] !== value"
+                [class.hover:bg-slate-50]="opt[valueKey] !== value" [class.dark:hover:bg-zinc-800]="opt[valueKey] !== value">
                 {{ getLabel(opt) }}
             </button>
             } @empty {
-            <p class="text-xs text-slate-400 text-center py-5">Sin resultados para "{{ busqueda }}"</p>
+            <p class="text-xs text-muted text-center py-5">Sin resultados para "{{ busqueda }}"</p>
             }
         </div>
 
     </div>
-    }
 
 </div>

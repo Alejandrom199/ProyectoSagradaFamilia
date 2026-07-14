@@ -13,7 +13,7 @@
         }
     </div>
 
-    <div class="border border-slate-200 overflow-hidden">
+    <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Listado de Padres de Familia" [data]="padres()" [columns]="columnas" [actions]="acciones()"
             [serverSide]="true" [serverTotalItems]="totalPadres()" (onServerQuery)="onServerQuery($event)"
             (onExportPdf)="descargarPadresPdf($event)" (onExportExcel)="descargarExcel()" exportFileName="padres"

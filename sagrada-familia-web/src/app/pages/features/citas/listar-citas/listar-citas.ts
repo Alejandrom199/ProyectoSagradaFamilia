@@ -15,6 +15,8 @@ import { Reportes } from '../../../../core/services/reportes';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
 import { NinoDetailResponse, NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { formatearFecha, formatearHora } from '../../../../shared/utils/date.utils';
+import { ESTADO_CITA_COLOR, ESTADO_CITA_LABEL } from '../../../../shared/constants/estado-cita.constants';
+import { badgeHtml } from '../../../../shared/utils/badge.util';
 
 @Component({
   selector: 'listar-citas',
@@ -51,19 +53,19 @@ export class ListarCitas implements OnInit {
         const horaFin = row.fechaHoraFin ? formatearHora(row.fechaHoraFin) : null;
         return `
           <div>
-            <p class="font-medium text-gray-800 text-sm">${formatearFecha(row.fechaHora)}</p>
-            <p class="text-xs text-gray-500">${horaInicio}${horaFin ? ' – ' + horaFin : ''}</p>
+            <p class="font-medium text-[var(--color-text-primary)] text-sm">${formatearFecha(row.fechaHora)}</p>
+            <p class="text-xs text-muted">${horaInicio}${horaFin ? ' – ' + horaFin : ''}</p>
           </div>`;
       },
       exportValue: (row) => `${formatearFecha(row.fechaHora)} ${formatearHora(row.fechaHora)}`
     },
     {
       key: 'nombreMedico', label: 'Médico', sortable: true, filterable: true,
-      render: (row) => `<span class="text-gray-700">Dr(a). ${row.nombreMedico}</span>`
+      render: (row) => `<span class="text-[var(--color-text-secondary)]">Dr(a). ${row.nombreMedico}</span>`
     },
     {
       key: 'motivo', label: 'Motivo',
-      render: (row) => row.motivo || '<span class="text-gray-400">Sin motivo</span>'
+      render: (row) => row.motivo || '<span class="text-muted">Sin motivo</span>'
     },
     {
       key: 'estado', label: 'Estado', sortable: true,
@@ -81,7 +83,7 @@ export class ListarCitas implements OnInit {
       type: 'ver',
       label: 'Reagendar',
       icon: 'matEditCalendarOutline',
-      class: 'text-amber-600 hover:bg-amber-50',
+      class: 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10',
       visible: (row) => row.estado === 'Pendiente' || row.estado === 'Cancelada' || row.estado === 'NoAsistio',
       onClick: (row) => this.router.navigate(['/citas', row.id, 'editar'])
     },
@@ -89,7 +91,7 @@ export class ListarCitas implements OnInit {
       type: 'eliminar',
       label: 'Cancelar',
       icon: 'matCancelOutline',
-      class: 'text-red-600 hover:bg-red-50',
+      class: 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10',
       visible: (row) => row.estado === 'Pendiente',
       onClick: (row) => this.router.navigate(['/citas', row.id])
     }
@@ -208,15 +210,7 @@ export class ListarCitas implements OnInit {
     });
   }
 
-  private badgeEstado(estado: string): string {
-    const mapa: Record<string, string> = {
-      'Pendiente': 'bg-yellow-100 text-yellow-700',
-      'Completada': 'bg-green-100 text-green-700',
-      'Cancelada': 'bg-red-100 text-red-700',
-      'NoAsistio': 'bg-gray-100 text-gray-700',
-      'Reagendada': 'bg-violet-100 text-violet-700'
-    };
-    const clase = mapa[estado] || 'bg-gray-100 text-gray-700';
-    return `<span class="px-2 py-1 rounded-full text-xs font-bold ${clase}">${estado}</span>`;
+  private badgeEstado(estado: EstadoCita): string {
+    return badgeHtml(ESTADO_CITA_LABEL[estado], ESTADO_CITA_COLOR[estado]);
   }
 }

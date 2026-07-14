@@ -10,7 +10,7 @@
 
         @for (item of items; track $index) {
         <li class="flex items-center space-x-2">
-            <ng-icon name="matChevronRightOutline" class="text-sm text-slate-400"></ng-icon>
+            <ng-icon name="matChevronRightOutline" class="text-sm text-muted"></ng-icon>
 
             @if (item.ruta && $index !== items.length - 1) {
             <a [routerLink]="item.ruta" class="hover:text-[var(--color-primary)] transition-colors font-medium">

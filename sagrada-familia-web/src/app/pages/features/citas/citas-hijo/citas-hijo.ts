@@ -11,6 +11,7 @@ import { NinosService } from '../../../../core/services/ninos';
 import { CitasService } from '../../../../core/services/citas';
 import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
+import { ESTADO_CITA_CHIP } from '../../../../shared/constants/estado-cita.constants';
 
 interface EstadoInfo {
   label:  string;
@@ -19,13 +20,14 @@ interface EstadoInfo {
   icono:  string;
 }
 
-const ESTADOS: Record<EstadoCita, EstadoInfo> = {
-  [EstadoCita.Pendiente]: { label: 'Próxima',    fondo: 'bg-blue-50',   texto: 'text-blue-700',   icono: 'matEventNoteOutline' },
-  [EstadoCita.EnCurso]:   { label: 'En curso',   fondo: 'bg-amber-50',  texto: 'text-amber-700',  icono: 'matScheduleOutline' },
-  [EstadoCita.Completada]:{ label: 'Atendida',   fondo: 'bg-green-50',  texto: 'text-green-700',  icono: 'matCheckCircleOutline' },
-  [EstadoCita.Cancelada]: { label: 'Cancelada',  fondo: 'bg-red-50',    texto: 'text-red-700',    icono: 'matCancelOutline' },
-  [EstadoCita.NoAsistio]: { label: 'No asistió', fondo: 'bg-slate-100', texto: 'text-slate-600',  icono: 'matWarningAmberOutline' },
-  [EstadoCita.Reagendada]:{ label: 'Reagendada', fondo: 'bg-violet-50', texto: 'text-violet-700',  icono: 'matEditCalendarOutline' },
+/** Label e ícono propios de esta vista (audiencia padre) — el color sale de ESTADO_CITA_CHIP. */
+const ESTADO_LABEL_ICONO: Record<EstadoCita, { label: string; icono: string }> = {
+  [EstadoCita.Pendiente]:  { label: 'Próxima',    icono: 'matEventNoteOutline' },
+  [EstadoCita.EnCurso]:    { label: 'En curso',   icono: 'matScheduleOutline' },
+  [EstadoCita.Completada]: { label: 'Atendida',   icono: 'matCheckCircleOutline' },
+  [EstadoCita.Cancelada]:  { label: 'Cancelada',  icono: 'matCancelOutline' },
+  [EstadoCita.NoAsistio]:  { label: 'No asistió', icono: 'matWarningAmberOutline' },
+  [EstadoCita.Reagendada]: { label: 'Reagendada', icono: 'matEditCalendarOutline' },
 };
 
 @Component({
@@ -88,6 +90,6 @@ export class CitasHijo implements OnInit {
   }
 
   estadoInfo(estado: EstadoCita): EstadoInfo {
-    return ESTADOS[estado];
+    return { ...ESTADO_LABEL_ICONO[estado], fondo: ESTADO_CITA_CHIP[estado].fondo, texto: ESTADO_CITA_CHIP[estado].texto };
   }
 }

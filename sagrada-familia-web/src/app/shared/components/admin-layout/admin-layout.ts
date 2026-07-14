@@ -7,9 +7,11 @@ import { NgIcon } from "@ng-icons/core";
 import { LoadingBar } from '../loading-bar/loading-bar';
 import { Sidebar } from '../sidebar/sidebar';
 import { Header } from '../header/header';
+import { AppVersionBadge } from '../app-version-badge/app-version-badge';
 import { AuthService } from '../../../core/services/auth';
 import { MenuService } from '../../../core/services/menu';
 import { ServerTimeService } from '../../../core/services/server-time';
+import { ThemeService } from '../../../core/services/theme';
 import { rolLabel } from '../../utils/rol-label.util';
 
 @Component({
@@ -21,7 +23,8 @@ import { rolLabel } from '../../utils/rol-label.util';
     CommonModule,
     Sidebar,
     LoadingBar,
-    Header
+    Header,
+    AppVersionBadge
   ],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css',
@@ -31,6 +34,7 @@ export class AdminLayout implements OnInit {
   readonly auth = inject(AuthService);
   private readonly menuService = inject(MenuService);
   readonly serverTime = inject(ServerTimeService);
+  readonly theme = inject(ThemeService);
   readonly rolLabel = rolLabel;
 
   readonly sidebarExpandido = signal<boolean>(true);

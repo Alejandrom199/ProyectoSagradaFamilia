@@ -11,6 +11,7 @@ import { NinosService } from '../../../../core/services/ninos';
 import { MedidasService } from '../../../../core/services/medidas';
 import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
 import { MedidaResponse } from '../../../../shared/interfaces/medida.interface';
+import { ESTADO_NUTRICIONAL_FONDO, ESTADO_NUTRICIONAL_TEXTO, ESTADO_NUTRICIONAL_BORDE, EstadoNutricional } from '../../../../shared/constants/estado-nutricional.constants';
 
 interface EstadoInfo {
   titulo:      string;
@@ -101,13 +102,20 @@ export class ProgresoHijos implements OnInit {
   }
 
   private estadoInfo(estado: string): EstadoInfo {
-    const mapa: Record<string, EstadoInfo> = {
-      'Normal':         { titulo: '¡Todo va bien!',   descripcion: 'Tu hijo tiene un peso saludable para su edad y estatura.',                icono: 'matFavoriteBorderOutline', fondo: 'bg-green-50',  texto: 'text-green-700',  borde: 'border-green-100' },
-      'BajoPeso':       { titulo: 'Peso bajo',         descripcion: 'Te recomendamos comentarlo con el pediatra en la próxima visita.',        icono: 'matWarningAmberOutline', fondo: 'bg-yellow-50', texto: 'text-yellow-700', borde: 'border-yellow-100' },
-      'BajoPesoSevero': { titulo: 'Peso muy bajo',     descripcion: 'Por favor consulta al médico lo antes posible.',                         icono: 'matErrorOutline',         fondo: 'bg-red-50',    texto: 'text-red-700',    borde: 'border-red-100' },
-      'Sobrepeso':      { titulo: 'Peso elevado',      descripcion: 'El pediatra puede orientarte con recomendaciones en la próxima visita.',  icono: 'matWarningAmberOutline', fondo: 'bg-orange-50', texto: 'text-orange-700', borde: 'border-orange-100' },
-      'Obesidad':       { titulo: 'Obesidad',          descripcion: 'Por favor consulta al médico lo antes posible.',                         icono: 'matErrorOutline',         fondo: 'bg-red-50',    texto: 'text-red-700',    borde: 'border-red-100' },
+    const textos: Record<EstadoNutricional, { titulo: string; descripcion: string; icono: string }> = {
+      Normal:         { titulo: '¡Todo va bien!', descripcion: 'Tu hijo tiene un peso saludable para su edad y estatura.',               icono: 'matFavoriteBorderOutline' },
+      BajoPeso:       { titulo: 'Peso bajo',      descripcion: 'Te recomendamos comentarlo con el pediatra en la próxima visita.',       icono: 'matWarningAmberOutline' },
+      BajoPesoSevero: { titulo: 'Peso muy bajo',  descripcion: 'Por favor consulta al médico lo antes posible.',                         icono: 'matErrorOutline' },
+      Sobrepeso:      { titulo: 'Peso elevado',   descripcion: 'El pediatra puede orientarte con recomendaciones en la próxima visita.', icono: 'matWarningAmberOutline' },
+      Obesidad:       { titulo: 'Obesidad',       descripcion: 'Por favor consulta al médico lo antes posible.',                         icono: 'matErrorOutline' },
     };
-    return mapa[estado] ?? { titulo: estado, descripcion: '', icono: 'matInfoOutline', fondo: 'bg-slate-50', texto: 'text-slate-700', borde: 'border-slate-100' };
+    const clave = estado as EstadoNutricional;
+    const texto = textos[clave] ?? { titulo: estado, descripcion: '', icono: 'matInfoOutline' };
+    return {
+      ...texto,
+      fondo: ESTADO_NUTRICIONAL_FONDO[clave] ?? 'bg-[var(--color-surface-alt)]',
+      texto: ESTADO_NUTRICIONAL_TEXTO[clave] ?? 'text-muted',
+      borde: ESTADO_NUTRICIONAL_BORDE[clave] ?? 'border-[var(--color-surface-border)]',
+    };
   }
 }
