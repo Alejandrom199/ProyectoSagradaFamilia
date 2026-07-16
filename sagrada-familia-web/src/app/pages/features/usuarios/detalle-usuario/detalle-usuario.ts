@@ -7,6 +7,7 @@ import { formatearEdad, formatearFecha, renderFechaHora } from '../../../../shar
 import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 import { DesactivarCuentaModal } from '../../../../shared/components/desactivar-cuenta-modal/desactivar-cuenta-modal';
+import { HistorialEstadoModal } from '../../../../shared/components/historial-estado-modal/historial-estado-modal';
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { UsuariosService } from '../../../../core/services/usuarios';
@@ -14,7 +15,7 @@ import { MedicosService } from '../../../../core/services/medicos';
 import { PadresService } from '../../../../core/services/padres';
 import { NinosService } from '../../../../core/services/ninos';
 import { AuthService } from '../../../../core/services/auth';
-import { UsuarioDetailResponse } from '../../../../shared/interfaces/usuario.interface';
+import { EstadoHistorialResponse, UsuarioDetailResponse } from '../../../../shared/interfaces/usuario.interface';
 import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
 import { PadreDetailResponse } from '../../../../shared/interfaces/padre.interface';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
@@ -22,7 +23,7 @@ import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 @Component({
   selector: 'app-detalle-usuario',
   standalone: true,
-  imports: [NgIcon, RouterLink, Breadcrumb, Datatable, ConfirmModal, DesactivarCuentaModal],
+  imports: [NgIcon, RouterLink, Breadcrumb, Datatable, ConfirmModal, DesactivarCuentaModal, HistorialEstadoModal],
   templateUrl: './detalle-usuario.html',
   styleUrl: './detalle-usuario.css',
 })
@@ -52,6 +53,10 @@ export class DetalleUsuario implements OnInit {
 
   mostrarModalDesactivar = signal(false);
   errorDesactivar         = signal<string | null>(null);
+
+  mostrarModalHistorial = signal(false);
+  cargandoHistorial     = signal(false);
+  historialEstado       = signal<EstadoHistorialResponse[]>([]);
 
   formatearFecha = formatearFecha;
 
@@ -235,6 +240,21 @@ export class DetalleUsuario implements OnInit {
         this.procesando.set(false);
         this.loadingBar.complete();
       }
+    });
+  }
+
+  abrirHistorial(): void {
+    const u = this.usuario();
+    if (!u) return;
+
+    this.mostrarModalHistorial.set(true);
+    this.cargandoHistorial.set(true);
+    this.usuariosService.obtenerHistorialEstado(u.id).subscribe({
+      next: (r) => {
+        if (r.success) this.historialEstado.set(r.data);
+        this.cargandoHistorial.set(false);
+      },
+      error: () => this.cargandoHistorial.set(false)
     });
   }
 
