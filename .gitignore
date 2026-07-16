@@ -3,6 +3,7 @@
 CLAUDE.md
 .playwright-mcp/
 diagrams/
+docs/*
 
 #Ides
 .vs/

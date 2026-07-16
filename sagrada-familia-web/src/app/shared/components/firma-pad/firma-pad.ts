@@ -1,5 +1,6 @@
-import { Component, ElementRef, output, signal, viewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, output, signal, viewChild, AfterViewInit, inject, effect } from '@angular/core';
 import { Button } from '../button/button';
+import { ThemeService } from '../../../core/services/theme';
 
 @Component({
   selector: 'firma-pad',
@@ -9,6 +10,10 @@ import { Button } from '../button/button';
 })
 export class FirmaPad implements AfterViewInit {
   private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
+  private readonly themeService = inject(ThemeService);
+
+  private static readonly COLOR_CLARO = '#1B355A';
+  private static readonly COLOR_OSCURO = '#FFFFFF';
 
   readonly guardar = output<string>();
   readonly cancelar = output<void>();
@@ -18,6 +23,13 @@ export class FirmaPad implements AfterViewInit {
   private contexto!: CanvasRenderingContext2D;
   private dibujando = false;
 
+  constructor() {
+    effect(() => {
+      const color = this.themeService.oscuro() ? FirmaPad.COLOR_OSCURO : FirmaPad.COLOR_CLARO;
+      if (this.contexto) this.contexto.strokeStyle = color;
+    });
+  }
+
   ngAfterViewInit(): void {
     const canvas = this.canvasRef().nativeElement;
     const contexto = canvas.getContext('2d');
@@ -26,7 +38,7 @@ export class FirmaPad implements AfterViewInit {
     this.contexto = contexto;
     this.contexto.lineWidth = 2.5;
     this.contexto.lineCap = 'round';
-    this.contexto.strokeStyle = '#1B355A';
+    this.contexto.strokeStyle = this.themeService.oscuro() ? FirmaPad.COLOR_OSCURO : FirmaPad.COLOR_CLARO;
   }
 
   iniciarTrazo(evento: MouseEvent | TouchEvent): void {

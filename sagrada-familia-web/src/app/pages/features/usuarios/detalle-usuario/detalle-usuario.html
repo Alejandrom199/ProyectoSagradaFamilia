@@ -37,6 +37,11 @@
                 <ng-icon name="matVpnKeyOutline" class="text-base"></ng-icon>
                 Restablecer contraseña
             </button>
+            <button (click)="abrirHistorial()"
+                class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700">
+                <ng-icon name="matHistoryOutline" class="text-base"></ng-icon>
+                Historial de estado
+            </button>
         </div>
     </div>
 
@@ -131,6 +136,11 @@
                 class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-md transition-colors">
                 <ng-icon name="matVpnKeyOutline" class="text-base"></ng-icon>
                 Restablecer contraseña
+            </button>
+            <button (click)="abrirHistorial()"
+                class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700">
+                <ng-icon name="matHistoryOutline" class="text-base"></ng-icon>
+                Historial de estado
             </button>
         </div>
     </div>
@@ -256,7 +266,13 @@
                     class="px-4 py-2 text-sm font-bold text-muted hover:text-slate-600 transition-colors">
                     Volver
                 </a>
-                @if (!esPropioUsuario()) {
+                <div class="flex items-center gap-3">
+                    <button (click)="abrirHistorial()"
+                        class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700">
+                        <ng-icon name="matHistoryOutline" class="text-base"></ng-icon>
+                        Historial de estado
+                    </button>
+                    @if (!esPropioUsuario()) {
                 <button (click)="toggleEstado()" [disabled]="procesando()"
                     class="px-6 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center gap-2"
                     [class.bg-red-600]="u.activo" [class.text-white]="u.activo" [class.hover:bg-red-700]="u.activo"
@@ -269,7 +285,8 @@
                     Activar cuenta
                     }
                 </button>
-                }
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -280,6 +297,12 @@
         [procesando]="procesando()" (confirm)="confirmarDesactivar($event)"
         (cancel)="mostrarModalDesactivar.set(false); errorDesactivar.set(null)">
     </desactivar-cuenta-modal>
+    }
+
+    @if (mostrarModalHistorial()) {
+    <historial-estado-modal [nombreUsuario]="nombreCompleto()" [historial]="historialEstado()"
+        [cargando]="cargandoHistorial()" (cerrar)="mostrarModalHistorial.set(false)">
+    </historial-estado-modal>
     }
 
     }

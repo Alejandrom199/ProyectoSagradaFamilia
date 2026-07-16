@@ -1,0 +1,56 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+    <div class="card w-full max-w-lg p-6 animate-fade-in max-h-[80vh] flex flex-col">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-zinc-100 mb-1">
+            Historial de estado
+        </h3>
+        <p class="text-sm text-secondary mb-4">
+            @if (nombreUsuario()) {
+            Cambios de activación/desactivación de <span class="font-semibold">{{ nombreUsuario() }}</span>.
+            } @else {
+            Cambios de activación/desactivación de esta cuenta.
+            }
+        </p>
+
+        <div class="flex-1 overflow-y-auto -mx-2 px-2">
+            @if (cargando()) {
+            <p class="text-sm text-secondary py-6 text-center">Cargando historial...</p>
+            } @else if (historial().length === 0) {
+            <p class="text-sm text-secondary py-6 text-center">Aún no se han registrado cambios de estado.</p>
+            } @else {
+            <ul class="flex flex-col gap-3">
+                @for (item of historial(); track item.id) {
+                <li class="flex gap-3 p-3 rounded-md border border-slate-200 dark:border-zinc-700">
+                    <div class="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
+                        [class.bg-green-100]="item.estadoNuevo" [class.dark:bg-green-500/15]="item.estadoNuevo" [class.text-green-700]="item.estadoNuevo"
+                        [class.bg-red-100]="!item.estadoNuevo" [class.dark:bg-red-500/15]="!item.estadoNuevo" [class.text-red-700]="!item.estadoNuevo">
+                        <ng-icon [name]="item.estadoNuevo ? 'matLockOpenOutline' : 'matLockOutline'" class="text-base"></ng-icon>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">
+                                {{ item.estadoNuevo ? 'Cuenta activada' : 'Cuenta desactivada' }}
+                            </p>
+                            <p class="text-xs text-muted whitespace-nowrap">
+                                {{ formatearFecha(item.fechaCambio) }} · {{ formatearHora(item.fechaCambio) }}
+                            </p>
+                        </div>
+                        <p class="text-xs text-secondary mt-0.5">
+                            Realizado por <span class="font-medium">{{ item.realizadoPor }}</span>
+                        </p>
+                        @if (item.motivo) {
+                        <p class="text-sm text-slate-600 dark:text-zinc-400 mt-1.5">"{{ item.motivo }}"</p>
+                        }
+                    </div>
+                </li>
+                }
+            </ul>
+            }
+        </div>
+
+        <div class="flex justify-end mt-6">
+            <btn variant="secondary" width="120px" (clicked)="cerrar.emit()">
+                Cerrar
+            </btn>
+        </div>
+    </div>
+</div>
