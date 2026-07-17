@@ -286,9 +286,12 @@
         @apply bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400;
     }
 
-    /* Avatar sin sexo definido — más apagado que la paleta de badges */
+    /* Avatar sin sexo definido — más apagado que la paleta de badges.
+       dark:bg-zinc-700 (no zinc-800): zinc-800 coincide con --color-surface-alt
+       (#27272a), el fondo del contenedor donde vive este avatar (sidebar),
+       así que el cuadro se fundía y desaparecía en modo oscuro. */
     .avatar-neutral {
-        @apply bg-white text-gray-600 dark:bg-zinc-800 dark:text-zinc-300;
+        @apply bg-white text-gray-600 dark:bg-zinc-700 dark:text-zinc-300;
     }
 
     /* Ocultar el ojito nativo que agrega Microsoft Edge a las contraseñas */
