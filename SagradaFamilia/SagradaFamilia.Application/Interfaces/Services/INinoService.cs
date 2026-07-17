@@ -25,7 +25,7 @@ namespace SagradaFamilia.Application.Interfaces.Services
         Task<IEnumerable<NinoDto.ListResponse>> ObtenerMisPacientesPorUsuarioIdAsync(int usuarioId);
 
         Task<byte[]> GenerarPlantillaAsync();
-        Task<byte[]> ExportarExcelAsync();
+        Task<byte[]> ExportarExcelAsync(int? medicoId = null);
         Task<NinoDto.ImportResultado> ImportarAsync(Stream archivoStream, int medicoId);
     }
 }

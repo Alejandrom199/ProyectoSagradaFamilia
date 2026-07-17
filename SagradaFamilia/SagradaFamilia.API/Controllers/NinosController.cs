@@ -56,6 +56,9 @@ public class NinosController : BaseController
     [Authorize(Roles = "Medico,Administrador")]
     public async Task<ActionResult<ApiResponse<IEnumerable<NinoDto.ListResponse>>>> ObtenerPorPadre(int padreId)
     {
+        if (User.IsInRole("Medico") && !await _padreService.PerteneceAMedicoAsync(padreId, MedicoId))
+            return Forbid();
+
         var response = await _ninoService.ObtenerPorPadreIdAsync(padreId);
         return HandleResponse(response);
     }
@@ -80,6 +83,11 @@ public class NinosController : BaseController
             var esSuHijo = await _ninoService.PerteneceAPadreAsync(id, padre.Id);
             if (!esSuHijo) return Forbid();
         }
+        else if (User.IsInRole("Medico"))
+        {
+            var esSuPaciente = await _ninoService.PerteneceAMedicoAsync(id, MedicoId);
+            if (!esSuPaciente) return Forbid();
+        }
 
         var response = await _ninoService.ObtenerPorIdAsync(id);
         return HandleResponse(response);
@@ -98,6 +106,9 @@ public class NinosController : BaseController
     [Authorize(Roles = "Medico,Administrador")]
     public async Task<ActionResult<ApiResponse<NinoDto.DetailResponse>>> Actualizar(int id, [FromBody] NinoDto.Update request)
     {
+        if (User.IsInRole("Medico") && !await _ninoService.PerteneceAMedicoAsync(id, MedicoId))
+            return Forbid();
+
         var response = await _ninoService.ActualizarAsync(id, request);
         return HandleResponse(response, "Datos del niño actualizados.");
     }
@@ -114,6 +125,12 @@ public class NinosController : BaseController
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse>> CambiarPadre(int id, [FromBody] NinoDto.ChangePadre request)
     {
+        if (!await _ninoService.PerteneceAMedicoAsync(id, MedicoId))
+            return Forbid();
+
+        if (!await _padreService.PerteneceAMedicoAsync(request.PadreId, MedicoId))
+            return Forbid();
+
         await _ninoService.CambiarPadreAsync(id, request.PadreId);
         return HandleSuccess("Representante reasignado correctamente.");
     }
@@ -122,6 +139,9 @@ public class NinosController : BaseController
     [Authorize(Roles = "Medico")]
     public async Task<ActionResult<ApiResponse>> Eliminar(int id)
     {
+        if (!await _ninoService.PerteneceAMedicoAsync(id, MedicoId))
+            return Forbid();
+
         await _ninoService.EliminarAsync(id);
         return HandleSuccess("Niño eliminado del sistema.");
     }
@@ -130,7 +150,8 @@ public class NinosController : BaseController
     [Authorize(Roles = "Administrador,Medico")]
     public async Task<IActionResult> ExportarExcel()
     {
-        var bytes = await _ninoService.ExportarExcelAsync();
+        int? medicoId = User.IsInRole("Medico") ? MedicoId : null;
+        var bytes = await _ninoService.ExportarExcelAsync(medicoId);
         string filename = $"pacientes-{DateTime.Now:yyyyMMdd}.xlsx";
         return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
     }

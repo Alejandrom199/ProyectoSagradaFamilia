@@ -52,18 +52,18 @@ public class PadreService : IPadreService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<PadreDto.ListResponse>> ObtenerTodosAsync()
+    public async Task<IEnumerable<PadreDto.ListResponse>> ObtenerTodosAsync(int? medicoId = null)
     {
-        _logger.LogInformation("Consultando el listado general de representantes (Padres).");
+        _logger.LogInformation("Consultando el listado de representantes (Padres). MedicoId filtro: {MedicoId}", medicoId);
 
-        var padres = await _padreRepository.ObtenerTodosAsync();
+        var padres = await _padreRepository.ObtenerTodosAsync(medicoId);
         return _mapper.Map<IEnumerable<PadreDto.ListResponse>>(padres);
     }
 
     public async Task<PagedResponse<PadreDto.ListResponse>> ObtenerPaginadoAsync(
-        int page, int pageSize, string? search, string? sortBy, bool ascending)
+        int page, int pageSize, string? search, string? sortBy, bool ascending, int? medicoId = null)
     {
-        var (items, total) = await _padreRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending);
+        var (items, total) = await _padreRepository.ObtenerPaginadoAsync(page, pageSize, search, sortBy, ascending, medicoId);
         var data = _mapper.Map<IEnumerable<PadreDto.ListResponse>>(items);
         return PagedResponse<PadreDto.ListResponse>.Ok(data, total, page, pageSize);
     }
@@ -86,6 +86,12 @@ public class PadreService : IPadreService
             ?? throw new NotFoundException("Padre asociado al usuario", usuarioId);
 
         return _mapper.Map<PadreDto.DetailResponse>(padre);
+    }
+
+    public async Task<bool> PerteneceAMedicoAsync(int padreId, int medicoId)
+    {
+        _logger.LogDebug("Verificando si el padre {PadreId} pertenece al médico {MedicoId}", padreId, medicoId);
+        return await _padreRepository.PerteneceAMedicoAsync(padreId, medicoId);
     }
 
     public async Task<PadreDto.DetailResponse> CrearAsync(PadreDto.Create request)
@@ -272,10 +278,10 @@ public class PadreService : IPadreService
         return new PadresPlantillaDocument().GenerarBytes();
     }
 
-    public async Task<byte[]> ExportarExcelAsync()
+    public async Task<byte[]> ExportarExcelAsync(int? medicoId = null)
     {
-        _logger.LogInformation("Exportando listado de representantes a Excel.");
-        var padres = await _padreRepository.ObtenerTodosAsync();
+        _logger.LogInformation("Exportando listado de representantes a Excel. MedicoId filtro: {MedicoId}", medicoId);
+        var padres = await _padreRepository.ObtenerTodosAsync(medicoId);
         var dtos = _mapper.Map<IEnumerable<PadreDto.ListResponse>>(padres);
         return new PadresExportDocument(dtos).GenerarBytes();
     }

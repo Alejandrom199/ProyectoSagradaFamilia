@@ -24,18 +24,26 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .Include(p => p.Medico)
                 .FirstOrDefaultAsync(p => p.UsuarioId == usuarioId && !p.Eliminado);
 
-        public async Task<IEnumerable<Padre>> ObtenerTodosAsync() =>
-            await _context.Padres
+        public async Task<IEnumerable<Padre>> ObtenerTodosAsync(int? medicoId = null)
+        {
+            var query = _context.Padres
                 .Include(p => p.Usuario)
                 .Include(p => p.Medico)
                 .Include(p => p.Ninos)
                 .Where(p => !p.Eliminado)
+                .AsQueryable();
+
+            if (medicoId.HasValue)
+                query = query.Where(p => p.MedicoId == medicoId.Value);
+
+            return await query
                 .OrderBy(p => p.Apellido)
                 .ThenBy(p => p.Nombre)
                 .ToListAsync();
+        }
 
         public async Task<(IEnumerable<Padre> Items, int TotalItems)> ObtenerPaginadoAsync(
-            int page, int pageSize, string? search, string? sortBy, bool ascending)
+            int page, int pageSize, string? search, string? sortBy, bool ascending, int? medicoId = null)
         {
             var query = _context.Padres
                 .Include(p => p.Usuario)
@@ -43,6 +51,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .Include(p => p.Ninos.Where(n => !n.Eliminado))
                 .Where(p => !p.Eliminado)
                 .AsQueryable();
+
+            if (medicoId.HasValue)
+                query = query.Where(p => p.MedicoId == medicoId.Value);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -73,6 +84,12 @@ namespace SagradaFamilia.Infrastructure.Persistence.Repositories
                 .OrderBy(p => p.Apellido)
                 .ThenBy(p => p.Nombre)
                 .ToListAsync();
+
+        public async Task<bool> PerteneceAMedicoAsync(int padreId, int medicoId) =>
+            await _context.Padres
+                .AnyAsync(p => p.Id == padreId
+                            && p.MedicoId == medicoId
+                            && !p.Eliminado);
 
         public async Task<Padre> CrearAsync(Padre padre)
         {
