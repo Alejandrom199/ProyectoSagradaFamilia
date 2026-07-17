@@ -1,6 +1,8 @@
-import { Component, input, computed, viewChild } from '@angular/core';
+import { Component, input, computed, viewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
+
+import { ThemeService } from '../../../core/services/theme';
 import type {
   ApexAxisChartSeries,
   ApexChart,
@@ -12,7 +14,8 @@ import type {
   ApexTooltip,
   ApexLegend,
   ApexDataLabels,
-  ApexAnnotations
+  ApexAnnotations,
+  ApexTheme
 } from 'ng-apexcharts';
 
 import { PuntoPrediccion, CurvasOmsResponse } from '../../interfaces/prediccion.interface';
@@ -20,6 +23,7 @@ import { PuntoPrediccion, CurvasOmsResponse } from '../../interfaces/prediccion.
 export type PredictionChartOptions = {
   series:      ApexAxisChartSeries;
   chart:       ApexChart;
+  theme:       ApexTheme;
   xaxis:       ApexXAxis;
   yaxis:       ApexYAxis;
   stroke:      ApexStroke;
@@ -41,6 +45,7 @@ export type PredictionChartOptions = {
 })
 export class PredictionChart {
   private readonly chartRef = viewChild<ChartComponent>('chartRef');
+  private readonly themeService = inject(ThemeService);
 
   predicciones = input.required<PuntoPrediccion[]>();
   curvasOms    = input<CurvasOmsResponse | null>(null);
@@ -60,13 +65,15 @@ export class PredictionChart {
   chartOptions = computed<Partial<PredictionChartOptions> | null>(() => {
     const pts = this.predicciones();
     if (!pts || pts.length === 0) return null;
-    return this.construirOpciones(pts, this.curvasOms());
+    return this.construirOpciones(pts, this.curvasOms(), this.themeService.oscuro());
   });
 
   private construirOpciones(
     pts: PuntoPrediccion[],
-    oms: CurvasOmsResponse | null
+    oms: CurvasOmsResponse | null,
+    oscuro: boolean
   ): Partial<PredictionChartOptions> {
+    const colorEje = oscuro ? '#a1a1aa' : '#64748b';
     const ts = (fecha: string) => new Date(fecha + 'T00:00:00').getTime();
 
     // ── Series del modelo Prophet ──────────────────────────────────────────────
@@ -139,8 +146,11 @@ export class PredictionChart {
         height: 380,
         toolbar: { show: false },
         fontFamily: 'inherit',
-        zoom: { enabled: false }
+        zoom: { enabled: false },
+        background: 'transparent',
+        foreColor: colorEje
       },
+      theme: { mode: oscuro ? 'dark' : 'light' },
       colors,
       fill:    { opacity: fillOpacity },
       stroke:  { width: strokeWidth, curve: 'smooth', dashArray: strokeDash },
@@ -153,19 +163,20 @@ export class PredictionChart {
       dataLabels: { enabled: false },
       xaxis: {
         type: 'datetime',
-        labels: { datetimeUTC: false, style: { colors: '#64748b', fontSize: '11px' } }
+        labels: { datetimeUTC: false, style: { colors: colorEje, fontSize: '11px' } }
       },
       yaxis: {
-        title: { text: 'Peso (kg)', style: { color: '#64748b', fontWeight: 600 } },
-        labels: { style: { colors: '#64748b', fontSize: '11px' } }
+        title: { text: 'Peso (kg)', style: { color: colorEje, fontWeight: 600 } },
+        labels: { style: { colors: colorEje, fontSize: '11px' } }
       },
-      tooltip: { shared: false, x: { format: 'MMM yyyy' } },
+      tooltip: { shared: false, theme: oscuro ? 'dark' : 'light', x: { format: 'MMM yyyy' } },
       legend: {
         show:       true,
         position:   'top',
         fontSize:   '11px',
         fontFamily: 'inherit',
-        markers:    { size: 8 }
+        markers:    { size: 8 },
+        labels:     { colors: colorEje }
       },
       annotations: {}
     };

@@ -25,6 +25,16 @@
    pone/saca ThemeService (src/app/core/services/theme.ts). */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Tailwind v4 resetea el cursor de <button> a 'default' (comportamiento nativo
+   del navegador), no a 'pointer' como sí hacía Tailwind v3-. Sin esta regla,
+   todo botón nativo del proyecto (incluido el componente compartido <btn>)
+   muestra el cursor de flecha en vez de la mano al pasar el mouse. */
+@layer base {
+    button:not(:disabled) {
+        cursor: pointer;
+    }
+}
+
 /* ── Escala tipográfica centralizada ─────────────────────────────────────────
    Modificar aquí propaga el cambio a todo el sistema.
    page-title  → encabezado principal de cada vista
@@ -324,12 +334,19 @@
 }
 
 @layer utilities {
+    /* fill-mode 'backwards', NO 'both': con 'both'/'forwards' el navegador retiene
+       la animación adjunta al terminar y getComputedStyle().transform reporta
+       'matrix(1,0,0,1,0,0)' en vez del keyword 'none', aunque el keyframe termine
+       en transform:none. Cualquier valor de transform que no sea literalmente
+       'none' convierte al elemento en containing block de sus descendientes
+       position:fixed — atrapa/desplaza dropdowns y paneles flotantes hijos
+       (ver bug: panel "Columnas" del datatable saliéndose del contenedor). */
     .animate-fade-in {
-        animation: fade-in var(--dur-slow) var(--ease-out-expo) both;
+        animation: fade-in var(--dur-slow) var(--ease-out-expo) backwards;
     }
 
     .animate-shake {
-        animation: shake var(--dur-slow) ease-in-out both;
+        animation: shake var(--dur-slow) ease-in-out backwards;
     }
 }
 
@@ -416,7 +433,7 @@
          [class.pop]="badgePop()"  → toggle desde el componente.
        ──────────────────────────────────────────────────────────────────────── */
     .pop {
-        animation: pop var(--dur-base) var(--ease-bounce) both;
+        animation: pop var(--dur-base) var(--ease-bounce) backwards;
     }
 
     /* ── .bounce-in ───────────────────────────────────────────────────────────
@@ -424,7 +441,7 @@
        de éxito, etc.)
        ──────────────────────────────────────────────────────────────────────── */
     .bounce-in {
-        animation: bounce-in var(--dur-slow) var(--ease-bounce) both;
+        animation: bounce-in var(--dur-slow) var(--ease-bounce) backwards;
     }
 
     /* ── .fade-up ─────────────────────────────────────────────────────────────
@@ -432,14 +449,14 @@
        detalle. Combinar con .stagger-* para efecto cascada.
        ──────────────────────────────────────────────────────────────────────── */
     .fade-up {
-        animation: fade-up var(--dur-slow) var(--ease-out-expo) both;
+        animation: fade-up var(--dur-slow) var(--ease-out-expo) backwards;
     }
 
     /* ── .slide-in-right ──────────────────────────────────────────────────────
        Entrada lateral. Para paneles de detalle y drawers.
        ──────────────────────────────────────────────────────────────────────── */
     .slide-in-right {
-        animation: slide-in-right var(--dur-slow) var(--ease-out-expo) both;
+        animation: slide-in-right var(--dur-slow) var(--ease-out-expo) backwards;
     }
 
     /* ── .shimmer ─────────────────────────────────────────────────────────────

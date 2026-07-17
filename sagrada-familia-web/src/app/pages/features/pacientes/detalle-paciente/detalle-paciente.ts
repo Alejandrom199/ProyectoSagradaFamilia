@@ -6,7 +6,7 @@ import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
 import type {
   ApexAxisChartSeries, ApexChart, ApexXAxis, ApexYAxis,
   ApexStroke, ApexDataLabels, ApexTooltip, ApexLegend,
-  ApexMarkers, ApexFill, ApexAnnotations
+  ApexMarkers, ApexFill, ApexAnnotations, ApexTheme
 } from 'ng-apexcharts';
 
 import { NinosService } from '../../../../core/services/ninos';
@@ -14,6 +14,7 @@ import { CitasService } from '../../../../core/services/citas';
 import { PrescripcionesService } from '../../../../core/services/prescripciones';
 import { MedidasService } from '../../../../core/services/medidas';
 import { AuthService } from '../../../../core/services/auth';
+import { ThemeService } from '../../../../core/services/theme';
 import { Reportes } from '../../../../core/services/reportes';
 import { NinoDetailResponse } from '../../../../shared/interfaces/nino.interface';
 import { CitaResponse } from '../../../../shared/interfaces/cita.interface';
@@ -27,6 +28,7 @@ import { DatatableColumn, Datatable } from '../../../../shared/components/datata
 type ChartOpts = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
+  theme?: ApexTheme;
   xaxis: ApexXAxis;
   yaxis: ApexYAxis | ApexYAxis[];
   stroke: ApexStroke;
@@ -53,6 +55,7 @@ export class DetallePaciente implements OnInit {
   private prescripcionesService = inject(PrescripcionesService);
   private medidasService = inject(MedidasService);
   private authService = inject(AuthService);
+  private readonly themeService = inject(ThemeService);
   private reportesService = inject(Reportes);
   private loadingBar = inject(LoadingBar);
 
@@ -78,20 +81,23 @@ export class DetallePaciente implements OnInit {
   chartPesoTalla = computed<Partial<ChartOpts> | null>(() => {
     const m = this.medidasOrdenadas();
     if (m.length < 2) return null;
+    const oscuro = this.themeService.oscuro();
+    const colorEje = oscuro ? '#a1a1aa' : '#64748b';
     const ts = (f: string) => new Date(f + 'T00:00:00').getTime();
     return {
       series: [
         { name: 'Peso (kg)', data: m.map(x => ({ x: ts(x.fechaMedicion), y: x.peso })) },
         { name: 'Talla (cm)', data: m.map(x => ({ x: ts(x.fechaMedicion), y: x.talla })) },
       ],
-      chart: { type: 'line', height: 280, toolbar: { show: false }, fontFamily: 'inherit', zoom: { enabled: false } },
+      chart: { type: 'line', height: 280, toolbar: { show: false }, fontFamily: 'inherit', zoom: { enabled: false }, background: 'transparent', foreColor: colorEje },
+      theme: { mode: oscuro ? 'dark' : 'light' },
       colors: ['#2563eb', '#7c3aed'],
       stroke: { curve: 'smooth', width: [2.5, 2.5] },
       dataLabels: { enabled: false },
       markers: { size: 4, strokeWidth: 0 },
       xaxis: {
         type: 'datetime',
-        labels: { datetimeUTC: false, style: { colors: '#64748b', fontSize: '11px' } }
+        labels: { datetimeUTC: false, style: { colors: colorEje, fontSize: '11px' } }
       },
       yaxis: [
         {
@@ -104,8 +110,8 @@ export class DetallePaciente implements OnInit {
           labels: { style: { colors: ['#7c3aed'], fontSize: '11px' } }
         },
       ],
-      tooltip: { x: { format: 'dd MMM yyyy' } },
-      legend: { show: true, position: 'top', fontSize: '12px', fontFamily: 'inherit' },
+      tooltip: { theme: oscuro ? 'dark' : 'light', x: { format: 'dd MMM yyyy' } },
+      legend: { show: true, position: 'top', fontSize: '12px', fontFamily: 'inherit', labels: { colors: colorEje } },
     };
   });
 
@@ -115,12 +121,17 @@ export class DetallePaciente implements OnInit {
   chartIMC = computed<Partial<ChartOpts> | null>(() => {
     const m = this.medidasOrdenadas();
     if (m.length < 2) return null;
+    const oscuro = this.themeService.oscuro();
+    const colorEje = oscuro ? '#a1a1aa' : '#64748b';
+    const colorAnotacion18 = oscuro ? '#fbbf24' : '#92400e';
+    const colorAnotacion25 = oscuro ? '#fb923c' : '#7c2d12';
     const ts = (f: string) => new Date(f + 'T00:00:00').getTime();
     const imc = (x: MedidaResponse) =>
       parseFloat((x.peso / Math.pow(x.talla / 100, 2)).toFixed(1));
     return {
       series: [{ name: 'IMC', data: m.map(x => ({ x: ts(x.fechaMedicion), y: imc(x) })) }],
-      chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'inherit', zoom: { enabled: false } },
+      chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'inherit', zoom: { enabled: false }, background: 'transparent', foreColor: colorEje },
+      theme: { mode: oscuro ? 'dark' : 'light' },
       colors: ['#0891b2'],
       fill: { opacity: 0.12 },
       stroke: { curve: 'smooth', width: 2.5 },
@@ -132,11 +143,11 @@ export class DetallePaciente implements OnInit {
       markers: { size: 0 },
       xaxis: {
         type: 'datetime',
-        labels: { datetimeUTC: false, style: { colors: '#64748b', fontSize: '11px' } }
+        labels: { datetimeUTC: false, style: { colors: colorEje, fontSize: '11px' } }
       },
       yaxis: {
-        title: { text: 'IMC (kg/m²)', style: { color: '#64748b', fontWeight: 600 } },
-        labels: { style: { colors: ['#64748b'], fontSize: '11px' } },
+        title: { text: 'IMC (kg/m²)', style: { color: colorEje, fontWeight: 600 } },
+        labels: { style: { colors: [colorEje], fontSize: '11px' } },
         min: 10
       },
       annotations: {
@@ -144,16 +155,16 @@ export class DetallePaciente implements OnInit {
           {
             y: 18.5,
             borderColor: '#f59e0b', borderWidth: 1,
-            label: { text: '18.5', position: 'left', style: { color: '#92400e', fontSize: '10px', background: 'transparent', padding: { left: 0, right: 4, top: 1, bottom: 1 } } }
+            label: { text: '18.5', position: 'left', style: { color: colorAnotacion18, fontSize: '10px', background: 'transparent', padding: { left: 0, right: 4, top: 1, bottom: 1 } } }
           },
           {
             y: 25,
             borderColor: '#f97316', borderWidth: 1,
-            label: { text: '25', position: 'left', style: { color: '#7c2d12', fontSize: '10px', background: 'transparent', padding: { left: 0, right: 4, top: 1, bottom: 1 } } }
+            label: { text: '25', position: 'left', style: { color: colorAnotacion25, fontSize: '10px', background: 'transparent', padding: { left: 0, right: 4, top: 1, bottom: 1 } } }
           },
         ]
       },
-      tooltip: { x: { format: 'dd MMM yyyy' } },
+      tooltip: { theme: oscuro ? 'dark' : 'light', x: { format: 'dd MMM yyyy' } },
       legend: { show: false },
     };
   });

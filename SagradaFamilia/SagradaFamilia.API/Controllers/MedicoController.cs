@@ -34,9 +34,12 @@ public class MedicoController : BaseController
     }
 
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador, Medico")]
     public async Task<ActionResult<ApiResponse<MedicoDto.DetailResponse>>> ObtenerPorId(int id)
     {
+        if (User.IsInRole("Medico") && id != MedicoId)
+            return Forbid();
+
         var result = await _medicoService.ObtenerPorIdAsync(id);
         return HandleResponse(result);
     }

@@ -45,6 +45,11 @@
         </div>
     </div>
 
+    @if (cargandoSeccion()) {
+    <div class="card mb-6 h-[122px] animate-pulse"></div>
+    <div class="border border-slate-200 dark:border-zinc-700 h-64 animate-pulse bg-[var(--color-surface-alt)]"></div>
+    } @else {
+
     @if (medico(); as m) {
     <div class="card mb-6">
         <div class="card-header">
@@ -90,10 +95,11 @@
 
     <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Pacientes del médico" [data]="pacientes()" [columns]="columnasPacientes"
-            [actions]="accionesPacientes" searchPlaceholder="Buscar por nombre..."
+            searchPlaceholder="Buscar por nombre..."
             emptyMessage="Este médico aún no tiene pacientes asignados." [showExportar]="false">
         </datatable>
     </div>
+    }
 
     @if (mostrarModalReset()) {
     <confirm-modal title="¿Restablecer contraseña?"
@@ -145,6 +151,11 @@
         </div>
     </div>
 
+    @if (cargandoSeccion()) {
+    <div class="card mb-6 h-[122px] animate-pulse"></div>
+    <div class="border border-slate-200 dark:border-zinc-700 h-64 animate-pulse bg-[var(--color-surface-alt)]"></div>
+    } @else {
+
     @if (padre(); as p) {
     <div class="card mb-6">
         <div class="card-header">
@@ -190,10 +201,11 @@
 
     <div class="border border-slate-200 dark:border-zinc-700 overflow-hidden">
         <datatable title="Hijos del representante" [data]="hijos()" [columns]="columnasHijos"
-            [actions]="accionesHijos" searchPlaceholder="Buscar por nombre..."
+            searchPlaceholder="Buscar por nombre..."
             emptyMessage="Este representante no tiene hijos registrados." [showExportar]="false">
         </datatable>
     </div>
+    }
 
     @if (mostrarModalReset()) {
     <confirm-modal title="¿Restablecer contraseña?"

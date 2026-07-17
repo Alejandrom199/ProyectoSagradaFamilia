@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 
 import { formatearEdad, formatearFecha, renderFechaHora } from '../../../../shared/utils/date.utils';
-import { DatatableAction, DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
+import { DatatableColumn, Datatable } from '../../../../shared/components/datatable/datatable';
 import { ConfirmModal } from '../../../../shared/components/confirm-modal/confirm-modal';
 import { DesactivarCuentaModal } from '../../../../shared/components/desactivar-cuenta-modal/desactivar-cuenta-modal';
 import { HistorialEstadoModal } from '../../../../shared/components/historial-estado-modal/historial-estado-modal';
@@ -35,7 +35,6 @@ export class DetalleUsuario implements OnInit {
   private padresService   = inject(PadresService);
   private ninosService    = inject(NinosService);
   private authService     = inject(AuthService);
-  private router          = inject(Router);
   private loadingBar      = inject(LoadingBar);
 
   readonly esPropioUsuario = () => this.usuario()?.id === this.authService.currentUser()?.id;
@@ -45,6 +44,8 @@ export class DetalleUsuario implements OnInit {
   padre     = signal<PadreDetailResponse | null>(null);
   pacientes = signal<NinoResponse[]>([]);
   hijos     = signal<NinoResponse[]>([]);
+
+  cargandoSeccion   = signal(true);
 
   procesando        = signal(false);
   mostrarModalReset = signal(false);
@@ -105,14 +106,6 @@ export class DetalleUsuario implements OnInit {
     }
   ];
 
-  accionesPacientes: DatatableAction<NinoResponse>[] = [
-    { type: 'ver', onClick: (row) => this.router.navigate(['/pacientes', row.id]) }
-  ];
-
-  accionesHijos: DatatableAction<NinoResponse>[] = [
-    { type: 'ver', onClick: (row) => this.router.navigate(['/pacientes', row.id]) }
-  ];
-
   ngOnInit(): void {
     this.cargarUsuario();
   }
@@ -133,9 +126,14 @@ export class DetalleUsuario implements OnInit {
   }
 
   private cargarDatosMedico(medicoId: number): void {
-    this.medicosService.obtenerTodos().subscribe(r => {
-      if (r.success) {
-        const m = r.data.find(x => x.id === medicoId) ?? null;
+    this.cargandoSeccion.set(true);
+
+    forkJoin({
+      medicos: this.medicosService.obtenerTodos(),
+      pacientes: this.ninosService.obtenerTodosAdmin(),
+    }).pipe(finalize(() => this.cargandoSeccion.set(false))).subscribe(({ medicos, pacientes }) => {
+      if (medicos.success) {
+        const m = medicos.data.find(x => x.id === medicoId) ?? null;
         this.medico.set(m);
         if (m) {
           this.migajas = [
@@ -144,28 +142,29 @@ export class DetalleUsuario implements OnInit {
           ];
         }
       }
-    });
 
-    this.ninosService.obtenerTodosAdmin().subscribe(r => {
-      if (r.success) {
-        this.pacientes.set(r.data.filter(n => n.medicoId === medicoId));
+      if (pacientes.success) {
+        this.pacientes.set(pacientes.data.filter(n => n.medicoId === medicoId));
       }
     });
   }
 
   private cargarDatosPadre(padreId: number): void {
-    this.padresService.obtenerPorId(padreId).subscribe(r => {
-      if (r.success) {
-        this.padre.set(r.data);
+    this.cargandoSeccion.set(true);
+
+    forkJoin({
+      padre: this.padresService.obtenerPorId(padreId),
+      hijos: this.ninosService.obtenerPorPadre(padreId),
+    }).pipe(finalize(() => this.cargandoSeccion.set(false))).subscribe(({ padre, hijos }) => {
+      if (padre.success) {
+        this.padre.set(padre.data);
         this.migajas = [
           { label: 'Usuarios', ruta: '/usuarios' },
-          { label: `${r.data.nombre} ${r.data.apellido}` }
+          { label: `${padre.data.nombre} ${padre.data.apellido}` }
         ];
       }
-    });
 
-    this.ninosService.obtenerPorPadre(padreId).subscribe(r => {
-      if (r.success) this.hijos.set(r.data);
+      if (hijos.success) this.hijos.set(hijos.data);
     });
   }
 
