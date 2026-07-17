@@ -58,14 +58,16 @@ export class Perfil implements OnInit {
         this.perfilUsuario.set(res.data);
 
         if (this.authService.esMedico() && res.data.medicoId) {
-          this.medicosService.obtenerPorId(res.data.medicoId).subscribe(r => {
-            if (r.success) this.infoMedico.set(r.data);
+          this.medicosService.obtenerPorId(res.data.medicoId).subscribe({
+            next: r => { if (r.success) this.infoMedico.set(r.data); },
+            error: err => console.error('No se pudo cargar la información del médico.', err)
           });
         }
 
         if (this.authService.esPadre() && res.data.padreId) {
-          this.padresService.obtenerPorId(res.data.padreId).subscribe(r => {
-            if (r.success) this.infoPadre.set(r.data);
+          this.padresService.obtenerPorId(res.data.padreId).subscribe({
+            next: r => { if (r.success) this.infoPadre.set(r.data); },
+            error: err => console.error('No se pudo cargar la información del padre.', err)
           });
         }
       },
