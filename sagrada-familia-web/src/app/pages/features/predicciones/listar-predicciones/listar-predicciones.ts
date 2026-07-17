@@ -14,6 +14,7 @@ import { PredictionChart } from '../../../../shared/components/prediction-chart/
 import { Breadcrumb, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { NinosService } from '../../../../core/services/ninos';
 import { AuthService } from '../../../../core/services/auth';
+import { ThemeService } from '../../../../core/services/theme';
 import { Reportes } from '../../../../core/services/reportes';
 import { NinoResponse } from '../../../../shared/interfaces/nino.interface';
 import { CurvasOmsResponse, PrediccionResponse, PuntoPrediccion } from '../../../../shared/interfaces/prediccion.interface';
@@ -42,6 +43,7 @@ export class ListarPredicciones implements OnInit {
   private loadingBar         = inject(LoadingBar);
   private reportesService    = inject(Reportes);
   readonly auth              = inject(AuthService);
+  private readonly themeService = inject(ThemeService);
 
   private readonly predictionChartRef = viewChild<PredictionChart>('predictionChartRef');
   private readonly precisionChartRef  = viewChild<ChartComponent>('precisionChartRef');
@@ -69,6 +71,8 @@ export class ListarPredicciones implements OnInit {
   chartPrecision = computed<Record<string, any> | null>(() => {
     const pts = (this.prediccion()?.predicciones ?? []).filter(p => p.pesoReal !== null);
     if (pts.length < 1) return null;
+    const oscuro = this.themeService.oscuro();
+    const colorEje = oscuro ? '#a1a1aa' : '#64748b';
     const ts = (f: string) => new Date(f + 'T00:00:00').getTime();
     return {
       series: [{
@@ -78,30 +82,31 @@ export class ListarPredicciones implements OnInit {
           y: parseFloat(((p.pesoReal ?? 0) - p.pesoPredicho).toFixed(2))
         }))
       }],
-      chart: { type: 'bar', height: 267, toolbar: { show: false }, fontFamily: 'inherit' },
+      chart: { type: 'bar', height: 267, toolbar: { show: false }, fontFamily: 'inherit', background: 'transparent', foreColor: colorEje },
+      theme: { mode: oscuro ? 'dark' : 'light' },
       colors: ['#2563eb'],
       plotOptions: { bar: { columnWidth: '50%', borderRadius: 2 } },
       dataLabels: {
         enabled: true,
         formatter: (v: number) => (v > 0 ? '+' : '') + v + ' kg',
-        style: { fontSize: '10px', colors: ['#1e40af'], fontFamily: 'inherit' },
+        style: { fontSize: '10px', colors: [oscuro ? '#93c5fd' : '#1e40af'], fontFamily: 'inherit' },
         background: { enabled: false }
       },
       xaxis: {
         type: 'datetime',
-        labels: { datetimeUTC: false, style: { colors: '#64748b', fontSize: '11px' } }
+        labels: { datetimeUTC: false, style: { colors: colorEje, fontSize: '11px' } }
       },
       yaxis: {
-        title: { text: 'Diferencia (kg)', style: { color: '#64748b', fontWeight: 600 } },
+        title: { text: 'Diferencia (kg)', style: { color: colorEje, fontWeight: 600 } },
         labels: {
-          style: { colors: ['#64748b'], fontSize: '11px' },
+          style: { colors: [colorEje], fontSize: '11px' },
           formatter: (v: number) => (v > 0 ? '+' : '') + v
         }
       },
       annotations: {
-        yaxis: [{ y: 0, borderColor: '#cbd5e1', borderWidth: 1 }]
+        yaxis: [{ y: 0, borderColor: oscuro ? '#52525b' : '#cbd5e1', borderWidth: 1 }]
       },
-      tooltip: { x: { format: 'MMM yyyy' } },
+      tooltip: { theme: oscuro ? 'dark' : 'light', x: { format: 'MMM yyyy' } },
       legend: { show: false }
     };
   });

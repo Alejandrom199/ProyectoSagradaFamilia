@@ -3,9 +3,10 @@ import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import type { ApexChart, ApexAxisChartSeries, ApexXAxis, ApexStroke, ApexFill, ApexDataLabels, ApexNonAxisChartSeries, ApexPlotOptions, ApexLegend, ApexTooltip } from 'ng-apexcharts';
+import type { ApexChart, ApexAxisChartSeries, ApexXAxis, ApexStroke, ApexFill, ApexDataLabels, ApexNonAxisChartSeries, ApexPlotOptions, ApexLegend, ApexTooltip, ApexTheme } from 'ng-apexcharts';
 
 import { AuthService } from '../../core/services/auth';
+import { ThemeService } from '../../core/services/theme';
 import { NinosService } from '../../core/services/ninos';
 import { AlimentosService } from '../../core/services/alimentos';
 import { CitasService } from '../../core/services/citas';
@@ -22,6 +23,7 @@ import { formatearFecha } from '../../shared/utils/date.utils';
 })
 export class Dashboard implements OnInit {
   readonly auth             = inject(AuthService);
+  private readonly themeService = inject(ThemeService);
   private ninosService      = inject(NinosService);
   private alimentosService  = inject(AlimentosService);
   private citasService      = inject(CitasService);
@@ -45,31 +47,37 @@ export class Dashboard implements OnInit {
   // Gráfico de actividad (línea de área)
   readonly actividadChart = computed(() => {
     const d = this.dashboard();
+    const oscuro = this.themeService.oscuro();
+    const colorEje = oscuro ? '#a1a1aa' : '#64748b';
     const labels    = d?.actividadSemana.map(a => a.fecha)    ?? [];
     const cantidades = d?.actividadSemana.map(a => a.cantidad) ?? [];
     return {
       series: [{ name: 'Acciones', data: cantidades }] as ApexAxisChartSeries,
-      chart:  { type: 'area', height: 220, toolbar: { show: false }, sparkline: { enabled: false }, fontFamily: 'inherit' } as ApexChart,
-      xaxis:  { categories: labels, labels: { style: { fontSize: '11px' } } } as ApexXAxis,
+      chart:  { type: 'area', height: 220, toolbar: { show: false }, sparkline: { enabled: false }, fontFamily: 'inherit', background: 'transparent', foreColor: colorEje } as ApexChart,
+      theme:  { mode: oscuro ? 'dark' : 'light' } as ApexTheme,
+      xaxis:  { categories: labels, labels: { style: { colors: colorEje, fontSize: '11px' } } } as ApexXAxis,
       stroke: { curve: 'smooth', width: 2 } as ApexStroke,
       fill:   { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } } as ApexFill,
       colors: ['#2563eb'],
       dataLabels: { enabled: false } as ApexDataLabels,
-      tooltip: { y: { formatter: (v: number) => `${v} acciones` } } as ApexTooltip,
+      tooltip: { theme: oscuro ? 'dark' : 'light', y: { formatter: (v: number) => `${v} acciones` } } as ApexTooltip,
     };
   });
 
   // Gráfico de usuarios por rol (dona)
   readonly rolesChart = computed(() => {
     const d = this.dashboard();
+    const oscuro = this.themeService.oscuro();
+    const colorEje = oscuro ? '#a1a1aa' : '#64748b';
     return {
       series: (d?.usuariosPorRol.map(r => r.cantidad) ?? []) as ApexNonAxisChartSeries,
       labels: d?.usuariosPorRol.map(r => r.rol) ?? [],
-      chart:  { type: 'donut', height: 220, fontFamily: 'inherit' } as ApexChart,
+      chart:  { type: 'donut', height: 220, fontFamily: 'inherit', background: 'transparent', foreColor: colorEje } as ApexChart,
+      theme:  { mode: oscuro ? 'dark' : 'light' } as ApexTheme,
       colors: ['#7c3aed', '#2563eb', '#16a34a'],
       plotOptions: { pie: { donut: { size: '65%' } } } as ApexPlotOptions,
-      legend: { position: 'bottom', fontSize: '12px' } as ApexLegend,
-      tooltip: { y: { formatter: (v: number) => `${v} usuarios` } } as ApexTooltip,
+      legend: { position: 'bottom', fontSize: '12px', labels: { colors: colorEje } } as ApexLegend,
+      tooltip: { theme: oscuro ? 'dark' : 'light', y: { formatter: (v: number) => `${v} usuarios` } } as ApexTooltip,
       dataLabels: { enabled: true, formatter: (_: any, opts: any) => `${opts.w.globals.series[opts.seriesIndex]}` } as ApexDataLabels,
     };
   });
@@ -77,16 +85,19 @@ export class Dashboard implements OnInit {
   // Gráfico de registro de usuarios por mes (barras)
   readonly registrosChart = computed(() => {
     const d = this.dashboard();
+    const oscuro = this.themeService.oscuro();
+    const colorEje = oscuro ? '#a1a1aa' : '#64748b';
     const labels    = d?.registrosPorMes.map(r => r.mes)      ?? [];
     const cantidades = d?.registrosPorMes.map(r => r.cantidad) ?? [];
     return {
       series: [{ name: 'Registros', data: cantidades }] as ApexAxisChartSeries,
-      chart:  { type: 'bar', height: 220, toolbar: { show: false }, fontFamily: 'inherit' } as ApexChart,
-      xaxis:  { categories: labels, labels: { style: { fontSize: '11px' } } } as ApexXAxis,
+      chart:  { type: 'bar', height: 220, toolbar: { show: false }, fontFamily: 'inherit', background: 'transparent', foreColor: colorEje } as ApexChart,
+      theme:  { mode: oscuro ? 'dark' : 'light' } as ApexTheme,
+      xaxis:  { categories: labels, labels: { style: { colors: colorEje, fontSize: '11px' } } } as ApexXAxis,
       colors: ['#16a34a'],
       plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } as ApexPlotOptions,
       dataLabels: { enabled: false } as ApexDataLabels,
-      tooltip: { y: { formatter: (v: number) => `${v} usuarios nuevos` } } as ApexTooltip,
+      tooltip: { theme: oscuro ? 'dark' : 'light', y: { formatter: (v: number) => `${v} usuarios nuevos` } } as ApexTooltip,
     };
   });
 
