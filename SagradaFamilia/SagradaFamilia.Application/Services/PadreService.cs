@@ -18,6 +18,7 @@ using SagradaFamilia.Domain.Interfaces.Repositories;
 public class PadreService : IPadreService
 {
     private readonly IPadreRepository _padreRepository;
+    private readonly INinoRepository _ninoRepository;
     private readonly IMedicoRepository _medicoRepository;
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IPasswordResetTokenRepository _resetTokenRepository;
@@ -30,6 +31,7 @@ public class PadreService : IPadreService
 
     public PadreService(
         IPadreRepository padreRepository,
+        INinoRepository ninoRepository,
         IMedicoRepository medicoRepository,
         IUsuarioRepository usuarioRepository,
         IPasswordResetTokenRepository resetTokenRepository,
@@ -41,6 +43,7 @@ public class PadreService : IPadreService
         ILogger<PadreService> logger)
     {
         _padreRepository = padreRepository;
+        _ninoRepository = ninoRepository;
         _medicoRepository = medicoRepository;
         _usuarioRepository = usuarioRepository;
         _resetTokenRepository = resetTokenRepository;
@@ -238,10 +241,28 @@ public class PadreService : IPadreService
         var medico = await _medicoRepository.ObtenerPorIdAsync(nuevoMedicoId)
             ?? throw new NotFoundException("Médico", nuevoMedicoId);
 
-        padre.MedicoId = medico.Id;
-        await _padreRepository.ActualizarAsync(padre);
+        await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            padre.MedicoId = medico.Id;
+            await _padreRepository.ActualizarAsync(padre);
 
-        _logger.LogInformation("Padre ID: {Id} reasignado al médico ID: {MedicoId}.", padreId, nuevoMedicoId);
+            foreach (var nino in padre.Ninos)
+            {
+                nino.MedicoId = medico.Id;
+                await _ninoRepository.ActualizarAsync(nino);
+            }
+
+            await _unitOfWork.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            _logger.LogError(ex, "Error al reasignar médico para padre ID: {Id}. Se realizó Rollback.", padreId);
+            throw new BusinessException("No se pudo reasignar el médico del padre.");
+        }
+
+        _logger.LogInformation("Padre ID: {Id} y sus {Count} hijo(s) reasignados al médico ID: {MedicoId}.", padreId, padre.Ninos.Count, nuevoMedicoId);
     }
 
     public async Task RestablecerPasswordAsync(int padreId)

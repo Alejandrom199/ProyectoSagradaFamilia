@@ -29,7 +29,7 @@
                             <div>
                                 <h4 class="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Nota</h4>
                                 <p class="text-xs text-secondary mt-1">
-                                    El médico y el representante se reasignan por separado, abajo, para evitar cambios accidentales.
+                                    El médico del niño se actualiza automáticamente al reasignar el médico de su representante. El representante se reasigna abajo.
                                 </p>
                             </div>
                         </div>
@@ -98,74 +98,11 @@
                     </div>
                 </div>
 
-                <!-- ── Sección: Reasignar médico (solo Admin) ───────────────────── -->
+                <!-- ── Sección: Médico asignado (solo lectura; se actualiza al reasignar el médico del representante) ───────────────────── -->
                 @if (authService.esAdmin()) {
                 <div class="border-t border-slate-200 dark:border-zinc-700 pt-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h3 class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Médico asignado</h3>
-                            <p class="text-xs text-muted mt-0.5">{{ nino()?.medicoNombreCompleto }}</p>
-                        </div>
-                        <button type="button" (click)="toggleCambioMedico()"
-                            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors"
-                            [class.border-slate-200]="!mostrarCambioMedico()" [class.dark:border-zinc-700]="!mostrarCambioMedico()"
-                            [class.text-slate-600]="!mostrarCambioMedico()" [class.dark:text-zinc-400]="!mostrarCambioMedico()"
-                            [class.hover:bg-slate-50]="!mostrarCambioMedico()" [class.dark:hover:bg-zinc-800]="!mostrarCambioMedico()"
-                            [class.border-red-200]="mostrarCambioMedico()" [class.text-red-500]="mostrarCambioMedico()"
-                            [class.hover:bg-red-50]="mostrarCambioMedico()" [class.dark:hover:bg-red-500/10]="mostrarCambioMedico()">
-                            @if (mostrarCambioMedico()) {
-                            <ng-icon name="matCloseOutline" size="13"></ng-icon>
-                            Cancelar
-                            } @else {
-                            <ng-icon name="matEditOutline" size="13"></ng-icon>
-                            Reasignar médico
-                            }
-                        </button>
-                    </div>
-
-                    @if (mostrarCambioMedico()) {
-                    <div class="bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md p-4 space-y-3">
-                        <p class="text-xs text-secondary">
-                            Selecciona el nuevo médico responsable de este paciente.
-                        </p>
-                        <div class="flex gap-2">
-                            <div class="w-full">
-                                <searchable-select
-                                    [options]="medicos()"
-                                    [labelFn]="medicoLabelFn"
-                                    valueKey="id"
-                                    [value]="nuevoMedicoId()"
-                                    (valueChange)="nuevoMedicoId.set($event)"
-                                    placeholder="Seleccionar médico..."
-                                    searchPlaceholder="Buscar médico...">
-                                </searchable-select>
-                            </div>
-                            <button type="button" (click)="cambiarMedico()"
-                                [disabled]="guardandoMedico() || !nuevoMedicoId()"
-                                class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors whitespace-nowrap">
-                                @if (guardandoMedico()) {
-                                <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                                } @else {
-                                <ng-icon name="matCheckOutline" size="15"></ng-icon>
-                                }
-                                Confirmar
-                            </button>
-                        </div>
-                        @if (errorMedico()) {
-                        <div class="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-100 rounded-md">
-                            <ng-icon name="matErrorOutline" size="14" class="text-red-500 shrink-0"></ng-icon>
-                            <p class="text-xs text-red-600">{{ errorMedico() }}</p>
-                        </div>
-                        }
-                    </div>
-                    }
-
-                    @if (exitoMedico()) {
-                    <div class="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 rounded-md mt-3">
-                        <ng-icon name="matCheckCircleOutline" size="15" class="text-emerald-500 shrink-0"></ng-icon>
-                        <p class="text-xs text-emerald-700 font-medium">Médico reasignado correctamente.</p>
-                    </div>
-                    }
+                    <h3 class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Médico asignado</h3>
+                    <p class="text-xs text-muted mt-0.5">{{ nino()?.medicoNombreCompleto }}</p>
                 </div>
                 }
 

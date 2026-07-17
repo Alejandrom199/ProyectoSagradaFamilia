@@ -164,9 +164,10 @@ public class NinoService : INinoService
             ?? throw new NotFoundException("Padre", nuevoPadreId);
 
         nino.PadreId = padre.Id;
+        nino.MedicoId = padre.MedicoId;
         await _ninoRepository.ActualizarAsync(nino);
 
-        _logger.LogInformation("Niño ID: {Id} reasignado al padre ID: {PadreId}.", ninoId, nuevoPadreId);
+        _logger.LogInformation("Niño ID: {Id} reasignado al padre ID: {PadreId} y al médico ID: {MedicoId}.", ninoId, nuevoPadreId, padre.MedicoId);
     }
 
     public async Task EliminarAsync(int id)
