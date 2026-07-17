@@ -235,10 +235,12 @@ public class NinoService : INinoService
         return new NinosPlantillaDocument(representantes).GenerarBytes();
     }
 
-    public async Task<byte[]> ExportarExcelAsync()
+    public async Task<byte[]> ExportarExcelAsync(int? medicoId = null)
     {
-        _logger.LogInformation("Exportando listado de pacientes a Excel.");
-        var ninos = await _ninoRepository.ObtenerTodosAsync();
+        _logger.LogInformation("Exportando listado de pacientes a Excel. MedicoId filtro: {MedicoId}", medicoId);
+        var ninos = medicoId.HasValue
+            ? await _ninoRepository.ObtenerPorMedicoIdAsync(medicoId.Value)
+            : await _ninoRepository.ObtenerTodosAsync();
         var dtos = _mapper.Map<IEnumerable<NinoDto.ListResponse>>(ninos);
         return new NinosExportDocument(dtos).GenerarBytes();
     }

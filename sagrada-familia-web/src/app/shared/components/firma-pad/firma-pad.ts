@@ -71,7 +71,27 @@ export class FirmaPad implements AfterViewInit {
   onGuardarClick(): void {
     if (!this.tieneTrazo()) return;
     const canvas = this.canvasRef().nativeElement;
+    this.normalizarTintaANegro(canvas);
     this.guardar.emit(canvas.toDataURL('image/png'));
+  }
+
+  /**
+   * Fuerza a negro puro el color de todo pixel con trazo (alpha > 0), preservando su
+   * transparencia. Así el PNG exportado siempre tiene tinta negra sobre fondo transparente,
+   * sin importar si se dibujó en modo claro (azul marino) u oscuro (blanco). La visualización
+   * posterior (perfil, reportes) decide el color final mediante CSS/estilos según el contexto.
+   */
+  private normalizarTintaANegro(canvas: HTMLCanvasElement): void {
+    const datosImagen = this.contexto.getImageData(0, 0, canvas.width, canvas.height);
+    const pixeles = datosImagen.data;
+    for (let i = 0; i < pixeles.length; i += 4) {
+      if (pixeles[i + 3] > 0) {
+        pixeles[i] = 0;
+        pixeles[i + 1] = 0;
+        pixeles[i + 2] = 0;
+      }
+    }
+    this.contexto.putImageData(datosImagen, 0, 0);
   }
 
   private obtenerPosicion(evento: MouseEvent | TouchEvent): { x: number; y: number } {

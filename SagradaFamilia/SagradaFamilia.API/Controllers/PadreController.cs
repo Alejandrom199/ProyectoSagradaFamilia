@@ -19,7 +19,8 @@ namespace SagradaFamilia.API.Controllers
         [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse<IEnumerable<PadreDto.ListResponse>>>> GetAll()
         {
-            var result = await _padreService.ObtenerTodosAsync();
+            int? medicoId = User.IsInRole("Medico") ? MedicoId : null;
+            var result = await _padreService.ObtenerTodosAsync(medicoId);
             return HandleResponse(result);
         }
 
@@ -29,13 +30,18 @@ namespace SagradaFamilia.API.Controllers
             [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
             [FromQuery] string? search = null, [FromQuery] string? sortBy = null, [FromQuery] bool asc = true)
         {
-            var result = await _padreService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc);
+            int? medicoId = User.IsInRole("Medico") ? MedicoId : null;
+            var result = await _padreService.ObtenerPaginadoAsync(page, pageSize, search, sortBy, asc, medicoId);
             return Ok(result);
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse<PadreDto.DetailResponse>>> GetById(int id)
         {
+            if (User.IsInRole("Medico") && !await _padreService.PerteneceAMedicoAsync(id, MedicoId))
+                return Forbid();
+
             var result = await _padreService.ObtenerPorIdAsync(id);
             return HandleResponse(result);
         }
@@ -64,6 +70,9 @@ namespace SagradaFamilia.API.Controllers
         [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse<PadreDto.DetailResponse>>> Update(int id, [FromBody] PadreDto.Update request)
         {
+            if (User.IsInRole("Medico") && !await _padreService.PerteneceAMedicoAsync(id, MedicoId))
+                return Forbid();
+
             var result = await _padreService.ActualizarAsync(id, request);
 
             return Ok(ApiResponse<PadreDto.DetailResponse>.Ok(result, "Padre actualizado con éxito."));
@@ -73,6 +82,9 @@ namespace SagradaFamilia.API.Controllers
         [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse>> Delete(int id)
         {
+            if (User.IsInRole("Medico") && !await _padreService.PerteneceAMedicoAsync(id, MedicoId))
+                return Forbid();
+
             await _padreService.EliminarAsync(id);
             return HandleSuccess("Padre eliminado.");
         }
@@ -81,6 +93,9 @@ namespace SagradaFamilia.API.Controllers
         [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse>> CambiarEmail(int id, [FromBody] PadreDto.ChangeEmail request)
         {
+            if (User.IsInRole("Medico") && !await _padreService.PerteneceAMedicoAsync(id, MedicoId))
+                return Forbid();
+
             await _padreService.CambiarEmailAsync(id, request.Email);
             return HandleSuccess("Correo electrónico actualizado correctamente.");
         }
@@ -97,6 +112,9 @@ namespace SagradaFamilia.API.Controllers
         [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse>> ResetPassword(int id)
         {
+            if (User.IsInRole("Medico") && !await _padreService.PerteneceAMedicoAsync(id, MedicoId))
+                return Forbid();
+
             await _padreService.RestablecerPasswordAsync(id);
             return HandleSuccess("Se ha enviado un enlace de restablecimiento al correo del representante.");
         }
@@ -105,7 +123,8 @@ namespace SagradaFamilia.API.Controllers
         [Authorize(Roles = "Administrador, Medico")]
         public async Task<IActionResult> ExportarExcel()
         {
-            var bytes = await _padreService.ExportarExcelAsync();
+            int? medicoId = User.IsInRole("Medico") ? MedicoId : null;
+            var bytes = await _padreService.ExportarExcelAsync(medicoId);
             string filename = $"representantes-{DateTime.Now:yyyyMMdd}.xlsx";
             return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
         }
