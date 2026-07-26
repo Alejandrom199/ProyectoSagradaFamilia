@@ -16,7 +16,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.status !== 401) return throwError(() => error);
 
       if (esRutaAuth) {
-        auth.logout();
+        // No llamar a auth.logout() acá: si la propia petición fallida YA es
+        // /auth/logout, volver a invocarlo dispara otro POST a /auth/logout,
+        // que vuelve a fallar con 401 y reentra en este mismo bloque — un loop
+        // infinito. Alcanza con limpiar el estado local.
+        auth.limpiarSesion();
         return throwError(() => error);
       }
 
