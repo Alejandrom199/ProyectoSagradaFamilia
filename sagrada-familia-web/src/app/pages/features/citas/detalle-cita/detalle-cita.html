@@ -152,8 +152,8 @@
                         <h3 class="text-sm font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider">Prescripción</h3>
                     </div>
                     @if (!cita()?.tienePrescripcion && cita()?.estado === 'EnCurso') {
-                    <button (click)="emitirPrescripcion()"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md text-xs font-bold hover:bg-blue-700 transition-colors">
+                    <button (click)="emitirPrescripcion()" [disabled]="guardandoConsulta()"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md text-xs font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors">
                         <ng-icon name="matScienceOutline" class="text-sm"></ng-icon>
                         Emitir receta
                     </button>

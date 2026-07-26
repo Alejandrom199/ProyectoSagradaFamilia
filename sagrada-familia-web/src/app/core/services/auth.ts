@@ -97,7 +97,9 @@ export class AuthService {
     localStorage.setItem('user', JSON.stringify(user));
   }
 
-  private limpiarSesion(): void {
+  // Público: el interceptor lo usa cuando /auth/logout en sí devuelve 401
+  // (cookie ya inválida) para no volver a llamar a logout() y disparar un loop.
+  limpiarSesion(): void {
     this._currentUser.set(null);
     localStorage.removeItem('user');
     this.router.navigate(['/login']);

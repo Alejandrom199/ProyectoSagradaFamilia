@@ -7,8 +7,15 @@
 #   - Existe solo en tiempo de build; no queda en las capas de la imagen final.
 #   - Permite seleccionar la configuración de Angular desde CI/CD:
 #       docker build --build-arg BUILD_CONFIGURATION=staging ...
-#   - 'production' activa: minificación, tree-shaking, hashes en nombres de
-#     archivos, y usa environment.prod.ts (apiUrl: '/api').
+#   - 'production' activa minificación, tree-shaking, hashes en nombres de
+#     archivos, y usa environment.prod.ts (apiUrl absoluta a Railway) — es el
+#     build que se despliega en Netlify, con backend en Railway y BD en Supabase.
+#   - 'docker' usa environment.docker.ts (apiUrl: '/api'), pensado para este
+#     mismo docker-compose.yml, donde nginx hace de proxy hacia el contenedor
+#     'api' local en la misma red interna.
+#   - 'development' usa environment.development.ts (apiUrl: 'http://localhost:5151/api'),
+#     para 'ng serve' en VS Code contra el backend corriendo suelto en Visual
+#     Studio (IIS Express/Kestrel) — NO se usa en ningún build de Docker.
 # =============================================================================
 FROM node:22-alpine AS builder
 
@@ -36,10 +43,7 @@ RUN npm install --ignore-scripts
 # Copiar el resto del código fuente una vez que node_modules ya está cacheado
 COPY . .
 
-# Compilar Angular en la configuración seleccionada.
-# En 'production', el CLI de Angular usa environment.prod.ts donde
-# apiUrl = '/api' → todas las peticiones HTTP van relativas al mismo origen,
-# lo que permite que nginx haga el proxy transparentemente.
+# Compilar Angular en la configuración seleccionada (ver ARG BUILD_CONFIGURATION arriba).
 RUN npm run build -- --configuration ${BUILD_CONFIGURATION}
 
 # Archivo estático leído por BuildInfoService para mostrar el badge 'build-<sha>'
