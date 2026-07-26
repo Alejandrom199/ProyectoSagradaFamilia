@@ -179,4 +179,17 @@ export class EditarCita implements OnInit {
     const seleccionada = new Date(`${fecha}T${hora}:00`);
     return seleccionada <= hoy ? { fechaPasada: true } : null;
   }
+
+  // Un minuto después de 'hora inicio': evita que el picker nativo permita
+  // una hora de terminación igual o anterior a la de inicio.
+  get horaFinMinima(): string {
+    const horaInicio = this.f['hora'].value as string;
+    if (!horaInicio) return '';
+
+    const [h, m] = horaInicio.split(':').map(Number);
+    const totalMinutos = (h * 60 + m + 1) % (24 * 60);
+    const hh = Math.floor(totalMinutos / 60);
+    const mm = totalMinutos % 60;
+    return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+  }
 }
