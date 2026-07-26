@@ -5,6 +5,7 @@ import { NgIcon } from '@ng-icons/core';
 
 import { CitasService } from '../../../../core/services/citas';
 import { ConsultasService } from '../../../../core/services/consultas';
+import { ConsultaActualizar } from '../../../../shared/interfaces/consulta.interface';
 import { CitaResponse, EstadoCita } from '../../../../shared/interfaces/cita.interface';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { LoadingBar } from '../../../../core/services/loading-bar';
@@ -103,9 +104,18 @@ export class DetalleCita implements OnInit {
     });
   }
 
-  // Guarda los datos clínicos y completa la consulta en un solo paso.
   // El motivo no se re-edita acá: se reenvía tal cual llegó (copiado de la cita al iniciar
   // la consulta) para no perderlo, ya que el backend reemplaza el campo completo al actualizar.
+  private payloadConsulta(): ConsultaActualizar {
+    return {
+      motivo: this.consultaMotivo() || undefined,
+      diagnostico: this.consultaDiagnostico() || undefined,
+      indicaciones: this.consultaIndicaciones() || undefined,
+      evolucion: this.consultaEvolucion() || undefined,
+    };
+  }
+
+  // Guarda los datos clínicos y completa la consulta en un solo paso.
   completarConsulta(): void {
     const consultaId = this.cita()?.consulta?.id;
     if (!consultaId) return;
@@ -113,12 +123,7 @@ export class DetalleCita implements OnInit {
     this.guardandoConsulta.set(true);
     this.loadingBar.show();
 
-    this.consultasService.actualizar(consultaId, {
-      motivo: this.consultaMotivo() || undefined,
-      diagnostico: this.consultaDiagnostico() || undefined,
-      indicaciones: this.consultaIndicaciones() || undefined,
-      evolucion: this.consultaEvolucion() || undefined,
-    }).subscribe({
+    this.consultasService.actualizar(consultaId, this.payloadConsulta()).subscribe({
       next: (r) => {
         if (!r.success) {
           this.guardandoConsulta.set(false);
@@ -191,11 +196,29 @@ export class DetalleCita implements OnInit {
     this.router.navigate(['/citas', this.citaId, 'editar']);
   }
 
+  // Persiste los datos clínicos antes de salir a la pantalla de prescripción:
+  // al volver, cargarCita() los trae desde el backend y sin este guardado
+  // se perdía lo escrito (nunca llegó a persistirse, solo vivía en los signals).
   emitirPrescripcion(): void {
     const consultaId = this.cita()?.consulta?.id;
     if (!consultaId) return;
-    this.router.navigate(['/prescripciones/consulta', consultaId, 'crear'], {
-      queryParams: { citaId: this.citaId }
+
+    this.guardandoConsulta.set(true);
+    this.loadingBar.show();
+
+    this.consultasService.actualizar(consultaId, this.payloadConsulta()).subscribe({
+      next: (r) => {
+        this.guardandoConsulta.set(false);
+        this.loadingBar.complete();
+        if (!r.success) return;
+        this.router.navigate(['/prescripciones/consulta', consultaId, 'crear'], {
+          queryParams: { citaId: this.citaId }
+        });
+      },
+      error: () => {
+        this.guardandoConsulta.set(false);
+        this.loadingBar.complete();
+      }
     });
   }
 
