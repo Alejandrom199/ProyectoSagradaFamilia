@@ -141,8 +141,13 @@ services:
       context: ./sagrada-familia-web
       dockerfile: Dockerfile
       args:
-        # ARG de build: activa minificación, tree-shaking y environment.prod.ts.
-        BUILD_CONFIGURATION: production
+        # ARG de build: usa environment.docker.ts (apiUrl: '/api'), pensado
+        # para este stack 100% en Docker (nginx + api + db en contenedores).
+        # No usar 'development': esa configuración es la de 'ng serve' en VS Code
+        # contra el backend local en Visual Studio (localhost:5151), fuera de Docker.
+        # 'production' (minificado, environment.prod.ts) queda reservado para
+        # el build que se despliega en Netlify contra Railway/Supabase.
+        BUILD_CONFIGURATION: docker
     ports:
       - "80:80"   # Único servicio expuesto al exterior del stack
     depends_on:
