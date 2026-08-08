@@ -30,6 +30,8 @@ source "$ENV_FILE"
 
 # Validar que las variables críticas estén definidas
 [ -z "$SUPABASE_PASSWORD" ]     && err "SUPABASE_PASSWORD no está definido en $ENV_FILE"
+[ -z "$SUPABASE_POOLER_HOST" ]  && err "SUPABASE_POOLER_HOST no está definido en $ENV_FILE"
+[ -z "$SUPABASE_PROJECT_REF" ]  && err "SUPABASE_PROJECT_REF no está definido en $ENV_FILE"
 [ -z "$JWT_SECRET_KEY" ]        && err "JWT_SECRET_KEY no está definido en $ENV_FILE"
 [ -z "$GMAIL_APP_PASSWORD" ]    && err "GMAIL_APP_PASSWORD no está definido en $ENV_FILE"
 [ -z "$NETLIFY_URL" ]           && err "NETLIFY_URL no está definido en $ENV_FILE"
@@ -57,7 +59,7 @@ log "Servicio creado"
 
 warn "Configurando variables del backend..."
 railway variables set \
-  "ConnectionStrings__PostgresConnection=Host=aws-1-us-east-2.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.xwajbkydcsvmygvvszza;Password=${SUPABASE_PASSWORD};SSL Mode=Require;Trust Server Certificate=true;" \
+  "ConnectionStrings__PostgresConnection=Host=${SUPABASE_POOLER_HOST};Port=5432;Database=postgres;Username=postgres.${SUPABASE_PROJECT_REF};Password=${SUPABASE_PASSWORD};SSL Mode=Require;Trust Server Certificate=true;" \
   "JwtSettings__SecretKey=${JWT_SECRET_KEY}" \
   "JwtSettings__Issuer=SagradaFamiliaAPI" \
   "JwtSettings__Audience=SagradaFamiliaClient" \
