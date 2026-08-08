@@ -20,7 +20,6 @@
                 [class]="categoriaSeleccionadaId() === null
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800'">
-                <ng-icon name="matAutoAwesomeOutline" size="14"></ng-icon>
                 Todas
             </button>
 
@@ -28,7 +27,6 @@
             <button (click)="filtrarCategoria(cat.id)"
                 class="press inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold border cursor-pointer transition-colors"
                 [class]="categoriaSeleccionadaId() === cat.id ? cat.claseActiva : cat.claseInactiva">
-                <ng-icon [name]="cat.icono" size="14"></ng-icon>
                 {{ cat.nombre }}
             </button>
             }
@@ -50,13 +48,9 @@
             <div class="lift group fade-up border rounded-md p-4 flex flex-col gap-3"
                  [ngClass]="[claseTarjeta(item.categoriaNombre), 'stagger-' + ((i % 6) + 1)]">
 
-                <!-- Icono + badge de categoría -->
-                <div class="flex items-start justify-between gap-2">
-                    <div class="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110"
-                        [ngClass]="colorDeCategoria(item.categoriaNombre)">
-                        <ng-icon [name]="iconoDeCategoria(item.categoriaNombre)" size="16"></ng-icon>
-                    </div>
-                    <span class="text-[9px] font-bold uppercase tracking-wide border px-1.5 py-0.5 rounded-md leading-none self-start mt-1.5"
+                <!-- Badge de categoría -->
+                <div class="flex items-start justify-end">
+                    <span class="text-[9px] font-bold uppercase tracking-wide border px-1.5 py-0.5 rounded-md leading-none"
                         [ngClass]="obtenerClaseBadge(item.categoriaNombre)">
                         {{ item.categoriaNombre }}
                     </span>

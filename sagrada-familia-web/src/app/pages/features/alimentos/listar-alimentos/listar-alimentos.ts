@@ -48,8 +48,8 @@ export class ListarAlimentos implements OnInit {
     { key: 'nombre', label: 'Alimento', sortable: true, render: (row) => `<p class="font-medium">${row.nombre}</p>` },
     { key: 'categoriaNombre', label: 'Categoría', sortable: true, filterable: true, render: (row) => `<span class="badge badge-primary">${row.categoriaNombre}</span>` },
     { key: 'edadMinimaMeses', label: 'Edad mínima (meses)', sortable: true, render: (row) => `${row.edadMinimaMeses} meses` },
-    { key: 'descripcion', label: 'Descripción', render: (row) => row.descripcion ? `<span class="text-xs text-[var(--color-text-secondary)] max-w-xs truncate block">${row.descripcion}</span>` : '<span class="text-muted">—</span>', exportValue: (row) => row.descripcion ?? '' },
-    { key: 'recomendacion', label: 'Recomendación', render: (row) => row.recomendacion ? `<p class="text-xs text-[var(--color-text-secondary)] max-w-xs truncate">${row.recomendacion}</p>` : '—', exportValue: (row) => row.recomendacion ?? '' },
+    { key: 'descripcion', label: 'Descripción', render: (row) => row.descripcion ? `<span class="text-xs text-[var(--color-text-secondary)] max-w-xs truncate block">${row.descripcion}</span>` : '<span class="text-muted">-</span>', exportValue: (row) => row.descripcion ?? '' },
+    { key: 'recomendacion', label: 'Recomendación', render: (row) => row.recomendacion ? `<p class="text-xs text-[var(--color-text-secondary)] max-w-xs truncate">${row.recomendacion}</p>` : '-', exportValue: (row) => row.recomendacion ?? '' },
     { key: 'activo', label: 'Estado', sortable: true, filterable: true, render: (row) => row.activo ? `<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-success-soft text-success">Activo</span>` : `<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-surface-alt)] text-muted">Inactivo</span>`, exportValue: (row) => row.activo ? 'Activo' : 'Inactivo' }
   ];
 

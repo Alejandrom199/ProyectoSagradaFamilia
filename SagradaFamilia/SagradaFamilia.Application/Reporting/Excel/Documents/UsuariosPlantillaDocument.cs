@@ -5,10 +5,14 @@ using ClosedXML.Excel;
 public class UsuariosPlantillaDocument : BaseExcelTemplate
 {
     private readonly IEnumerable<(string NombreCompleto, string Email)> _medicos;
+    private readonly IEnumerable<string> _especialidades;
 
-    public UsuariosPlantillaDocument(IEnumerable<(string NombreCompleto, string Email)> medicos)
+    public UsuariosPlantillaDocument(
+        IEnumerable<(string NombreCompleto, string Email)> medicos,
+        IEnumerable<string> especialidades)
     {
         _medicos = medicos;
+        _especialidades = especialidades;
     }
 
     public override byte[] GenerarBytes()
@@ -22,14 +26,15 @@ public class UsuariosPlantillaDocument : BaseExcelTemplate
         AgregarEncabezado(ws, "Plantilla de Importación de Usuarios", totalCols);
 
         AgregarFilaInstruccion(ws, 4, totalCols,
-            "* = Campo obligatorio   |   Email es la clave única: si ya existe se actualizarán los datos   |   " +
-            "Rol: Medico o Padre   |   Especialidad solo aplica a Medico   |   Médico es obligatorio solo si Rol = Padre (seleccione del desplegable)");
+            "* = Campo obligatorio   |   Esta carga masiva solo CREA usuarios nuevos: si el email ya existe, la fila se rechaza   |   " +
+            "Rol: Medico o Padre   |   Especialidad es obligatoria si Rol = Medico (seleccione del desplegable)   |   Médico es obligatorio solo si Rol = Padre (seleccione del desplegable)");
 
         EstilarEncabezadoColumnas(ws, 5, headers);
 
         var opcionesMedicos = _medicos
             .Select(m => $"{m.NombreCompleto} - {m.Email}")
             .ToList();
+        var opcionesEspecialidades = _especialidades.ToList();
 
         ws.Cell(6, 1).Value = "Padre";
         ws.Cell(6, 2).Value = "Sofia";
@@ -47,6 +52,20 @@ public class UsuariosPlantillaDocument : BaseExcelTemplate
         dvRol.ErrorStyle = XLErrorStyle.Stop;
         dvRol.ErrorTitle = "Rol inválido";
         dvRol.ErrorMessage = "Seleccione Medico o Padre del desplegable.";
+
+        if (opcionesEspecialidades.Count > 0)
+        {
+            var wsEspecialidades = workbook.Worksheets.Add("_Especialidades");
+            for (int i = 0; i < opcionesEspecialidades.Count; i++)
+                wsEspecialidades.Cell(i + 1, 1).Value = opcionesEspecialidades[i];
+            wsEspecialidades.Visibility = XLWorksheetVisibility.VeryHidden;
+
+            var dvEspecialidad = ws.Range(ws.Cell(7, 6), ws.Cell(1048576, 6)).CreateDataValidation();
+            dvEspecialidad.List(wsEspecialidades.Range(1, 1, opcionesEspecialidades.Count, 1), true);
+            dvEspecialidad.ErrorStyle = XLErrorStyle.Stop;
+            dvEspecialidad.ErrorTitle = "Especialidad inválida";
+            dvEspecialidad.ErrorMessage = "Seleccione una especialidad del listado desplegable.";
+        }
 
         if (opcionesMedicos.Count > 0)
         {

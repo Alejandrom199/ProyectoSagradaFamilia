@@ -41,6 +41,10 @@ export class PadresService {
     return this.http.get<ApiResponse<PadreDetailResponse>>(`${this.url}/${id}`, { withCredentials: true });
   }
 
+  obtenerMiPerfil(): Observable<ApiResponse<PadreDetailResponse>> {
+    return this.http.get<ApiResponse<PadreDetailResponse>>(`${this.url}/mi-perfil`, { withCredentials: true });
+  }
+
   cambiarEmail(id: number, request: PadreCambiarEmail): Observable<ApiResponse<null>> {
     return this.http.patch<ApiResponse<null>>(`${this.url}/${id}/email`, request, { withCredentials: true });
   }

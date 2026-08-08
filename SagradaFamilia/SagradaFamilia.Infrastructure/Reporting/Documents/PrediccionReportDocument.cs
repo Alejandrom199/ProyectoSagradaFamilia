@@ -86,7 +86,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     col.Item().PaddingTop(4).Text(
                         string.IsNullOrWhiteSpace(_nino.MedicoEspecialidad)
                             ? $"Dr(a). {_nino.MedicoNombreCompleto}"
-                            : $"Dr(a). {_nino.MedicoNombreCompleto} — {_nino.MedicoEspecialidad}")
+                            : $"Dr(a). {_nino.MedicoNombreCompleto} - {_nino.MedicoEspecialidad}")
                         .Style(BaseReportTemplate.EstiloValores);
                 });
             });
@@ -113,7 +113,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     {
                         col.Item().Text($"En {punto!.Meses} meses").Style(BaseReportTemplate.EstiloValores).FontSize(8);
                         col.Item().PaddingTop(2).Text($"{punto.PesoPredicho:0.00} kg").Bold().FontSize(16).FontColor(BaseReportTemplate.ColorNaval);
-                        col.Item().Text($"Rango: {punto.PesoMinimo:0.00} – {punto.PesoMaximo:0.00} kg").Style(BaseReportTemplate.EstiloValores).FontSize(8);
+                        col.Item().Text($"Rango: {punto.PesoMinimo:0.00} - {punto.PesoMaximo:0.00} kg").Style(BaseReportTemplate.EstiloValores).FontSize(8);
                         col.Item().Text(punto.FechaObjetivo.ToString("dd MMM yyyy", Cultura).ToLower()).Style(BaseReportTemplate.EstiloValores).FontSize(7);
                     });
                 }
@@ -189,7 +189,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila)
                         .Text($"{p.PesoPredicho:0.00} kg").Style(BaseReportTemplate.EstiloValores);
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila)
-                        .Text($"{p.PesoMinimo:0.00} — {p.PesoMaximo:0.00} kg").Style(BaseReportTemplate.EstiloValores);
+                        .Text($"{p.PesoMinimo:0.00} - {p.PesoMaximo:0.00} kg").Style(BaseReportTemplate.EstiloValores);
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima)
                         .Text(p.PesoReal is not null ? $"{p.PesoReal:0.00} kg" : "Aún sin medir")
                         .Style(BaseReportTemplate.EstiloValores);

@@ -50,12 +50,6 @@ export class ExploradorVisual {
     }))
   );
 
-  private categoriaMapByName = computed<Map<string, CategoriaEstilizada>>(() => {
-    const m = new Map<string, CategoriaEstilizada>();
-    this.categoriasEstilizadas().forEach(c => m.set(c.nombre, c));
-    return m;
-  });
-
   itemsFiltrados = computed<ItemExplorador[]>(() => {
     const texto = this.busqueda().toLowerCase().trim();
     const catId = this.categoriaSeleccionadaId();
@@ -70,14 +64,6 @@ export class ExploradorVisual {
 
   filtrarCategoria(id: number | null) { this.categoriaSeleccionadaId.set(id); }
   actualizarBusqueda(e: Event) { this.busqueda.set((e.target as HTMLInputElement).value); }
-
-  iconoDeCategoria(nombre: string): string {
-    return this.categoriaMapByName().get(nombre)?.icono ?? 'matAutoAwesomeOutline';
-  }
-
-  colorDeCategoria(nombre: string): string {
-    return this.categoriaMapByName().get(nombre)?.color ?? 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300';
-  }
 
   claseTarjeta(nombre: string): string {
     const n = nombre.toLowerCase();

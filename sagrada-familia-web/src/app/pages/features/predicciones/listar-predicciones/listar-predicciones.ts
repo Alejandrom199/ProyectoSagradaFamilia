@@ -126,7 +126,7 @@ export class ListarPredicciones implements OnInit {
     },
     {
       key: 'pesoMinimo', label: 'Rango de confianza',
-      render: (r) => `<span class="text-xs text-[var(--color-text-secondary)]">${r.pesoMinimo.toFixed(2)} — ${r.pesoMaximo.toFixed(2)} kg</span>`
+      render: (r) => `<span class="text-xs text-[var(--color-text-secondary)]">${r.pesoMinimo.toFixed(2)} - ${r.pesoMaximo.toFixed(2)} kg</span>`
     },
     {
       key: 'pesoReal', label: 'Peso real',
@@ -211,7 +211,7 @@ export class ListarPredicciones implements OnInit {
     const u = this.auth.currentUser();
     this.reportesService.descargarPrediccionPdf({
       ninoId: nino.id,
-      titulo: `Reporte de Predicción — ${nino.nombre} ${nino.apellido}`,
+      titulo: `Reporte de Predicción - ${nino.nombre} ${nino.apellido}`,
       usuario: u ? `${u.nombre} ${u.apellido}` : '',
       graficaPrediccionBase64,
       graficaPrecisionBase64,

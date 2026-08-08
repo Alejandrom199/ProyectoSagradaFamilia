@@ -46,6 +46,14 @@ namespace SagradaFamilia.API.Controllers
             return HandleResponse(result);
         }
 
+        [HttpGet("mi-perfil")]
+        [Authorize(Roles = "Padre")]
+        public async Task<ActionResult<ApiResponse<PadreDto.DetailResponse>>> ObtenerMiPerfil()
+        {
+            var result = await _padreService.ObtenerPorUsuarioIdAsync(UsuarioId);
+            return HandleResponse(result);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Administrador, Medico")]
         public async Task<ActionResult<ApiResponse<PadreDto.DetailResponse>>> Create([FromBody] PadreDto.Create request)

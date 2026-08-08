@@ -161,6 +161,74 @@ namespace SagradaFamilia.Infrastructure.Persistence.Migrations.Postgres
                     b.ToTable("Auditorias", (string)null);
                 });
 
+            modelBuilder.Entity("SagradaFamilia.Domain.Entities.CatalogoValor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("Eliminado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime?>("FechaEliminacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("UsuarioCreacionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UsuarioEliminacionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UsuarioModificacionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Valor")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Eliminado");
+
+                    b.HasIndex("Tipo", "Codigo")
+                        .IsUnique()
+                        .HasFilter("\"Eliminado\" = false");
+
+                    b.ToTable("CatalogosValor", (string)null);
+                });
+
             modelBuilder.Entity("SagradaFamilia.Domain.Entities.CategoriaAlimento", b =>
                 {
                     b.Property<int>("Id")

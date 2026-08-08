@@ -45,7 +45,7 @@ export class ListarLogs implements OnInit {
       key: 'endpoint', label: 'Endpoint',
       render: (row) => row.endpoint
         ? `<code class="text-xs bg-[var(--color-surface-alt)] px-2 py-1 rounded">${row.endpoint}</code>`
-        : '<span class="text-muted">—</span>'
+        : '<span class="text-muted">-</span>'
     },
     {
       key: 'usuarioId', label: 'Usuario', filterable: true,

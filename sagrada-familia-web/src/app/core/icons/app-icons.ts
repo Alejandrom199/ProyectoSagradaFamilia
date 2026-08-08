@@ -38,6 +38,7 @@ import {
   matGroupsOutline,
   matBadgeOutline,
   matAdminPanelSettingsOutline,
+  matTuneOutline,
   matCalendarMonthOutline,
   matScheduleOutline,
   matSearchOutline,
@@ -129,6 +130,26 @@ import {
   matEditCalendarOutline
 } from '@ng-icons/material-icons/outline';
 
+// ── Font Awesome Solid (íconos de dominio sin equivalente claro en Hero/Material) ──
+import {
+  // Pacientes / niños
+  faSolidBaby, faSolidChild, faSolidBabyCarriage, faSolidHandsHoldingChild,
+  // Médicos / clínico
+  faSolidUserDoctor, faSolidUserNurse, faSolidStethoscope, faSolidSyringe,
+  faSolidHospital, faSolidNotesMedical, faSolidFileMedical, faSolidHeartPulse,
+  faSolidFilePrescription,
+  // Medidas / crecimiento
+  faSolidWeightScale, faSolidScaleBalanced,
+  // Nutrición / alimentos
+  faSolidUtensils, faSolidCarrot, faSolidAppleWhole,
+  // Predicción / IA
+  faSolidBrain, faSolidRobot, faSolidMagnifyingGlassChart,
+  // Citas
+  faSolidCalendarCheck, faSolidEnvelopeCircleCheck,
+  // Reportes
+  faSolidChartLine, faSolidChartPie
+} from '@ng-icons/font-awesome/solid';
+
 // ── Exportación combinada para provideIcons global ────────────────────────────
 export const APP_ICONS = {
   // Heroicons
@@ -161,6 +182,7 @@ export const APP_ICONS = {
   matGroupsOutline,
   matBadgeOutline,
   matAdminPanelSettingsOutline,
+  matTuneOutline,
   matCalendarMonthOutline,
   matScheduleOutline,
   matSearchOutline,
@@ -249,7 +271,24 @@ export const APP_ICONS = {
   // Crear usuario
   matGroupOutline,
   // Reagendación de citas
-  matEditCalendarOutline
+  matEditCalendarOutline,
+  // Font Awesome Solid
+  // Pacientes / niños
+  faSolidBaby, faSolidChild, faSolidBabyCarriage, faSolidHandsHoldingChild,
+  // Médicos / clínico
+  faSolidUserDoctor, faSolidUserNurse, faSolidStethoscope, faSolidSyringe,
+  faSolidHospital, faSolidNotesMedical, faSolidFileMedical, faSolidHeartPulse,
+  faSolidFilePrescription,
+  // Medidas / crecimiento
+  faSolidWeightScale, faSolidScaleBalanced,
+  // Nutrición / alimentos
+  faSolidUtensils, faSolidCarrot, faSolidAppleWhole,
+  // Predicción / IA
+  faSolidBrain, faSolidRobot, faSolidMagnifyingGlassChart,
+  // Citas
+  faSolidCalendarCheck, faSolidEnvelopeCircleCheck,
+  // Reportes
+  faSolidChartLine, faSolidChartPie
 };
 
 /**
@@ -271,22 +310,34 @@ export const SIDEBAR_ICON_MAP: Record<string, string> = {
   'admin-panel': 'matAdminPanelSettingsOutline',
   'manage-accounts': 'matManageAccountsOutline',
   'verified-user': 'matVerifiedUserOutline',
+  'user-doctor': 'faSolidUserDoctor',
+  'tune': 'matTuneOutline',
+  'category': 'matCategoryOutline',
   // Opciones clínicas
   'calendar-month': 'matCalendarMonthOutline',
+  'calendar-check': 'faSolidCalendarCheck',
   'schedule': 'matScheduleOutline',
+  'history': 'matHistoryOutline',
   'search': 'matSearchOutline',
   'event-note': 'matEventNoteOutline',
   'child-care': 'matChildCareOutline',
   'medical-services': 'matMedicalServicesOutline',
   'local-hospital': 'matLocalHospitalOutline',
+  'notes-medical': 'faSolidNotesMedical',
+  'file-prescription': 'faSolidFilePrescription',
   // Reportes / predicción
   'trending-up': 'matTrendingUpOutline',
   'bar-chart': 'matBarChartOutline',
   'grid-view': 'matGridViewOutline',
+  'brain': 'faSolidBrain',
+  'chart-line': 'faSolidChartLine',
+  // Nutrición
+  'utensils': 'faSolidUtensils',
   // Auditoría / alertas
   'warning-amber': 'matWarningAmberOutline',
   // Comunicación
   'email': 'matEmailOutline',
+  'envelope-check': 'faSolidEnvelopeCircleCheck',
   // Utilidades
   'home': 'matHomeOutline',
   // ── Claves legadas del backend (nombres heroicons) — retrocompatibilidad ──

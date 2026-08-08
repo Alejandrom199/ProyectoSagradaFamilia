@@ -59,7 +59,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                         .Style(BaseReportTemplate.EstiloValoresBold);
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(l.Nivel).Style(BaseReportTemplate.EstiloValores);
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(l.Mensaje).Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(l.Endpoint ?? "—").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(l.Endpoint ?? "-").Style(BaseReportTemplate.EstiloValores);
                 }
             });
         }

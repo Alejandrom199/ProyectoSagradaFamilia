@@ -35,7 +35,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 ModuloId = moduloAdmin.Id,
                 Nombre   = "Eventos de correo",
                 Ruta     = Ruta,
-                Icono    = "mail",
+                Icono    = "envelope-check",
                 Orden    = 7,
                 Activo   = true,
                 OpcionAcciones = new List<OpcionAccion>

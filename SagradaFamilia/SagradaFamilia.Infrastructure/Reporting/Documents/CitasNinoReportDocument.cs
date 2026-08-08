@@ -57,13 +57,13 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                 foreach (var c in _citas)
                 {
                     var hora = c.FechaHora.ToString("HH:mm");
-                    var horaFin = c.FechaHoraFin.HasValue ? $" – {c.FechaHoraFin.Value.ToString("HH:mm")}" : string.Empty;
+                    var horaFin = c.FechaHoraFin.HasValue ? $" - {c.FechaHoraFin.Value.ToString("HH:mm")}" : string.Empty;
                     var fechaTexto = $"{c.FechaHora.ToString("dd MMM yyyy", cultura).ToLower()} {hora}{horaFin}";
 
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(fechaTexto).Style(BaseReportTemplate.EstiloValoresBold);
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.NombreNino).Style(BaseReportTemplate.EstiloValores);
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text($"Dr(a). {c.NombreMedico}").Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.Motivo ?? "—").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.Motivo ?? "-").Style(BaseReportTemplate.EstiloValores);
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(c.Estado).Style(BaseReportTemplate.EstiloValores);
                 }
             });

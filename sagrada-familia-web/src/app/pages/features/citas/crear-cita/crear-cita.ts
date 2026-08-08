@@ -132,23 +132,24 @@ export class CrearCita implements OnInit {
 
     const v = this.formCita.value;
     const horaSeleccionada = v.hora as string;
+    const horaFinSeleccionada = v.horaFin as string;
 
     const inicio = this.horaInicioAtencion();
     const fin = this.horaFinAtencion();
+
+    // Validaciones frontend ANTES de activar el spinner
+    if (horaFinSeleccionada <= horaSeleccionada) {
+      this.error.set('La hora de terminación debe ser posterior a la hora de inicio.');
+      return;
+    }
 
     if (inicio && horaSeleccionada < inicio) {
         this.error.set(`Las citas solo pueden agendarse a partir de las ${inicio} horas.`);
         return;
     }
-    if (fin && horaSeleccionada >= fin) {
-        this.error.set(`Las citas no pueden agendarse después de las ${fin} horas.`);
+    if (fin && horaFinSeleccionada > fin) {
+        this.error.set(`Las citas deben terminar antes de las ${fin} horas.`);
         return;
-    }
-
-    // Validaciones frontend ANTES de activar el spinner
-    if (v.horaFin <= v.hora) {
-      this.error.set('La hora de terminación debe ser posterior a la hora de inicio.');
-      return;
     }
 
     this.guardando.set(true);

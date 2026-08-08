@@ -86,6 +86,10 @@ export const routes: Routes = [
                 loadChildren: () => import('./pages/features/parametros/parametros.routes').then(m => m.parametrosRoutes)
             },
             {
+                path: 'catalogos',
+                loadChildren: () => import('./pages/features/catalogos/catalogos.routes').then(m => m.catalogosRoutes)
+            },
+            {
                 path: '',
                 pathMatch: 'full',
                 loadComponent: () => import('./shared/components/role-redirect/role-redirect').then(m => m.RoleRedirect)

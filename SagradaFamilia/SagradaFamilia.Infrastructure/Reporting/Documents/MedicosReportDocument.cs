@@ -54,8 +54,8 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                 {
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text($"{m.Nombre} {m.Apellido}").Style(BaseReportTemplate.EstiloValoresBold);
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(m.Email).Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(m.Especialidad ?? "—").Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(m.Telefono ?? "—").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(m.Especialidad ?? "-").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(m.Telefono ?? "-").Style(BaseReportTemplate.EstiloValores);
                 }
             });
         }

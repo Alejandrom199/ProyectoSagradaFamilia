@@ -63,7 +63,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila)
                         .Text(string.Join(", ", p.Medicamentos.Select(m => $"{m.Nombre} ({m.Dosis}, {m.Frecuencia})")))
                         .Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(p.Indicaciones ?? "—").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(p.Indicaciones ?? "-").Style(BaseReportTemplate.EstiloValores);
                 }
             });
         }

@@ -97,7 +97,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     col.Item().AlignCenter().PaddingTop(4).Text(
                         string.IsNullOrWhiteSpace(_nino.MedicoEspecialidad)
                             ? $"Dr(a). {_nino.MedicoNombreCompleto}"
-                            : $"Dr(a). {_nino.MedicoNombreCompleto} — {_nino.MedicoEspecialidad}")
+                            : $"Dr(a). {_nino.MedicoNombreCompleto} - {_nino.MedicoEspecialidad}")
                         .Style(BaseReportTemplate.EstiloValoresBold).FontSize(9);
                     col.Item().AlignCenter().Text("Médico tratante").Style(BaseReportTemplate.EstiloValores).FontSize(8);
                 });
@@ -140,7 +140,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     col.Item().PaddingTop(4).Text(
                         string.IsNullOrWhiteSpace(_nino.MedicoEspecialidad)
                             ? $"Dr(a). {_nino.MedicoNombreCompleto}"
-                            : $"Dr(a). {_nino.MedicoNombreCompleto} — {_nino.MedicoEspecialidad}")
+                            : $"Dr(a). {_nino.MedicoNombreCompleto} - {_nino.MedicoEspecialidad}")
                         .Style(BaseReportTemplate.EstiloValores);
                 });
             });
@@ -261,10 +261,10 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila)
                         .Text(c.FechaCreacion.ToString("dd MMM yyyy", Cultura).ToLower())
                         .Style(BaseReportTemplate.EstiloValoresBold);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.Motivo ?? "—").Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.Diagnostico ?? "—").Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.Indicaciones ?? "—").Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(c.Evolucion ?? "—").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.Motivo ?? "-").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.Diagnostico ?? "-").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFila).Text(c.Indicaciones ?? "-").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(c.Evolucion ?? "-").Style(BaseReportTemplate.EstiloValores);
                 }
             });
         }
@@ -304,7 +304,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila)
                         .Text(string.Join(", ", p.Medicamentos.Select(m => $"{m.Nombre} ({m.Dosis}, {m.Frecuencia})")))
                         .Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(p.Indicaciones ?? "—").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(p.Indicaciones ?? "-").Style(BaseReportTemplate.EstiloValores);
                 }
             });
         }

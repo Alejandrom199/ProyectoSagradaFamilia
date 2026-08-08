@@ -44,7 +44,7 @@ export class ListarPlantillas implements OnInit {
     {
       key: 'codigo', label: 'Código',
       render: (row) => {
-        if (!row.codigo) return '<span class="text-slate-400 text-xs">—</span>';
+        if (!row.codigo) return '<span class="text-slate-400 text-xs">-</span>';
         const cls = this.etiquetaCodigo(row.codigo);
         return `<span class="px-2 py-0.5 rounded text-xs font-mono font-semibold ${cls}">${row.codigo}</span>`;
       }

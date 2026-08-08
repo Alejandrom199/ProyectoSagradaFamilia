@@ -61,6 +61,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Contexts
         public DbSet<LogSistema> LogsSistema => Set<LogSistema>();
         public DbSet<Auditoria> Auditorias => Set<Auditoria>();
         public DbSet<ParametroSistema> ParametrosSistema => Set<ParametroSistema>();
+        public DbSet<CatalogoValor> CatalogosValor => Set<CatalogoValor>();
         public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
         public DbSet<PlantillaCorreo> PlantillasCorreo => Set<PlantillaCorreo>();
         public DbSet<EventoCorreo> EventosCorreo => Set<EventoCorreo>();

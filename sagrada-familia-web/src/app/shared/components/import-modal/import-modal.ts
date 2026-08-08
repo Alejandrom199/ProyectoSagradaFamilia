@@ -26,11 +26,13 @@ export class ImportModal {
   resultado         = signal<ImportResult | null>(null);
   archivoSeleccionado = signal<File | null>(null);
   dragging          = signal(false);
+  detalleExpandido  = signal(false);
 
   cerrar() {
     this.estado.set('seleccion');
     this.resultado.set(null);
     this.archivoSeleccionado.set(null);
+    this.detalleExpandido.set(false);
     this.cerrado.emit();
   }
 
@@ -76,5 +78,10 @@ export class ImportModal {
     this.estado.set('seleccion');
     this.archivoSeleccionado.set(null);
     this.resultado.set(null);
+    this.detalleExpandido.set(false);
+  }
+
+  toggleDetalle() {
+    this.detalleExpandido.update(v => !v);
   }
 }

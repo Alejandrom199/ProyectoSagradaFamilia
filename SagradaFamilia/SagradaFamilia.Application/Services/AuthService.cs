@@ -75,7 +75,7 @@ public class AuthService : IAuthService
         {
             await _logSistema.RegistrarEventoAsync(
                 nivel: "Information",
-                mensaje: $"Login exitoso — {usuario.Rol.Nombre}: {usuario.Email}",
+                mensaje: $"Login exitoso - {usuario.Rol.Nombre}: {usuario.Email}",
                 endpoint: "/api/auth/login",
                 usuarioId: usuario.Id);
         }
@@ -143,7 +143,7 @@ public class AuthService : IAuthService
 
         await _logSistema.RegistrarEventoAsync(
             nivel: "Information",
-            mensaje: $"Contraseña restablecida exitosamente — Usuario: {usuario.Email}",
+            mensaje: $"Contraseña restablecida exitosamente - Usuario: {usuario.Email}",
             endpoint: "/api/auth/nueva-clave",
             usuarioId: usuario.Id);
     }
@@ -163,7 +163,7 @@ public class AuthService : IAuthService
 
         await _logSistema.RegistrarEventoAsync(
             nivel: "Information",
-            mensaje: $"Cuenta activada exitosamente — Usuario: {usuario.Email}",
+            mensaje: $"Cuenta activada exitosamente - Usuario: {usuario.Email}",
             endpoint: "/api/auth/activar-cuenta",
             usuarioId: usuario.Id);
     }

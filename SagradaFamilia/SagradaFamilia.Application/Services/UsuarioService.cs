@@ -20,6 +20,7 @@ public class UsuarioService : IUsuarioService
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IMedicoRepository _medicoRepository;
     private readonly IPadreRepository _padreRepository;
+    private readonly ICatalogoValorRepository _catalogoValorRepository;
     private readonly IPasswordResetTokenRepository _resetTokenRepository;
     private readonly IUsuarioEstadoHistorialRepository _estadoHistorialRepository;
     private readonly IEmailService _emailService;
@@ -30,11 +31,13 @@ public class UsuarioService : IUsuarioService
     private readonly ILogger<UsuarioService> _logger;
 
     private const int LongitudMinimaMotivo = 10;
+    private const string TipoEspecialidadMedica = "ESPECIALIDAD_MEDICA";
 
     public UsuarioService(
         IUsuarioRepository usuarioRepository,
         IMedicoRepository medicoRepository,
         IPadreRepository padreRepository,
+        ICatalogoValorRepository catalogoValorRepository,
         IPasswordResetTokenRepository resetTokenRepository,
         IUsuarioEstadoHistorialRepository estadoHistorialRepository,
         IEmailService emailService,
@@ -47,6 +50,7 @@ public class UsuarioService : IUsuarioService
         _usuarioRepository = usuarioRepository;
         _medicoRepository = medicoRepository;
         _padreRepository = padreRepository;
+        _catalogoValorRepository = catalogoValorRepository;
         _resetTokenRepository = resetTokenRepository;
         _estadoHistorialRepository = estadoHistorialRepository;
         _emailService = emailService;
@@ -235,7 +239,10 @@ public class UsuarioService : IUsuarioService
             .Select(m => ($"{m.Nombre} {m.Apellido}", m.Usuario.Email))
             .ToList();
 
-        return new UsuariosPlantillaDocument(opcionesMedicos).GenerarBytes();
+        var especialidades = await _catalogoValorRepository.ObtenerPorTipoAsync(TipoEspecialidadMedica);
+        var opcionesEspecialidades = especialidades.Select(e => e.Valor).ToList();
+
+        return new UsuariosPlantillaDocument(opcionesMedicos, opcionesEspecialidades).GenerarBytes();
     }
 
     public async Task<byte[]> ExportarExcelAsync()
@@ -269,6 +276,10 @@ public class UsuarioService : IUsuarioService
                 resultado.Errores.Add(new UsuarioDto.ImportError { Fila = 0, Mensaje = "No se encontró la hoja 'Usuarios'. Use la plantilla oficial." });
                 return resultado;
             }
+
+            var especialidadesValidas = (await _catalogoValorRepository.ObtenerPorTipoAsync(TipoEspecialidadMedica))
+                .Select(e => e.Valor)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             const int DataStartRow = 7;
             int lastRow = ws.LastRowUsed()?.RowNumber() ?? DataStartRow - 1;
@@ -312,7 +323,25 @@ public class UsuarioService : IUsuarioService
                     erroresFila.Add("Email excede 200 caracteres");
 
                 if (telefono.Length > 20) erroresFila.Add("Teléfono excede 20 caracteres");
-                if (especialidad.Length > 200) erroresFila.Add("Especialidad excede 200 caracteres");
+
+                if (especialidad.Length > 200)
+                {
+                    erroresFila.Add("Especialidad excede 200 caracteres");
+                }
+                else if (rol == RolEnum.Medico)
+                {
+                    if (string.IsNullOrEmpty(especialidad))
+                        erroresFila.Add("Especialidad es obligatoria cuando el Rol es Medico");
+                    else if (!especialidadesValidas.Contains(especialidad))
+                        erroresFila.Add($"Especialidad '{especialidad}' no existe en el catálogo");
+                }
+                else if (rol == RolEnum.Padre && !string.IsNullOrEmpty(especialidad))
+                {
+                    erroresFila.Add("Especialidad no aplica cuando el Rol es Padre");
+                }
+
+                if (rol == RolEnum.Medico && !string.IsNullOrEmpty(emailMedico))
+                    erroresFila.Add("Médico no aplica cuando el Rol es Medico");
 
                 Medico? medicoAsignado = null;
                 if (rol == RolEnum.Padre)
@@ -342,41 +371,15 @@ public class UsuarioService : IUsuarioService
 
                 if (usuarioExistente != null)
                 {
-                    if (usuarioExistente.RolId != (int)rol!.Value)
+                    // La carga masiva de usuarios es solo de creación: un padre puede tener hijos
+                    // y un médico pacientes ya asignados, así que no se permite modificar por Excel
+                    // para evitar inconsistencias con esas relaciones.
+                    resultado.Errores.Add(new UsuarioDto.ImportError
                     {
-                        resultado.Errores.Add(new UsuarioDto.ImportError { Fila = rowNum, Mensaje = $"El email '{email}' pertenece a un usuario con otro rol." });
-                        continue;
-                    }
-
-                    if (rol == RolEnum.Medico)
-                    {
-                        var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(usuarioExistente.Id);
-                        if (medico == null)
-                        {
-                            resultado.Errores.Add(new UsuarioDto.ImportError { Fila = rowNum, Mensaje = $"El email '{email}' existe pero no tiene perfil de médico." });
-                            continue;
-                        }
-                        medico.Nombre       = nombre;
-                        medico.Apellido     = apellido;
-                        medico.Telefono     = string.IsNullOrEmpty(telefono)     ? null : telefono;
-                        medico.Especialidad = string.IsNullOrEmpty(especialidad) ? null : especialidad;
-                        await _medicoRepository.ActualizarAsync(medico);
-                    }
-                    else
-                    {
-                        var padre = await _padreRepository.ObtenerPorUsuarioIdAsync(usuarioExistente.Id);
-                        if (padre == null)
-                        {
-                            resultado.Errores.Add(new UsuarioDto.ImportError { Fila = rowNum, Mensaje = $"El email '{email}' existe pero no tiene perfil de representante." });
-                            continue;
-                        }
-                        padre.Nombre   = nombre;
-                        padre.Apellido = apellido;
-                        padre.Telefono = string.IsNullOrEmpty(telefono) ? null : telefono;
-                        padre.MedicoId = medicoAsignado!.Id;
-                        await _padreRepository.ActualizarAsync(padre);
-                    }
-                    resultado.Actualizados++;
+                        Fila = rowNum,
+                        Mensaje = $"El email '{email}' ya existe. La carga masiva no permite modificar usuarios existentes."
+                    });
+                    continue;
                 }
                 else
                 {
@@ -427,6 +430,14 @@ public class UsuarioService : IUsuarioService
 
                         await _unitOfWork.CommitAsync();
                         resultado.Importados++;
+                        resultado.Detalle.Add(new UsuarioDto.ImportDetalle
+                        {
+                            Fila    = rowNum,
+                            Email   = email,
+                            Nombre  = $"{nombre} {apellido}",
+                            Rol     = rol == RolEnum.Medico ? "Medico" : "Padre",
+                            Accion  = "Creado"
+                        });
 
                         var codigoEvento = rol == RolEnum.Medico ? "CUENTA_MEDICO" : "CUENTA_PADRE";
                         await EnviarCorreoActivacionAsync(codigoEvento, email, nombre, apellido, token.Token, rowNum);

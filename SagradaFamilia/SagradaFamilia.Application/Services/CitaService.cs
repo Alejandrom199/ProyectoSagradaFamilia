@@ -110,10 +110,10 @@ public class CitaService : ICitaService
         var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(usuarioId)
             ?? throw new NotFoundException("Médico", usuarioId);
 
-        await ValidarHorarioAtencionAsync(request.FechaHora);
-
         if (request.FechaHoraFin <= request.FechaHora)
             throw new BusinessException("La hora de terminación debe ser posterior a la hora de inicio.");
+
+        await ValidarHorarioAtencionAsync(request.FechaHora, request.FechaHoraFin);
 
         var haySolapamiento = await _citaRepository.ExisteTraslapeAsync(
             medico.Id, request.FechaHora, request.FechaHoraFin);
@@ -121,7 +121,7 @@ public class CitaService : ICitaService
         if (haySolapamiento)
             throw new BusinessException(
                 $"El médico ya tiene una cita programada que se solapa con el horario " +
-                $"{request.FechaHora:HH:mm}–{request.FechaHoraFin:HH:mm}. " +
+                $"{request.FechaHora:HH:mm}-{request.FechaHoraFin:HH:mm}. " +
                 $"Verifique la agenda antes de agendar.");
 
         var cita = _mapper.Map<Cita>(request);
@@ -157,13 +157,15 @@ public class CitaService : ICitaService
         if (request.FechaHoraFin <= request.FechaHora)
             throw new BusinessException("La hora de terminación debe ser posterior a la hora de inicio.");
 
+        await ValidarHorarioAtencionAsync(request.FechaHora, request.FechaHoraFin);
+
         var haySolapamiento = await _citaRepository.ExisteTraslapeAsync(
             citaOrigen.MedicoId, request.FechaHora, request.FechaHoraFin, excluirCitaId: id);
 
         if (haySolapamiento)
             throw new BusinessException(
                 $"El médico ya tiene una cita que se solapa con el horario " +
-                $"{request.FechaHora:HH:mm}–{request.FechaHoraFin:HH:mm}.");
+                $"{request.FechaHora:HH:mm}-{request.FechaHoraFin:HH:mm}.");
 
         await _unitOfWork.BeginTransactionAsync();
         try
@@ -275,7 +277,7 @@ public class CitaService : ICitaService
                 ["NOMBRE_NINO"]  = $"{cita.Nino.Nombre} {cita.Nino.Apellido}",
                 ["FECHA"]        = cita.FechaHora.ToString("dd/MM/yyyy"),
                 ["HORA_INICIO"]  = cita.FechaHora.ToString("HH:mm"),
-                ["HORA_FIN"]     = cita.FechaHoraFin?.ToString("HH:mm") ?? "—",
+                ["HORA_FIN"]     = cita.FechaHoraFin?.ToString("HH:mm") ?? "-",
                 ["MEDICO"]       = $"Dr(a). {cita.Medico.Nombre} {cita.Medico.Apellido}",
                 ["MOTIVO"]       = !string.IsNullOrWhiteSpace(cita.Motivo) ? cita.Motivo : "No especificado",
             };
@@ -309,7 +311,7 @@ public class CitaService : ICitaService
             .Replace("\r\n", "\\n").Replace("\n", "\\n");
 
         var descripcion = $"Cita con Dr(a). {cita.Medico.Nombre} {cita.Medico.Apellido}"
-            + (!string.IsNullOrWhiteSpace(cita.Motivo) ? $" — {cita.Motivo}" : "");
+            + (!string.IsNullOrWhiteSpace(cita.Motivo) ? $" - {cita.Motivo}" : "");
 
         var ics = new System.Text.StringBuilder()
             .Append("BEGIN:VCALENDAR\r\n")
@@ -333,7 +335,7 @@ public class CitaService : ICitaService
         return ("cita.ics", System.Text.Encoding.UTF8.GetBytes(ics));
     }
 
-    private async Task ValidarHorarioAtencionAsync(DateTime fechaHora)
+    private async Task ValidarHorarioAtencionAsync(DateTime fechaHora, DateTime fechaHoraFin)
     {
         var pHoraInicio = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "HORA_INICIO");
         var pHoraFin = await _parametroRepository.ObtenerPorGrupoYCodigoAsync("HORARIO_ATENCION", "HORA_FIN");
@@ -349,6 +351,9 @@ public class CitaService : ICitaService
         {
             if (TimeOnly.FromDateTime(fechaHora) >= horaFin)
                 throw new BusinessException($"Las citas no pueden agendarse después de las {pHoraFin.Valor} horas.");
+
+            if (TimeOnly.FromDateTime(fechaHoraFin) > horaFin)
+                throw new BusinessException($"Las citas deben terminar antes de las {pHoraFin.Valor} horas.");
         }
 
         if (pDiasHabiles is { Activo: true })
