@@ -41,7 +41,7 @@
                     <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">
                         {{ dragging() ? 'Suelta el archivo aquí' : 'Arrastra tu archivo aquí' }}
                     </p>
-                    <p class="text-xs text-muted mt-0.5">o haz clic para seleccionar — solo <span
+                    <p class="text-xs text-muted mt-0.5">o haz clic para seleccionar - solo <span
                             class="font-medium">.xlsx</span></p>
                 </div>
             </div>
@@ -154,11 +154,64 @@
                 <p class="text-sm text-emerald-700 dark:text-emerald-400 font-medium">Importación completada sin errores.</p>
             </div>
             }
+
+            <!-- Detalle de registros creados/actualizados -->
+            @if (resultado()!.detalle && resultado()!.detalle!.length > 0) {
+            <div class="border border-slate-200 dark:border-zinc-700 rounded-md overflow-hidden">
+                <button type="button" (click)="toggleDetalle()"
+                    class="w-full flex items-center justify-between gap-2 bg-slate-50 dark:bg-zinc-800 px-3 py-2 text-left cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-700/70 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <ng-icon name="matTaskAltOutline" size="14" class="text-emerald-500 shrink-0"></ng-icon>
+                        <span class="text-xs font-medium text-slate-700 dark:text-zinc-300">
+                            Detalle de registros procesados ({{ resultado()!.detalle!.length }})
+                        </span>
+                    </span>
+                    <span class="flex items-center gap-1 text-xs font-semibold text-secondary shrink-0">
+                        {{ detalleExpandido() ? 'Ocultar' : 'Ver detalle' }}
+                        <ng-icon name="matExpandMoreOutline" size="14"
+                            class="transition-transform duration-200" [class.rotate-180]="detalleExpandido()"></ng-icon>
+                    </span>
+                </button>
+
+                @if (detalleExpandido()) {
+                <div class="max-h-48 overflow-y-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 dark:bg-zinc-800 border-b border-slate-100 dark:border-zinc-800">
+                                <th class="text-left px-3 py-2 text-secondary font-medium w-16">Fila</th>
+                                <th class="text-left px-3 py-2 text-secondary font-medium">Email</th>
+                                <th class="text-left px-3 py-2 text-secondary font-medium">Nombre</th>
+                                <th class="text-left px-3 py-2 text-secondary font-medium">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (item of resultado()!.detalle!; track item.fila) {
+                            <tr class="border-b border-slate-100 dark:border-zinc-800 last:border-0">
+                                <td class="px-3 py-2 text-secondary font-medium">{{ item.fila }}</td>
+                                <td class="px-3 py-2 text-slate-700 dark:text-zinc-300 truncate max-w-[160px]">{{ item.email }}</td>
+                                <td class="px-3 py-2 text-slate-700 dark:text-zinc-300">{{ item.nombre }}</td>
+                                <td class="px-3 py-2">
+                                    <span class="px-1.5 py-0.5 rounded-md text-[10px] font-semibold"
+                                        [class.bg-emerald-50]="item.accion === 'Creado'" [class.dark:bg-emerald-500/10]="item.accion === 'Creado'"
+                                        [class.text-emerald-700]="item.accion === 'Creado'" [class.dark:text-emerald-400]="item.accion === 'Creado'"
+                                        [class.bg-blue-50]="item.accion !== 'Creado'" [class.dark:bg-blue-500/10]="item.accion !== 'Creado'"
+                                        [class.text-blue-700]="item.accion !== 'Creado'" [class.dark:text-blue-400]="item.accion !== 'Creado'">
+                                        {{ item.accion }}
+                                    </span>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </div>
+            }
         </div>
 
         <div class="flex justify-end gap-2 px-6 pb-6">
             @if (resultado()!.errores.length > 0) {
-            <btn variant="outline" (clicked)="volverASeleccion()">
+            <btn width="200px" variant="outline" (clicked)="volverASeleccion()">
                 <ng-icon name="matFileUploadOutline" size="14" class="mr-1.5"></ng-icon>
                 Volver a importar
             </btn>

@@ -9,9 +9,13 @@ import { LoadingBar } from '../../../../core/services/loading-bar';
 import { UsuariosService } from '../../../../core/services/usuarios';
 import { MedicosService } from '../../../../core/services/medicos';
 import { PadresService } from '../../../../core/services/padres';
+import { CatalogoValoresService } from '../../../../core/services/catalogo-valores';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { MedicoResponse } from '../../../../shared/interfaces/medico.interface';
+import { CatalogoValorResponse } from '../../../../shared/interfaces/catalogo-valor.interface';
 import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
+
+const TIPO_ESPECIALIDAD_MEDICA = 'ESPECIALIDAD_MEDICA';
 
 const ROLES = [
   { id: 1, nombre: 'Administrador', icono: 'matAdminPanelSettingsOutline', descripcion: 'Acceso total al sistema' },
@@ -31,12 +35,14 @@ export class CrearUsuario implements OnInit {
   private usuariosService = inject(UsuariosService);
   private medicosService  = inject(MedicosService);
   private padresService   = inject(PadresService);
+  private catalogoValoresService = inject(CatalogoValoresService);
   private router          = inject(Router);
   private loadingBar      = inject(LoadingBar);
 
   form!: FormGroup;
   roles = ROLES;
   medicos = signal<MedicoResponse[]>([]);
+  especialidades = signal<CatalogoValorResponse[]>([]);
   readonly medicoLabelFn = (m: MedicoResponse) => `${m.nombre} ${m.apellido}`;
 
   guardando       = signal(false);
@@ -52,6 +58,9 @@ export class CrearUsuario implements OnInit {
     this.form = this.initForm();
     this.medicosService.obtenerTodos().subscribe(res => {
       if (res.success) this.medicos.set(res.data);
+    });
+    this.catalogoValoresService.obtenerPorTipo(TIPO_ESPECIALIDAD_MEDICA).subscribe(res => {
+      if (res.success) this.especialidades.set(res.data);
     });
   }
 

@@ -27,7 +27,6 @@ Proyecto de tesis de grado - Ingeniería en Software.
 - [Roles del sistema](#roles-del-sistema)
 - [Módulos funcionales](#módulos-funcionales)
 - [Despliegue en producción](#despliegue-en-producción)
-- [Documentación adicional](#documentación-adicional)
 - [Convenciones del proyecto](#convenciones-del-proyecto)
 - [Licencia](#licencia)
 
@@ -54,33 +53,7 @@ La Sagrada Familia digitaliza el flujo de atención pediátrica de un consultori
 
 El sistema se compone de cuatro servicios independientes:
 
-```mermaid
-flowchart LR
-    subgraph Cliente
-        B["Navegador"]
-    end
-
-    subgraph Frontend
-        WEB["sagrada-familia-web<br/>Angular 21 + nginx"]
-    end
-
-    subgraph Backend
-        API["SagradaFamilia.API<br/>.NET 8 · Clean Architecture"]
-    end
-
-    subgraph ML["Microservicio de predicción"]
-        PREDICT["sagrada-predict-api<br/>FastAPI + Prophet"]
-    end
-
-    subgraph Datos
-        DB[("PostgreSQL")]
-    end
-
-    B --> WEB
-    WEB -->|"/api/*"| API
-    API -->|HTTP| PREDICT
-    API --> DB
-```
+![Arquitectura de alto nivel](architecture/high-level-architecture-sagrada-familia.drawio.png)
 
 **Backend** (`SagradaFamilia/`) sigue Clean Architecture en cuatro proyectos:
 
@@ -132,8 +105,7 @@ ProyectoSagradaFamilia/
 │   ├── app/
 │   ├── main.py
 │   └── railway.toml
-├── docs/                            # Documentación de tesis, diagramas, manuales
-├── diagramas/                       # Diagramas de arquitectura (.drawio)
+├── architecture/                    # Diagramas de arquitectura e infraestructura (.drawio + .png)
 ├── docker-compose.yml               # Stack local completo (db + api + predict + web)
 ├── docker-compose.prod.yml          # Self-host con imágenes publicadas en Docker Hub
 ├── netlify.toml                     # Build config del frontend en Netlify
@@ -221,28 +193,12 @@ Para despliegue en Railway existe además `.env.railway.example` con las variabl
 
 ## Despliegue en producción
 
-```mermaid
-flowchart LR
-    NET["Netlify<br/>(frontend Angular, build 'production')"]
-    RAIL_API["Railway<br/>(SagradaFamilia.API)"]
-    RAIL_PRED["Railway<br/>(sagrada-predict-api)"]
-    SUPA[("Supabase<br/>PostgreSQL")]
-
-    NET -->|HTTPS /api| RAIL_API
-    RAIL_API --> RAIL_PRED
-    RAIL_API --> SUPA
-```
+![Diagrama de infraestructura y despliegue](architecture/diagrama-arquitectonico-sagrada-familia.drawio.png)
 
 - **Frontend**: Netlify construye con `netlify.toml` (`ng build --configuration production`), que usa `environment.prod.ts` apuntando al dominio de Railway.
 - **Backend y microservicio de predicción**: Railway construye cada uno desde su propio `Dockerfile` (`railway.toml` por servicio).
 - **Base de datos**: PostgreSQL administrado por Supabase.
 - **CI**: al hacer merge de `dev` → `main`, `.github/workflows/docker-publish.yml` construye y publica en Docker Hub las tres imágenes (`api`, `predict`, `web`) para quien prefiera un despliegue self-hosted vía `docker-compose.prod.yml`.
-
-## Documentación adicional
-
-- `docs/` — documentación de tesis (capítulos, manual técnico, manual de usuario, requerimientos funcionales/no funcionales).
-- `diagramas/` — diagramas de arquitectura (backend, frontend, predictor, despliegue local y cloud) en formato `.drawio`.
-- `docs/diagramas/` — diagramas de secuencia por caso de uso y diagramas BPMN (AS-IS / TO-BE) del proceso de atención.
 
 ## Convenciones del proyecto
 

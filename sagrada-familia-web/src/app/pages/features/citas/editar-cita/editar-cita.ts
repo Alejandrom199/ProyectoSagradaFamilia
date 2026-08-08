@@ -124,16 +124,16 @@ export class EditarCita implements OnInit {
     const inicio = this.horaInicioAtencion();
     const fin    = this.horaFinAtencion();
 
+    if (v.horaFin <= v.hora) {
+      this.error.set('La hora de terminación debe ser posterior a la hora de inicio.');
+      return;
+    }
     if (inicio && v.hora < inicio) {
       this.error.set(`Las citas solo pueden agendarse a partir de las ${inicio} horas.`);
       return;
     }
-    if (fin && v.hora >= fin) {
-      this.error.set(`Las citas no pueden agendarse después de las ${fin} horas.`);
-      return;
-    }
-    if (v.horaFin <= v.hora) {
-      this.error.set('La hora de terminación debe ser posterior a la hora de inicio.');
+    if (fin && v.horaFin > fin) {
+      this.error.set(`Las citas deben terminar antes de las ${fin} horas.`);
       return;
     }
 

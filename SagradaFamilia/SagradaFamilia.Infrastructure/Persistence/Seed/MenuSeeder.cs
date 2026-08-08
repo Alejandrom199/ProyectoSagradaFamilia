@@ -32,11 +32,13 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
                         new() { Nombre = "Padres de Familia", Ruta = "/padres", Icono = "groups", Orden = 2, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
-                        new() { Nombre = "Médicos", Ruta = "/medicos", Icono = "badge", Orden = 3, Activo = true,
+                        new() { Nombre = "Médicos", Ruta = "/medicos", Icono = "user-doctor", Orden = 3, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
                         new() { Nombre = "Roles y Permisos", Ruta = "/roles", Icono = "verified-user", Orden = 4, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver")) },
-                        new() { Nombre = "Parámetros del Sistema", Ruta = "/parametros", Icono = "settings", Orden = 5, Activo = true,
+                        new() { Nombre = "Parámetros del Sistema", Ruta = "/parametros", Icono = "tune", Orden = 5, Activo = true,
+                            OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
+                        new() { Nombre = "Catálogos", Ruta = "/catalogos", Icono = "category", Orden = 6, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
                     }
                 },
@@ -51,23 +53,23 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 },
                 new()
                 {
-                    Nombre = "Atención Médica", Icono = "assignment", Orden = 3, Activo = true,
+                    Nombre = "Atención Médica", Icono = "notes-medical", Orden = 3, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Agenda de Citas", Ruta = "/citas", Icono = "calendar-month", Orden = 1, Activo = true,
+                        new() { Nombre = "Agenda de Citas", Ruta = "/citas", Icono = "calendar-check", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) },
-                        new() { Nombre = "Historial de Citas", Ruta = "/citas/historial", Icono = "schedule", Orden = 2, Activo = true,
+                        new() { Nombre = "Historial de Citas", Ruta = "/citas/historial", Icono = "history", Orden = 2, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver")) },
-                        new() { Nombre = "Historial de Prescripciones", Ruta = "/prescripciones", Icono = "assignment", Orden = 3, Activo = true,
+                        new() { Nombre = "Historial de Prescripciones", Ruta = "/prescripciones", Icono = "file-prescription", Orden = 3, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
                     }
                 },
                 new()
                 {
-                    Nombre = "Predicciones", Icono = "trending-up", Orden = 4, Activo = true,
+                    Nombre = "Predicciones", Icono = "brain", Orden = 4, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Predicciones de Crecimiento", Ruta = "/predicciones", Icono = "batch-prediction", Orden = 1, Activo = true,
+                        new() { Nombre = "Predicciones de Crecimiento", Ruta = "/predicciones", Icono = "chart-line", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver")) }
                     }
                 },
@@ -76,7 +78,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                     Nombre = "Orientación Alimentaria", Icono = "set-meal", Orden = 5, Activo = true,
                     Opciones = new List<Opcion>
                     {
-                        new() { Nombre = "Alimentos", Ruta = "/alimentos", Icono = "set-meal", Orden = 1, Activo = true,
+                        new() { Nombre = "Alimentos", Ruta = "/alimentos", Icono = "utensils", Orden = 1, Activo = true,
                             OpcionAcciones = Acciones(GetIdAccion("Ver"), GetIdAccion("Crear"), GetIdAccion("Editar"), GetIdAccion("Eliminar")) }
                     }
                 },

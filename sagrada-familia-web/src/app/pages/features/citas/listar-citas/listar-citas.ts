@@ -54,7 +54,7 @@ export class ListarCitas implements OnInit {
         return `
           <div>
             <p class="font-medium text-[var(--color-text-primary)] text-sm">${formatearFecha(row.fechaHora)}</p>
-            <p class="text-xs text-muted">${horaInicio}${horaFin ? ' – ' + horaFin : ''}</p>
+            <p class="text-xs text-muted">${horaInicio}${horaFin ? ' - ' + horaFin : ''}</p>
           </div>`;
       },
       exportValue: (row) => `${formatearFecha(row.fechaHora)} ${formatearHora(row.fechaHora)}`
@@ -181,7 +181,7 @@ export class ListarCitas implements OnInit {
   exportarPdf(): void {
     const n = this.nino();
     const u = this.authService.currentUser();
-    const titulo = n ? `Citas — ${n.nombre} ${n.apellido}` : 'Historial de Citas';
+    const titulo = n ? `Citas - ${n.nombre} ${n.apellido}` : 'Historial de Citas';
     const params = { ninoId: this.ninoId, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
     this.reportesService.descargarReportePdf('reportes/citas-nino-pdf', params).subscribe({
       next: (blob) => {

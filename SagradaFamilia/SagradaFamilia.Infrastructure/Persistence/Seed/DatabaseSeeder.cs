@@ -34,6 +34,9 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
             await ParametroSeeder.SeedAsync(context);
             logger.LogInformation("ParametroSeeder completado");
 
+            await CatalogoValorSeeder.SeedAsync(context);
+            logger.LogInformation("CatalogoValorSeeder completado");
+
             await PlantillaCorreoSeeder.SeedAsync(context);
             logger.LogInformation("PlantillaCorreoSeeder completado");
 
@@ -48,6 +51,12 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
 
             await EventosCorreoMenuPatch.PatchAsync(context);
             logger.LogInformation("EventosCorreoMenuPatch completado");
+
+            await IconosMenuPatch.PatchAsync(context);
+            logger.LogInformation("IconosMenuPatch completado");
+
+            await CatalogosMenuPatch.PatchAsync(context);
+            logger.LogInformation("CatalogosMenuPatch completado");
 
             logger.LogInformation("Seeds completados exitosamente.");
         }

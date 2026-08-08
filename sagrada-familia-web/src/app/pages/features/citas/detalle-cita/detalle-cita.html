@@ -10,7 +10,7 @@
             <p class="page-subtitle">
                 {{ formatearFecha(cita()!.fechaHora) }}
                 · {{ formatearHora(cita()!.fechaHora) }}
-                @if (cita()!.fechaHoraFin) { – {{ formatearHora(cita()!.fechaHoraFin!) }} }
+                @if (cita()!.fechaHoraFin) { - {{ formatearHora(cita()!.fechaHoraFin!) }} }
                 · Dr(a). {{ cita()?.nombreMedico }}
             </p>
         </div>
@@ -50,7 +50,7 @@
                         <p class="text-sm font-medium text-slate-700 dark:text-zinc-300">
                             {{ formatearHora(cita()!.fechaHora) }}
                             @if (cita()!.fechaHoraFin) {
-                            <span class="text-muted"> – </span>
+                            <span class="text-muted"> - </span>
                             {{ formatearHora(cita()!.fechaHoraFin!) }}
                             }
                         </p>
@@ -168,7 +168,7 @@
                                 <p class="text-[10px] font-bold text-muted uppercase tracking-wider">Medicamentos</p>
                                 <ul class="text-sm text-slate-700 dark:text-zinc-300 list-disc list-inside space-y-0.5">
                                     @for (m of p.medicamentos; track m.id) {
-                                    <li>{{ m.nombre }} — {{ m.dosis }}, {{ m.frecuencia }} ({{ m.viaAdministracion }})</li>
+                                    <li>{{ m.nombre }} - {{ m.dosis }}, {{ m.frecuencia }} ({{ m.viaAdministracion }})</li>
                                     }
                                 </ul>
                             </div>

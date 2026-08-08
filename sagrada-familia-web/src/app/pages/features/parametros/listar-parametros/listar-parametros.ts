@@ -46,14 +46,40 @@ export class ListarParametros implements OnInit {
         return Array.from(mapa.entries()).map(([grupo, items]) => ({ grupo, items }));
     });
 
+    gruposColapsados = signal<Set<string>>(new Set());
+
+    toggleColapso(grupo: string): void {
+        this.gruposColapsados.update(set => {
+            const nuevo = new Set(set);
+            nuevo.has(grupo) ? nuevo.delete(grupo) : nuevo.add(grupo);
+            return nuevo;
+        });
+    }
+
+    estaColapsado(grupo: string): boolean {
+        return this.gruposColapsados().has(grupo);
+    }
+
     migajas: BreadcrumbItem[] = [{ label: 'Parámetros del Sistema' }];
 
     ngOnInit() { this.cargarDatos(); }
 
+    private primeraCarga = true;
+
     cargarDatos() {
         this.loadingBar.show();
         this.parametrosService.obtenerTodos().subscribe({
-            next: (r) => { if (r.success) this.parametros.set(r.data); this.loadingBar.complete(); },
+            next: (r) => {
+                if (r.success) {
+                    this.parametros.set(r.data);
+                    // Solo la primera vez: entra a la pantalla con todos los grupos recogidos.
+                    if (this.primeraCarga) {
+                        this.gruposColapsados.set(new Set(r.data.map(p => p.grupo)));
+                        this.primeraCarga = false;
+                    }
+                }
+                this.loadingBar.complete();
+            },
             error: () => this.loadingBar.complete()
         });
     }

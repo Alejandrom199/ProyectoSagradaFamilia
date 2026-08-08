@@ -34,7 +34,7 @@ namespace SagradaFamilia.Infrastructure.Email
                     : null
             };
 
-            _logger.LogInformation("Enviando email a {Destinatario} vía Brevo — Asunto: {Asunto}", destinatario, asunto);
+            _logger.LogInformation("Enviando email a {Destinatario} vía Brevo - Asunto: {Asunto}", destinatario, asunto);
 
             var jsonOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
             var response = await _httpClient.PostAsJsonAsync("smtp/email", payload, jsonOptions);
@@ -42,7 +42,7 @@ namespace SagradaFamilia.Infrastructure.Email
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-                _logger.LogError("Brevo rechazó el email. Status: {Status} — Body: {Body}", response.StatusCode, body);
+                _logger.LogError("Brevo rechazó el email. Status: {Status} - Body: {Body}", response.StatusCode, body);
                 throw new InvalidOperationException($"Error al enviar email vía Brevo: {response.StatusCode}");
             }
 

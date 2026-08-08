@@ -182,7 +182,7 @@ export class DetallePaciente implements OnInit {
     },
     {
       key: 'motivo', label: 'Motivo',
-      render: (row) => row.motivo || '<span class="text-muted">—</span>'
+      render: (row) => row.motivo || '<span class="text-muted">-</span>'
     },
     {
       key: 'estado', label: 'Estado',
@@ -262,7 +262,7 @@ export class DetallePaciente implements OnInit {
     this.loadingBar.show();
     const n = this.nino();
     const u = this.authService.currentUser();
-    const titulo = n ? `Historia Clínica — ${n.nombre} ${n.apellido}` : 'Historia Clínica';
+    const titulo = n ? `Historia Clínica - ${n.nombre} ${n.apellido}` : 'Historia Clínica';
 
     const [graficaCrecimientoBase64, graficaImcBase64] = await Promise.all([
       this.capturarGrafica(this.chartPesoTallaRef()),

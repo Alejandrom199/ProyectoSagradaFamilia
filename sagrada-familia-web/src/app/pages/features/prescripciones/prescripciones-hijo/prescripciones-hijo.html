@@ -40,7 +40,7 @@
                     <div>
                         <p class="text-sm font-bold text-slate-800 dark:text-zinc-100">{{ formatearFecha(p.fechaCreacion) }}</p>
                         <p class="text-sm text-slate-600 dark:text-zinc-400 mt-0.5">
-                            Dr(a). {{ p.nombreMedico }}{{ p.especialidadMedico ? ' — ' + p.especialidadMedico : '' }}
+                            Dr(a). {{ p.nombreMedico }}{{ p.especialidadMedico ? ' - ' + p.especialidadMedico : '' }}
                         </p>
                         <p class="text-xs text-muted mt-0.5">
                             {{ p.medicamentos.length }} medicamento{{ p.medicamentos.length !== 1 ? 's' : '' }}

@@ -64,12 +64,22 @@
             public int Importados { get; set; }
             public int Actualizados { get; set; }
             public List<ImportError> Errores { get; set; } = [];
+            public List<ImportDetalle> Detalle { get; set; } = [];
         }
 
         public class ImportError
         {
             public int Fila { get; set; }
             public string Mensaje { get; set; } = string.Empty;
+        }
+
+        public class ImportDetalle
+        {
+            public int Fila { get; set; }
+            public string Email { get; set; } = string.Empty;
+            public string Nombre { get; set; } = string.Empty;
+            public string Rol { get; set; } = string.Empty;
+            public string Accion { get; set; } = string.Empty;
         }
     }
 }

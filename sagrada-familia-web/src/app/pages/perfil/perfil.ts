@@ -64,8 +64,8 @@ export class Perfil implements OnInit {
           });
         }
 
-        if (this.authService.esPadre() && res.data.padreId) {
-          this.padresService.obtenerPorId(res.data.padreId).subscribe({
+        if (this.authService.esPadre()) {
+          this.padresService.obtenerMiPerfil().subscribe({
             next: r => { if (r.success) this.infoPadre.set(r.data); },
             error: err => console.error('No se pudo cargar la información del padre.', err)
           });

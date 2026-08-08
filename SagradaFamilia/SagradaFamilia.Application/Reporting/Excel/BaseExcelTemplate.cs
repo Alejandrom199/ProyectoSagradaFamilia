@@ -16,7 +16,7 @@ public abstract class BaseExcelTemplate
     protected const string ColorInstruccionFondo = "#FEF9C3";
     protected const string ColorInstruccionTexto = "#854D0E";
 
-    protected const string NombreSistema = "Sagrada Familia — Sistema Pediátrico";
+    protected const string NombreSistema = "Sagrada Familia - Sistema Pediátrico";
 
     public abstract byte[] GenerarBytes();
 

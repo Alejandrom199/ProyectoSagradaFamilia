@@ -29,7 +29,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo            = "CUENTA_PADRE",
-                    Nombre            = "Activación de cuenta — Padre",
+                    Nombre            = "Activación de cuenta - Padre",
                     Descripcion       = "Se dispara cuando se registra un nuevo padre o representante. El destinatario recibe un enlace para establecer su contraseña y activar su cuenta.",
                     Variables         = """["NOMBRE","APELLIDO","LINK"]""",
                     PlantillaCorreoId = IdPlantilla("CUENTA_PADRE")
@@ -37,7 +37,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo            = "CUENTA_MEDICO",
-                    Nombre            = "Activación de cuenta — Médico",
+                    Nombre            = "Activación de cuenta - Médico",
                     Descripcion       = "Se dispara cuando el administrador registra un nuevo médico. El médico recibe un enlace para activar su cuenta y establecer su contraseña.",
                     Variables         = """["NOMBRE","APELLIDO","LINK"]""",
                     PlantillaCorreoId = IdPlantilla("CUENTA_MEDICO")
@@ -45,7 +45,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo            = "CUENTA_ADMIN",
-                    Nombre            = "Activación de cuenta — Administrador",
+                    Nombre            = "Activación de cuenta - Administrador",
                     Descripcion       = "Se dispara cuando se registra un nuevo administrador. El destinatario recibe un enlace para activar su acceso al sistema.",
                     Variables         = """["EMAIL","LINK"]""",
                     PlantillaCorreoId = IdPlantilla("CUENTA_ADMIN")
@@ -61,7 +61,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo            = "CITA_AGENDADA",
-                    Nombre            = "Cita agendada — Notificación al padre",
+                    Nombre            = "Cita agendada - Notificación al padre",
                     Descripcion       = "Se dispara cuando se programa una nueva cita. El padre recibe un correo con los datos de la consulta.",
                     Variables         = """["NOMBRE_PADRE","NOMBRE_NINO","FECHA","HORA_INICIO","HORA_FIN","MEDICO","MOTIVO"]""",
                     PlantillaCorreoId = IdPlantilla("CITA_AGENDADA")
@@ -69,7 +69,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo            = "CITA_REAGENDADA",
-                    Nombre            = "Cita reagendada — Notificación al padre",
+                    Nombre            = "Cita reagendada - Notificación al padre",
                     Descripcion       = "Se dispara cuando una cita es reprogramada. El padre recibe la nueva fecha y hora confirmada.",
                     Variables         = """["NOMBRE_PADRE","NOMBRE_NINO","FECHA","HORA_INICIO","HORA_FIN","MEDICO"]""",
                     PlantillaCorreoId = IdPlantilla("CITA_REAGENDADA")

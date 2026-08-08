@@ -15,7 +15,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 {
                     Codigo = "CAMBIO_CLAVE",
                     Nombre = "Restablecimiento de contraseña",
-                    Asunto = "Restablecimiento de contraseña — Sagrada Familia",
+                    Asunto = "Restablecimiento de contraseña - Sagrada Familia",
                     Activo = true,
                     Cuerpo = """
 <!DOCTYPE html>
@@ -54,7 +54,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
           </tr>
           <tr>
             <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
-              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático - no respondas a este mensaje.</p>
             </td>
           </tr>
         </table>
@@ -68,8 +68,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo = "CUENTA_PADRE",
-                    Nombre = "Activación de cuenta — Padre",
-                    Asunto = "Bienvenido a Sagrada Familia — Activá tu cuenta",
+                    Nombre = "Activación de cuenta - Padre",
+                    Asunto = "Bienvenido a Sagrada Familia - Activá tu cuenta",
                     Activo = true,
                     Cuerpo = """
 <!DOCTYPE html>
@@ -108,7 +108,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
           </tr>
           <tr>
             <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
-              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático - no respondas a este mensaje.</p>
             </td>
           </tr>
         </table>
@@ -122,8 +122,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo = "CUENTA_ADMIN",
-                    Nombre = "Activación de cuenta — Administrador",
-                    Asunto = "Bienvenido a Sagrada Familia — Activá tu cuenta",
+                    Nombre = "Activación de cuenta - Administrador",
+                    Asunto = "Bienvenido a Sagrada Familia - Activá tu cuenta",
                     Activo = true,
                     Cuerpo = """
 <!DOCTYPE html>
@@ -164,7 +164,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
           </tr>
           <tr>
             <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
-              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático - no respondas a este mensaje.</p>
             </td>
           </tr>
         </table>
@@ -178,8 +178,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo = "CUENTA_MEDICO",
-                    Nombre = "Credenciales de acceso — Médico",
-                    Asunto = "Credenciales de acceso — Sagrada Familia",
+                    Nombre = "Credenciales de acceso - Médico",
+                    Asunto = "Credenciales de acceso - Sagrada Familia",
                     Activo = true,
                     Cuerpo = """
 <!DOCTYPE html>
@@ -224,7 +224,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
           </tr>
           <tr>
             <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
-              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático - no respondas a este mensaje.</p>
             </td>
           </tr>
         </table>
@@ -238,8 +238,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo = "CITA_AGENDADA",
-                    Nombre = "Cita agendada — Notificación al padre",
-                    Asunto = "Cita pediátrica programada — Sagrada Familia",
+                    Nombre = "Cita agendada - Notificación al padre",
+                    Asunto = "Cita pediátrica programada - Sagrada Familia",
                     Activo = true,
                     Cuerpo = """
 <!DOCTYPE html>
@@ -284,7 +284,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                     </tr>
                     <tr>
                       <td style="padding:5px 0;font-size:13px;color:#64748b;">Horario</td>
-                      <td style="padding:5px 0;font-size:13px;font-weight:600;color:#0f172a;">{{HORA_INICIO}} – {{HORA_FIN}} hrs</td>
+                      <td style="padding:5px 0;font-size:13px;font-weight:600;color:#0f172a;">{{HORA_INICIO}} - {{HORA_FIN}} hrs</td>
                     </tr>
                     <tr>
                       <td style="padding:5px 0;font-size:13px;color:#64748b;">Motivo</td>
@@ -300,7 +300,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
           </tr>
           <tr>
             <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
-              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático - no respondas a este mensaje.</p>
             </td>
           </tr>
         </table>
@@ -314,8 +314,8 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                 new()
                 {
                     Codigo = "CITA_REAGENDADA",
-                    Nombre = "Cita reagendada — Notificación al padre",
-                    Asunto = "Tu cita fue reagendada — Sagrada Familia",
+                    Nombre = "Cita reagendada - Notificación al padre",
+                    Asunto = "Tu cita fue reagendada - Sagrada Familia",
                     Activo = true,
                     Cuerpo = """
 <!DOCTYPE html>
@@ -360,7 +360,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
                     </tr>
                     <tr>
                       <td style="padding:5px 0;font-size:13px;color:#64748b;">Nuevo horario</td>
-                      <td style="padding:5px 0;font-size:13px;font-weight:600;color:#2563eb;">{{HORA_INICIO}} – {{HORA_FIN}} hrs</td>
+                      <td style="padding:5px 0;font-size:13px;font-weight:600;color:#2563eb;">{{HORA_INICIO}} - {{HORA_FIN}} hrs</td>
                     </tr>
                   </table>
                 </td></tr>
@@ -372,7 +372,7 @@ namespace SagradaFamilia.Infrastructure.Persistence.Seed
           </tr>
           <tr>
             <td style="padding:20px 40px;border-top:1px solid #e2e8f0;">
-              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático — no respondas a este mensaje.</p>
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">Correo automático - no respondas a este mensaje.</p>
             </td>
           </tr>
         </table>

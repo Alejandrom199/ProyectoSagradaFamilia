@@ -1,0 +1,185 @@
+<div class="page-container">
+    <breadcrumb [items]="migajas" homeRoute="/dashboard"></breadcrumb>
+
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="page-title">Catálogos</h2>
+            <p class="page-subtitle">Listas de valores administrables para formularios del sistema</p>
+        </div>
+        <button (click)="mostrarFormNuevo.set(!mostrarFormNuevo())"
+            class="flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors">
+            <ng-icon name="matAddOutline" size="1em"></ng-icon>
+            Nuevo valor
+        </button>
+    </div>
+
+    <!-- Formulario nuevo valor -->
+    @if (mostrarFormNuevo()) {
+    <div class="bg-white dark:bg-zinc-900 border border-blue-200 p-6 mb-6">
+        <h3 class="font-bold text-slate-800 dark:text-zinc-100 mb-4 flex items-center gap-2">
+            <ng-icon name="matAddOutline" size="1em" class="text-blue-500"></ng-icon>
+            Agregar nuevo valor de catálogo
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-secondary mb-1">Tipo <span class="text-red-400">*</span></label>
+                <input [(ngModel)]="nuevoValor.tipo" placeholder="Ej: ESPECIALIDAD_MEDICA"
+                    class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary mb-1">Código <span class="text-red-400">*</span></label>
+                <input [(ngModel)]="nuevoValor.codigo" placeholder="Ej: PEDIATRIA_GENERAL"
+                    class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary mb-1">Valor <span class="text-red-400">*</span></label>
+                <input [(ngModel)]="nuevoValor.valor" placeholder="Ej: Pediatría General"
+                    class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary mb-1">Descripción</label>
+                <input [(ngModel)]="nuevoValor.descripcion" placeholder="Descripción opcional"
+                    class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+            </div>
+        </div>
+        @if (errorNuevo()) {
+        <p class="text-red-500 text-xs mt-3">{{ errorNuevo() }}</p>
+        }
+        <div class="flex gap-3 mt-4">
+            <button (click)="crearValor()" [disabled]="creando()"
+                class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50">
+                <ng-icon name="matCheckOutline" size="0.9em"></ng-icon>
+                {{ creando() ? 'Guardando...' : 'Guardar' }}
+            </button>
+            <button (click)="mostrarFormNuevo.set(false)"
+                class="px-4 py-2 text-sm text-secondary hover:text-slate-700 dark:hover:text-zinc-200 rounded-md border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
+                Cancelar
+            </button>
+        </div>
+    </div>
+    }
+
+    <!-- Tipos de catálogo -->
+    @for (tipo of tipos(); track tipo.tipo) {
+    <div class="card mb-6">
+        <button type="button" (click)="toggleColapso(tipo.tipo)"
+            class="card-header w-full text-left cursor-pointer hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors">
+            <div class="w-9 h-9 bg-blue-50 dark:bg-blue-500/10 rounded-md flex items-center justify-center">
+                <ng-icon name="matCategoryOutline" size="1.1em" class="text-blue-500"></ng-icon>
+            </div>
+            <div class="flex-1">
+                <p class="font-bold text-slate-800 dark:text-zinc-100 text-sm">{{ tipo.tipo }}</p>
+                <p class="text-xs text-muted">{{ tipo.items.length }} valor{{ tipo.items.length !== 1 ? 'es' : '' }}</p>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs font-semibold text-secondary shrink-0">
+                {{ estaColapsado(tipo.tipo) ? 'Ampliar' : 'Recoger' }}
+                <ng-icon name="matExpandMoreOutline" size="1.1em"
+                    class="transition-transform duration-200" [class.rotate-180]="!estaColapsado(tipo.tipo)">
+                </ng-icon>
+            </div>
+        </button>
+
+        @if (!estaColapsado(tipo.tipo)) {
+        <div class="divide-y divide-slate-100 dark:divide-zinc-800">
+            @for (v of tipo.items; track v.id) {
+            <div class="px-6 py-4">
+                <!-- Vista normal -->
+                @if (!estaEditando(v.id)) {
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-mono font-bold text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-md">{{ v.codigo }}</span>
+                            @if (!v.activo) {
+                            <span class="text-[10px] font-semibold text-muted bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">Inactivo</span>
+                            }
+                        </div>
+                        <p class="text-base font-semibold text-slate-800 dark:text-zinc-100 mt-1">{{ v.valor }}</p>
+                        @if (v.descripcion) {
+                        <p class="text-xs text-muted mt-0.5">{{ v.descripcion }}</p>
+                        }
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                        <label class="flex items-center cursor-pointer" [tooltip]="v.activo ? 'Inactivar' : 'Activar'"
+                            tooltipPosition="top">
+                            <div class="relative">
+                                <input type="checkbox" [checked]="v.activo" (change)="toggleActivo(v)" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-200 dark:bg-zinc-700 peer-checked:bg-blue-600 rounded-full transition-colors"></div>
+                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white dark:bg-zinc-900 rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                            </div>
+                        </label>
+                        <button (click)="iniciarEdicion(v)"
+                            class="p-2 rounded-md text-muted hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
+                            title="Editar">
+                            <ng-icon name="matEditOutline" size="1em"></ng-icon>
+                        </button>
+                        <button (click)="valorAEliminar.set(v)"
+                            class="p-2 rounded-md text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                            title="Eliminar">
+                            <ng-icon name="matDeleteOutline" size="1em"></ng-icon>
+                        </button>
+                    </div>
+                </div>
+                }
+
+                <!-- Vista edición inline -->
+                @if (estaEditando(v.id)) {
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono font-bold text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-md">{{ v.codigo }}</span>
+                        <span class="text-xs text-muted">editando</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-secondary mb-1">Valor</label>
+                            <input [(ngModel)]="editando()!.valor"
+                                class="w-full border border-blue-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-secondary mb-1">Descripción</label>
+                            <input [(ngModel)]="editando()!.descripcion"
+                                class="w-full border border-slate-200 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" [(ngModel)]="editando()!.activo" id="activo-{{v.id}}"
+                            class="w-4 h-4 rounded border-slate-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-300" />
+                        <label [for]="'activo-' + v.id" class="text-xs text-slate-600 dark:text-zinc-400 cursor-pointer">Activo</label>
+                    </div>
+                    @if (errorGuardado()) {
+                    <p class="text-red-500 text-xs">{{ errorGuardado() }}</p>
+                    }
+                    <div class="flex gap-2 pt-1">
+                        <button (click)="guardar()" [disabled]="guardando()"
+                            class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50">
+                            <ng-icon name="matCheckOutline" size="0.85em"></ng-icon>
+                            {{ guardando() ? 'Guardando...' : 'Guardar' }}
+                        </button>
+                        <button (click)="cancelarEdicion()"
+                            class="px-3 py-1.5 text-xs text-secondary rounded-md border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
+                            <ng-icon name="matCloseOutline" size="0.85em"></ng-icon>
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+        }
+    </div>
+    }
+
+    @if (tipos().length === 0) {
+    <div class="text-center py-16 text-muted">
+        <ng-icon name="matCategoryOutline" size="3em" class="mb-4 opacity-30"></ng-icon>
+        <p class="text-sm">No hay valores de catálogo configurados.</p>
+    </div>
+    }
+
+    @if (valorAEliminar()) {
+    <confirm-modal title="¿Eliminar valor de catálogo?"
+        [message]="'Se eliminará el valor ' + valorAEliminar()?.tipo + '/' + valorAEliminar()?.codigo + '. Esta acción no se puede deshacer.'"
+        (confirm)="confirmarEliminar()" (cancel)="valorAEliminar.set(null)">
+    </confirm-modal>
+    }
+</div>

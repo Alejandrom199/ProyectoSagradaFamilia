@@ -49,7 +49,7 @@ export class PredictionChart {
 
   predicciones = input.required<PuntoPrediccion[]>();
   curvasOms    = input<CurvasOmsResponse | null>(null);
-  title        = input<string>('Curva de Crecimiento — Peso');
+  title        = input<string>('Curva de Crecimiento - Peso');
 
   async capturarImagen(): Promise<string | null> {
     const chart = this.chartRef();

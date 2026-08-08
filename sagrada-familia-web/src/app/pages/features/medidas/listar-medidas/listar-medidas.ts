@@ -180,7 +180,7 @@ export class ListarMedidas implements OnInit {
   exportarPdf(): void {
     const n = this.nino();
     const u = this.authService.currentUser();
-    const titulo = n ? `Medidas — ${n.nombre} ${n.apellido}` : 'Historial de Medidas';
+    const titulo = n ? `Medidas - ${n.nombre} ${n.apellido}` : 'Historial de Medidas';
     const params = { ninoId: this.id, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
     this.reportesService.descargarReportePdf('reportes/medidas-pdf', params).subscribe({
       next: (blob) => { this.descargarBlob(blob, `medidas-${hoy()}.pdf`); },

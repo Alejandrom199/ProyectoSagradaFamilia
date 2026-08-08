@@ -128,7 +128,7 @@ export class ListarAuditoria implements OnInit {
       key: 'ipAddress', label: 'IP',
       render: (row) => row.ipAddress
         ? `<span class="text-xs text-[var(--color-text-secondary)]">${row.ipAddress}</span>`
-        : '<span class="text-muted">—</span>'
+        : '<span class="text-muted">-</span>'
     }
   ];
 
@@ -167,14 +167,14 @@ export class ListarAuditoria implements OnInit {
     const despues = this.parsearJson(d.valoresNuevos);
 
     const fmtVal = (v: unknown): string => {
-      if (v == null) return '—';
+      if (v == null) return '-';
       if (typeof v === 'boolean') return v ? 'Sí' : 'No';
       if (typeof v === 'string') {
-        if (!v.trim()) return '—';
+        if (!v.trim()) return '-';
         if (/^\d{4}-\d{2}-\d{2}(T|\s|$)/.test(v)) return formatearFecha(v);
         return v;
       }
-      if (typeof v === 'object') return '—';
+      if (typeof v === 'object') return '-';
       return String(v);
     };
 
@@ -184,7 +184,7 @@ export class ListarAuditoria implements OnInit {
         .map(([k, v]) => ({
           clave: k,
           etiqueta: ETIQUETAS_CAMPOS[k] ?? k,
-          antes: '—',
+          antes: '-',
           despues: fmtVal(v),
           cambio: false
         }));
@@ -197,7 +197,7 @@ export class ListarAuditoria implements OnInit {
           clave: k,
           etiqueta: ETIQUETAS_CAMPOS[k] ?? k,
           antes: fmtVal(v),
-          despues: '—',
+          despues: '-',
           cambio: false
         }));
     }

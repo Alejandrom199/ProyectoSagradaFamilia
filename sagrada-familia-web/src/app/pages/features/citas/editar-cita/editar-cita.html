@@ -27,14 +27,14 @@
                         <p class="text-sm text-secondary">
                             {{ formatearFecha(cita()!.fechaHora) }}
                             · {{ formatearHora(cita()!.fechaHora) }}
-                            @if (cita()!.fechaHoraFin) { – {{ formatearHora(cita()!.fechaHoraFin!) }} }
+                            @if (cita()!.fechaHoraFin) { - {{ formatearHora(cita()!.fechaHoraFin!) }} }
                         </p>
                     </div>
 
                     @if (horaInicioAtencion() && horaFinAtencion()) {
                     <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-100 rounded-md">
                         <p class="text-[11px] font-bold text-blue-700 uppercase tracking-wide mb-1">Horario de atención</p>
-                        <p class="text-xs text-blue-600">{{ horaInicioAtencion() }} — {{ horaFinAtencion() }} hrs</p>
+                        <p class="text-xs text-blue-600">{{ horaInicioAtencion() }} - {{ horaFinAtencion() }} hrs</p>
                     </div>
                     }
                 </div>

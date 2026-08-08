@@ -30,7 +30,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-muted mb-1">Correo</p>
-                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ perfilUsuario()?.email ?? '—' }}</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ perfilUsuario()?.email ?? '-' }}</p>
                 </div>
                 <div>
                     <p class="text-xs text-muted mb-1">Rol</p>
@@ -41,7 +41,7 @@
                 <div>
                     <p class="text-xs text-muted mb-1">Miembro desde</p>
                     <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">
-                        @if (perfilUsuario(); as p) { {{ formatearFecha(p.fechaCreacion) }} } @else { — }
+                        @if (perfilUsuario(); as p) { {{ formatearFecha(p.fechaCreacion) }} } @else { - }
                     </p>
                 </div>
 
@@ -63,7 +63,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-muted mb-1">Médico asignado</p>
-                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ infoPadre()?.medicoNombreCompleto ?? '—' }}</p>
+                    <p class="text-sm font-medium text-slate-800 dark:text-zinc-100">{{ infoPadre()?.medicoNombreCompleto ?? '-' }}</p>
                 </div>
                 }
             </div>

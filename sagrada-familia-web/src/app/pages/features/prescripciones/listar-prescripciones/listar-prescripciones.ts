@@ -66,7 +66,7 @@ export class ListarPrescripciones implements OnInit {
       key: 'indicaciones', label: 'Indicaciones',
       render: (row) => row.indicaciones
         ? `<p class="text-xs text-[var(--color-text-secondary)] max-w-xs truncate" title="${row.indicaciones}">${row.indicaciones}</p>`
-        : '<span class="text-muted">—</span>'
+        : '<span class="text-muted">-</span>'
     }
   ];
 
@@ -143,7 +143,7 @@ export class ListarPrescripciones implements OnInit {
   exportarPdf(): void {
     const n = this.nino();
     const u = this.authService.currentUser();
-    const titulo = n ? `Prescripciones — ${n.nombre} ${n.apellido}` : 'Historial de Prescripciones';
+    const titulo = n ? `Prescripciones - ${n.nombre} ${n.apellido}` : 'Historial de Prescripciones';
     const params = { ninoId: this.ninoId, titulo, usuario: u ? `${u.nombre} ${u.apellido}` : '' };
     this.reportesService.descargarReportePdf('reportes/prescripciones-pdf', params).subscribe({
       next: (blob) => { this.descargarBlob(blob, `prescripciones-${hoy()}.pdf`); },

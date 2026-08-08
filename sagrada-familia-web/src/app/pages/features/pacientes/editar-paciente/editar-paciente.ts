@@ -52,7 +52,7 @@ export class EditarPaciente implements OnInit {
     { label: 'Editar Paciente' },
   ];
 
-  readonly padreLabelFn = (p: PadreResponse) => `${p.nombre} ${p.apellido} — ${p.email}`;
+  readonly padreLabelFn = (p: PadreResponse) => `${p.nombre} ${p.apellido} - ${p.email}`;
   readonly sexoOptions = SEXO_OPTIONS;
 
   ngOnInit(): void {

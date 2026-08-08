@@ -7,23 +7,30 @@ import { finalize } from 'rxjs';
 
 import { LoadingBar } from '../../../../core/services/loading-bar';
 import { MedicosService } from '../../../../core/services/medicos';
+import { CatalogoValoresService } from '../../../../core/services/catalogo-valores';
 import { BreadcrumbItem, Breadcrumb } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { MedicoCreate } from '../../../../shared/interfaces/medico.interface';
+import { CatalogoValorResponse } from '../../../../shared/interfaces/catalogo-valor.interface';
+import { SearchableSelect } from '../../../../shared/components/searchable-select/searchable-select';
+
+const TIPO_ESPECIALIDAD_MEDICA = 'ESPECIALIDAD_MEDICA';
 
 @Component({
   selector: 'app-crear-medico',
   standalone: true,
-  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule],
+  imports: [RouterLink, FormsModule, Breadcrumb, NgIcon, ReactiveFormsModule, SearchableSelect],
   templateUrl: './crear-medico.html',
   styleUrl: './crear-medico.css',
 })
 export class CrearMedico implements OnInit {
   private fb             = inject(FormBuilder);
   private medicosService = inject(MedicosService);
+  private catalogoValoresService = inject(CatalogoValoresService);
   private router         = inject(Router);
   private loadingBar     = inject(LoadingBar);
 
   formMedico!: FormGroup;
+  especialidades = signal<CatalogoValorResponse[]>([]);
 
   guardando = signal(false);
   error     = signal<string | null>(null);
@@ -35,6 +42,9 @@ export class CrearMedico implements OnInit {
 
   ngOnInit(): void {
     this.formMedico = this.initForm();
+    this.catalogoValoresService.obtenerPorTipo(TIPO_ESPECIALIDAD_MEDICA).subscribe(res => {
+      if (res.success) this.especialidades.set(res.data);
+    });
   }
 
   private initForm(): FormGroup {

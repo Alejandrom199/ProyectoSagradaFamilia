@@ -64,7 +64,7 @@ namespace SagradaFamilia.Infrastructure.Reporting.Documents
                     table.Cell().Element(BaseReportTemplate.EstiloCeldaFila)
                         .Text(r.UsuarioNombreCompleto ?? r.UsuarioEmail ?? "Sistema")
                         .Style(BaseReportTemplate.EstiloValores);
-                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(r.IpAddress ?? "—").Style(BaseReportTemplate.EstiloValores);
+                    table.Cell().Element(BaseReportTemplate.EstiloCeldaFilaUltima).Text(r.IpAddress ?? "-").Style(BaseReportTemplate.EstiloValores);
                 }
             });
         }

@@ -217,12 +217,18 @@
                     @if (esMedico) {
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-600 dark:text-zinc-400 uppercase ml-1">Especialidad</label>
-                        <div class="relative">
-                            <ng-icon name="matWorkOutline"
-                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-base"></ng-icon>
-                            <input formControlName="especialidad" type="text" placeholder="Ej. Pediatría general"
-                                class="form-input pl-10">
-                        </div>
+                        <searchable-select
+                            [options]="especialidades()"
+                            valueKey="valor"
+                            labelKey="valor"
+                            [value]="f['especialidad'].value"
+                            (valueChange)="f['especialidad'].setValue($event)"
+                            placeholder="Seleccionar especialidad..."
+                            searchPlaceholder="Buscar especialidad...">
+                        </searchable-select>
+                        @if (especialidades().length === 0) {
+                        <span class="text-[11px] text-amber-600 font-medium ml-1">No hay especialidades configuradas en el catálogo.</span>
+                        }
                     </div>
                     }
 

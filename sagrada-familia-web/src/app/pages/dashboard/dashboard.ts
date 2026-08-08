@@ -34,10 +34,10 @@ export class Dashboard implements OnInit {
 
   // ── Médico ────────────────────────────────────────────────
   stats = signal([
-    { label: 'Pacientes',    valor: '—', icon: 'matPeopleOutline',        color: '#2563eb', bgColor: '#dbeafe', ruta: '/pacientes' },
-    { label: 'Citas hoy',    valor: '—', icon: 'matCalendarMonthOutline', color: '#7c3aed', bgColor: '#ede9fe', ruta: '/citas' },
-    { label: 'Alimentos',    valor: '—', icon: 'matCakeOutline',           color: '#d97706', bgColor: '#fef3c7', ruta: '/alimentos' },
-    { label: 'Predicciones', valor: '—', icon: 'matBarChartOutline',       color: '#16a34a', bgColor: '#dcfce7', ruta: '/predicciones' },
+    { label: 'Pacientes',    valor: '-', icon: 'matPeopleOutline',        color: '#2563eb', bgColor: '#dbeafe', ruta: '/pacientes' },
+    { label: 'Citas hoy',    valor: '-', icon: 'matCalendarMonthOutline', color: '#7c3aed', bgColor: '#ede9fe', ruta: '/citas' },
+    { label: 'Alimentos',    valor: '-', icon: 'matCakeOutline',           color: '#d97706', bgColor: '#fef3c7', ruta: '/alimentos' },
+    { label: 'Predicciones', valor: '-', icon: 'matBarChartOutline',       color: '#16a34a', bgColor: '#dcfce7', ruta: '/predicciones' },
   ]);
 
   // ── Admin dashboard ────────────────────────────────────────
@@ -104,7 +104,7 @@ export class Dashboard implements OnInit {
   // Salud del sistema
   readonly uptimeTexto = computed(() => {
     const inicio = this.dashboard()?.salud?.iniciadoEn;
-    if (!inicio) return '—';
+    if (!inicio) return '-';
 
     const ms = Date.now() - new Date(inicio).getTime();
     const dias  = Math.floor(ms / (1000 * 60 * 60 * 24));
