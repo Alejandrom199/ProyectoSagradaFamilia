@@ -35,7 +35,7 @@ services:
     image: ${DOCKERHUB_USER}/sagrada-familia-api:latest
     environment:
       # ── Supabase ───────────────────────────────────────────────────────────
-      ConnectionStrings__PostgresConnection: "Host=db.xwajbkydcsvmygvvszza.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=${POSTGRES_PASSWORD};SSL Mode=Require;Trust Server Certificate=true;"
+      ConnectionStrings__PostgresConnection: "Host=${SUPABASE_HOST};Port=5432;Database=postgres;Username=postgres;Password=${POSTGRES_PASSWORD};SSL Mode=Require;Trust Server Certificate=true;"
       JwtSettings__SecretKey: ${JWT_SECRET_KEY}
       JwtSettings__Issuer: SagradaFamiliaAPI
       JwtSettings__Audience: SagradaFamiliaClient

@@ -3,7 +3,9 @@
 CLAUDE.md
 .playwright-mcp/
 diagrams/
+diagramas/
 docs/*
+tesis_diapos/
 
 #Ides
 .vs/
