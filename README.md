@@ -1,14 +1,24 @@
-# La Sagrada Familia - Sistema de Monitoreo Pediátrico
+<p align="center">
+  <img src="assets/logo.png" alt="Logo La Sagrada Familia" width="160">
+</p>
 
-Sistema web para la gestión clínica y el seguimiento del crecimiento infantil del **Consultorio Médico La Sagrada Familia** (Milagro, Ecuador). Permite administrar pacientes, agendar y atender citas, registrar consultas y prescripciones, dar seguimiento antropométrico (peso/talla/IMC contra referencias OMS) y predecir tendencias de crecimiento mediante series de tiempo.
+<h1 align="center">La Sagrada Familia - Sistema de Monitoreo Pediátrico</h1>
 
-Proyecto de tesis de grado - Ingeniería en Software.
+<p align="center">
+  Sistema web para la gestión clínica y el seguimiento del crecimiento infantil del <strong>Consultorio Médico La Sagrada Familia</strong> (Milagro, Ecuador). Permite administrar pacientes, agendar y atender citas, registrar consultas y prescripciones, dar seguimiento antropométrico (peso/talla/IMC contra referencias OMS) y predecir tendencias de crecimiento mediante series de tiempo.
+</p>
 
-![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)
-![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
-![Python](https://img.shields.io/badge/Python-FastAPI-009688?logo=fastapi&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+<p align="center">
+  Proyecto de tesis de grado - Ingeniería en Software.
+</p>
+
+<p align="center">
+  <img alt=".NET" src="https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white">
+  <img alt="Angular" src="https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white">
+  <img alt="Python" src="https://img.shields.io/badge/Python-FastAPI-009688?logo=fastapi&logoColor=white">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white">
+</p>
 
 ---
 
@@ -16,6 +26,7 @@ Proyecto de tesis de grado - Ingeniería en Software.
 
 - [Descripción general](#descripción-general)
 - [Características principales](#características-principales)
+- [Capturas de pantalla](#capturas-de-pantalla)
 - [Arquitectura](#arquitectura)
 - [Stack tecnológico](#stack-tecnológico)
 - [Estructura del repositorio](#estructura-del-repositorio)
@@ -48,6 +59,38 @@ La Sagrada Familia digitaliza el flujo de atención pediátrica de un consultori
 - **Autenticación JWT** con rotación de refresh token en cookies `httpOnly`, recuperación de contraseña y activación de cuenta por correo.
 - **Auditoría y trazabilidad**: registro de acciones sensibles y logs de sistema, con soft delete en las entidades del dominio.
 - **Modo oscuro** y sistema de diseño centralizado en el frontend.
+
+## Capturas de pantalla
+
+<table>
+  <tr>
+    <td width="50%">
+      <p align="center"><strong>Inicio de sesión</strong></p>
+      <img src="assets/screenshots/login.png" alt="Pantalla de inicio de sesión" width="100%">
+    </td>
+    <td width="50%">
+      <p align="center"><strong>Dashboard del administrador</strong></p>
+      <img src="assets/screenshots/dashboard-admin.png" alt="Dashboard del administrador" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <p align="center"><strong>Predicciones de crecimiento (Prophet + referencias OMS)</strong></p>
+      <img src="assets/screenshots/prediccion-crecimiento.png" alt="Predicciones de crecimiento" width="100%">
+    </td>
+    <td width="50%">
+      <p align="center"><strong>Ficha clínica del paciente</strong></p>
+      <img src="assets/screenshots/historia-clinica.png" alt="Ficha clínica del paciente" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <p align="center"><strong>Orientación alimentaria (vista del padre)</strong></p>
+      <img src="assets/screenshots/orientacion-alimentaria-padre.png" alt="Orientación alimentaria, vista del padre" width="100%">
+    </td>
+    <td width="50%"></td>
+  </tr>
+</table>
 
 ## Arquitectura
 

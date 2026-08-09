@@ -60,11 +60,11 @@ export class ListarMedidas implements OnInit {
     },
     {
       key: 'peso', label: 'Peso', sortable: true,
-      render: (r) => `<span class="font-medium text-slate-700">${r.peso} kg</span>`
+      render: (r) => `<span class="font-medium text-slate-700 dark:text-zinc-300">${r.peso} kg</span>`
     },
     {
       key: 'talla', label: 'Talla', sortable: true,
-      render: (r) => `<span class="font-medium text-slate-700">${r.talla} cm</span>`
+      render: (r) => `<span class="font-medium text-slate-700 dark:text-zinc-300">${r.talla} cm</span>`
     },
     {
       key: 'estadoNutricional', label: 'Estado', sortable: true, filterable: true,
@@ -75,11 +75,11 @@ export class ListarMedidas implements OnInit {
     },
     {
       key: 'percentilPeso', label: 'P. Peso', sortable: true,
-      render: (r) => `<span class="text-xs text-slate-500">P${r.percentilPeso}</span>`
+      render: (r) => `<span class="text-xs text-muted">P${r.percentilPeso}</span>`
     },
     {
       key: 'percentilTalla', label: 'P. Talla', sortable: true,
-      render: (r) => `<span class="text-xs text-slate-500">P${r.percentilTalla}</span>`
+      render: (r) => `<span class="text-xs text-muted">P${r.percentilTalla}</span>`
     },
   ];
 
