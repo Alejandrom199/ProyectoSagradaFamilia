@@ -270,7 +270,13 @@ export class Datatable<T extends object> implements OnChanges {
   }
 
   ngOnChanges() {
-    this.paginaActualSignal.set(1);
+    // En modo servidor, cada respuesta de página cambia `data` y dispararía este hook:
+    // resetear aquí pisaría la página real recién pedida (ver cambiarPagina). Los flujos
+    // que sí deben volver a la página 1 en modo servidor (búsqueda, filtros, tamaño de
+    // página) ya lo hacen explícitamente antes de pedir datos.
+    if (!this.serverSide) {
+      this.paginaActualSignal.set(1);
+    }
   }
 
   accionesVisibles(row: T): DatatableAction<T>[] {

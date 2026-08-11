@@ -10,7 +10,7 @@ import {
   heroChevronDoubleLeft, heroChevronDoubleRight,
   heroAdjustmentsHorizontal,
   heroArrowLeft, heroArrowRight, heroArrowUp, heroArrowDown,
-  heroArrowDownTray, heroArrowUpTray, heroArrowPath, heroArrowRightOnRectangle, heroArrowTrendingUp,
+  heroArrowPath, heroArrowRightOnRectangle, heroArrowTrendingUp,
   heroBars3, heroBeaker, heroBriefcase,
   heroCake, heroCalendarDays, heroChartBar, heroChartBarSquare,
   heroCheckCircle, heroCircleStack, heroClock, heroCloud,
@@ -113,9 +113,6 @@ import {
   // Categorías orientación padres
   matPublicOutline,
   matEcoOutline,
-  // Datatable export
-  matBorderAllOutline,
-  matPictureAsPdfOutline,
   // Medidas progreso
   matHeightOutline,
   matHistoryOutline,
@@ -130,13 +127,14 @@ import {
   matEditCalendarOutline
 } from '@ng-icons/material-icons/outline';
 
-// ── Font Awesome Solid (íconos de dominio sin equivalente claro en Hero/Material) ──
+// ── Font Awesome Solid (íconos de dominio sin equivalente en Hero/Material NI en
+//    el set "regular" de Font Awesome — ver bloque "Regular" más abajo) ──────────
 import {
   // Pacientes / niños
   faSolidBaby, faSolidChild, faSolidBabyCarriage, faSolidHandsHoldingChild,
   // Médicos / clínico
   faSolidUserDoctor, faSolidUserNurse, faSolidStethoscope, faSolidSyringe,
-  faSolidHospital, faSolidNotesMedical, faSolidFileMedical, faSolidHeartPulse,
+  faSolidNotesMedical, faSolidFileMedical, faSolidHeartPulse,
   faSolidFilePrescription,
   // Medidas / crecimiento
   faSolidWeightScale, faSolidScaleBalanced,
@@ -145,10 +143,25 @@ import {
   // Predicción / IA
   faSolidBrain, faSolidRobot, faSolidMagnifyingGlassChart,
   // Citas
-  faSolidCalendarCheck, faSolidEnvelopeCircleCheck,
+  faSolidEnvelopeCircleCheck,
   // Reportes
   faSolidChartLine, faSolidChartPie
 } from '@ng-icons/font-awesome/solid';
+
+// ── Font Awesome Regular (variante outline; se usa cuando Font Awesome Free trae
+//    un equivalente "regular" del ícono — si no existe, se usa el "solid" de arriba) ──
+import {
+  // Médicos / clínico
+  faHospital as faRegularHospital,
+  // Citas
+  faCalendarCheck as faRegularCalendarCheck,
+  // Datatable — Excel / PDF / exportar / importar
+  faFileExcel as faRegularFileExcel,
+  faFilePdf as faRegularFilePdf,
+  faShareFromSquare as faRegularShareFromSquare,
+  faFolderOpen as faRegularFolderOpen,
+  faFileLines as faRegularFileLines,
+} from '@ng-icons/font-awesome/regular';
 
 // ── Exportación combinada para provideIcons global ────────────────────────────
 export const APP_ICONS = {
@@ -157,7 +170,7 @@ export const APP_ICONS = {
   heroChevronDoubleLeft, heroChevronDoubleRight,
   heroAdjustmentsHorizontal,
   heroArrowLeft, heroArrowRight, heroArrowUp, heroArrowDown,
-  heroArrowDownTray, heroArrowUpTray, heroArrowPath, heroArrowRightOnRectangle, heroArrowTrendingUp,
+  heroArrowPath, heroArrowRightOnRectangle, heroArrowTrendingUp,
   heroBars3, heroBeaker, heroBriefcase,
   heroCake, heroCalendarDays, heroChartBar, heroChartBarSquare,
   heroCheckCircle, heroCircleStack, heroClock, heroCloud,
@@ -257,9 +270,6 @@ export const APP_ICONS = {
   // Categorías orientación padres
   matPublicOutline,
   matEcoOutline,
-  // Datatable export
-  matBorderAllOutline,
-  matPictureAsPdfOutline,
   // Medidas progreso
   matHeightOutline,
   matHistoryOutline,
@@ -272,12 +282,12 @@ export const APP_ICONS = {
   matGroupOutline,
   // Reagendación de citas
   matEditCalendarOutline,
-  // Font Awesome Solid
+  // Font Awesome Solid (sin equivalente "regular" en Font Awesome Free)
   // Pacientes / niños
   faSolidBaby, faSolidChild, faSolidBabyCarriage, faSolidHandsHoldingChild,
   // Médicos / clínico
   faSolidUserDoctor, faSolidUserNurse, faSolidStethoscope, faSolidSyringe,
-  faSolidHospital, faSolidNotesMedical, faSolidFileMedical, faSolidHeartPulse,
+  faSolidNotesMedical, faSolidFileMedical, faSolidHeartPulse,
   faSolidFilePrescription,
   // Medidas / crecimiento
   faSolidWeightScale, faSolidScaleBalanced,
@@ -286,9 +296,14 @@ export const APP_ICONS = {
   // Predicción / IA
   faSolidBrain, faSolidRobot, faSolidMagnifyingGlassChart,
   // Citas
-  faSolidCalendarCheck, faSolidEnvelopeCircleCheck,
+  faSolidEnvelopeCircleCheck,
   // Reportes
-  faSolidChartLine, faSolidChartPie
+  faSolidChartLine, faSolidChartPie,
+  // Font Awesome Regular (variante outline, cuando existe equivalente)
+  faRegularHospital, faRegularCalendarCheck,
+  // Datatable — Excel / PDF / exportar / importar
+  faRegularFileExcel, faRegularFilePdf,
+  faRegularShareFromSquare, faRegularFolderOpen, faRegularFileLines,
 };
 
 /**
@@ -315,7 +330,7 @@ export const SIDEBAR_ICON_MAP: Record<string, string> = {
   'category': 'matCategoryOutline',
   // Opciones clínicas
   'calendar-month': 'matCalendarMonthOutline',
-  'calendar-check': 'faSolidCalendarCheck',
+  'calendar-check': 'faRegularCalendarCheck',
   'schedule': 'matScheduleOutline',
   'history': 'matHistoryOutline',
   'search': 'matSearchOutline',
